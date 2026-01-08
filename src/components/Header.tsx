@@ -20,7 +20,7 @@ const navigation = [
 
 const category = [
   {
-    name: "도복 · 띠",
+    name: "도복·띠",
     href: "/products/ttibok/taekwondo", // 첫 서브카테고리로 이동
     subMenu: [
       { name: "태권도복", href: "/products/ttibok/taekwondo" },
@@ -34,20 +34,20 @@ const category = [
     name: "보호장비",
     href: "/products/protection/headgear", // 첫 서브카테고리로 이동
     subMenu: [
-      { name: "머리보호대", href: "/products/protection/headgear" },
-      { name: "몸통보호대", href: "/products/protection/body" },
-      { name: "팔다리보호대", href: "/products/protection/limbs" },
+      { name: "머리 보호대", href: "/products/protection/headgear" },
+      { name: "몸통 보호대", href: "/products/protection/body" },
+      { name: "팔·다리 보호대", href: "/products/protection/limbs" },
       { name: "글러브", href: "/products/protection/gloves" },
       { name: "아대", href: "/products/protection/band" },
       { name: "마우스피스", href: "/products/protection/mouthpiece" },
     ],
   },
   {
-    name: "훈련 · 격파용품",
+    name: "훈련·격파용품",
     href: "/products/training/mit-shield",
     subMenu: [
-      { name: "미트 · 쉴드", href: "/products/training/mit-shield" },
-      { name: "샌드백 · 사각백", href: "/products/training/sandbag-square" },
+      { name: "미트·쉴드", href: "/products/training/mit-shield" },
+      { name: "샌드백·사각백", href: "/products/training/sandbag-square" },
       { name: "송판류", href: "/products/training/wood-board" },
       { name: "쌍절곤", href: "/products/training/nunchaku" },
       { name: "줄넘기", href: "/products/training/jump-rope" },
@@ -57,19 +57,19 @@ const category = [
     name: "도장설비",
     href: "/products/studio/mattress-pit",
     subMenu: [
-      { name: "매트리스 · 뜀틀", href: "/products/studio/mattress-pit" },
+      { name: "매트리스·뜀틀", href: "/products/studio/mattress-pit" },
       { name: "에어매트", href: "/products/studio/air-mat" },
-      { name: "퍼즐매트 · 롤매트", href: "/products/studio/puzzle-roll-mat" },
+      { name: "퍼즐매트·롤매트", href: "/products/studio/puzzle-roll-mat" },
     ],
   },
   {
     name: "부가용품",
     href: "/products/accessories/shoes",
     subMenu: [
-      { name: "신발 · 실내화", href: "/products/accessories/shoes" },
-      { name: "상장 · 트로피", href: "/products/accessories/trophy" },
+      { name: "신발·실내화", href: "/products/accessories/shoes" },
+      { name: "상장·트로피", href: "/products/accessories/trophy" },
       {
-        name: "도장 문구류 · 소모품",
+        name: "도장 문구류·소모품",
         href: "/products/accessories/stationery",
       },
     ],
@@ -85,19 +85,17 @@ export default function Header() {
   const [openMenu, setOpenMenu] = useState(false);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // 메뉴 열기
   const handleMouseEnter = () => {
-    // 메뉴 열기
-    if (closeTimeoutRef.current) {
-      clearTimeout(closeTimeoutRef.current); // 닫기 예약 있으면 취소
-    }
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
     setOpenMenu(true);
   };
 
+  // 메뉴 닫기 (딜레이)
   const handleMouseLeave = () => {
-    // 메뉴 닫기 예약
     closeTimeoutRef.current = setTimeout(() => {
       setOpenMenu(false);
-    }, 200); // 200ms 후에 메뉴 닫기
+    }, 150); // 150ms 딜레이
   };
 
   return (
@@ -129,33 +127,35 @@ export default function Header() {
         </H.IconGroup>
       </H.TopHeader>
 
-      <H.BottomHeader as="nav">
+      <H.BottomHeader as="nav" style={{ position: "relative" }}>
         <H.Navigation>
           {navigation.map((nav, idx) => (
             <H.Li
+              key={nav.name}
               isFirst={idx === 0}
-              onMouseEnter={handleMouseEnter}
+              onMouseEnter={idx === 0 ? handleMouseEnter : undefined}
               onMouseLeave={handleMouseLeave}
             >
               <Link href={nav.href} passHref legacyBehavior>
                 <H.NavLink isFirst={idx === 0}>{nav.name}</H.NavLink>
               </Link>
 
-              <H.Menu isFirst={idx === 0}>
-                {category.map((cat) => (
-                  <ul key={cat.name}>
-                    <H.B_category>{cat.name}</H.B_category>
-
-                    <H.line />
-
-                    {cat.subMenu.map((el) => (
-                      <H.S_Category key={el.name}>
-                        <Link href={el.href}>{el.name}</Link>
-                      </H.S_Category>
-                    ))}
-                  </ul>
-                ))}
-              </H.Menu>
+              {/* 전상품 메뉴만 열기 */}
+              {openMenu && idx === 0 && (
+                <H.Menu>
+                  {category.map((cat) => (
+                    <ul key={cat.name}>
+                      <H.B_category>{cat.name}</H.B_category>
+                      <H.line />
+                      {cat.subMenu.map((el) => (
+                        <H.S_Category key={el.name}>
+                          <Link href={el.href}>{el.name}</Link>
+                        </H.S_Category>
+                      ))}
+                    </ul>
+                  ))}
+                </H.Menu>
+              )}
             </H.Li>
           ))}
         </H.Navigation>

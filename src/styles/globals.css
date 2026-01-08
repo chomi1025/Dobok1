@@ -9,6 +9,42 @@
   box-sizing: border-box;
 }
 
+input {
+  border: 1px solid #ddd;
+  padding: 11px 15px;
+  width: 100%;
+}
+
+input:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+select {
+  outline: none;
+}
+
+select:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
+legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+address {
+  font-style: normal;
+}
 /* 2. 폰트 적용 */
 @font-face {
   font-family: "Pretendard";
@@ -74,9 +110,17 @@ html {
 
 /* 3. body 기본 스타일 */
 body {
-  font-family: "Pretendard", sans-serif;
   background-color: #fff;
   color: #333;
+
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui,
+    sans-serif;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* 4. a 태그 기본 */
