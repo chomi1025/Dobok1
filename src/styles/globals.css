@@ -104,7 +104,6 @@ address {
 /* 2. 기본 폰트, line-height */
 html {
   font-size: 16px; /* 기본 폰트 사이즈 */
-  line-height: 1.5; /* 국룰 라인 높이 */
   scroll-behavior: smooth; /* 부드러운 스크롤 */
 }
 
@@ -115,8 +114,6 @@ body {
 
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui,
     sans-serif;
-  font-weight: 500;
-  line-height: 1.5;
   letter-spacing: -0.01em;
 
   -webkit-font-smoothing: antialiased;
@@ -146,4 +143,8 @@ button {
 ul,
 ol {
   list-style: none;
+}
+
+p {
+  margin: 0;
 }

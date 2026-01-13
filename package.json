@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "@types/node": "25.0.3",
@@ -18,14 +17,6 @@
     "next": "^13.4.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-=======
-    "@types/node": "25.0.3",
-    "@types/react": "19.2.7",
-    "@types/react-dom": "19.2.3",
-    "next": "16.1.1",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
->>>>>>> 144bbef4a98eb68f006f51e30e8987968a5f03aa
-    "typescript": "5.9.3"
+    "typescript": "5.2.2"
   }
 }

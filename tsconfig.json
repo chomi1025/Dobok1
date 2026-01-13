@@ -5,31 +5,30 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
-<<<<<<< HEAD
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-=======
-    "noEmit": true,
+
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
->>>>>>> 144bbef4a98eb68f006f51e30e8987968a5f03aa
+
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+
+    "plugins": [{ "name": "next" }],
+
     "paths": {
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/assets/data/product.js"
+  ],
   "exclude": ["node_modules"]
 }

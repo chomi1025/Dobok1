@@ -5,6 +5,7 @@ export const TopHeader = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: white;
 `;
 
 export const IconGroup = styled.div`
@@ -101,6 +102,7 @@ export const Menu = styled.nav<{ isVisible?: boolean }>`
   background-color: white;
   box-shadow: 0 5px 5px rgba(0, 0, 0, 0.03);
   display: flex;
+  z-index: 10;
 
   > ul {
     display: block;
