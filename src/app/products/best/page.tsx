@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 "use client";
 import * as B from "./style";
 import ProductList from "@/components/product/ProductList";
@@ -17,4 +18,8 @@ export default function BestProductPage() {
       </B.Inner>
     </>
   );
+=======
+export default function Header() {
+  return <div>베스트 상품 화면</div>;
+>>>>>>> 83a61c5 (헤더)
 }

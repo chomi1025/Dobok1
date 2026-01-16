@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 "use client";
 import * as F from "./Footer.styles";
 import Link from "next/link";
@@ -65,5 +66,20 @@ export default function Footer() {
         </F.Right_Wrapper>
       </F.Inner>
     </F.Footer>
+=======
+// src/components/Footer.tsx
+export default function Footer() {
+  return (
+    <footer
+      style={{
+        padding: "16px",
+        backgroundColor: "#575C69",
+        color: "white",
+        textAlign: "center",
+      }}
+    >
+      © 2026 도복일번지. All rights reserved.
+    </footer>
+>>>>>>> 83a61c5 (헤더)
   );
 }

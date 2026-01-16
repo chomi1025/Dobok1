@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 "use client";
 import ProductList from "@/components/product/ProductList";
 import * as N from "./style";
@@ -16,4 +17,8 @@ export default function NewProductPage() {
       </N.Inner>
     </>
   );
+=======
+export default function Header() {
+  return <div>신제품 화면</div>;
+>>>>>>> 83a61c5 (헤더)
 }

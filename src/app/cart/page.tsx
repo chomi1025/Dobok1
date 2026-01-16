@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 "use client";
 import { usePathname } from "next/navigation";
 import CartEmptyComponent from "./CartEmpty";
@@ -35,4 +36,8 @@ export default function CartPage() {
       <CartEmptyComponent />
     </C.Inner>
   );
+=======
+export default function Header() {
+  return <div>장바구니 화면</div>;
+>>>>>>> 83a61c5 (헤더)
 }
