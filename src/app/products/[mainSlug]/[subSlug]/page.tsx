@@ -1,126 +1,89 @@
-"use client";
+import { getCategories } from "@/lib/category";
+import styles from "./page.module.scss";
 import Link from "next/link";
-import * as S from "./style";
-import { getMainCategory, getSubCategory } from "@/lib/category";
-import { PRODUCTS } from "./../../../../assets/data/product";
-import { Line } from "./../../../signup/style";
-import Image from "next/image";
-import ProductList from "./../../../../components/product/productList";
-import { Product } from "./page";
 
-export interface Product {
-  id: string;
-  name: string;
-
-  mainSlug: string; // protection
-  subSlug: string; // headgear
-
-  price: number; // 원가
-  saleRate: number; // 할인율 (없으면 0)
-
-  thumbnail: string; // 리스트용 이미지
-  images: string[]; // 상세페이지 이미지들
-
-  isSoldOut: boolean;
-  createdAt: string;
-}
-
-interface SubCategory {
-  name: string;
-  subSlug: string;
-}
-
-interface MainCategory {
+export type MainCategory = {
+  id: number;
+  created_at: string;
   name: string;
   mainSlug: string;
-  subMenu: SubCategory[];
-}
+  sort_order: number;
+};
 
-interface PageProps {
+export type SubCategory = {
+  id: number;
+  created_at: string;
+  name: string;
+  slug: string;
+  main_id: number | null;
+  sort_order: number;
+};
+
+export type GroupedCategory = MainCategory & {
+  subs: SubCategory[];
+};
+
+type Props = {
   params: {
     mainSlug: string;
-    subSlug?: string; // 전체 페이지 대비
+    subSlug: string;
   };
-}
+};
 
-export default function SubCategory({ params }: PageProps) {
+export default async function Page({ params }: Props) {
   const { mainSlug, subSlug } = params;
-  const main = getMainCategory(mainSlug) as MainCategory;
-  const sub = subSlug
-    ? (getSubCategory(mainSlug, subSlug) as SubCategory)
-    : null;
+  const { grouped } = await getCategories();
 
-  const subTabs: { name: string; subSlug: string | null }[] = [
-    { name: "전체", subSlug: null },
-    ...main.subMenu,
-  ];
-
-  const isActive =
-    (sub.subSlug === null && !params.subSlug) || sub.subSlug === params.subSlug;
+  const currentMain: GroupedCategory | undefined = grouped.find(
+    (m) => m.mainSlug === mainSlug
+  );
+  const currentSub: SubCategory | undefined = currentMain?.subs.find(
+    (s) => s.slug === subSlug
+  );
 
   return (
-    <>
-      <S.Inner>
-        <S.Title_Wrapper>
-          <S.Bread_crumb aria-label="breadcrumb">
-            <ol>
-              <li>
-                <Link href="/">전상품</Link>
+    <section className={styles.container}>
+      {/* 타이틀 + 브레드크럼 */}
+      <div className={styles.top}>
+        <div className={styles.header}>
+          {/* 타이틀 */}
+          <h1 className={styles.title}>{currentMain?.name}</h1>
+
+          {/* 브레드크럼 */}
+          <nav className={styles.breadcrumb}>
+            <Link href="/">전상품</Link>
+            <span>/</span>
+            <Link href={`/products/${currentMain?.mainSlug}`}>
+              {currentMain?.name}
+            </Link>
+            {currentSub && (
+              <>
+                <span>/</span>
+                <span>{currentSub.name}</span>
+              </>
+            )}
+          </nav>
+        </div>
+
+        {/* 서브카테고리 탭 */}
+        <nav className={styles.tabMenuWrapper}>
+          <ul className={styles.tabs}>
+            {currentMain?.subs.map((sub) => (
+              <li
+                key={sub.id}
+                className={sub.slug === subSlug ? styles.activeTab : styles.tab}
+              >
+                <Link href={`/products/${mainSlug}/${sub.slug}`}>
+                  {sub.name}
+                </Link>
               </li>
-
-              <li>
-                <Link href="/">{main.name}</Link>
-              </li>
-
-              {sub && (
-                <li>
-                  <Link href={`/products/${main.mainSlug}/${sub.subSlug}`}>
-                    {sub.name}
-                  </Link>
-                </li>
-              )}
-            </ol>
-          </S.Bread_crumb>
-
-          <h2>{main.name}</h2>
-        </S.Title_Wrapper>
-
-        <S.TabMenu_Wrapper aria-label="카테고리 탭">
-          <ul>
-            {subTabs.map((tab) => {
-              const isActive =
-                (tab.subSlug === null && !params.subSlug) ||
-                tab.subSlug === params.subSlug;
-
-              return (
-                <li
-                  key={tab.subSlug ?? "all"}
-                  className={isActive ? "active" : ""}
-                >
-                  <Link
-                    href={
-                      tab.subSlug
-                        ? `/products/${main.mainSlug}/${tab.subSlug}`
-                        : `/products/${main.mainSlug}`
-                    }
-                  >
-                    {tab.name}
-                  </Link>
-                </li>
-              );
-            })}
+            ))}
           </ul>
-        </S.TabMenu_Wrapper>
+        </nav>
+      </div>
 
-        <S.Product_Wrapper>
-          <select name="" id="">
-            <option value="">최신순</option>
-            <option value="">가격순</option>
-            <option value="">후기순</option>
-          </select>
-          <ProductList product={PRODUCTS} />
-        </S.Product_Wrapper>
-      </S.Inner>
-    </>
+      {/* 상품 리스트 */}
+      <div className={styles.productList}>{/* <ProductList /> */}</div>
+    </section>
   );
 }

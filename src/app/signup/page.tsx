@@ -15,8 +15,9 @@ export default function Signup() {
     address2: "",
   });
 
-  const onlyNumber = (e) => {
-    e.target.value = e.target.value.replace(/\D/g, "");
+  const onlyNumber = (e: React.FormEvent<HTMLInputElement>) => {
+    const target = e.target as HTMLInputElement;
+    target.value = target.value.replace(/\D/g, "");
   };
 
   return (

@@ -1,15 +1,17 @@
 "use client";
-import ProductCard from "./ProductCart";
 import * as S from "./style";
+import ProductCard, { Product } from "./ProductCard";
 
-export default function ProductList(props) {
-  console.log(props?.product);
+interface Props {
+  product: Product[];
+}
 
+export default function ProductList({ product }: Props) {
   return (
     <>
       <S.ProductList>
-        {props?.product?.map((product) => (
-          <ProductCard key={product.id} product={product} />
+        {product?.map((p) => (
+          <ProductCard key={p.id} product={p} />
         ))}
       </S.ProductList>
     </>

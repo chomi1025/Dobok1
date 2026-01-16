@@ -1,17 +1,18 @@
 import "@/styles/globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import React from "react";
 
-export default function RootLayout({
+import Footer from "@/components/Footer";
+import { ReactNode } from "react";
+import HeaderServer from "@/components/header/Header.server";
+
+export default async function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <html lang="ko">
       <body>
-        <Header />
+        <HeaderServer />
         {children}
         <Footer />
       </body>

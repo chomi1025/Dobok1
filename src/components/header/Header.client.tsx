@@ -8,7 +8,6 @@ import cart from "@/assets/Image/header/cil_cart.png";
 import search from "@/assets/Image/header/si_search-line.png";
 import * as H from "./Header.styles";
 import { useRef, useState } from "react";
-import { category } from "./../assets/data/category";
 
 const navigation = [
   { name: "전상품", href: "/products" },
@@ -19,7 +18,22 @@ const navigation = [
   { name: "고객센터", href: "/support" },
 ];
 
-export default function Header() {
+type Category = {
+  id: number;
+  name: string;
+  mainSlug: string;
+  subs: {
+    id: number;
+    name: string;
+    slug: string;
+  }[];
+};
+
+export default function HeaderClient({
+  categories,
+}: {
+  categories: Category[];
+}) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const openSearch = () => setIsSearchOpen(true);
@@ -86,17 +100,15 @@ export default function Header() {
               {/* 전상품 메뉴만 열기 */}
               {openMenu && idx === 0 && (
                 <H.Menu>
-                  {category.map((cat) => (
+                  {categories.map((cat) => (
                     <ul key={cat.name}>
                       <H.B_category>{cat.name}</H.B_category>
 
                       <H.line />
 
-                      {cat.subMenu.map((el) => (
+                      {cat.subs.map((el) => (
                         <H.S_Category key={el.name}>
-                          <Link
-                            href={`/products/${cat.mainSlug}/${el.subSlug}`}
-                          >
+                          <Link href={`/products/${cat.mainSlug}/${el.slug}`}>
                             {el.name}
                           </Link>
                         </H.S_Category>

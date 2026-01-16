@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-import content from "./../../../node_modules/next/image-types/global.d";
 
 export const Inner = styled.section`
   text-align: center;

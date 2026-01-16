@@ -1,7 +1,6 @@
 "use client";
-import ProductList from "@/components/product/productList";
+import ProductList from "@/components/product/ProductList";
 import * as N from "./style";
-
 import { PRODUCTS } from "@/assets/data/product";
 
 export default function NewProductPage() {

@@ -3,6 +3,22 @@ import Link from "next/link";
 import Image from "next/image";
 import * as S from "./style";
 
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  saleRate?: number; // optional
+  thumbnail: string;
+  mainSlug: string;
+  subSlug: string;
+  originalPrice?: number; // optional
+  isBest?: boolean; // optional
+  stock: number;
+  isNew?: boolean; // optional
+  rating?: number; // optional
+  reviewCount?: number; // optional
+}
+
 interface Props {
   product: Product;
 }
@@ -13,7 +29,9 @@ export default function ProductCard({ product }: Props) {
   const { name, price, saleRate, thumbnail, mainSlug, subSlug, id } = product;
 
   const salePrice =
-    saleRate > 0 ? Math.floor(price * (1 - saleRate / 100)) : price;
+    (saleRate ?? 0) > 0
+      ? Math.floor(price * (1 - (saleRate ?? 0) / 100))
+      : price;
 
   return (
     <li>
@@ -29,13 +47,13 @@ export default function ProductCard({ product }: Props) {
           <S.Product_Title>{name}</S.Product_Title>
 
           <S.Product_price>
-            {saleRate > 0 && <S.Sale>{saleRate}%</S.Sale>}
+            {(saleRate ?? 0) > 0 && <S.Sale>{saleRate}%</S.Sale>}
 
             <S.Price>
               <strong>{salePrice.toLocaleString()}</strong>원
             </S.Price>
 
-            {saleRate > 0 && <small>{price.toLocaleString()}원</small>}
+            {(saleRate ?? 0) > 0 && <small>{price.toLocaleString()}원</small>}
           </S.Product_price>
         </S.Info_Wrapper>
       </Link>

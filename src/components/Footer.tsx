@@ -19,8 +19,8 @@ export default function Footer() {
         <F.Footer_links>
           <ul>
             {navigation.map((nav) => (
-              <li key={nav.name}>
-                <Link href="/">{nav.name}</Link>
+              <li key={nav?.name}>
+                <Link href="/">{nav?.name}</Link>
               </li>
             ))}
           </ul>

@@ -9,14 +9,19 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@emotion/react": "^11",
+    "@emotion/cache": "^11.14.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/server": "^11.11.0",
     "@emotion/styled": "^11",
+    "@supabase/supabase-js": "^2.90.1",
     "@types/node": "25.0.3",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
     "next": "^13.4.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "sass": "^1.97.2",
+    "supabase": "^2.72.6",
     "typescript": "5.2.2"
   }
 }

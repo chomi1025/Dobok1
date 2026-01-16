@@ -1,4 +1,20 @@
-export const PRODUCTS = [
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  saleRate?: number; // optional
+  thumbnail: string;
+  mainSlug: string;
+  subSlug: string;
+  originalPrice?: number; // optional
+  isBest?: boolean; // optional
+  stock: number;
+  isNew?: boolean; // optional
+  rating?: number; // optional
+  reviewCount?: number; // optional
+}
+
+export const PRODUCTS: Product[] = [
   {
     id: "p-001",
     name: "태권도 머리 보호대",

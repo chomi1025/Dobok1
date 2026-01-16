@@ -1,7 +1,8 @@
 "use client";
-import ProductList from "@/components/product/productList";
 import * as B from "./style";
+import ProductList from "@/components/product/ProductList";
 import { PRODUCTS } from "@/assets/data/product";
+import { Product } from "../../../components/product/ProductCard"; // Product 타입 import
 
 export default function BestProductPage() {
   return (
@@ -12,7 +13,7 @@ export default function BestProductPage() {
           <p>도복일번지의 베스트 상품을 모아왔어요</p>
         </B.SectionHeader>
 
-        <ProductList product={PRODUCTS} />
+        <ProductList product={PRODUCTS as Product[]} />
       </B.Inner>
     </>
   );
