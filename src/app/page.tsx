@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 "use client";
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { useEffect, useState } from "react";
@@ -42,9 +41,4 @@ export default function HomePage() {
   }, []);
 
   return <div>ㅁㄴㅇ</div>;
-=======
-// app/page.tsx
-export default function HomePage() {
-  return <h1>Next 13 App Router 시작!</h1>;
->>>>>>> 83a61c5 (헤더)
 }

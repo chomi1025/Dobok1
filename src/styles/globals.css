@@ -9,10 +9,6 @@
   box-sizing: border-box;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> f746dfe (로그인,회원가입)
 input {
   border: 1px solid #ddd;
   padding: 11px 15px;
@@ -49,11 +45,7 @@ fieldset {
 address {
   font-style: normal;
 }
-<<<<<<< HEAD
-=======
->>>>>>> 83a61c5 (헤더)
-=======
->>>>>>> f746dfe (로그인,회원가입)
+
 /* 2. 폰트 적용 */
 @font-face {
   font-family: "Pretendard";
@@ -113,32 +105,21 @@ address {
 /* 2. 기본 폰트, line-height */
 html {
   font-size: 16px; /* 기본 폰트 사이즈 */
-<<<<<<< HEAD
-=======
-  line-height: 1.5; /* 국룰 라인 높이 */
->>>>>>> 83a61c5 (헤더)
   scroll-behavior: smooth; /* 부드러운 스크롤 */
 }
 
 /* 3. body 기본 스타일 */
 body {
-<<<<<<< HEAD
-<<<<<<< HEAD
   background-color: #fff;
   color: #333;
-
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui,
     sans-serif;
   letter-spacing: -0.01em;
-
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-=======
   font-family: "Pretendard", sans-serif;
   background-color: #fff;
   color: #333;
->>>>>>> 83a61c5 (헤더)
-=======
   background-color: #fff;
   color: #333;
 
@@ -150,7 +131,6 @@ body {
 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
->>>>>>> f746dfe (로그인,회원가입)
 }
 
 /* 4. a 태그 기본 */
@@ -177,10 +157,7 @@ ul,
 ol {
   list-style: none;
 }
-<<<<<<< HEAD
 
 p {
   margin: 0;
 }
-=======
->>>>>>> 83a61c5 (헤더)
