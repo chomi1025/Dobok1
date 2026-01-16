@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f746dfe (로그인,회원가입)
 "use client";
 import * as L from "./style";
 import Link from "next/link";
@@ -52,8 +55,11 @@ export default function Login() {
       </L.Form>
     </L.Inner>
   );
+<<<<<<< HEAD
 =======
 export default function Header() {
   return <div>로그인화면</div>;
 >>>>>>> 83a61c5 (헤더)
+=======
+>>>>>>> f746dfe (로그인,회원가입)
 }

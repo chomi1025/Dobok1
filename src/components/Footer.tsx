@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 "use client";
 import * as F from "./Footer.styles";
 import Link from "next/link";
@@ -9,7 +8,6 @@ const navigation = [
   { name: "이용약관", href: "/products" },
   { name: "개인정보처리방침", href: "/products/new" },
   { name: "이용안내", href: "/products/best" },
-  ,
   { name: "고객센터", href: "/support" },
 ];
 
@@ -20,8 +18,8 @@ export default function Footer() {
         <F.Footer_links>
           <ul>
             {navigation.map((nav) => (
-              <li key={nav?.name}>
-                <Link href="/">{nav?.name}</Link>
+              <li key={nav.name}>
+                <Link href="/">{nav.name}</Link>
               </li>
             ))}
           </ul>
@@ -66,20 +64,5 @@ export default function Footer() {
         </F.Right_Wrapper>
       </F.Inner>
     </F.Footer>
-=======
-// src/components/Footer.tsx
-export default function Footer() {
-  return (
-    <footer
-      style={{
-        padding: "16px",
-        backgroundColor: "#575C69",
-        color: "white",
-        textAlign: "center",
-      }}
-    >
-      © 2026 도복일번지. All rights reserved.
-    </footer>
->>>>>>> 83a61c5 (헤더)
   );
 }

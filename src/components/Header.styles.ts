@@ -82,17 +82,25 @@ export const Li = styled.li<{ isFirst?: boolean }>`
       width: 100%;
       padding: 50px 0 76px;
       justify-content: center;
-  gap: 84px;
-  background-color: white;
-  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.07);
-  display: flex;
+      gap: 84px;
+      background-color: white;
+      box-shadow: 0 5px 5px rgba(0, 0, 0, 0.07);
+      display: flex;
 
-    }
   `}
 `;
 
-export const Menu = styled.nav<{ isFirst?: boolean }>`
-  display: none;
+export const Menu = styled.nav<{ isVisible?: boolean }>`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  padding: 50px 0 76px;
+  justify-content: center;
+  gap: 84px;
+  background-color: white;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.03);
+  display: flex;
 
   > ul {
     display: block;
@@ -110,6 +118,7 @@ export const S_Category = styled.li`
   position: relative;
   margin-bottom: 15px;
   color: #555;
+  font-size: 16px;
   &:hover {
     color: #222;
   }

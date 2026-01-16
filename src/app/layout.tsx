@@ -1,32 +1,13 @@
 import "@/styles/globals.css";
-<<<<<<< HEAD
-
 import Footer from "@/components/Footer";
 import { ReactNode } from "react";
-import HeaderServer from "@/components/header/Header.server";
+import HeaderServer from "@/components/header/Header.server"; // 혹은 Header
 
-export default async function RootLayout({
-  children,
-}: {
-  children: ReactNode;
-=======
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
->>>>>>> 83a61c5 (헤더)
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko">
       <body>
-<<<<<<< HEAD
-        <HeaderServer />
-=======
-        <Header />
->>>>>>> 83a61c5 (헤더)
+        <HeaderServer /> {/* 혹은 <Header /> */}
         {children}
         <Footer />
       </body>

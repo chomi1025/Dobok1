@@ -10,6 +10,9 @@
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f746dfe (로그인,회원가입)
 input {
   border: 1px solid #ddd;
   padding: 11px 15px;
@@ -46,8 +49,11 @@ fieldset {
 address {
   font-style: normal;
 }
+<<<<<<< HEAD
 =======
 >>>>>>> 83a61c5 (헤더)
+=======
+>>>>>>> f746dfe (로그인,회원가입)
 /* 2. 폰트 적용 */
 @font-face {
   font-family: "Pretendard";
@@ -117,6 +123,7 @@ html {
 /* 3. body 기본 스타일 */
 body {
 <<<<<<< HEAD
+<<<<<<< HEAD
   background-color: #fff;
   color: #333;
 
@@ -131,6 +138,19 @@ body {
   background-color: #fff;
   color: #333;
 >>>>>>> 83a61c5 (헤더)
+=======
+  background-color: #fff;
+  color: #333;
+
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui,
+    sans-serif;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+>>>>>>> f746dfe (로그인,회원가입)
 }
 
 /* 4. a 태그 기본 */
