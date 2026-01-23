@@ -1,23 +1,151 @@
 "use client";
 import * as S from "./style";
+import * as yup from "yup";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import type { ObjectSchema } from "yup";
+import BirthdayInputComponent from "./BirthdayInput";
+import PersonalInfoInputComponent from "./PersonalInfo";
+import AddressInputComponent from "./AddressInput";
+import AccountComponent from "./AccountInfo";
+import EmailComponent from "./EmailInfo";
+import CheckComponent from "./Checkinput";
 
-export default function Signup() {
-  const [phone, setPhone] = useState({
-    prefix: "010",
-    middle: "",
-    last: "",
+interface PhoneType {
+  prefix: string;
+  middle: string;
+  last: string;
+}
+
+export interface FormType {
+  username: string;
+  password: string;
+  passwordConfirm: string;
+  name: string;
+  phone: PhoneType;
+  email: string;
+  address: {
+    address: string;
+    zipCode: string;
+    address2: string;
+  };
+  birthDate: string;
+  agreeTerms: boolean;
+}
+
+const schema: ObjectSchema<FormType> = yup.object({
+  username: yup
+    .string()
+    .required("아이디는 필수입니다.")
+    .min(4, "4글자 이상")
+    .max(20, "20글자 이하") // 원하는 최대 글자수
+    .matches(
+      /^[A-Za-z0-9]+$/, // ✅ 영어 대소문자 + 숫자만 허용
+      "아이디는 영어와 숫자만 사용 가능합니다.",
+    ),
+  password: yup
+    .string()
+    .required("비밀번호는 필수입니다.")
+    .min(8, "8글자 이상 입력해주세요.")
+    .max(20, "20글자 이하 입력해주세요."),
+  passwordConfirm: yup
+    .string()
+    .oneOf([yup.ref("password")], "비밀번호가 일치하지 않습니다.")
+    .required("비밀번호 확인은 필수입니다."),
+  name: yup.string().required("이름은 필수입니다."),
+  phone: yup
+    .object({
+      prefix: yup.string().required(),
+      middle: yup.string().required(),
+      last: yup.string().required(),
+    })
+    .required(),
+  email: yup
+    .string()
+    .email("이메일 형식이 아닙니다")
+    .required("이메일은 필수입니다."),
+  address: yup
+    .object({
+      address: yup.string().required("주소를 입력해주세요"),
+      zipCode: yup.string().required("우편번호를 입력해주세요"),
+      address2: yup.string().required("상세주소를 입력해주세요"),
+    })
+    .test(
+      "all-fields-filled",
+      "주소를 정확히 입력해주세요.",
+      (value) => !!value?.address && !!value?.zipCode && !!value?.address2,
+    )
+    .required(),
+  birthDate: yup.string().required("생년월일은 필수입니다."),
+  agreeTerms: yup
+    .boolean()
+    .oneOf([true], "약관에 동의해야 합니다")
+    .required("약관 체크는 필수입니다."),
+});
+
+export default function SignupClient() {
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<FormType>({
+    resolver: yupResolver<FormType, any, any>(schema),
+    mode: "onSubmit",
+    defaultValues: {
+      username: "",
+      password: "",
+      passwordConfirm: "",
+      name: "",
+      phone: { prefix: "010", middle: "", last: "" }, // <- 여기 중요!!!
+      email: "",
+      address: { address: "", zipCode: "", address2: "" },
+      birthDate: "",
+      agreeTerms: false,
+    },
+    shouldUnregister: true, // defaultValue에 따라 오류 초기화
   });
 
-  const [address, setAddress] = useState({
-    zipCode: "",
-    address1: "",
-    address2: "",
-  });
+  console.log(errors); // 이거 submit 클릭 전에 찍어보기
 
-  const onlyNumber = (e: React.FormEvent<HTMLInputElement>) => {
-    const target = e.target as HTMLInputElement;
-    target.value = target.value.replace(/\D/g, "");
+  // 우편번호 찾기(다음)
+  const [isPostOpen, setIsPostOpen] = useState(false);
+
+  const [emailDomain, setEmailDomain] = useState("gmail.com"); // 기본값
+
+  // 회원가입 버튼
+  const onSubmit: SubmitHandler<FormType> = async (data) => {
+    console.log("submit", data); // <- 여기 꼭 찍어보기
+    const fullPhone = `${data.phone.prefix}-${data.phone.middle}-${data.phone.last}`;
+
+    try {
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: data.username,
+          password: data.password,
+          email: data.email,
+          name: data.name,
+          phone: fullPhone,
+          address: data.address,
+          birth_date: data.birthDate,
+        }),
+      });
+
+      const resData = await res.json();
+      if (resData.error) return alert(resData.error);
+
+      alert("회원가입 완료!");
+      router.push("/");
+    } catch (err) {
+      console.error(err);
+      alert("회원가입 실패");
+    }
   };
 
   return (
@@ -30,235 +158,37 @@ export default function Signup() {
 
         <S.Line />
 
-        <S.Form>
+        <S.Form onSubmit={handleSubmit(onSubmit)}>
           <S.Form_Inner>
-            {/* 아이디 */}
-            <fieldset>
-              <legend>계정 정보</legend>
+            {/* 계정정보:아이디,비밀번호 */}
 
-              <div className="field">
-                <label htmlFor="userId">아이디</label>
-                <input
-                  id="userId"
-                  type="text"
-                  name="userId"
-                  placeholder="아이디를 입력해주세요"
-                  autoComplete="username"
-                  required
-                />
-              </div>
+            <AccountComponent register={register} errors={errors} />
 
-              <div className="field">
-                <label htmlFor="password">비밀번호</label>
-                <input
-                  id="password"
-                  type="password"
-                  name="password"
-                  autoComplete="new-password"
-                  placeholder="8자 이상, 영문, 숫자, 특수문자 중 2가지 이상을 조합해주세요."
-                  required
-                />
-              </div>
+            {/* 개인정보:이름,핸드폰번호 */}
+            <PersonalInfoInputComponent control={control} errors={errors} />
 
-              <div className="field">
-                <label htmlFor="passwordConfirm">비밀번호 확인</label>
-                <input
-                  id="passwordConfirm"
-                  type="password"
-                  name="passwordConfirm"
-                  required
-                />
-              </div>
-            </fieldset>
+            {/* 주소 */}
+            <AddressInputComponent control={control} errors={errors} />
 
-            {/* 개인정보 */}
-            <fieldset>
-              <legend>개인 정보</legend>
+            {/* 이메일 */}
+            <EmailComponent
+              control={control}
+              errors={errors}
+              emailDomain={emailDomain}
+              setEmailDomain={setEmailDomain}
+            />
 
-              <div className="field">
-                <label htmlFor="name">이름</label>
-                <input id="name" type="text" name="name" required />
-              </div>
-
-              <S.Phone className="field">
-                <label htmlFor="phone">핸드폰 번호</label>
-                <div>
-                  <S.Phone_Selectwrapper>
-                    <select
-                      value={phone.prefix}
-                      onChange={(e) =>
-                        setPhone({ ...phone, prefix: e.target.value })
-                      }
-                    >
-                      <option value="010">010</option>
-                      <option value="011">011</option>
-                      <option value="016">016</option>
-                      <option value="017">017</option>
-                      <option value="018">018</option>
-                      <option value="019">019</option>
-                    </select>
-
-                    <S.Arrow />
-                  </S.Phone_Selectwrapper>
-
-                  <input
-                    type="text"
-                    maxLength={4}
-                    inputMode="numeric"
-                    value={phone.middle}
-                    onChange={(e) =>
-                      setPhone({
-                        ...phone,
-                        middle: e.target.value.replace(/\D/g, ""),
-                      })
-                    }
-                  />
-
-                  <input
-                    type="text"
-                    maxLength={4}
-                    inputMode="numeric"
-                    value={phone.last}
-                    onChange={(e) =>
-                      setPhone({
-                        ...phone,
-                        last: e.target.value.replace(/\D/g, ""),
-                      })
-                    }
-                  />
-
-                  <button>본인인증</button>
-                </div>
-              </S.Phone>
-
-              <S.address className="field">
-                <label htmlFor="email">주소</label>
-
-                <div>
-                  <input
-                    type="text"
-                    placeholder="우편번호"
-                    value={address.zipCode}
-                    readOnly
-                  />
-                  <button>본인인증</button>
-                </div>
-
-                <input
-                  type="text"
-                  placeholder="주소"
-                  value={address.address1}
-                  readOnly
-                />
-
-                <input
-                  type="text"
-                  placeholder="상세주소"
-                  value={address.address2}
-                  onChange={(e) =>
-                    setAddress({ ...address, address2: e.target.value })
-                  }
-                />
-              </S.address>
-
-              <S.Email className="field">
-                <label htmlFor="email">이메일</label>
-
-                <div>
-                  <input
-                    id="email"
-                    type="email"
-                    name="email"
-                    autoComplete="email"
-                  />
-
-                  <S.Email_Selectwrapper>
-                    <select
-                      value={phone.prefix}
-                      onChange={(e) =>
-                        setPhone({ ...phone, prefix: e.target.value })
-                      }
-                    >
-                      <option value="gmail.com">gmail.com</option>
-                      <option value="naver.com">naver.com</option>
-                      <option value="daum.net">daum.net</option>
-                      <option value="hanmail.net">hanmail.net</option>
-                    </select>
-
-                    <S.Arrow />
-                  </S.Email_Selectwrapper>
-                </div>
-              </S.Email>
-
-              <S.Birthday className="field">
-                <label htmlFor="email">생년월일</label>
-                <div>
-                  <span>
-                    <input
-                      placeholder="YYYY"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      maxLength={4}
-                      onInput={onlyNumber}
-                    />
-                  </span>
-
-                  <span>
-                    <input
-                      placeholder="MM"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      maxLength={2}
-                      onInput={onlyNumber}
-                    />
-                  </span>
-
-                  <span>
-                    <input
-                      placeholder="DD"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      maxLength={2}
-                      onInput={onlyNumber}
-                    />
-                  </span>
-                </div>
-              </S.Birthday>
-            </fieldset>
+            {/* 생년월일 */}
+            <BirthdayInputComponent control={control} errors={errors} />
           </S.Form_Inner>
 
+          {/* 구분선 */}
           <S.Line2 />
 
           {/* 약관 동의 */}
-          <S.Check_Wrapper>
-            <fieldset>
-              <legend>약관 동의</legend>
+          <CheckComponent register={register} errors={errors} />
 
-              <label>
-                <input type="checkbox" required />
-                <span>
-                  도복일번지의 이용약관(필수), 개인정보 수집 및 이용(필수)에
-                  모두 동의합니다.
-                </span>
-              </label>
-
-              <label>
-                <input type="checkbox" required />
-                <span>[필수] 만 14세 이상입니다.</span>
-              </label>
-
-              <label>
-                <input type="checkbox" required />
-                <span>[필수] 이용약관</span>
-              </label>
-
-              <label>
-                <input type="checkbox" />
-                <span>[필수] 개인정보 수집 및 이용</span>
-              </label>
-            </fieldset>
-          </S.Check_Wrapper>
-
+          {/*  회원가입 버튼 */}
           <S.Signup_Button type="submit">회원가입</S.Signup_Button>
         </S.Form>
       </S.Inner>

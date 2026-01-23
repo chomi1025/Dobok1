@@ -3,11 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/assets/Image/header/logo@2x.png";
-import login from "@/assets/Image/header/mage_login.png";
 import cart from "@/assets/Image/header/cil_cart.png";
-import search from "@/assets/Image/header/si_search-line.png";
+import myPage from "@/assets/Image/header/bi_person.png";
 import * as H from "./Header.styles";
 import { useRef, useState } from "react";
+import { Session } from "next-auth";
+import AuthIcons from "./AuthIcons.client";
 
 const navigation = [
   { name: "전상품", href: "/products" },
@@ -21,23 +22,21 @@ const navigation = [
 type Category = {
   id: number;
   name: string;
-  mainSlug: string;
-  subs: {
-    id: number;
-    name: string;
-    slug: string;
-  }[];
+  slug: string;
+  parentId: number | null;
+  sortOrder: number | null;
+  children: Category[];
 };
 
 export default function HeaderClient({
   categories,
+  session,
 }: {
   categories: Category[];
+  session: Session | null;
 }) {
+  console.log(session);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-
-  const openSearch = () => setIsSearchOpen(true);
-  const closeSearch = () => setIsSearchOpen(false);
 
   const [openMenu, setOpenMenu] = useState(false);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -65,13 +64,17 @@ export default function HeaderClient({
         </h1>
 
         <H.IconGroup>
-          <button onClick={openSearch}>
-            <Image src={search} alt="도복일번지 검색" width={24} height={24} />
-          </button>
-
-          <Link href="/login">
-            <Image src={login} alt="도복일번지 로그인" width={24} height={24} />
+          <Link href="/mypage">
+            <Image
+              src={myPage}
+              alt="도복일번지 마이페이지"
+              width={24}
+              height={24}
+            />
           </Link>
+
+          {/* 로그인상태에 따라 로그아웃/로그인 아이콘 바뀜 */}
+          <AuthIcons />
 
           <Link href="/cart">
             <Image
@@ -93,22 +96,28 @@ export default function HeaderClient({
               onMouseEnter={idx === 0 ? handleMouseEnter : undefined}
               onMouseLeave={handleMouseLeave}
             >
-              <Link href={nav.href} passHref legacyBehavior>
+              <Link href={idx === 0 ? "" : nav.href} passHref legacyBehavior>
                 <H.NavLink isFirst={idx === 0}>{nav.name}</H.NavLink>
               </Link>
 
               {/* 전상품 메뉴만 열기 */}
-              {openMenu && idx === 0 && (
-                <H.Menu>
+
+              {/* 항상 렌더링 */}
+              {idx === 0 && (
+                <H.Menu
+                  isOpen={openMenu}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                >
                   {categories.map((cat) => (
-                    <ul key={cat.name}>
+                    <ul key={cat.id}>
                       <H.B_category>{cat.name}</H.B_category>
 
                       <H.line />
 
-                      {cat.subs.map((el) => (
-                        <H.S_Category key={el.name}>
-                          <Link href={`/products/${cat.mainSlug}/${el.slug}`}>
+                      {cat.children?.map((el) => (
+                        <H.S_Category key={el.id}>
+                          <Link href={`/products/${cat.slug}/${el.slug}`}>
                             {el.name}
                           </Link>
                         </H.S_Category>

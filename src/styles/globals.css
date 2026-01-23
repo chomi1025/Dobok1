@@ -9,10 +9,25 @@
   box-sizing: border-box;
 }
 
+/* IE/Edge용 */
+select::-ms-expand {
+  display: none;
+}
+
+select {
+  -webkit-appearance: none; /* 사파리, 크롬 */
+  -moz-appearance: none; /* 파이어폭스 */
+  appearance: none; /* 최신 브라우저 */
+  background: none; /* 배경 제거 */
+  border: 1px solid #ddd;
+  color: #444;
+}
+
 input {
   border: 1px solid #ddd;
   padding: 11px 15px;
   width: 100%;
+  color: #444;
 }
 
 input:focus-visible {
@@ -112,7 +127,11 @@ html {
 body {
   background-color: #fff;
   color: #333;
-  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui,
+  font-family:
+    "Pretendard",
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
     sans-serif;
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
@@ -123,7 +142,11 @@ body {
   background-color: #fff;
   color: #333;
 
-  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui,
+  font-family:
+    "Pretendard",
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
     sans-serif;
   font-weight: 500;
   line-height: 1.5;

@@ -5,6 +5,10 @@ export const Inner = styled.section`
   width: 650px;
   margin: 0 auto;
   position: relative;
+
+  .field {
+    margin-bottom: 30px;
+  }
 `;
 
 export const Title_Wrapper = styled.div`
@@ -22,6 +26,28 @@ export const Title_Wrapper = styled.div`
     font-size: 14px;
   }
 `;
+export const Error_Wrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  position: relative;
+  p {
+    margin-left: 10px;
+    font-size: 13px;
+    color: red;
+  }
+
+  button {
+    position: absolute;
+    right: 0;
+    color: white;
+    background-color: #444;
+    padding: 5px 7px;
+    font-size: 12px;
+    border-radius: 3px;
+    font-weight: 300;
+  }
+`;
 
 export const Line = styled.span`
   display: block;
@@ -37,6 +63,9 @@ export const Form = styled.form`
   align-items: center;
   justify-content: center;
   margin: 0 auto;
+
+  fieldset {
+  }
 `;
 
 export const Signup_Button = styled.button`
@@ -55,10 +84,8 @@ export const Form_Inner = styled.div`
 
   > fieldset {
     > div {
-      margin-bottom: 30px;
       label {
         display: block;
-        margin-bottom: 10px;
         font-size: 14px;
         font-weight: 500;
       }
@@ -67,16 +94,31 @@ export const Form_Inner = styled.div`
 `;
 
 export const Phone = styled.div`
-  > div {
+  div:last-of-type {
     display: flex;
     gap: 5px;
+    color: #444;
 
-    input:first-of-type {
-      width: 100px;
+    select {
+      appearance: none;
+      background-image: url("https://firebasestorage.googleapis.com/v0/b/myfirebase-34805.appspot.com/o/Keyboard%20arrow%20down.png?alt=media&token=b4055887-17dc-4dab-ac01-26e699caf8db");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 24px;
+      width: 90px;
+      padding: 11px 15px;
+      color: #444;
     }
 
-    input:last-of-type {
-      width: 100px;
+    input {
+      color: #444;
+      &:first-of-type {
+        width: 100px;
+      }
+
+      &:last-of-type {
+        width: 100px;
+      }
     }
 
     > button {
@@ -118,7 +160,7 @@ export const Arrow = styled.span`
   color: #666;
 `;
 
-export const address = styled.div`
+export const address = styled.fieldset`
   > div {
     display: flex;
 
@@ -143,8 +185,12 @@ export const address = styled.div`
   }
 `;
 
+export const PersonalInfo = styled.fieldset``;
+export const AccountInfo = styled.fieldset``;
+export const EmailInfo = styled.fieldset``;
+
 export const Email = styled.div`
-  > div {
+  > div:nth-of-type(2) {
     display: flex;
     justify-content: space-between;
 
@@ -180,56 +226,70 @@ export const Email_Selectwrapper = styled.div`
 `;
 
 export const Birthday = styled.div`
+  label {
+    font-size: 14px;
+  }
+
   > div {
     display: flex;
 
     > span {
       display: flex;
       align-items: center;
+    }
+  }
+`;
 
-      input {
-        padding: 11px 8px;
-        text-align: right;
-      }
+export const Select_box = styled.span`
+  select {
+    padding: 11px 15px;
+    font-size: 14px;
+    color: #444;
+    border: 1px solid #ddd;
+    background-image: url("https://firebasestorage.googleapis.com/v0/b/myfirebase-34805.appspot.com/o/Keyboard%20arrow%20down.png?alt=media&token=b4055887-17dc-4dab-ac01-26e699caf8db");
+    background-repeat: no-repeat;
+    background-size: 24px;
+  }
 
-      &:first-of-type {
-        width: 100px;
+  &:nth-of-type(1) {
+    select {
+      width: 100px;
+      background-position: right 10px center;
+    }
 
-        input {
-          width: 100%;
-          font-size: 14px;
-        }
+    &::after {
+      content: "년";
+      margin: 0 18px 0 8px;
+      color: #333;
+      font-weight: 600;
+    }
+  }
 
-        &::after {
-          content: "년";
-          margin-left: 8px;
-        }
-      }
+  &:nth-of-type(2) {
+    select {
+      width: 70px;
+      background-position: right 7px center;
+    }
 
-      &:nth-of-type(2) {
-        margin-left: 13px;
-        &::after {
-          content: "월";
-          margin-left: 8px;
-        }
+    &::after {
+      content: "월";
+      margin: 0 18px 0 8px;
+      color: #333;
+      font-weight: 600;
+    }
+  }
 
-        input {
-          width: 50px;
-        }
-      }
+  &:nth-of-type(3) {
+    select {
+      width: 70px;
+      background-position: right 7px center;
+    }
 
-      &:nth-of-type(3) {
-        margin-left: 13px;
-
-        &::after {
-          content: "일";
-          margin-left: 8px;
-        }
-
-        input {
-          width: 50px;
-        }
-      }
+    &::after {
+      content: "일";
+      margin: 0 18px 0 8px;
+      color: #333;
+      font-weight: 600;
     }
   }
 `;
@@ -239,7 +299,7 @@ export const Line2 = styled.span`
   width: 650px;
   height: 1px;
   background-color: #ddd;
-  margin: 30px 0 60px;
+  margin: 50px 0 60px;
 `;
 
 export const Check_Wrapper = styled.div`
@@ -247,7 +307,7 @@ export const Check_Wrapper = styled.div`
     > label {
       display: flex;
       align-items: center;
-      margin-bottom: 25px;
+
       font-size: 14px;
 
       > input {

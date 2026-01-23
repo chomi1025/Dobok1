@@ -1,29 +1,40 @@
-import { cache } from "react";
-import { supabaseServer } from "@/lib/supabase/supabaseServer";
+import { prisma } from "@/lib/prisma";
 
-export const getCategories = cache(async () => {
-  const mainRes = await supabaseServer
-    .from("MainCategory")
-    .select("*")
-    .order("sort_order");
+export type Category = {
+  id: number;
+  name: string;
+  slug: string;
+  parentId: number | null;
+  sortOrder: number | null;
+  children: Category[];
+};
 
-  const subRes = await supabaseServer
-    .from("SubCategory")
-    .select("*")
-    .order("main_id")
-    .order("sort_order");
+export const getCategories = async (): Promise<{ grouped: Category[] }> => {
+  const main = await prisma.category.findMany({
+    where: { parentId: null },
+    orderBy: { sortOrder: "asc" },
+    include: {
+      children: {
+        orderBy: { sortOrder: "asc" },
+      },
+    },
+  });
 
-  const main = mainRes.data ?? [];
-  const sub = subRes.data ?? [];
-
-  const grouped = main.map((m) => ({
-    ...m,
-    subs: sub.filter((s) => s.main_id === m.id),
+  const grouped: Category[] = main.map((cat) => ({
+    id: cat.id,
+    name: cat.name,
+    slug: cat.slug,
+    parentId: cat.parentId,
+    sortOrder: cat.sortOrder,
+    children: cat.children.map((child) => ({
+      id: child.id,
+      name: child.name,
+      slug: child.slug,
+      parentId: child.parentId,
+      sortOrder: child.sortOrder,
+      children: [],
+    })),
   }));
 
-  return {
-    main,
-    sub,
-    grouped,
-  };
-});
+  return { grouped };
+};

@@ -1,26 +1,28 @@
-.container {
+/* ====== Emotion Styled Components ====== */
+
+import styled from "@emotion/styled";
+
+export const Container = styled.section`
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 16px;
-}
+`;
 
-/* 헤더 */
-.top {
+export const Top = styled.div`
   text-align: center;
-}
+`;
 
-.header {
+export const Header = styled.div`
   margin-bottom: 24px;
-}
+`;
 
-.title {
+export const Title = styled.h1`
   font-size: 28px;
   font-weight: 700;
   margin-top: 12px;
-}
+`;
 
-/* 브레드크럼 */
-.breadcrumb {
+export const Breadcrumb = styled.nav`
   display: flex;
   justify-content: center;
   gap: 8px;
@@ -35,10 +37,18 @@
       text-decoration: underline;
     }
   }
-}
 
-/* 탭 메뉴 */
-.tabMenuWrapper {
+  span {
+    /* span 자체는 비워두고 before로만 표시 */
+    &.withSeparator::before {
+      content: ">";
+      margin: 0 4px; // 좌우 여백
+      color: #666;
+    }
+  }
+`;
+
+export const TabMenuWrapper = styled.nav`
   ul {
     display: flex;
     justify-content: center;
@@ -68,9 +78,8 @@
       }
     }
   }
-}
+`;
 
-/* 상품 리스트 */
-.productList {
+export const ProductList = styled.div`
   margin-top: 40px;
-}
+`;

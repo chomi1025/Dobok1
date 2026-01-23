@@ -91,7 +91,7 @@ export const Li = styled.li<{ isFirst?: boolean }>`
   `}
 `;
 
-export const Menu = styled.nav<{ isVisible?: boolean }>`
+export const Menu = styled.nav<{ isVisible?: boolean; isOpen: boolean }>`
   position: absolute;
   top: 100%;
   left: 0;
@@ -103,6 +103,9 @@ export const Menu = styled.nav<{ isVisible?: boolean }>`
   box-shadow: 0 5px 5px rgba(0, 0, 0, 0.03);
   display: flex;
   z-index: 10;
+  opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
+  visibility: ${({ isOpen }) => (isOpen ? "visible" : "hidden")};
+  pointer-events: ${({ isOpen }) => (isOpen ? "auto" : "none")};
 
   > ul {
     display: block;
