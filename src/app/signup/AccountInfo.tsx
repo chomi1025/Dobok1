@@ -1,15 +1,29 @@
 "use client";
 import * as S from "./style";
-import { FieldErrors, useFormContext, UseFormRegister } from "react-hook-form";
-import type { FormType } from "./page";
+import {
+  FieldErrors,
+  UseFormClearErrors,
+  UseFormRegister,
+  UseFormSetValue,
+} from "react-hook-form";
 import { useEffect, useState } from "react";
+import { FormType } from "./types";
 
 type Props = {
   register: UseFormRegister<FormType>;
   errors: FieldErrors<FormType>;
+  setValue: UseFormSetValue<FormType>;
+  clearErrors: UseFormClearErrors<FormType>;
+  isEdit: boolean;
 };
 
-export default function AccountComponent({ register, errors }: Props) {
+export default function AccountComponent({
+  register,
+  errors,
+  setValue,
+  clearErrors,
+  isEdit,
+}: Props) {
   const [checkMessage, setCheckMessage] = useState<string | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
@@ -29,6 +43,7 @@ export default function AccountComponent({ register, errors }: Props) {
       setCheckMessage("아이디는 영어와 숫자만 사용 가능합니다.");
       return;
     }
+
     setIsChecking(true);
     setCheckMessage(null);
 
@@ -39,8 +54,11 @@ export default function AccountComponent({ register, errors }: Props) {
 
       if (data.exists) {
         setCheckMessage("❌ 이미 사용 중인 아이디 입니다.");
+        setValue("usernameChecked", false);
       } else {
         setCheckMessage("✅ 사용 가능한 아이디 입니다!");
+        setValue("usernameChecked", true, { shouldValidate: true });
+        clearErrors("usernameChecked"); // ✅ 여기!!!
       }
     } catch (error) {
       console.error(error);
@@ -75,12 +93,19 @@ export default function AccountComponent({ register, errors }: Props) {
       <div className="field">
         <S.Error_Wrapper>
           <label htmlFor="username">아이디</label>
-          {errors.username && (
-            <p className="error">{errors.username.message?.toString()}</p>
+          {/* 회원정보 수정일 때 항상 표시 */}
+          {isEdit && <p className="error">아이디는 변경할 수 없습니다.</p>}
+
+          {/* 회원가입일 때만 기존 에러 */}
+          {!isEdit && errors.usernameChecked && (
+            <p className="error">{errors.usernameChecked.message}</p>
           )}
-          <button type="button" onClick={handleCheckUsername}>
-            중복체크
-          </button>
+
+          {isEdit || (
+            <button type="button" onClick={handleCheckUsername}>
+              중복체크
+            </button>
+          )}
         </S.Error_Wrapper>
 
         {/* ✅ 토스트 팝업 */}
@@ -117,7 +142,16 @@ export default function AccountComponent({ register, errors }: Props) {
           </div>
         )}
 
-        <input id="username" placeholder="아이디" {...register("username")} />
+        <input
+          id="username"
+          placeholder="아이디"
+          {...register("username", {
+            onChange: () => {
+              setValue("usernameChecked", false);
+            },
+          })}
+          readOnly={isEdit}
+        />
       </div>
 
       <div className="field">
@@ -131,7 +165,7 @@ export default function AccountComponent({ register, errors }: Props) {
         <input
           id="password"
           type="password"
-          placeholder="비밀번호"
+          placeholder="영문,숫자,특수문자를 모두 포함한 8~20글자"
           {...register("password")}
         />
       </div>

@@ -7,7 +7,6 @@ export const Inner = styled.section`
   position: relative;
 
   .field {
-    margin-bottom: 30px;
   }
 `;
 
@@ -65,6 +64,18 @@ export const Form = styled.form`
   margin: 0 auto;
 
   fieldset {
+    legend {
+      font-size: 0; /* 글자 안보이게 */
+      width: 0; /* 영역 최소화 */
+      height: 0;
+      padding: 0;
+      margin: 0;
+      border: 0;
+      overflow: hidden;
+      position: absolute;
+      clip: rect(0 0 0 0);
+      pointer-events: none; /* 클릭 막힘 방지 */
+    }
   }
 `;
 
@@ -161,10 +172,13 @@ export const Arrow = styled.span`
 `;
 
 export const address = styled.fieldset`
+  margin-bottom: 30px;
+
   > div {
     display: flex;
 
     > input {
+      padding: 12px 20px;
       width: 133px;
     }
 
@@ -180,14 +194,46 @@ export const address = styled.fieldset`
     }
   }
 
-  > input:nth-of-type(1) {
-    margin: 10px 0;
+  > input {
+    padding: 12px 20px;
+    width: 100%;
+
+    &:nth-of-type(1) {
+      margin: 10px 0;
+    }
   }
 `;
 
-export const PersonalInfo = styled.fieldset``;
-export const AccountInfo = styled.fieldset``;
-export const EmailInfo = styled.fieldset``;
+export const PersonalInfo = styled.fieldset`
+  input {
+    width: 100%;
+    padding: 12px 20px;
+  }
+
+  .field {
+    margin-bottom: 30px;
+  }
+`;
+
+export const AccountInfo = styled.fieldset`
+  input {
+    width: 100%;
+    padding: 12px 20px;
+  }
+
+  .field {
+    margin-bottom: 30px;
+  }
+`;
+export const EmailInfo = styled.fieldset`
+  input {
+    width: 100%;
+    padding: 12px 20px;
+  }
+  .field {
+    margin-bottom: 30px;
+  }
+`;
 
 export const Email = styled.div`
   > div:nth-of-type(2) {
@@ -307,13 +353,29 @@ export const Check_Wrapper = styled.div`
     > label {
       display: flex;
       align-items: center;
-
       font-size: 14px;
+      margin-bottom: 25px;
 
       > input {
         width: 20px;
         height: 20px;
         margin-right: 8px;
+      }
+
+      > p {
+        font-weight: 600;
+
+        span {
+          color: #c1272d;
+        }
+      }
+
+      > button {
+        margin-left: 30px;
+        font-weight: 500;
+        font-size: 12px;
+        color: #888;
+        text-decoration: underline;
       }
     }
   }

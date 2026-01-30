@@ -12,6 +12,9 @@ import AddressInputComponent from "./AddressInput";
 import AccountComponent from "./AccountInfo";
 import EmailComponent from "./EmailInfo";
 import CheckComponent from "./Checkinput";
+import TermsModal from "@/components/terms/Termsmodal";
+
+import { FormType } from "./types";
 
 interface PhoneType {
   prefix: string;
@@ -19,23 +22,9 @@ interface PhoneType {
   last: string;
 }
 
-export interface FormType {
-  username: string;
-  password: string;
-  passwordConfirm: string;
-  name: string;
-  phone: PhoneType;
-  email: string;
-  address: {
-    address: string;
-    zipCode: string;
-    address2: string;
-  };
-  birthDate: string;
-  agreeTerms: boolean;
-}
+type TermsType = "service" | "privacy";
 
-const schema: ObjectSchema<FormType> = yup.object({
+export const schema: ObjectSchema<FormType> = yup.object({
   username: yup
     .string()
     .required("아이디는 필수입니다.")
@@ -45,11 +34,19 @@ const schema: ObjectSchema<FormType> = yup.object({
       /^[A-Za-z0-9]+$/, // ✅ 영어 대소문자 + 숫자만 허용
       "아이디는 영어와 숫자만 사용 가능합니다.",
     ),
+  usernameChecked: yup
+    .boolean()
+    .required("아이디 중복체크를 해주세요.")
+    .oneOf([true], "아이디 중복체크를 해주세요."),
   password: yup
     .string()
     .required("비밀번호는 필수입니다.")
     .min(8, "8글자 이상 입력해주세요.")
-    .max(20, "20글자 이하 입력해주세요."),
+    .max(20, "20글자 이하 입력해주세요.")
+    .matches(
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/,
+      "영문, 숫자, 특수문자를 각각 1개 이상 포함해야 합니다.",
+    ),
   passwordConfirm: yup
     .string()
     .oneOf([yup.ref("password")], "비밀번호가 일치하지 않습니다.")
@@ -92,12 +89,15 @@ export default function SignupClient() {
     register,
     handleSubmit,
     control,
+    setValue,
+    clearErrors,
     formState: { errors },
   } = useForm<FormType>({
     resolver: yupResolver<FormType, any, any>(schema),
     mode: "onSubmit",
     defaultValues: {
       username: "",
+      usernameChecked: false, // ✅
       password: "",
       passwordConfirm: "",
       name: "",
@@ -110,7 +110,9 @@ export default function SignupClient() {
     shouldUnregister: true, // defaultValue에 따라 오류 초기화
   });
 
-  console.log(errors); // 이거 submit 클릭 전에 찍어보기
+  //모달관련(약관동의)
+  const [termsOpen, setTermsOpen] = useState(false);
+  const [termsType, setTermsType] = useState<TermsType>("service");
 
   // 우편번호 찾기(다음)
   const [isPostOpen, setIsPostOpen] = useState(false);
@@ -129,6 +131,7 @@ export default function SignupClient() {
         body: JSON.stringify({
           username: data.username,
           password: data.password,
+          passwordConfirm: data.passwordConfirm,
           email: data.email,
           name: data.name,
           phone: fullPhone,
@@ -162,7 +165,13 @@ export default function SignupClient() {
           <S.Form_Inner>
             {/* 계정정보:아이디,비밀번호 */}
 
-            <AccountComponent register={register} errors={errors} />
+            <AccountComponent
+              register={register}
+              errors={errors}
+              setValue={setValue}
+              clearErrors={clearErrors}
+              isEdit={false}
+            />
 
             {/* 개인정보:이름,핸드폰번호 */}
             <PersonalInfoInputComponent control={control} errors={errors} />
@@ -186,7 +195,21 @@ export default function SignupClient() {
           <S.Line2 />
 
           {/* 약관 동의 */}
-          <CheckComponent register={register} errors={errors} />
+          <CheckComponent
+            register={register}
+            errors={errors}
+            onOpenTerms={(type) => {
+              setTermsType(type);
+              setTermsOpen(true);
+            }}
+          />
+
+          {/* 모달창 */}
+          <TermsModal
+            open={termsOpen}
+            type={termsType} // ✅ 이거 추가
+            onClose={() => setTermsOpen(false)}
+          />
 
           {/*  회원가입 버튼 */}
           <S.Signup_Button type="submit">회원가입</S.Signup_Button>

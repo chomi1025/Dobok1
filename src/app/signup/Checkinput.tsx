@@ -1,14 +1,19 @@
 "use client";
 import * as S from "./style";
 import { UseFormRegister, FieldErrors } from "react-hook-form";
-import type { FormType } from "./page";
+import { FormType } from "./types";
 
 type Props = {
   register: UseFormRegister<FormType>;
   errors: FieldErrors<FormType>;
+  onOpenTerms: (type: "service" | "privacy") => void;
 };
 
-export default function CheckComponent({ register, errors }: Props) {
+export default function CheckComponent({
+  register,
+
+  onOpenTerms,
+}: Props) {
   return (
     <S.Check_Wrapper>
       <fieldset>
@@ -16,28 +21,49 @@ export default function CheckComponent({ register, errors }: Props) {
 
         <label>
           <input type="checkbox" {...register("agreeTerms")} />
-          <span>
+          <p>
             도복일번지의 이용약관(필수), 개인정보 수집 및 이용(필수)에 모두
             동의합니다.
-          </span>
-        </label>
-        {errors.agreeTerms && (
-          <p className="error">{errors.agreeTerms.message}</p>
-        )}
-
-        <label>
-          <input type="checkbox" required />
-          <span>[필수] 만 14세 이상입니다.</span>
+          </p>
         </label>
 
         <label>
           <input type="checkbox" required />
-          <span>[필수] 이용약관</span>
+          <p>
+            <span>[필수] </span>만 14세 이상입니다.
+          </p>
+        </label>
+
+        <label>
+          <input type="checkbox" required />
+          <p>
+            <span>[필수] </span>이용약관
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              onOpenTerms("service");
+            }}
+            className="terms-link"
+          >
+            전체보기 <span aria-hidden>›</span>
+          </button>
         </label>
 
         <label>
           <input type="checkbox" />
-          <span>[필수] 개인정보 수집 및 이용</span>
+          <p>
+            <span>[필수] </span>개인정보 수집 및 이용
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              onOpenTerms("privacy");
+            }}
+            className="terms-link"
+          >
+            전체보기 <span aria-hidden>›</span>
+          </button>
         </label>
       </fieldset>
     </S.Check_Wrapper>

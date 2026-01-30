@@ -21,6 +21,7 @@ export default function PersonalInfoInputComponent({ control, errors }: Props) {
           <div className="field">
             <S.Error_Wrapper>
               <label htmlFor="name">이름</label>
+
               {errors.name && <p>{errors.name.message}</p>}
             </S.Error_Wrapper>
 
@@ -63,14 +64,36 @@ export default function PersonalInfoInputComponent({ control, errors }: Props) {
           <Controller
             name="phone.middle"
             control={control}
-            render={({ field }) => <input {...field} />}
+            render={({ field }) => (
+              <input
+                {...field}
+                inputMode="numeric"
+                maxLength={4}
+                placeholder="0000"
+                onChange={(e) => {
+                  const onlyNumber = e.target.value.replace(/\D/g, "");
+                  field.onChange(onlyNumber.slice(0, 4));
+                }}
+              />
+            )}
           />
 
           {/* last */}
           <Controller
             name="phone.last"
             control={control}
-            render={({ field }) => <input {...field} />}
+            render={({ field }) => (
+              <input
+                {...field}
+                inputMode="numeric"
+                maxLength={4}
+                placeholder="0000"
+                onChange={(e) => {
+                  const onlyNumber = e.target.value.replace(/\D/g, "");
+                  field.onChange(onlyNumber.slice(0, 4));
+                }}
+              />
+            )}
           />
 
           <button type="button">본인인증</button>

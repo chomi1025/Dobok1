@@ -1,7 +1,7 @@
 "use client";
 import * as S from "./style";
 import { Control, Controller, FieldErrors } from "react-hook-form";
-import type { FormType } from "./page";
+import { FormType } from "./types";
 
 type Props = {
   control: Control<FormType>;

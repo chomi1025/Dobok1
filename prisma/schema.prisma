@@ -8,16 +8,16 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
   password  String
-  createdAt DateTime  @default(now())
-  address   Json
+  createdAt DateTime @default(now())
+  address   Json?
   birthDate DateTime
   name      String
-  role      String    @default("user")
-  phone     String?   @unique
-  username  String    @unique
+  role      String   @default("user")
+  phone     String?  @unique
+  username  String   @unique
   orders    Order[]
 }
 
@@ -25,7 +25,6 @@ enum Role {
   USER
   ADMIN
 }
-
 
 model Category {
   id        Int        @id @default(autoincrement())
@@ -39,31 +38,52 @@ model Category {
 }
 
 model Product {
-  id          Int         @id @default(autoincrement())
-  name        String
-  description String?
-  price       Float
-  stock       Int
-  categoryId  Int
-  createdAt   DateTime    @default(now())
-  orderItems  OrderItem[]
-  category    Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  id       Int      @id @default(autoincrement())
+  name     String   @unique
+  price    Int
+  stock    Int
+  category Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+}
+
+
+enum OrderStatus {
+  PAYMENT_COMPLETE
+  PREPARING
+  SHIPPING
+  DELIVERED
+  CANCELLED
 }
 
 model Order {
-  id         Int         @id @default(autoincrement())
-  userId     Int
-  totalPrice Float
-  createdAt  DateTime    @default(now())
-  user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items      OrderItem[]
+  id          Int         @id @default(autoincrement())
+  orderNumber String      @unique   // ✅ 여기 추가
+  date        DateTime
+  total       Int
+  status      OrderStatus
+  userId      Int
+  user        User        @relation(fields: [userId], references: [id])
+  items       OrderItem[]
 }
 
+
+
 model OrderItem {
-  id        Int     @id @default(autoincrement())
-  orderId   Int
-  productId Int
-  quantity  Int
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id      Int @id @default(autoincrement())
+  orderId Int
+
+  productId    Int
+  productName  String
+  productImage String?
+
+  optionText String?
+  unitPrice  Int
+  quantity   Int
+  totalPrice Int
+
+  createdAt DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
 }

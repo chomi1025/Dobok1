@@ -1,9 +1,7 @@
 /* src/styles/globals.css */
 
 /* 1. margin, padding 초기화 */
-*,
-*::before,
-*::after {
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -25,8 +23,7 @@ select {
 
 input {
   border: 1px solid #ddd;
-  padding: 11px 15px;
-  width: 100%;
+
   color: #444;
 }
 
@@ -42,13 +39,6 @@ select {
 select:focus:not(:focus-visible) {
   outline: none;
   box-shadow: none;
-}
-
-legend {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
 }
 
 fieldset {
@@ -149,7 +139,6 @@ body {
     system-ui,
     sans-serif;
   font-weight: 500;
-  line-height: 1.5;
   letter-spacing: -0.01em;
 
   -webkit-font-smoothing: antialiased;
@@ -173,6 +162,8 @@ button {
   background: none;
   cursor: pointer;
   font-family: inherit;
+  font-size: 16px;
+  color: #333;
 }
 
 /* 6. ul, ol 기본 */
