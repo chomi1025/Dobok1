@@ -1,5 +1,5 @@
 "use client";
-import { useParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import * as S from "./style";
 import Link from "next/link";
 
@@ -29,10 +29,10 @@ const menuItems = [
 ];
 
 export default function Sidebar() {
-  const { slug } = useParams<{ slug: string }>();
+  const pathname = usePathname();
 
   return (
-    <S.Inner>
+    <S.Inner isEdit={false}>
       <h2>마이페이지</h2>
 
       <nav>
@@ -41,7 +41,7 @@ export default function Sidebar() {
             <li className="title">{section.title}</li>
 
             {section.items.map((menu) => {
-              const isActive = menu.slug === slug;
+              const isActive = pathname.startsWith(`/mypage/${menu.slug}`);
 
               return (
                 <li key={menu.slug} className={isActive ? "active" : ""}>

@@ -2,84 +2,94 @@ import DatePicker from "react-datepicker";
 import * as P from "./style";
 import { ko } from "date-fns/locale";
 import { useState, useEffect } from "react";
-import { subMonths } from "date-fns";
 
-export default function PeriodTabsComponent() {
+type PeriodType = "1MONTH" | "3MONTH" | "6MONTH" | "12MONTH" | "CUSTOM";
+interface Props {
+  period: PeriodType;
+  onPeriodChange: (p: PeriodType) => void; // 탭용 (즉시)
+  onCustomSubmit: (start: Date, end: Date) => void; // 조회 버튼용
+}
+
+const tabMap: { label: string; value: PeriodType; months: number }[] = [
+  { label: "1개월", value: "1MONTH", months: 1 },
+  { label: "3개월", value: "3MONTH", months: 3 },
+  { label: "6개월", value: "6MONTH", months: 6 },
+  { label: "12개월", value: "12MONTH", months: 12 },
+];
+
+export default function PeriodTabsComponent({
+  period,
+  onPeriodChange,
+  onCustomSubmit,
+}: Props) {
   const [startDate, setStartDate] = useState<Date | null>(null);
-  const [active, setActive] = useState<number>(1);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
-  const setPeriod = (months: number) => {
+  const applyPeriod = (months: number, value: PeriodType) => {
     const end = new Date();
-    const start = subMonths(end, months);
+    end.setHours(23, 59, 59, 999);
+
+    const start = new Date(end);
+    start.setMonth(start.getMonth() - months);
+    start.setDate(1);
 
     setStartDate(start);
     setEndDate(end);
-    setActive(months);
+
+    onPeriodChange(value); // ✅ 즉시 조회
   };
 
-  const handleSearch = () => {
-    if (!startDate || !endDate) {
-      alert("조회 기간을 선택해주세요.");
-      return;
-    }
-    // 여기서 API 호출 or router.push
-  };
-
+  // 최초 진입 시 1개월
   useEffect(() => {
-    setPeriod(1);
+    applyPeriod(1, "1MONTH");
   }, []);
 
   return (
-    <>
-      <P.PeriodTabs>
-        <ul>
-          <P.Tab active={active == 1} onClick={() => setPeriod(1)}>
-            1개월
+    <P.PeriodTabs>
+      <ul>
+        {tabMap.map((tab) => (
+          <P.Tab
+            key={tab.value}
+            active={period === tab.value}
+            onClick={() => applyPeriod(tab.months, tab.value)}
+          >
+            {tab.label}
           </P.Tab>
+        ))}
+      </ul>
 
-          <P.Tab active={active == 3} onClick={() => setPeriod(3)}>
-            3개월
-          </P.Tab>
+      <div>
+        <DatePicker
+          locale={ko}
+          selected={startDate}
+          onChange={(date: Date | null) => setStartDate(date)}
+          selectsStart
+          startDate={startDate}
+          endDate={endDate}
+          dateFormat="yyyy.MM.dd"
+        />
 
-          <P.Tab active={active == 6} onClick={() => setPeriod(6)}>
-            6개월
-          </P.Tab>
+        <span>~</span>
 
-          <P.Tab active={active == 12} onClick={() => setPeriod(12)}>
-            12개월
-          </P.Tab>
-        </ul>
-
-        <div>
-          <DatePicker
-            locale={ko}
-            selected={startDate}
-            onChange={(date: Date | null) => setStartDate(date)}
-            selectsStart
-            startDate={startDate}
-            endDate={endDate}
-            placeholderText="시작일"
-            dateFormat="yyyy.MM.dd"
-          />
-
-          <span>~</span>
-
-          <DatePicker
-            locale={ko}
-            selected={endDate}
-            onChange={(date: Date | null) => setEndDate(date)}
-            selectsEnd
-            startDate={startDate}
-            endDate={endDate}
-            minDate={startDate ?? undefined}
-            placeholderText="종료일"
-            dateFormat="yyyy.MM.dd"
-          />
-
-          <button onClick={handleSearch}>조회</button>
-        </div>
-      </P.PeriodTabs>
-    </>
+        <DatePicker
+          locale={ko}
+          selected={endDate}
+          onChange={(date: Date | null) => setEndDate(date)}
+          selectsEnd
+          startDate={startDate}
+          endDate={endDate}
+          minDate={startDate ?? undefined}
+          dateFormat="yyyy.MM.dd"
+        />
+        <button
+          onClick={() => {
+            if (!startDate || !endDate) return;
+            onCustomSubmit(startDate, endDate); // 🔥 이것만
+          }}
+        >
+          조회
+        </button>
+      </div>
+    </P.PeriodTabs>
   );
 }

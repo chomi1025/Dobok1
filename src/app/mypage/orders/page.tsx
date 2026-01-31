@@ -2,21 +2,25 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import * as M from "../style";
-import * as O from "./style";
+import * as O from "../style";
 import "react-datepicker/dist/react-datepicker.css";
 import ReactPaginate from "react-paginate";
-import PeriodTabsComponent from "../../../../components/mypage/PeriodTabs";
 import {
   Column,
   OrdersTable,
 } from "@/components/mypage/ordersTable/ordersTable";
 import OrderSkeleton from "./OrderSkeleton";
+import PeriodTabsComponent from "@/components/mypage/PeriodTabs";
 
 export type OrderStatus =
   | "PAYMENT_COMPLETE" // 결제완료
   | "PREPARING" // 상품준비중
   | "SHIPPING" // 배송중
   | "DELIVERED"; // 배송완료
+
+type PeriodType = "1MONTH" | "3MONTH" | "6MONTH" | "12MONTH" | "CUSTOM";
+
+type FixedPeriod = Exclude<PeriodType, "CUSTOM">;
 
 const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
   PAYMENT_COMPLETE: "결제완료",
@@ -58,7 +62,7 @@ const orderColumns: Column<Order>[] = [
       <div style={{ display: "flex", flexDirection: "column" }}>
         <span>{row.date}</span>
 
-        <Link href="/">
+        <Link href={`/mypage/orders/${row.orderNumber}`}>
           <span style={{ textDecoration: "underline" }}>{row.orderNumber}</span>
         </Link>
       </div>
@@ -71,11 +75,11 @@ const orderColumns: Column<Order>[] = [
     align: "left",
     render: (row) => (
       <div style={{ display: "flex", alignItems: "center", gap: "23px" }}>
-        <Link href="/">
+        <Link href={`/mypage/orders/${row.orderNumber}`}>
           <img src={row.img} width={90} height={90} />
         </Link>
 
-        <Link href="/">
+        <Link href={`/mypage/orders/${row.orderNumber}`}>
           <span>{row.name}</span>
         </Link>
       </div>
@@ -83,12 +87,11 @@ const orderColumns: Column<Order>[] = [
   },
   {
     key: "price",
-    label: "상품금액/수량",
+    label: "수량",
     flex: 1,
     render: (row) => (
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <span>{row.price.toLocaleString()}원</span>
-        <span>{row.quantity}개</span>
+        <span>총 {row.quantity}개</span>
       </div>
     ),
   },
@@ -111,26 +114,89 @@ const orderColumns: Column<Order>[] = [
   },
 ];
 
-// 서버에서 주문 데이터를 fetch하는 함수
-async function fetchOrders() {
-  const res = await fetch("/api/mypage/orders");
-  return res.json();
-}
-
 export default function OrdersPage() {
+  const [allOrders, setAllOrders] = useState<Order[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
 
+  // 날짜관련
+  const [period, setPeriod] = useState<PeriodType>("1MONTH"); //기본탭 : 1개월
+  const [customRange, setCustomRange] = useState<{
+    start: Date;
+    end: Date;
+  } | null>(null); //커스텀 탭
+
+  // 서버에서 주문 데이터를 fetch하는 함수
+  async function fetchOrders() {
+    const res = await fetch("/api/mypage/orders", {
+      credentials: "include", // 이거 필수!
+    });
+    return res.json();
+  }
   // 서버 데이터 fetch
   const [loading, setLoading] = useState(true);
+
+  const periodToMonths: Record<FixedPeriod, number> = {
+    "1MONTH": 1,
+    "3MONTH": 3,
+    "6MONTH": 6,
+    "12MONTH": 12,
+  };
+
+  //날짜 함수
+  const filterByPeriod = (orders: Order[], period: FixedPeriod) => {
+    const now = new Date();
+    const months = periodToMonths[period];
+
+    const fromDate = new Date(now.getFullYear(), now.getMonth() - months, 1);
+
+    return orders.filter((o) => new Date(o.date) >= fromDate);
+  };
+
+  const filterOrders = (orders: Order[], period: PeriodType) => {
+    if (period === "CUSTOM") {
+      if (!customRange) return orders;
+
+      return orders.filter((o) => {
+        const date = new Date(o.date);
+        return date >= customRange.start && date <= customRange.end;
+      });
+    }
+
+    // 🔥 여기서 새로운 변수에 담아줘야 함
+    const fixedPeriod: FixedPeriod = period;
+
+    return filterByPeriod(orders, fixedPeriod);
+  };
+
+  // 주문배송이력 로딩
   useEffect(() => {
-    fetchOrders().then((data) => {
-      setOrders(data);
-      setLoading(false);
-    });
+    const loadOrders = async () => {
+      try {
+        setLoading(true);
+
+        const data: Order[] = await fetchOrders();
+
+        setAllOrders(data);
+        console.log("data는", data);
+        setOrders(filterByPeriod(data, "1MONTH")); // 초기 1개월
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadOrders();
   }, []);
 
+  useEffect(() => {
+    setOrders(filterOrders(allOrders, period));
+    setCurrentPage(0);
+  }, [period, customRange, allOrders]);
+
+  // 페이지네이션
   const pageCount = Math.ceil(orders.length / itemsPerPage);
 
   const currentItems = orders.slice(
@@ -148,7 +214,17 @@ export default function OrdersPage() {
       <h2>주문/배송 조회</h2>
 
       {/* 날짜 선택 탭 */}
-      <PeriodTabsComponent />
+      <PeriodTabsComponent
+        period={period}
+        onPeriodChange={(p) => {
+          setPeriod(p);
+          setCustomRange(null); // 🔥 탭 누르면 커스텀 초기화
+        }}
+        onCustomSubmit={(start, end) => {
+          setPeriod("CUSTOM");
+          setCustomRange({ start, end });
+        }}
+      />
 
       {/* 테이블 목록 */}
       <OrdersTable
@@ -162,18 +238,20 @@ export default function OrdersPage() {
       {/* 페이지네이션 */}
       <O.Pagination>
         <ReactPaginate
-          pageCount={pageCount}
+          pageCount={pageCount > 0 ? pageCount : 1} // 페이지 없으면 1로
           pageRangeDisplayed={5}
           marginPagesDisplayed={2}
           onPageChange={handlePageClick}
           containerClassName="pagination"
           pageClassName="page-item"
           pageLinkClassName="page-link"
-          previousClassName="page-item"
+          previousClassName={`page-item prev ${currentPage === 0 ? "disabled" : ""}`}
           previousLinkClassName="page-link"
-          nextClassName="page-item"
+          nextClassName={`page-item next ${currentPage + 1 === pageCount ? "disabled" : ""}`}
           nextLinkClassName="page-link"
           activeClassName="active"
+          previousLabel={<img src="/image/active-left.png" alt="이전" />}
+          nextLabel={<img src="/image/active-right.png" alt="다음" />}
         />
       </O.Pagination>
     </M.Contents>

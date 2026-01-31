@@ -1,13 +1,12 @@
 "use client";
 
 import * as M from "../style";
-import * as P from "../../../signup/style";
+import * as P from "../../signup/style";
 import AccountComponent from "@/app/signup/AccountInfo";
 import PersonalInfoInputComponent from "@/app/signup/PersonalInfo";
 import AddressInputComponent from "@/app/signup/AddressInput";
 import EmailComponent from "@/app/signup/EmailInfo";
 import BirthdayInputComponent from "@/app/signup/BirthdayInput";
-
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";

@@ -13,7 +13,6 @@ import AccountComponent from "./AccountInfo";
 import EmailComponent from "./EmailInfo";
 import CheckComponent from "./Checkinput";
 import TermsModal from "@/components/terms/Termsmodal";
-
 import { FormType } from "./types";
 
 interface PhoneType {

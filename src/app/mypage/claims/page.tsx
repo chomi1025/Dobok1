@@ -1,12 +1,14 @@
 "use client";
 import Link from "next/link";
+import ReactPaginate from "react-paginate";
 import {
   Column,
   OrdersTable,
 } from "@/components/mypage/ordersTable/ordersTable";
 import * as M from "../style";
-import PeriodTabsComponent from "../../../../components/mypage/PeriodTabs";
+
 import { useState } from "react";
+import PeriodTabsComponent from "@/components/mypage/PeriodTabs";
 
 export interface Claim {
   id: number;
@@ -119,6 +121,26 @@ export default function ClaimsPage() {
 
       {/* 테이블 목록 */}
       <OrdersTable columns={claimColumns} data={currentItems} />
+
+      {/* 페이지네이션 */}
+      <M.Pagination>
+        <ReactPaginate
+          pageCount={pageCount > 0 ? pageCount : 1} // 페이지 없으면 1로
+          pageRangeDisplayed={5}
+          marginPagesDisplayed={2}
+          onPageChange={handlePageClick}
+          containerClassName="pagination"
+          pageClassName="page-item"
+          pageLinkClassName="page-link"
+          previousClassName={`page-item prev ${currentPage === 0 ? "disabled" : ""}`}
+          previousLinkClassName="page-link"
+          nextClassName={`page-item next ${currentPage + 1 === pageCount ? "disabled" : ""}`}
+          nextLinkClassName="page-link"
+          activeClassName="active"
+          previousLabel={<img src="/image/active-left.png" alt="이전" />}
+          nextLabel={<img src="/image/active-right.png" alt="다음" />}
+        />
+      </M.Pagination>
     </M.Contents>
   );
 }

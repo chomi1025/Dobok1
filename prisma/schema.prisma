@@ -38,14 +38,15 @@ model Category {
 }
 
 model Product {
-  id       Int      @id @default(autoincrement())
-  name     String   @unique
-  price    Int
-  stock    Int
-  category Category @relation(fields: [categoryId], references: [id])
-  categoryId Int
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  price       Float
+  stock       Int
+  categoryId  Int
+  createdAt   DateTime @default(now())
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
-
 
 enum OrderStatus {
   PAYMENT_COMPLETE
@@ -57,7 +58,7 @@ enum OrderStatus {
 
 model Order {
   id          Int         @id @default(autoincrement())
-  orderNumber String      @unique   // ✅ 여기 추가
+  orderNumber String      @unique
   date        DateTime
   total       Int
   status      OrderStatus

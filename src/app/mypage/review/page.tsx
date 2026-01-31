@@ -5,8 +5,8 @@ import {
   OrdersTable,
 } from "@/components/mypage/ordersTable/ordersTable";
 import * as M from "../style";
-import PeriodTabsComponent from "../../../../components/mypage/PeriodTabs";
 import { useState } from "react";
+import PeriodTabsComponent from "@/components/mypage/PeriodTabs";
 
 export interface Reviews {
   id: number;
