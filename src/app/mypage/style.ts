@@ -29,14 +29,14 @@ export const Contents = styled.section<{
   }
 `;
 
-export const WithDraw = styled.form`
+export const WithDraw = styled.div`
   width: 660px;
   display: block;
   margin: 55px auto 90px;
   padding: 60px 0 75px;
   border: 1px solid #ddd;
 
-  section:first-of-type {
+  > section {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -68,106 +68,110 @@ export const WithDraw = styled.form`
     }
   }
 
-  fieldset {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+  > form {
+    margin-top: 65px;
     margin-bottom: 60px;
 
-    legend {
-      text-align: center;
-      padding: 15px 0;
-      margin-bottom: 30px;
-      border-top: 1px solid #ddd;
-      border-bottom: 1px solid #ddd;
-      font-size: 20px;
-      font-weight: 700;
-    }
+    > section {
+      width: 350px;
+      margin: 60px auto 0;
+      display: flex;
+      flex-direction: column;
 
-    ul {
-      li {
-        &:not(:last-of-type) {
-          margin-bottom: 8px;
-        }
+      label:first-of-type {
+        margin-bottom: 12px;
+        font-size: 15px;
 
-        label {
-          display: flex;
-          align-items: center;
-          transition: all 0.2s ease;
-
-          input {
-            display: none;
-          }
-
-          /* 네모 박스 */
-          .box {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-            border: 2px solid #999;
-            border-radius: 4px;
-            position: relative;
-            flex-shrink: 0;
-          }
-
-          .text {
-            font-size: 14px;
-          }
-
-          /* hover */
-          &:hover {
-            background: #f7f7f7;
-          }
-
-          /* 선택됨 */
-          input:checked + .box {
-            border-color: #333;
-            background: #333;
-          }
-
-          input:checked + .box::after {
-            content: "";
-            position: absolute;
-            inset: 5px;
-            background: #fff;
-          }
+        > input {
+          margin-right: 10px;
         }
       }
-    }
-  }
-
-  section:last-of-type {
-    width: 350px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-
-    label:first-of-type {
-      margin-bottom: 12px;
-      font-size: 15px;
 
       > input {
-        margin-right: 10px;
+        padding: 12px 0 12px 15px;
+        margin-bottom: 20px;
+      }
+
+      label:nth-of-type(2) {
+        font-size: 14px;
+        margin-bottom: 15px;
+        display: flex;
+      }
+
+      > button {
+        width: 100%;
+        height: 60px;
+        border-radius: 5px;
+        background-color: #333;
+        color: white;
       }
     }
 
-    > input {
-      padding: 12px 0 12px 15px;
-      margin-bottom: 20px;
-    }
-
-    label:nth-of-type(2) {
-      font-size: 14px;
-      margin-bottom: 15px;
+    fieldset {
       display: flex;
-    }
+      align-items: center;
+      flex-direction: column;
 
-    > button {
-      width: 100%;
-      height: 60px;
-      border-radius: 5px;
-      background-color: #333;
-      color: white;
+      legend {
+        text-align: center;
+        padding: 15px 0;
+        margin-bottom: 30px;
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      ul {
+        li {
+          &:not(:last-of-type) {
+            margin-bottom: 8px;
+          }
+
+          label {
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+
+            input {
+              display: none;
+            }
+
+            /* 네모 박스 */
+            .box {
+              width: 20px;
+              height: 20px;
+              margin-right: 10px;
+              border: 2px solid #999;
+              border-radius: 4px;
+              position: relative;
+              flex-shrink: 0;
+            }
+
+            .text {
+              font-size: 14px;
+            }
+
+            /* hover */
+            &:hover {
+              background: #f7f7f7;
+            }
+
+            /* 선택됨 */
+            input:checked + .box {
+              border-color: #333;
+              background: #333;
+            }
+
+            input:checked + .box::after {
+              content: "";
+              position: absolute;
+              inset: 5px;
+              background: #fff;
+            }
+          }
+        }
+      }
     }
   }
 `;

@@ -8,6 +8,7 @@ type Props = {
   errors: FieldErrors<FormType>;
   emailDomain: string;
   setEmailDomain: (domain: string) => void;
+  isEdit: boolean;
 };
 
 export default function EmailComponent({
@@ -15,6 +16,7 @@ export default function EmailComponent({
   errors,
   emailDomain,
   setEmailDomain,
+  isEdit,
 }: Props) {
   return (
     <S.EmailInfo>
@@ -25,7 +27,14 @@ export default function EmailComponent({
           <S.Email className="field">
             <S.Error_Wrapper>
               <label htmlFor="email">이메일</label>
-              {errors.email && <p>{errors.email.message}</p>}
+
+              {/* 수정 모드면 변경 불가 메시지 */}
+              {isEdit && <p className="error">이메일은 변경할 수 없습니다.</p>}
+
+              {/* 수정 모드 아닐 때만 에러 표시 */}
+              {!isEdit && errors.email && (
+                <p className="error">{errors.email.message}</p>
+              )}
             </S.Error_Wrapper>
 
             <div>
@@ -35,6 +44,7 @@ export default function EmailComponent({
                 placeholder="이메일"
                 value={value.split("@")[0] || ""}
                 onChange={(e) => onChange(`${e.target.value}@${emailDomain}`)}
+                disabled={isEdit} // ← 수정 모드면 입력 불가
               />
 
               <S.Email_Selectwrapper>
@@ -45,6 +55,7 @@ export default function EmailComponent({
                     const localPart = value.split("@")[0];
                     onChange(`${localPart}@${e.target.value}`);
                   }}
+                  disabled={isEdit} // ← 수정 모드면 입력 불가
                 >
                   <option value="gmail.com">gmail.com</option>
                   <option value="naver.com">naver.com</option>

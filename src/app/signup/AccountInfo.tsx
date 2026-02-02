@@ -9,12 +9,18 @@ import {
 import { useEffect, useState } from "react";
 import { FormType } from "./types";
 
+type User = {
+  id: string;
+  username: string;
+};
+
 type Props = {
   register: UseFormRegister<FormType>;
   errors: FieldErrors<FormType>;
   setValue: UseFormSetValue<FormType>;
   clearErrors: UseFormClearErrors<FormType>;
   isEdit: boolean;
+  user?: User;
 };
 
 export default function AccountComponent({
@@ -23,6 +29,7 @@ export default function AccountComponent({
   setValue,
   clearErrors,
   isEdit,
+  user,
 }: Props) {
   const [checkMessage, setCheckMessage] = useState<string | null>(null);
   const [isChecking, setIsChecking] = useState(false);
@@ -144,13 +151,9 @@ export default function AccountComponent({
 
         <input
           id="username"
-          placeholder="아이디"
-          {...register("username", {
-            onChange: () => {
-              setValue("usernameChecked", false);
-            },
-          })}
-          readOnly={isEdit}
+          {...register("username")}
+          placeholder={isEdit ? "" : "아이디"}
+          readOnly={!!isEdit}
         />
       </div>
 
@@ -165,8 +168,9 @@ export default function AccountComponent({
         <input
           id="password"
           type="password"
-          placeholder="영문,숫자,특수문자를 모두 포함한 8~20글자"
+          placeholder="비밀번호"
           {...register("password")}
+          readOnly={false}
         />
       </div>
 

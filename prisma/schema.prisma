@@ -72,19 +72,16 @@ model Order {
 model OrderItem {
   id      Int @id @default(autoincrement())
   orderId Int
-
   productId    Int
   productName  String
   productImage String?
-
   optionText String?
   unitPrice  Int
   quantity   Int
   totalPrice Int
-
   createdAt DateTime @default(now())
-
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
   @@index([orderId])
 }
+
+

@@ -1,14 +1,19 @@
 "use client";
 import * as S from "./style";
 import { Control, Controller, FieldErrors } from "react-hook-form";
-import type { FormType } from "./page";
+import type { FormType } from "./types";
 
 type Props = {
   control: Control<FormType>;
   errors: FieldErrors<FormType>;
+  isEdit: boolean;
 };
 
-export default function BirthdayInputComponent({ control, errors }: Props) {
+export default function BirthdayInputComponent({
+  control,
+  errors,
+  isEdit,
+}: Props) {
   return (
     <Controller
       name="birthDate"
@@ -32,7 +37,16 @@ export default function BirthdayInputComponent({ control, errors }: Props) {
           <S.Birthday className="field">
             <S.Error_Wrapper>
               <label htmlFor="birthDate">생년월일</label>
-              {errors.birthDate && <p>{errors.birthDate.message}</p>}
+
+              {/* 수정 모드면 변경 불가 메시지 */}
+              {isEdit && (
+                <p className="error">생년월일은 변경할 수 없습니다.</p>
+              )}
+
+              {/* 수정 모드 아닐 때만 에러 표시 */}
+              {!isEdit && errors.birthDate && (
+                <p className="error">{errors.birthDate.message}</p>
+              )}
             </S.Error_Wrapper>
 
             <div style={{ display: "flex", gap: "5px" }}>
@@ -43,6 +57,7 @@ export default function BirthdayInputComponent({ control, errors }: Props) {
                   onChange={(e) =>
                     handleChange(e.target.value, month || "", day || "")
                   }
+                  disabled={isEdit} // ← 수정 모드면 선택 불가
                 >
                   <option value="">----</option>
                   {Array.from({ length: 100 }, (_, i) => 2026 - i).map((y) => (
@@ -60,6 +75,7 @@ export default function BirthdayInputComponent({ control, errors }: Props) {
                   onChange={(e) =>
                     handleChange(year || "", e.target.value, day || "")
                   }
+                  disabled={isEdit} // ← 수정 모드면 선택 불가
                 >
                   <option value="">--</option>
                   {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
@@ -77,6 +93,7 @@ export default function BirthdayInputComponent({ control, errors }: Props) {
                   onChange={(e) =>
                     handleChange(year || "", month || "", e.target.value)
                   }
+                  disabled={isEdit} // ← 수정 모드면 선택 불가
                 >
                   <option value="">--</option>
                   {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
