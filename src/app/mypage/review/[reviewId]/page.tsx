@@ -1,6 +1,7 @@
 "use client";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import * as R from "./style";
 
@@ -23,8 +24,10 @@ export default function ReviewDetailPage() {
   const params = useParams();
   const reviewId = params.reviewId;
   const [review, setReview] = useState<any>(null);
-  const loginUserRole = "admin";
   const [replyContent, setReplyContent] = useState("");
+  const router = useRouter();
+  const { data: session } = useSession();
+  const loginUserRole = session?.user?.role?.toLowerCase(); // admin / user
 
   useEffect(() => {
     if (!reviewId) return;
@@ -131,10 +134,13 @@ export default function ReviewDetailPage() {
       </R.Answer>
 
       <R.Button_Wrapper>
-        <R.Button_before>목록으로</R.Button_before>
+        <R.Button_before onClick={() => router.push("/mypage/review")}>
+          목록으로
+        </R.Button_before>
+
         {loginUserRole === "admin" && (
           <R.Button_submit onClick={handleSubmitReply}>
-            등록하기
+            {review.reply ? "수정하기" : "등록하기"}
           </R.Button_submit>
         )}
       </R.Button_Wrapper>

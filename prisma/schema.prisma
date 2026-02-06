@@ -20,7 +20,11 @@ model User {
   username  String   @unique
   orders    Order[]
   reviews   Review[]
-  replies   Reply[]   // User가 작성한 Reply
+  reviewReplies  ReviewReply[]  // 리뷰 답변 작성한 admin
+  inquiryReplies InquiryReply[]
+  questionReplies QuestionReply[]
+  inquiries  Inquiry[]
+  questions  Question[]
 }
 
 enum Role {
@@ -123,33 +127,55 @@ model Review {
   content     String
   createdAt   DateTime @default(now())
   images      String[] @default([])
-  reply       Reply?   @relation("ReviewReply") // 리뷰 한 개당 1:1 답변
+  reply       ReviewReply? // 1:1 답변
   @@unique([orderItemId])
 }
 
 model Inquiry {
   id       Int      @id @default(autoincrement())
+  userId   Int
+  user     User     @relation(fields: [userId], references: [id])
   content  String
-  replies  Reply[]  @relation("InquiryReplies") // 문의 답변
+  createdAt DateTime @default(now())
+  replies  InquiryReply[]
 }
 
 model Question {
   id       Int      @id @default(autoincrement())
+  userId   Int
+  user     User     @relation(fields: [userId], references: [id])
   content  String
-  replies  Reply[]  @relation("QuestionReplies") // 1:1 답변
+  createdAt DateTime @default(now())
+  replies  QuestionReply[]
 }
 
-model Reply {
+
+model ReviewReply {
+  id        Int      @id @default(autoincrement())
+  reviewId  Int      @unique
+  review    Review   @relation(fields: [reviewId], references: [id])
+  adminId   Int
+  admin     User     @relation(fields: [adminId], references: [id])
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model InquiryReply {
+  id        Int      @id @default(autoincrement())
+  inquiryId Int
+  inquiry   Inquiry  @relation(fields: [inquiryId], references: [id])
+  adminId   Int
+  admin     User     @relation(fields: [adminId], references: [id])
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model QuestionReply {
   id         Int      @id @default(autoincrement())
-  reviewId   Int?     @unique
-  inquiryId  Int?
-  questionId Int?
-  type       String   // "review", "inquiry", "question"
-  content    String
-  createdAt  DateTime @default(now())
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id])
   adminId    Int
   admin      User     @relation(fields: [adminId], references: [id])
-  review     Review?  @relation("ReviewReply", fields: [reviewId], references: [id])
-  inquiry    Inquiry? @relation("InquiryReplies", fields: [inquiryId], references: [id])
-  question   Question? @relation("QuestionReplies", fields: [questionId], references: [id])
+  content    String
+  createdAt  DateTime @default(now())
 }

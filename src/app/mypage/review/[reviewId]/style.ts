@@ -187,9 +187,11 @@ export const Answer = styled.section`
 `;
 
 export const ReplyText = styled.div`
-  background-color: #f5f5f5;
-  padding: 12px 16px;
-  border-radius: 8px;
+  width: 100%;
+  min-height: 150px;
+  background-color: #e7e7e7;
+  padding: 30px;
+  border: 1px solid #ddd;
   font-size: 14px;
   color: #333;
   margin-top: 8px;
