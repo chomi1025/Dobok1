@@ -7,8 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "ts-node prisma/seed.ts",
-    "prisma": "prisma"
+    "seed": "ts-node prisma/seed.ts"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed/base.ts"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
@@ -23,8 +25,10 @@
     "bcrypt": "^6.0.0",
     "date-fns": "^4.1.0",
     "latest": "^0.2.0",
+    "multer": "^2.0.2",
     "next": "13.4.4",
     "next-auth": "^4.24.13",
+    "next-connect": "^1.0.0",
     "pg": "^8.17.1",
     "react": "18.2.0",
     "react-datepicker": "^9.1.0",
@@ -35,14 +39,16 @@
     "sass": "^1.97.2",
     "supabase": "^2.72.6",
     "typescript": "^5.9.3",
-    "yup": "^1.7.1"
+    "yup": "^1.7.1",
+    "zustand": "^5.0.11"
   },
   "devDependencies": {
-    "@prisma/client": "4.15.0",
+    "@prisma/client": "5.14.0",
     "@types/bcrypt": "^6.0.0",
     "@types/bcryptjs": "^3.0.0",
+    "@types/multer": "^2.0.0",
     "@types/react-datepicker": "^7.0.0",
-    "prisma": "4.15.0",
+    "prisma": "5.14.0",
     "ts-node": "^10.9.2"
   }
 }

@@ -26,6 +26,7 @@ export default function Login() {
 
       if (!res?.ok) {
         console.log("로그인 실패: " + res?.error);
+        router.refresh();
         return;
       }
 

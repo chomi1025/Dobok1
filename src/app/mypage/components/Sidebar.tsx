@@ -7,8 +7,8 @@ const menuItems = [
   {
     title: "쇼핑정보",
     items: [
-      { slug: "orders", label: "주문/배송 조회" },
-      { slug: "claims", label: "취소/교환/반품 조회" },
+      { slug: "order", label: "주문/배송 조회" },
+      { slug: "claim", label: "취소/교환/반품 조회" },
     ],
   },
   {

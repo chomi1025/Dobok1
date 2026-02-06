@@ -6,13 +6,18 @@ import {
   OrdersTable,
 } from "@/components/mypage/ordersTable/ordersTable";
 import * as M from "../style";
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PeriodTabsComponent from "@/components/mypage/PeriodTabs";
+
+type ClaimType = "cancel" | "exchange" | "return";
+
+type PeriodType = "1MONTH" | "3MONTH" | "6MONTH" | "12MONTH" | "CUSTOM";
+
+type FixedPeriod = Exclude<PeriodType, "CUSTOM">;
 
 export interface Claim {
   id: number;
-  type: "취소" | "교환" | "반품";
+  type: ClaimType;
   requestedAt: string;
   claimNumber: string;
   name: string;
@@ -22,24 +27,18 @@ export interface Claim {
   total: string;
 }
 
-const claims: Claim[] = Array.from({ length: 5 }, (_, i) => ({
-  id: 2000 + i,
-  type: "반품",
-  requestedAt: "2025.12.15",
-  claimNumber: "C00000946" + 5 + i,
-  name: `아디다스 품새도복(여) 유단자용 외  ${i + 1}건`,
-  img: "/sample.png",
-  price: "57,600원 / 3개",
-  quantity: 1,
-  total: "57,600원",
-}));
+const CLAIM_TYPE_LABEL = {
+  cancel: "취소",
+  exchange: "교환",
+  return: "반품",
+} as const;
 
 const claimColumns: Column<Claim>[] = [
   {
     key: "type",
     label: "유형",
     flex: 1,
-    render: (row) => <span>{row.type}</span>,
+    render: (row) => <span>{CLAIM_TYPE_LABEL[row.type]}</span>,
   },
   {
     key: "requestedAt",
@@ -51,9 +50,7 @@ const claimColumns: Column<Claim>[] = [
     label: "접수번호",
     flex: 1.6,
     render: (row) => (
-      <span style={{ textDecoration: "underline" }}>
-        <Link href={""}>{row.claimNumber}</Link>
-      </span>
+      <Link href={`/mypage/claim/${row.claimNumber}`}>{row.claimNumber}</Link>
     ),
   },
   {
@@ -88,15 +85,35 @@ const claimColumns: Column<Claim>[] = [
     key: "price",
     label: "상품금액/수량",
     flex: 1.4,
+    render: (row) => (
+      <span>
+        {row.price.toLocaleString()}원 / {row.quantity}개
+      </span>
+    ),
   },
   {
     key: "total",
     label: "합계금액",
     flex: 1.2,
+    render: (row) => (
+      <span>
+        {row.price.toLocaleString()}원 / {row.quantity}개
+      </span>
+    ),
   },
 ];
 
 export default function ClaimsPage() {
+  // 날짜관련
+  const [period, setPeriod] = useState<PeriodType>("1MONTH"); //기본탭 : 1개월
+  const [customRange, setCustomRange] = useState<{
+    start: Date;
+    end: Date;
+  } | null>(null); //커스텀 탭
+  const [claims, setClaims] = useState<Claim[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  console.log(123);
   const [currentPage, setCurrentPage] = useState(0); // react-paginate는 0부터 시작
   const itemsPerPage = 10;
 
@@ -112,12 +129,42 @@ export default function ClaimsPage() {
     setCurrentPage(selectedItem.selected);
   };
 
+  useEffect(() => {
+    const fetchClaims = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch("/api/mypage/claim", {
+          credentials: "include",
+        });
+
+        const data: Claim[] = await res.json();
+        setClaims(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClaims();
+  }, []);
+
   return (
     <M.Contents>
       <h2>취소/교환/반품 조회</h2>
 
       {/* 날짜 선택 탭 */}
-      <PeriodTabsComponent />
+      <PeriodTabsComponent
+        period={period}
+        onPeriodChange={(p) => {
+          setPeriod(p);
+          setCustomRange(null);
+        }}
+        onCustomSubmit={(start, end) => {
+          setPeriod("CUSTOM");
+          setCustomRange({ start, end });
+        }}
+      />
 
       {/* 테이블 목록 */}
       <OrdersTable columns={claimColumns} data={currentItems} />

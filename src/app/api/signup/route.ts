@@ -51,8 +51,14 @@ export async function POST(req: NextRequest) {
     });
 
     if (existingUser) {
+      const duplicateFields = [];
+      if (existingUser.email === email) duplicateFields.push("email");
+      if (existingUser.username === username) duplicateFields.push("username");
+      if (phoneStr && existingUser.phone === phoneStr)
+        duplicateFields.push("phone");
+
       return NextResponse.json(
-        { error: "이미 존재하는 이메일, 아이디 또는 전화번호입니다." },
+        { error: `이미 존재하는 ${duplicateFields.join(", ")}입니다.` },
         { status: 400 },
       );
     }

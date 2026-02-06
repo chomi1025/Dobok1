@@ -12,21 +12,8 @@ export const Inner = styled.main`
   }
 `;
 
-export const Contents = styled.section<{
-  isEdit?: boolean;
-  withDraw?: boolean;
-}>`
+export const Contents = styled.section`
   padding-bottom: 300px;
-
-  h2 {
-    font-size: 24px;
-    padding-bottom: ${(props) =>
-      props.isEdit || props.withDraw ? "20px" : ""};
-    border-bottom: ${(props) =>
-      props.isEdit || props.withDraw ? "1px solid #333" : ""};
-    margin-bottom: ${(props) =>
-      props.isEdit || props.withDraw ? "90px" : "40px"};
-  }
 `;
 
 export const WithDraw = styled.div`
@@ -247,8 +234,7 @@ export const StatusActions = styled.div`
 `;
 
 export const BaseButton = styled.button`
-  width: 80px;
-  padding: 8px 0;
+  padding: 8px 12px;
   font-size: 14px;
   border-radius: 5px;
   cursor: pointer;

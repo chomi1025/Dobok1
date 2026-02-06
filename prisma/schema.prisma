@@ -19,6 +19,8 @@ model User {
   phone     String?  @unique
   username  String   @unique
   orders    Order[]
+  reviews   Review[]
+  replies   Reply[]   // User가 작성한 Reply
 }
 
 enum Role {
@@ -39,13 +41,14 @@ model Category {
 
 model Product {
   id          Int      @id @default(autoincrement())
-  name        String
+  name        String   @unique
   description String?
   price       Float
   stock       Int
   categoryId  Int
   createdAt   DateTime @default(now())
   category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  orderItems  OrderItem[]
 }
 
 enum OrderStatus {
@@ -59,29 +62,94 @@ enum OrderStatus {
 model Order {
   id          Int         @id @default(autoincrement())
   orderNumber String      @unique
-  date        DateTime
+  createdAt   DateTime    @default(now())
   total       Int
   status      OrderStatus
   userId      Int
-  user        User        @relation(fields: [userId], references: [id])
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   items       OrderItem[]
 }
 
-
-
 model OrderItem {
-  id      Int @id @default(autoincrement())
-  orderId Int
+  id           Int      @id @default(autoincrement())
+  orderId      Int
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId    Int
   productName  String
   productImage String?
-  optionText String?
-  unitPrice  Int
-  quantity   Int
-  totalPrice Int
-  createdAt DateTime @default(now())
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  @@index([orderId])
+  optionText   String?
+  unitPrice    Int
+  quantity     Int
+  totalPrice   Int
+  createdAt    DateTime @default(now())
+  reviews      Review[]
+  claims       Claim[]
+  product      Product @relation(fields: [productId], references: [id])
 }
 
+model Claim {
+  id          Int    @id @default(autoincrement())
+  claimNumber String @unique @default(uuid())
+  claimType   ClaimType
+  status      ClaimStatus @default(REQUESTED)
+  requestedAt DateTime    @default(now())
+  detail      String
+  orderItemId Int?
+  orderItem   OrderItem?  @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  reason      String?
+  processedAt DateTime?
+}
 
+enum ClaimType {
+  CANCEL
+  RETURN
+  EXCHANGE
+}
+
+enum ClaimStatus {
+  REQUESTED
+  APPROVED
+  COMPLETED
+  REJECTED
+}
+
+model Review {
+  id          Int      @id @default(autoincrement())
+  orderItemId Int
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id])
+  userId      Int
+  user        User @relation(fields: [userId], references: [id])
+  rating      Int
+  content     String
+  createdAt   DateTime @default(now())
+  images      String[] @default([])
+  reply       Reply?   @relation("ReviewReply") // 리뷰 한 개당 1:1 답변
+  @@unique([orderItemId])
+}
+
+model Inquiry {
+  id       Int      @id @default(autoincrement())
+  content  String
+  replies  Reply[]  @relation("InquiryReplies") // 문의 답변
+}
+
+model Question {
+  id       Int      @id @default(autoincrement())
+  content  String
+  replies  Reply[]  @relation("QuestionReplies") // 1:1 답변
+}
+
+model Reply {
+  id         Int      @id @default(autoincrement())
+  reviewId   Int?     @unique
+  inquiryId  Int?
+  questionId Int?
+  type       String   // "review", "inquiry", "question"
+  content    String
+  createdAt  DateTime @default(now())
+  adminId    Int
+  admin      User     @relation(fields: [adminId], references: [id])
+  review     Review?  @relation("ReviewReply", fields: [reviewId], references: [id])
+  inquiry    Inquiry? @relation("InquiryReplies", fields: [inquiryId], references: [id])
+  question   Question? @relation("QuestionReplies", fields: [questionId], references: [id])
+}

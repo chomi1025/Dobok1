@@ -20,7 +20,7 @@ export default async function OrderDetailPage({ params }: Props) {
 
   const formattedOrder = {
     ...order,
-    date: order.date.toISOString().slice(0, 10),
+    date: order.createdAt.toISOString().slice(0, 10),
     shipping: {
       name: order.user.name,
       phone: order.user.phone,

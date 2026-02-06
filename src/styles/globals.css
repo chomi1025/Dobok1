@@ -23,8 +23,12 @@ select {
 
 input {
   border: 1px solid #ddd;
-
   color: #444;
+}
+
+textarea {
+  font-family: inherit; /* body 폰트 상속 */
+  resize: vertical; /* 크기 조절 가능 */
 }
 
 input:focus-visible {

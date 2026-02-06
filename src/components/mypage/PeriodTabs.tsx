@@ -4,6 +4,7 @@ import { ko } from "date-fns/locale";
 import { useState, useEffect } from "react";
 
 type PeriodType = "1MONTH" | "3MONTH" | "6MONTH" | "12MONTH" | "CUSTOM";
+
 interface Props {
   period: PeriodType;
   onPeriodChange: (p: PeriodType) => void; // 탭용 (즉시)

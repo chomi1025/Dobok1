@@ -8,6 +8,8 @@ import * as M from "../style";
 import { useState } from "react";
 import PeriodTabsComponent from "@/components/mypage/PeriodTabs";
 
+type PeriodType = "1MONTH" | "3MONTH" | "6MONTH" | "12MONTH" | "CUSTOM";
+
 export interface Reviews {
   id: number;
   productName: string;
@@ -93,6 +95,11 @@ const reviewColumns: Column<Reviews>[] = [
 export default function ReviewPage() {
   const [currentPage, setCurrentPage] = useState(0); // react-paginate는 0부터 시작
   const itemsPerPage = 10;
+  const [period, setPeriod] = useState<PeriodType>("1MONTH"); //기본탭 : 1개월
+  const [customRange, setCustomRange] = useState<{
+    start: Date;
+    end: Date;
+  } | null>(null); //커스텀 탭
 
   const pageCount = Math.ceil(reviews.length / itemsPerPage);
 
@@ -107,11 +114,21 @@ export default function ReviewPage() {
   };
 
   return (
-    <M.Contents isEdit={false}>
+    <M.Contents>
       <h2>상품 후기</h2>
 
       {/* 날짜 선택 탭 */}
-      <PeriodTabsComponent />
+      <PeriodTabsComponent
+        period={period}
+        onPeriodChange={(p) => {
+          setPeriod(p);
+          setCustomRange(null); // 🔥 탭 누르면 커스텀 초기화
+        }}
+        onCustomSubmit={(start, end) => {
+          setPeriod("CUSTOM");
+          setCustomRange({ start, end });
+        }}
+      />
 
       {/* 테이블 목록 */}
       <OrdersTable columns={reviewColumns} data={currentItems} />

@@ -11,6 +11,7 @@ import {
 } from "@/components/mypage/ordersTable/ordersTable";
 import OrderSkeleton from "./OrderSkeleton";
 import PeriodTabsComponent from "@/components/mypage/PeriodTabs";
+import { useRouter } from "next/navigation";
 
 export type OrderStatus =
   | "PAYMENT_COMPLETE" // 결제완료
@@ -29,18 +30,6 @@ const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
   DELIVERED: "배송완료",
 };
 
-const STATUS_ACTIONS: Record<OrderStatus, React.ReactNode> = {
-  PAYMENT_COMPLETE: <O.SecondaryButton>주문취소</O.SecondaryButton>,
-  PREPARING: null,
-  SHIPPING: <O.SecondaryButton>배송조회</O.SecondaryButton>,
-  DELIVERED: (
-    <>
-      <O.PrimaryButton>리뷰작성</O.PrimaryButton>
-      <O.SecondaryButton>반품신청</O.SecondaryButton>
-    </>
-  ),
-};
-
 export interface Order {
   id: number;
   date: string;
@@ -51,6 +40,12 @@ export interface Order {
   quantity: number;
   total: number;
   status: OrderStatus;
+  claims?: {
+    id: number;
+    claimType: "RETURN" | "EXCHANGE";
+    status: string;
+  }[];
+  reviewWritten?: boolean;
 }
 
 const orderColumns: Column<Order>[] = [
@@ -75,11 +70,11 @@ const orderColumns: Column<Order>[] = [
     align: "left",
     render: (row) => (
       <div style={{ display: "flex", alignItems: "center", gap: "23px" }}>
-        <Link href={`/mypage/orders/${row.orderNumber}`}>
+        <Link href={`/mypage/order/${row.orderNumber}`}>
           <img src={row.img} width={90} height={90} />
         </Link>
 
-        <Link href={`/mypage/orders/${row.orderNumber}`}>
+        <Link href={`/mypage/order/${row.orderNumber}`}>
           <span>{row.name}</span>
         </Link>
       </div>
@@ -104,13 +99,62 @@ const orderColumns: Column<Order>[] = [
   {
     key: "status",
     label: "상태 / 처리",
-    flex: 1,
-    render: (row) => (
-      <O.StatusActions>
-        <span>{ORDER_STATUS_LABEL[row.status]}</span>
-        {STATUS_ACTIONS[row.status]}
-      </O.StatusActions>
-    ),
+    flex: 1.2,
+    render: (row) => {
+      const router = useRouter();
+      const claim = (row as any).claims?.[0];
+
+      return (
+        <O.StatusActions>
+          <span>{ORDER_STATUS_LABEL[row.status]}</span>
+
+          {row.status === "PAYMENT_COMPLETE" && (
+            <O.SecondaryButton>주문취소</O.SecondaryButton>
+          )}
+
+          {row.status === "SHIPPING" && (
+            <O.SecondaryButton>배송조회</O.SecondaryButton>
+          )}
+
+          {row.status === "DELIVERED" && (
+            <>
+              {/* 리뷰 버튼 */}
+              {!row.reviewWritten && !claim && (
+                <O.PrimaryButton
+                  onClick={() =>
+                    router.push(
+                      `/mypage/review/select?orderNumber=${row.orderNumber}`,
+                    )
+                  }
+                >
+                  리뷰작성
+                </O.PrimaryButton>
+              )}
+
+              {/* 반품/교환 버튼 */}
+              {claim ? (
+                <O.SecondaryButton
+                  onClick={() =>
+                    router.push(`/mypage/claim/${claim.claimNumber}`)
+                  }
+                >
+                  {claim.claimType === "RETURN" ? "반품 신청됨" : "교환 신청됨"}{" "}
+                  - {claim.status === "REQUESTED" ? "처리중" : "완료"}
+                </O.SecondaryButton>
+              ) : (
+                <O.SecondaryButton
+                  onClick={() =>
+                    router.push(`/mypage/claim/new?orderId=${row.id}`)
+                  }
+                >
+                  반품/교환 신청
+                </O.SecondaryButton>
+              )}
+            </>
+          )}
+        </O.StatusActions>
+      );
+    },
   },
 ];
 
@@ -145,10 +189,11 @@ export default function OrdersPage() {
   };
 
   //날짜 함수
-  const filterByPeriod = (orders: Order[], period: FixedPeriod) => {
+  const filterByPeriod = (orders: Order[] | undefined, period: FixedPeriod) => {
+    if (!Array.isArray(orders)) return [];
+
     const now = new Date();
     const months = periodToMonths[period];
-
     const fromDate = new Date(now.getFullYear(), now.getMonth() - months, 1);
 
     return orders.filter((o) => new Date(o.date) >= fromDate);
