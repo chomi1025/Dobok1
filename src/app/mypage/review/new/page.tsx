@@ -27,8 +27,6 @@ export default function ReviewNewPage() {
   const searchParams = useSearchParams();
   const orderItemId = searchParams.get("orderItemId"); // ✅ 여기서 가져오기
 
-  const loginUserId = 11;
-
   const {
     register,
     handleSubmit,

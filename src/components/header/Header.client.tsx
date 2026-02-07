@@ -35,7 +35,7 @@ export default function HeaderClient({
   categories: Category[];
   session: Session | null;
 }) {
-  console.log(session);
+
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const [openMenu, setOpenMenu] = useState(false);

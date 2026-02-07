@@ -22,15 +22,11 @@ const TYPE_MAP: Record<string, string> = {
 export default function ClaimDetailPage() {
   const { claimNumber } = useParams();
   const [claim, setClaim] = useState<any>(null);
-  console.log("나와라!:", claim);
 
   useEffect(() => {
     if (!claimNumber) {
-      console.log("claimNumber 없음");
       return;
     }
-
-    console.log("fetch 시작:", claimNumber);
 
     fetch(`/api/mypage/claim/${claimNumber}`)
       .then((res) => {

@@ -4,11 +4,36 @@ import { Button } from "./../../claim/new/style";
 export const Wrapper = styled.div`
   flex: 1;
   padding-bottom: 300px;
+  position: relative;
 `;
 
 export const Title = styled.h2`
   font-size: 24px;
   font-weight: 700;
+  border-radius: 4px;
+`;
+
+export const Button_top = styled.div`
+  position: absolute;
+  top: 12px;
+  right: 0;
+
+  button {
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 4px;
+
+    &:first-of-type {
+      border: 1px solid #ddd;
+      margin-right: 8px;
+    }
+
+    &:last-of-type {
+      background-color: #c1272d;
+      color: white;
+    }
+  }
 `;
 
 export const Line = styled.hr`
@@ -51,6 +76,13 @@ export const P_option = styled.div`
 
 export const Section = styled.div`
   margin-bottom: 20px;
+  white-space: pre-wrap; /* 공백과 줄바꿈 유지 */
+  word-wrap: break-word;
+
+  img {
+    width: 500px; /* ⭐ 원하는 가로 */
+    height: auto; /* ⭐ 비율 유지 */
+  }
 `;
 
 export const Date = styled.span`
@@ -88,8 +120,30 @@ export const TextArea = styled.textarea`
 
 export const Container = styled.div`
   display: flex;
+  justify-content: space-between;
   gap: 10px;
-  margin-bottom: 20px;
+`;
+
+export const Button_middle = styled.div`
+  display: flex;
+  align-items: baseline;
+  padding-top: 10px;
+  gap: 8px;
+  margin-bottom: 50px;
+
+  button {
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 3px;
+
+    &:first-of-type {
+      border: 1px solid #ddd;
+    }
+    &:last-of-type {
+      background-color: #1e40af;
+      color: white;
+    }
+  }
 `;
 
 export const ImageBox = styled.div`
@@ -172,10 +226,30 @@ export const Error = styled.div`
   color: red;
 `;
 
-export const Contents = styled.section`
-  background-color: #e7e7e7;
-  padding: 30px;
-  margin-bottom: 40px;
+export const Contents = styled.section<{ isEditingReview: boolean }>`
+  padding: ${({ isEditingReview }) => (isEditingReview ? "" : "30px")};
+  border-radius: 6px;
+  margin-bottom: ${({ isEditingReview }) => (isEditingReview ? "" : "30px")};
+
+  background-color: ${({ isEditingReview }) =>
+    isEditingReview ? "#ffffff" : "#e7e7e7"};
+
+  border: 1px solid
+    ${({ isEditingReview }) => (isEditingReview ? "#999" : "transparent")};
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+
+  /* 수정 중일 때 에디터 스타일 보정 */
+  ${({ isEditingReview }) =>
+    isEditingReview &&
+    `
+    .textarea-like {
+      border: none;
+      padding: 0;
+    }
+  `}
 `;
 
 export const Answer = styled.section`

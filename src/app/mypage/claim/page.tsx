@@ -113,7 +113,6 @@ export default function ClaimsPage() {
   const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(true);
 
-  console.log(123);
   const [currentPage, setCurrentPage] = useState(0); // react-paginate는 0부터 시작
   const itemsPerPage = 10;
 

@@ -14,7 +14,7 @@ const menuItems = [
   {
     title: "쇼핑활동",
     items: [
-      { slug: "reviews", label: "상품후기" },
+      { slug: "review", label: "상품후기" },
       { slug: "product-qna", label: "상품문의" },
       { slug: "inquiry", label: "1:1문의" },
     ],

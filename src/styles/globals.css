@@ -1,5 +1,15 @@
 /* src/styles/globals.css */
 
+.ProseMirror {
+  padding: 30px;
+}
+
+.ProseMirror img {
+  max-width: 100%;
+  width: 480px;
+  height: auto;
+}
+
 /* 1. margin, padding 초기화 */
 * {
   margin: 0;
