@@ -6,7 +6,6 @@ interface OrderInfoProps {
 }
 
 export const OrdersSection = styled.section`
-  margin-top: 35px;
   font-size: 15px;
   position: relative;
 `;

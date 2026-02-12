@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useSession } from "next-auth/react";
 
 type FormValues = {
   rating: number;
@@ -27,6 +28,8 @@ export default function ReviewNewPage() {
   const searchParams = useSearchParams();
   const orderItemId = searchParams.get("orderItemId"); // ✅ 여기서 가져오기
 
+  const { data: session, status } = useSession();
+  const loginUserId = session?.user?.id;
   const {
     register,
     handleSubmit,

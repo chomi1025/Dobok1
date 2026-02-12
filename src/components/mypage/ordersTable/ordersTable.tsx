@@ -12,7 +12,7 @@ export interface Column<T> {
 interface OrdersTableProps<T> {
   columns: Column<T>[];
   data: T[];
-  inquiry: boolean;
+  inquiry?: boolean;
 }
 
 export const OrdersTable = <T extends { id: number }>({

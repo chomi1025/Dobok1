@@ -8,23 +8,31 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  address   Json?
-  birthDate DateTime
-  name      String
-  role      String   @default("user")
-  phone     String?  @unique
-  username  String   @unique
-  orders    Order[]
-  reviews   Review[]
-  reviewReplies  ReviewReply[]  // 리뷰 답변 작성한 admin
-  inquiryReplies InquiryReply[]
-  questionReplies QuestionReply[]
-  inquiries  Inquiry[]
-  questions  Question[]
+  id               Int                @id @default(autoincrement())
+  email            String             @unique
+  password         String
+  name             String
+  username         String             @unique
+  role             String             @default("user") // "user" | "admin"
+  phone            String?            @unique
+  birthDate        DateTime
+  address          Json?
+  createdAt        DateTime           @default(now())
+
+  // --- 관계 설정 ---
+  orders           Order[]
+  reviews          Review[]
+
+  // 리뷰 답변 (어드민일 경우)
+  reviewReplies    ReviewReply[]
+
+  // 1:1 문의 (Inquiry)
+  inquiries        Inquiry[]
+  inquiryReplies   InquiryReply[]     // 어드민이 작성한 1:1 문의 답변
+
+  // 상품 Q&A (ProductQna)
+  productQnas      ProductQna[]
+  productQnaReplies ProductQnaReply[] // 어드민이 작성한 상품 Q&A 답변
 }
 
 enum Role {
@@ -53,6 +61,7 @@ model Product {
   createdAt   DateTime @default(now())
   category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   orderItems  OrderItem[]
+  productQnas ProductQna[] // 상품 문의 목록 추가
 }
 
 enum OrderStatus {
@@ -117,6 +126,7 @@ enum ClaimStatus {
   REJECTED
 }
 
+//리뷰
 model Review {
   id          Int      @id @default(autoincrement())
   orderItemId Int
@@ -131,25 +141,7 @@ model Review {
   @@unique([orderItemId])
 }
 
-model Inquiry {
-  id       Int      @id @default(autoincrement())
-  userId   Int
-  user     User     @relation(fields: [userId], references: [id])
-  content  String
-  createdAt DateTime @default(now())
-  replies  InquiryReply[]
-}
-
-model Question {
-  id       Int      @id @default(autoincrement())
-  userId   Int
-  user     User     @relation(fields: [userId], references: [id])
-  content  String
-  createdAt DateTime @default(now())
-  replies  QuestionReply[]
-}
-
-
+//리뷰 댓글
 model ReviewReply {
   id        Int      @id @default(autoincrement())
   reviewId  Int      @unique
@@ -160,6 +152,17 @@ model ReviewReply {
   createdAt DateTime @default(now())
 }
 
+//1:1문의
+model Inquiry {
+  id       Int      @id @default(autoincrement())
+  userId   Int
+  user     User     @relation(fields: [userId], references: [id])
+  content  String
+  createdAt DateTime @default(now())
+  replies  InquiryReply[]
+}
+
+//1:1문의 댓글
 model InquiryReply {
   id        Int      @id @default(autoincrement())
   inquiryId Int
@@ -170,12 +173,30 @@ model InquiryReply {
   createdAt DateTime @default(now())
 }
 
-model QuestionReply {
-  id         Int      @id @default(autoincrement())
-  questionId Int
-  question   Question @relation(fields: [questionId], references: [id])
-  adminId    Int
-  admin      User     @relation(fields: [adminId], references: [id])
-  content    String
-  createdAt  DateTime @default(now())
+//상품 Qna
+model ProductQna {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  isSecret  Boolean  @default(false)
+
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  reply     ProductQnaReply?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductQnaReply {
+  id           Int        @id @default(autoincrement())
+  content      String     @db.Text
+  productQnaId Int        @unique
+  productQna   ProductQna @relation(fields: [productQnaId], references: [id], onDelete: Cascade)
+  adminId      Int
+  admin        User       @relation(fields: [adminId], references: [id])
+  createdAt    DateTime   @default(now())
 }

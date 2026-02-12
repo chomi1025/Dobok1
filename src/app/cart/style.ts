@@ -16,26 +16,6 @@ export const SectionHeader = styled.div`
 `;
 
 // CartEmpty
-export const BreadCrumb = styled.nav`
-  margin-top: 15px;
-  ul {
-    display: flex;
-    justify-content: center;
-    color: #888;
-  }
-`;
-
-export const Step = styled.li<{ $active: boolean }>`
-  color: ${({ $active }) => ($active ? "#333" : "#888")};
-  font-weight: ${({ $active }) => ($active ? "700" : "")};
-
-  /* 👉 화살표를 '이 li 뒤에' 붙임 */
-  &:not(:last-child)::after {
-    content: ">";
-    margin: 0 8px;
-    color: ${({ $active }) => ($active ? "#333" : "#888")};
-  }
-`;
 
 export const List_Wrapper = styled.div`
   margin-top: 40px;
