@@ -1,9 +1,6 @@
 "use client";
 import Link from "next/link";
-import {
-  Column,
-  OrdersTable,
-} from "@/components/mypage/ordersTable/ordersTable";
+import { Column, table } from "@/components/Table/page";
 import * as P from "../style";
 import { useState } from "react";
 
@@ -177,7 +174,7 @@ export default function Inquiry() {
       </div>
 
       {/* 테이블 목록 */}
-      <OrdersTable inquiry columns={InquiryColumns} data={currentItems} />
+      <table inquiry columns={InquiryColumns} data={currentItems} />
     </P.Contents>
   );
 }

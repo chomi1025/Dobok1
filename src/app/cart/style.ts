@@ -4,22 +4,22 @@ export const Inner = styled.section`
   width: 1040px;
   margin: 0 auto;
 
-  padding: 90px 0 0;
+  padding: 90px 0 300px;
 `;
 
 export const SectionHeader = styled.div`
   text-align: center;
+  margin-bottom: 40px;
 
   h2 {
     font-size: 32px;
+    margin-bottom: 15px;
   }
 `;
 
 // CartEmpty
 
-export const List_Wrapper = styled.div`
-  margin-top: 40px;
-`;
+export const List_Wrapper = styled.div``;
 
 export const List = styled.div`
   padding: 100px 0;

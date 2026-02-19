@@ -5,10 +5,7 @@ import * as M from "../style";
 import * as O from "../style";
 import "react-datepicker/dist/react-datepicker.css";
 import ReactPaginate from "react-paginate";
-import {
-  Column,
-  OrdersTable,
-} from "@/components/mypage/ordersTable/ordersTable";
+import { Column, table } from "@/components/Table/page";
 import OrderSkeleton from "./OrderSkeleton";
 import PeriodTabsComponent from "@/components/mypage/PeriodTabs";
 import { useRouter } from "next/navigation";
@@ -272,7 +269,7 @@ export default function OrdersPage() {
       />
 
       {/* 테이블 목록 */}
-      <OrdersTable
+      <table
         columns={orderColumns}
         inquiry={false}
         data={loading ? [] : currentItems}

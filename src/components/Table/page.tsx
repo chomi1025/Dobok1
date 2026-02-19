@@ -9,43 +9,51 @@ export interface Column<T> {
   render?: (row: T) => React.ReactNode;
 }
 
-interface OrdersTableProps<T> {
+interface tableProps<T> {
   columns: Column<T>[];
   data: T[];
   inquiry?: boolean;
 }
 
-export const OrdersTable = <T extends { id: number }>({
+export const Table = <T extends { id: number }>({
   columns,
   data,
   inquiry,
-}: OrdersTableProps<T>) => {
+}: tableProps<T>) => {
   return (
-    <O.OrdersSection>
+    <O.Section>
       {/* 1:1문의 / 문의하기 버튼 */}
       {inquiry && <O.InquiryButton>문의하기</O.InquiryButton>}
 
       {/* 헤더 */}
-      <O.OrdersHeader>
+      <O.Header>
         {columns.map((col) => (
-          <O.OrderInfo key={String(col.key)} style={{ flex: col.flex }}>
+          <O.Info
+            key={String(col.key)}
+            style={{ flex: col.flex }}
+            align={col.align}
+          >
             {col.label}
-          </O.OrderInfo>
+          </O.Info>
         ))}
-      </O.OrdersHeader>
+      </O.Header>
 
       {/* 데이터 */}
-      <O.OrdersBody>
+      <O.Body>
         {data.map((row) => (
-          <O.OrdersRow key={row.id}>
+          <O.Row key={row.id}>
             {columns.map((col) => (
-              <O.OrderInfo key={String(col.key)} style={{ flex: col.flex }}>
+              <O.Info
+                key={String(col.key)}
+                align={col.align}
+                style={{ flex: col.flex }}
+              >
                 {col.render ? col.render(row) : String(row[col.key])}
-              </O.OrderInfo>
+              </O.Info>
             ))}
-          </O.OrdersRow>
+          </O.Row>
         ))}
-      </O.OrdersBody>
-    </O.OrdersSection>
+      </O.Body>
+    </O.Section>
   );
 };

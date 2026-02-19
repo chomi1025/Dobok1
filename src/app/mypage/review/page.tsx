@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  Column,
-  OrdersTable,
-} from "@/components/mypage/ordersTable/ordersTable";
+import { Column, table } from "@/components/Table/page";
 import * as M from "../style";
 import PeriodTabsComponent from "@/components/mypage/PeriodTabs";
 import { useSession } from "next-auth/react";
@@ -142,7 +139,7 @@ export default function ReviewPage() {
       />
 
       {/* 테이블 목록 */}
-      <OrdersTable columns={reviewColumns} data={currentItems} />
+      <table columns={reviewColumns} data={currentItems} />
 
       {/* 페이지네이션 (react-paginate 등) */}
       {/* 페이지네이션 */}

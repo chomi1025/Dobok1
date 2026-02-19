@@ -147,7 +147,6 @@ export const InputRow = styled.div`
   }
 
   input {
-    flex: 1;
     max-width: 400px;
     height: 35px;
     border: 1px solid #e1e1e1;
@@ -165,5 +164,206 @@ export const InputRow = styled.div`
       border-color: #333;
       box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
     }
+  }
+`;
+
+export const ShippingWrapper = styled.section`
+  margin-top: 70px;
+  legend {
+    font-size: 20px;
+    color: #222;
+    font-weight: 700;
+    padding-bottom: 10px;
+  }
+
+  hr {
+    border: none;
+    background-color: #333;
+    width: 100%;
+    height: 1px;
+  }
+
+  ul {
+    display: flex;
+  }
+`;
+
+export const InputRow2 = styled.div<{ radio?: boolean }>`
+  display: flex;
+  align-items: center;
+  padding: 15px 0 15px 30px;
+  border-bottom: 1px solid #ddd;
+
+  > p,
+  > label {
+    width: 120px;
+  }
+
+  ul {
+    li {
+      display: flex;
+      align-items: center;
+      margin-right: 10px;
+
+      input {
+        color: #333;
+        margin-right: 10px;
+        width: 21px;
+        height: 21px;
+      }
+    }
+  }
+
+  select {
+    width: 417px;
+  }
+
+  > input,
+  .address-group input,
+  select {
+    font-size: 14px;
+    height: 35px;
+    padding-left: 16px;
+    &::placeholder {
+      color: #ccc;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #333;
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  .address-group > div,
+  .address-group > input:not(:last-of-type) {
+    margin-bottom: 10px;
+  }
+
+  .address-group div {
+    display: flex;
+
+    input {
+      width: 185px;
+    }
+
+    button {
+      font-size: 15px;
+      background-color: #333;
+      color: white;
+      padding: 0 17px;
+      margin-left: 10px;
+      border-radius: 4px;
+    }
+  }
+
+  .address-group input {
+    display: block;
+    width: 417px;
+  }
+`;
+
+export const PayWrapper = styled.section`
+  margin-top: 70px;
+
+  hr {
+    border: none;
+    width: 100%;
+    height: 1px;
+    background-color: #333;
+    margin-top: 10px;
+  }
+`;
+
+export const SummaryRow = styled.div<{ total?: boolean }>`
+  padding: 18px 0 18px 30px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+
+  dt {
+    width: 120px;
+  }
+`;
+
+export const PaymentMethodWrapper = styled.section`
+  margin-top: 70px;
+
+  > fieldset {
+    > legend {
+      font-size: 20px;
+      color: #222;
+      font-weight: 700;
+      padding-bottom: 10px;
+    }
+
+    > hr {
+      border: none;
+      width: 100%;
+      height: 1px;
+      background-color: #333;
+      margin-top: 10px;
+    }
+
+    > div {
+      display: flex;
+      gap: 18px;
+      padding-top: 30px;
+
+      > label {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 183px;
+        height: 60px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.4s ease;
+
+        input[type="radio"] {
+          appearance: none;
+          -webkit-appearance: none;
+          margin: 0;
+        }
+
+        &:has(input[type="radio"]:checked) {
+          border: 2px solid #000;
+        }
+      }
+    }
+
+    > p {
+      color: #888;
+      font-size: 14px;
+      font-weight: 300;
+      margin-top: 20px;
+    }
+  }
+`;
+
+export const TermsWrapper = styled.section`
+  margin-top: 130px;
+  text-align: center;
+
+  > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+
+    > input {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+    }
+  }
+
+  > button {
+    background-color: #1e40af;
+    width: 125px;
+    height: 45px;
+    color: white;
+    border-radius: 4px;
+    font-size: 15px;
   }
 `;

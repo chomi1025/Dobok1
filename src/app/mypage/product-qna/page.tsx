@@ -1,9 +1,6 @@
 "use client";
 import Link from "next/link";
-import {
-  Column,
-  OrdersTable,
-} from "@/components/mypage/ordersTable/ordersTable";
+import { Column, table } from "@/components/Table/page";
 import * as P from "../style";
 import { useState } from "react";
 
@@ -151,7 +148,7 @@ export default function ProductQna() {
       </div>
 
       {/* 테이블 목록 */}
-      <OrdersTable columns={QnaColumns} data={currentItems} />
+      <table columns={QnaColumns} data={currentItems} />
     </P.Contents>
   );
 }

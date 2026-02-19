@@ -1,10 +1,7 @@
 "use client";
 import Link from "next/link";
 import ReactPaginate from "react-paginate";
-import {
-  Column,
-  OrdersTable,
-} from "@/components/mypage/ordersTable/ordersTable";
+import { Column, table } from "@/components/Table/page";
 import * as M from "../style";
 import { useEffect, useState } from "react";
 import PeriodTabsComponent from "@/components/mypage/PeriodTabs";
@@ -166,7 +163,7 @@ export default function ClaimsPage() {
       />
 
       {/* 테이블 목록 */}
-      <OrdersTable columns={claimColumns} data={currentItems} />
+      <table columns={claimColumns} data={currentItems} />
 
       {/* 페이지네이션 */}
       <M.Pagination>

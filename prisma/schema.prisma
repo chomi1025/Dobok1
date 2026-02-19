@@ -62,7 +62,19 @@ model Product {
   category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   orderItems  OrderItem[]
   productQnas ProductQna[] // 상품 문의 목록 추가
+  cartItems CartItem[]   // 👈 이거 추가
 }
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  productId Int
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+
+  product   Product  @relation(fields: [productId], references: [id])
+}
+
 
 enum OrderStatus {
   PAYMENT_COMPLETE

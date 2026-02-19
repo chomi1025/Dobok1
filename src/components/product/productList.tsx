@@ -3,14 +3,14 @@ import * as S from "./style";
 import ProductCard, { Product } from "./ProductCard";
 
 interface Props {
-  product: Product[];
+  products: Product[];
 }
 
-export default function ProductList({ product }: Props) {
+export default function ProductList({ products }: Props) {
   return (
     <>
       <S.ProductList>
-        {product?.map((p) => (
+        {products?.map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}
       </S.ProductList>
