@@ -220,7 +220,6 @@ export const Pagination = styled.div`
 
   .page-item.disabled .page-link {
     opacity: 0.5;
-    pointer-events: none;
     cursor: default;
   }
 `;

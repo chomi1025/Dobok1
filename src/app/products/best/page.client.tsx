@@ -1,14 +1,22 @@
 "use client";
 import * as B from "./style";
 import ProductList from "@/components/product/ProductList";
-import { Product } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+
+type ProductWithFullDetails = Prisma.ProductGetPayload<{
+  include: {
+    options: true;
+    category: {
+      include: { parent: true };
+    };
+  };
+}>;
 
 interface Props {
-  products: Product[];
+  products: ProductWithFullDetails[];
 }
 
 export default function BestProductClientPage({ products }: Props) {
-  console.log(products);
   return (
     <>
       <B.Inner>

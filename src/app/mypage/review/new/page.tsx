@@ -3,7 +3,7 @@
 import Image from "next/image";
 import * as R from "./style";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useSession } from "next-auth/react";
@@ -11,7 +11,7 @@ import { useSession } from "next-auth/react";
 type FormValues = {
   rating: number;
   content: string;
-  images: (File | null)[];
+  images: (File | null | undefined)[];
 };
 
 const schema = yup.object({
@@ -20,16 +20,23 @@ const schema = yup.object({
   images: yup
     .array()
     .max(3, "이미지는 최대 3장까지 업로드 가능합니다")
-    .of(yup.mixed().nullable()),
+    .of(
+      yup
+        .mixed<File>()
+        .test("is-file", "파일이어야 합니다", (value) => value instanceof File)
+        .nullable(),
+    )
+    .default([]),
 });
 
 export default function ReviewNewPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const orderItemId = searchParams.get("orderItemId"); // ✅ 여기서 가져오기
+  const orderItemId = searchParams.get("orderItemId");
 
   const { data: session, status } = useSession();
   const loginUserId = session?.user?.id;
+
   const {
     register,
     handleSubmit,
@@ -39,10 +46,8 @@ export default function ReviewNewPage() {
     setValue,
   } = useForm<FormValues>({
     resolver: yupResolver(schema),
-    defaultValues: { rating: 0, content: "", images: [null, null, null] },
+    defaultValues: { rating: 0, content: "", images: [] },
   });
-
-  const images = watch("images");
 
   const data = {
     productId: "1",
@@ -50,8 +55,15 @@ export default function ReviewNewPage() {
     img: "/images/sample.jpg",
   };
 
-  const handleFormSubmit = async (formData: FormValues) => {
+  const handleFormSubmit: SubmitHandler<FormValues> = async (
+    formData: FormValues,
+  ) => {
     if (!orderItemId) return alert("주문 상품 ID가 없습니다!");
+
+    if (!loginUserId) {
+      alert("로그인 정보가 없습니다. 로그인을 먼저 진행해주세요.");
+      return;
+    }
 
     try {
       const fd = new FormData();
@@ -67,7 +79,7 @@ export default function ReviewNewPage() {
         body: fd,
       });
 
-      const result = await res.json(); // ✅ 여기서 JSON으로 받아야 함
+      const result = await res.json();
 
       if (!res.ok) throw new Error("리뷰 등록 실패");
 
@@ -85,6 +97,8 @@ export default function ReviewNewPage() {
   const handleRemoveImage = (index: number) => {
     setValue(`images.${index}`, null);
   };
+
+  const images = watch("images");
 
   return (
     <R.Wrapper>

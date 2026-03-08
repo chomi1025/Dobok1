@@ -6,6 +6,14 @@ import Image from "next/image";
 import * as R from "./style";
 import ReviewEditor from "@/components/mypage/ReviewEditor";
 
+// 답변(Reply) 타입
+type ReplyType = {
+  id: number;
+  content: string;
+  createdAt: string;
+};
+
+// 리뷰 상세 데이터 타입
 type ReviewType = {
   id: number;
   rating: number;
@@ -19,12 +27,14 @@ type ReviewType = {
     };
     option?: string;
   };
+  reply?: ReplyType;
 };
 
 export default function ReviewDetailPage() {
   const params = useParams();
   const reviewId = params.reviewId;
-  const [review, setReview] = useState<any>(null);
+
+  const [review, setReview] = useState<ReviewType | null>(null);
   const [isEditingReview, setIsEditingReview] = useState(false);
   const [reviewContent, setReviewContent] = useState("");
   const [replyContent, setReplyContent] = useState("");
@@ -247,7 +257,7 @@ export default function ReviewDetailPage() {
             {review.reply && !isEditingReply && (
               <R.Button_submit
                 onClick={() => {
-                  setReplyContent(review.reply.content);
+                  setReplyContent(review.reply?.content || "");
                   setIsEditingReply(true);
                 }}
               >
@@ -260,7 +270,7 @@ export default function ReviewDetailPage() {
                 <R.Button_before
                   onClick={() => {
                     setIsEditingReply(false);
-                    setReplyContent(review.reply.content);
+                    setReplyContent(review.reply?.content || "");
                   }}
                 >
                   취소하기

@@ -1,3 +1,5 @@
-export default function Header() {
-  return <div>고객센터 화면</div>;
+import { redirect } from "next/navigation";
+
+export default function SupportPage() {
+  redirect("/support/notice");
 }

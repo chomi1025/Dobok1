@@ -27,40 +27,27 @@ export default function CartPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const removeItem = (productId: number) => {
-    const storedCart = localStorage.getItem("guestCart");
-    if (!storedCart) return;
-
-    const cart = JSON.parse(storedCart);
-
-    const updatedCart = cart.filter(
-      (item: any) => item.product.id !== productId,
-    );
-
-    localStorage.setItem("guestCart", JSON.stringify(updatedCart));
-  };
-
-  console.log("세션뭐야", session);
-
   useEffect(() => {
+    if (status === "loading") return;
+
     const fetchCart = async () => {
       try {
-        // 회원일때 ! 세션가져와서
+        // 회원일때 !
         if (session) {
-          const res = await fetch("/api/cart");
+          const result = await fetch("/api/cart");
 
-          if (!res.ok) throw new Error("장바구니 불러오기 실패");
+          if (!result.ok) {
+            console.log(await result.text());
+            throw new Error("장바구니 불러오기 실패");
+          }
 
-          const data = await res.json();
+          const data = await result.json();
+          console.log(data);
           setCart(data);
         } else {
-          //비회원일때 ! 로컬스토리지 이용
+          // 비회원일때 !
           const guestCart = localStorage.getItem("guestCart");
-          if (guestCart) {
-            setCart(JSON.parse(guestCart));
-          } else {
-            setCart([]);
-          }
+          setCart(guestCart ? JSON.parse(guestCart) : []);
         }
       } catch (err) {
         console.error(err);
@@ -70,7 +57,7 @@ export default function CartPage() {
     };
 
     fetchCart();
-  }, []);
+  }, [session, status]);
 
   if (loading) return <div>로딩중...</div>;
 

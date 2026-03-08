@@ -35,7 +35,6 @@ export default function HeaderClient({
   categories: Category[];
   session: Session | null;
 }) {
-
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const [openMenu, setOpenMenu] = useState(false);
@@ -59,7 +58,16 @@ export default function HeaderClient({
       <H.TopHeader>
         <h1>
           <Link href="/">
-            <Image src={logo} alt="도복일번지 로고" width={281} height={114} />
+            <Image
+              src={logo}
+              alt="도복일번지 로고"
+              width={281}
+              height={114}
+              priority
+              loading="eager"
+              decoding="sync"
+              fetchPriority="high"
+            />
           </Link>
         </h1>
 
@@ -70,11 +78,15 @@ export default function HeaderClient({
               alt="도복일번지 마이페이지"
               width={24}
               height={24}
+              priority
+              loading="eager"
+              decoding="sync"
+              fetchPriority="high"
             />
           </Link>
 
           {/* 로그인상태에 따라 로그아웃/로그인 아이콘 바뀜 */}
-          <AuthIcons />
+          <AuthIcons session={session} />
 
           <Link href="/cart">
             <Image
@@ -82,6 +94,10 @@ export default function HeaderClient({
               alt="도복일번지 장바구니"
               width={24}
               height={24}
+              priority
+              loading="eager"
+              decoding="sync"
+              fetchPriority="high"
             />
           </Link>
         </H.IconGroup>

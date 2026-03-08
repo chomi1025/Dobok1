@@ -2,66 +2,6 @@ import { PrismaClient, OrderStatus, ClaimType } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  // ==========================
-  // 1️⃣ 유저 시드
-  // ==========================
-  const users = [
-    {
-      name: "초미",
-      username: "chomi",
-      email: "chomi@example.com",
-      password: "1234",
-      birthDate: new Date("1996-03-27"),
-    },
-    {
-      name: "밍키",
-      username: "mingki",
-      email: "mingki@example.com",
-      password: "1234",
-      birthDate: new Date("1996-01-01"),
-    },
-    {
-      name: "토리",
-      username: "tori",
-      email: "tori@example.com",
-      password: "1234",
-      birthDate: new Date("1996-01-01"),
-    },
-    {
-      name: "하늘",
-      username: "haneul",
-      email: "haneul@example.com",
-      password: "1234",
-      birthDate: new Date("1996-01-01"),
-    },
-    {
-      name: "루나",
-      username: "luna",
-      email: "luna@example.com",
-      password: "1234",
-      birthDate: new Date("1996-01-01"),
-    },
-  ];
-
-  await Promise.all(
-    users.map((u) =>
-      prisma.user.upsert({
-        where: { username: u.username },
-        update: {
-          name: u.name,
-          email: u.email,
-          password: u.password,
-          birthDate: u.birthDate,
-        },
-        create: u,
-      }),
-    ),
-  );
-  console.log("✅ 유저 시드 완료!");
-
-  // ==========================
-  // 2️⃣ 카테고리 + 서브카테고리
-  // ==========================
   const categories = [
     {
       name: "도복·띠",
@@ -155,38 +95,6 @@ async function main() {
     }
   }
   console.log("✅ 카테고리 & 서브카테고리 삽입 완료!");
-
-  // ==========================
-  // 3️⃣ 상품 시드
-  // ==========================
-  const products = [
-    { name: "아디다스 품새도복", price: 57600, categorySlug: "ttibok" },
-    { name: "태권도 띠", price: 8000, categorySlug: "ttibok" },
-    { name: "합기도복", price: 57600, categorySlug: "ttibok" },
-    { name: "유도 보호대", price: 33600, categorySlug: "protection" },
-    { name: "검도복", price: 57600, categorySlug: "ttibok" },
-    { name: "샌드백", price: 36000, categorySlug: "training" },
-    { name: "글러브", price: 7200, categorySlug: "protection" },
-  ];
-
-  for (const prod of products) {
-    const category = await prisma.category.findUnique({
-      where: { slug: prod.categorySlug },
-    });
-    if (!category) throw new Error(`Category not found: ${prod.categorySlug}`);
-
-    await prisma.product.upsert({
-      where: { name: prod.name },
-      update: { price: prod.price },
-      create: {
-        name: prod.name,
-        price: prod.price,
-        stock: 100,
-        categoryId: category.id,
-      },
-    });
-  }
-  console.log("✅ 상품 시드 완료!");
 }
 
 main()

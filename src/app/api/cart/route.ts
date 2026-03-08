@@ -1,11 +1,18 @@
+import { authOptions } from "@/lib/auth/options";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const { productId, quantity } = await req.json();
+  const session = await getServerSession(authOptions);
 
-  // TODO: 로그인 유저 ID 가져오기
-  const userId = 1;
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { productId, quantity, productOptionId } = await req.json();
+
+  const userId = Number(session.user.id);
 
   const existing = await prisma.cartItem.findFirst({
     where: {
@@ -24,6 +31,7 @@ export async function POST(req: Request) {
       data: {
         userId,
         productId,
+        productOptionId, // 선택된 옵션 ID
         quantity,
       },
     });
@@ -33,10 +41,16 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
-  const userId = 1; // 🔥 나중에 로그인 세션으로 바꿔야 함
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const cartItems = await prisma.cartItem.findMany({
-    where: { userId },
+    where: {
+      userId: Number(session.user.id),
+    },
     include: {
       product: true, // 상품 정보 같이 가져오기
     },

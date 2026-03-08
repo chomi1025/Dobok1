@@ -74,7 +74,6 @@ export const Form = styled.form`
       overflow: hidden;
       position: absolute;
       clip: rect(0 0 0 0);
-      pointer-events: none; /* 클릭 막힘 방지 */
     }
   }
 `;
@@ -166,7 +165,7 @@ export const Arrow = styled.span`
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  pointer-events: none; /* ⭐ 중요 */
+  //pointer-events: none;
   font-size: 12px;
   color: #666;
 `;

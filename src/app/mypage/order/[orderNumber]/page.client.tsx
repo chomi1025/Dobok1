@@ -1,8 +1,19 @@
 "use client";
 import Image from "next/image";
 import * as O from "./style";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+
+interface Address {
+  postcode: string;
+  address: string;
+  detailAddress: string;
+}
+
+interface Shipping {
+  name: string;
+  phone: string;
+  address: Address;
+}
 
 interface OrderItem {
   id: number;
@@ -17,11 +28,7 @@ interface Order {
   date: string;
   status: string;
   items: OrderItem[];
-  shipping: {
-    name: string;
-    phone: string;
-    address: string;
-  };
+  shipping: Shipping;
 }
 
 const ORDER_STATUS_LABEL: Record<string, string> = {
@@ -36,7 +43,6 @@ export default function OrderDetailClientPage({ order }: { order: Order }) {
   const totalPrice = order.items.reduce((sum, i) => sum + i.totalPrice, 0);
   const deliveryFee = 3000;
   const grandTotal = totalPrice + deliveryFee;
-  console.log(order);
 
   return (
     <O.Wrapper>
@@ -72,7 +78,7 @@ export default function OrderDetailClientPage({ order }: { order: Order }) {
           <O.Label>배송지</O.Label>
           <O.Address>
             {order.shipping?.address
-              ? `${order.shipping.address.address} ${order.shipping.address.address2} (${order.shipping.address.zipCode})`
+              ? `${order.shipping.address.postcode} ${order.shipping.address.address} (${order.shipping.address.detailAddress})`
               : "주소 없음"}
           </O.Address>
         </O.InfoGrid>

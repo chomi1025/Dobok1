@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Column, table } from "@/components/Table/page";
+import { Column, Table } from "@/components/Table/page";
 import * as P from "../style";
 import { useState } from "react";
 
@@ -148,7 +148,7 @@ export default function ProductQna() {
       </div>
 
       {/* 테이블 목록 */}
-      <table columns={QnaColumns} data={currentItems} />
+      <Table columns={QnaColumns} data={currentItems} />
     </P.Contents>
   );
 }

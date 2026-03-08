@@ -2,6 +2,8 @@
 import * as S from "./style";
 import {
   FieldErrors,
+  FieldValues,
+  Path,
   UseFormClearErrors,
   UseFormRegister,
   UseFormSetValue,
@@ -14,23 +16,23 @@ type User = {
   username: string;
 };
 
-type Props = {
-  register: UseFormRegister<FormType>;
-  errors: FieldErrors<FormType>;
-  setValue: UseFormSetValue<FormType>;
-  clearErrors: UseFormClearErrors<FormType>;
+type Props<T extends FieldValues> = {
+  register: UseFormRegister<T>;
+  errors: FieldErrors<T>;
+  setValue?: UseFormSetValue<T>; // 선택사항으로 변경 (수정페이지에선 안 쓸 수도 있으니)
+  clearErrors?: UseFormClearErrors<T>;
   isEdit: boolean;
-  user?: User;
+  user?: { id: string; username: string };
 };
 
-export default function AccountComponent({
+export default function AccountComponent<T extends FieldValues>({
   register,
   errors,
   setValue,
   clearErrors,
   isEdit,
   user,
-}: Props) {
+}: Props<T>) {
   const [checkMessage, setCheckMessage] = useState<string | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
@@ -61,11 +63,13 @@ export default function AccountComponent({
 
       if (data.exists) {
         setCheckMessage("❌ 이미 사용 중인 아이디 입니다.");
-        setValue("usernameChecked", false);
+        setValue?.("usernameChecked" as Path<T>, false as any);
       } else {
         setCheckMessage("✅ 사용 가능한 아이디 입니다!");
-        setValue("usernameChecked", true, { shouldValidate: true });
-        clearErrors("usernameChecked"); // ✅ 여기!!!
+        setValue?.("usernameChecked" as Path<T>, true as any, {
+          shouldValidate: true,
+        });
+        clearErrors?.("usernameChecked" as Path<T>);
       }
     } catch (error) {
       console.error(error);
@@ -105,7 +109,7 @@ export default function AccountComponent({
 
           {/* 회원가입일 때만 기존 에러 */}
           {!isEdit && errors.usernameChecked && (
-            <p className="error">{errors.usernameChecked.message}</p>
+            <p className="error">{String(errors.usernameChecked.message)}</p>
           )}
 
           {isEdit || (
@@ -151,7 +155,7 @@ export default function AccountComponent({
 
         <input
           id="username"
-          {...register("username")}
+          {...register("username" as Path<T>)}
           placeholder={isEdit ? "" : "아이디"}
           readOnly={!!isEdit}
         />
@@ -169,7 +173,7 @@ export default function AccountComponent({
           id="password"
           type="password"
           placeholder="비밀번호"
-          {...register("password")}
+          {...register("password" as Path<T>)}
           readOnly={false}
         />
       </div>
@@ -188,7 +192,7 @@ export default function AccountComponent({
           id="passwordConfirm"
           type="password"
           placeholder="비밀번호 확인"
-          {...register("passwordConfirm")}
+          {...register("passwordConfirm" as Path<T>)}
         />
       </div>
     </S.AccountInfo>

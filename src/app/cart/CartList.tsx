@@ -1,31 +1,34 @@
 "use client";
 import { Table } from "@/components/Table/page";
 import styled from "@emotion/styled";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-export interface Column<T> {
-  key: keyof T;
-  label: string;
+interface Column<T> {
+  key: keyof T | string; // key를 string도 허용하도록 변경
+  label: React.ReactNode; // label을 string이 아니라 React.ReactNode로 변경하여 JSX 요소를 허용
   width?: string;
   flex?: number;
   align?: "left" | "center" | "right";
   render?: (row: T) => React.ReactNode;
 }
 
+interface CartItem {
+  id: number; // 장바구니 아이템 고유 ID
+  name: string; // 상품 이름
+  img: string; // 상품 이미지 URL
+  option?: string; // 상품 옵션 (선택적)
+  price: number; // 가격
+  quantity: number; // 수량
+  close?: boolean; // 삭제 여부 (선택적)
+}
+
 type TableCartItem = Pick<
   CartItem,
-  "id" | "name" | "img" | "price" | "quantity"
+  "id" | "name" | "img" | "price" | "quantity" | "option"
 >;
-
-interface CartItem {
-  id: number;
-  name: string;
-  img: string;
-  option?: string;
-  price: number;
-  quantity: number;
-  close?: boolean;
-}
 
 interface ApiCartItem {
   id: number;
@@ -101,12 +104,57 @@ const Buttons = styled.div`
 `;
 
 export default function CartListComponent({ cart, setCart }: Props) {
-  // 선택한 아이템 삭제
-  const removeItem = (productId: number) => {
-    const updatedCart = cart.filter((item) => item.id !== productId);
+  const { data: session } = useSession();
+  // 체크된 상품 ID 배열
+  const [checkedItems, setCheckedItems] = useState<number[]>([]); // productId 배열
+  const router = useRouter();
 
-    setCart(updatedCart);
-    localStorage.setItem("guestCart", JSON.stringify(updatedCart));
+  console.log("현재배열:", checkedItems);
+  // 전체 상품 선택
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      // 전체 상품의 productId만 넣기
+      setCheckedItems(cart.map((item) => Number(item.product.id)));
+    } else {
+      setCheckedItems([]);
+    }
+  };
+
+  //개별 상품 선택
+  const toggleCheck = (productId: number) => {
+    setCheckedItems((prev) =>
+      prev.includes(productId)
+        ? prev.filter((id) => id !== productId)
+        : [...prev, productId],
+    );
+  };
+
+  // 전체선택 체크 여부
+  const isAllChecked = cart.length > 0 && checkedItems.length === cart.length;
+
+  // 선택한 아이템 삭제
+  const removeItem = async (productId: number) => {
+    try {
+      if (session) {
+        // 회원일때 !
+        const result = await fetch(`/api/cart/${productId}`, {
+          method: "DELETE",
+        });
+
+        if (!result.ok) {
+          throw new Error("회원 장바구니 삭제 실패");
+        }
+
+        setCart(cart.filter((item) => item.id !== productId));
+      } else {
+        const updatedCart = cart.filter((item) => item.id !== productId);
+
+        setCart(updatedCart);
+        localStorage.setItem("guestCart", JSON.stringify(updatedCart));
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // 모든 장바구니 아이템 삭제
@@ -120,15 +168,16 @@ export default function CartListComponent({ cart, setCart }: Props) {
   const cartColumns: Column<TableCartItem>[] = [
     {
       key: "check",
-      label: (
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <input type="checkbox" style={{ width: "20px", height: "20px" }} />
-        </div>
-      ),
+      label: "선택",
       flex: 0.4,
-      render: () => (
+      render: (row) => (
         <div style={{ display: "flex", justifyContent: "center" }}>
-          <input type="checkbox" style={{ width: "20px", height: "20px" }} />
+          <input
+            type="checkbox"
+            style={{ width: "20px", height: "20px" }}
+            checked={checkedItems.includes(row.id)}
+            onChange={() => toggleCheck(row.id)}
+          />
         </div>
       ),
     },
@@ -143,7 +192,7 @@ export default function CartListComponent({ cart, setCart }: Props) {
             justifyContent: "flex-start",
             alignItems: "flex-start",
             gap: "25px",
-            width: "100%", // 중요! Info의 flex-center 폭 다 차지
+            width: "100%",
           }}
         >
           <Image
@@ -153,7 +202,6 @@ export default function CartListComponent({ cart, setCart }: Props) {
             alt="상품 이미지"
             style={{ backgroundColor: "#D9D9D9" }}
           />
-
           <div
             style={{
               display: "flex",
@@ -171,10 +219,9 @@ export default function CartListComponent({ cart, setCart }: Props) {
         </div>
       ),
     },
-
     {
       key: "quantity",
-      label: "수량",
+      label: "수량", // 문자열로 변경
       flex: 1.5,
       render: (row) => (
         <span style={{ display: "flex" }}>{row.quantity}개</span>
@@ -182,7 +229,7 @@ export default function CartListComponent({ cart, setCart }: Props) {
     },
     {
       key: "price",
-      label: "상품금액",
+      label: "상품금액", // 문자열로 변경
       flex: 1.2,
       render: (row) => (
         <span style={{ display: "flex", justifyContent: "center" }}>
@@ -192,16 +239,7 @@ export default function CartListComponent({ cart, setCart }: Props) {
     },
     {
       key: "close",
-      label: (
-        <Image
-          alt={"전체삭제"}
-          src={"/image/meteor-icons_xmark.png"}
-          width={20}
-          height={20}
-          style={{ display: "flex", justifyContent: "center" }}
-          onClick={removeall}
-        />
-      ),
+      label: "삭제", // 문자열로 변경
       flex: 0.5,
       render: (row) => (
         <Image
@@ -217,8 +255,9 @@ export default function CartListComponent({ cart, setCart }: Props) {
       ),
     },
   ];
+
   const tableData = cart.map((item) => ({
-    id: item.id,
+    id: item.product.id,
     name: item.product.name,
     img: "/img/default.png", // 나중에 product.image 넣으면 됨
     price: item.product.price,
@@ -232,6 +271,26 @@ export default function CartListComponent({ cart, setCart }: Props) {
   const shippingFee = totalProductPrice >= 50000 ? 0 : 3000;
 
   const totalPayment = totalProductPrice + shippingFee;
+
+  const goToCheckout = (all: boolean) => {
+    try {
+      const selectedItems = all
+        ? cart // 전체상품
+        : cart.filter((item) => checkedItems.includes(item.product.id)); // 선택상품
+
+      if (session) {
+        // 회원
+        const ids = selectedItems.map((item) => item.product.id).join(",");
+        router.push(`/checkout?ids=${ids}`);
+      } else {
+        // 비회원
+        localStorage.setItem("checkoutItems", JSON.stringify(selectedItems));
+        router.push("/checkout");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -253,8 +312,8 @@ export default function CartListComponent({ cart, setCart }: Props) {
         </div>
 
         <Buttons>
-          <button>선택 상품 주문</button>
-          <button>전체 상품 주문</button>
+          <button onClick={() => goToCheckout(false)}>선택 상품 주문</button>
+          <button onClick={() => goToCheckout(true)}>전체 상품 주문</button>
         </Buttons>
       </CartSummary>
     </>

@@ -14,6 +14,7 @@ import * as yup from "yup";
 import type { ObjectSchema } from "yup";
 import Router from "next/router";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 /* =======================
    타입
@@ -38,6 +39,7 @@ export interface ProfileEditUser {
 }
 
 export interface ProfileEditFormType {
+  username?: string; // 👈 추가
   password?: string;
   passwordConfirm?: string;
   name: string;
@@ -59,8 +61,10 @@ export interface ProfileEditFormType {
    yup schema
 ======================= */
 const profileEditSchema: ObjectSchema<ProfileEditFormType> = yup.object({
+  username: yup.string().optional(), // 👈 추가
   password: yup
     .string()
+    .transform((value) => (value === "" ? undefined : value)) // 빈 문자열은 무시
     .optional()
     .min(8, "8글자 이상")
     .max(20, "20글자 이하")
@@ -68,28 +72,26 @@ const profileEditSchema: ObjectSchema<ProfileEditFormType> = yup.object({
       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&#])/,
       "영문, 숫자, 특수문자 포함",
     ),
-
   passwordConfirm: yup
     .string()
     .oneOf([yup.ref("password")], "비밀번호가 일치하지 않습니다.")
     .optional(),
-
   name: yup.string().required("이름은 필수입니다."),
-
-  phone: yup.object({
-    prefix: yup.string().required(),
-    middle: yup.string().required(),
-    last: yup.string().required(),
-  }),
-
+  phone: yup
+    .object({
+      prefix: yup.string().required(),
+      middle: yup.string().required(),
+      last: yup.string().required(),
+    })
+    .required(),
   email: yup.string().email("이메일 형식이 아닙니다.").required(),
-
-  address: yup.object({
-    address: yup.string().required(),
-    zipCode: yup.string().required(),
-    address2: yup.string().required(),
-  }),
-
+  address: yup
+    .object({
+      address: yup.string().required(),
+      zipCode: yup.string().required(),
+      address2: yup.string().required(),
+    })
+    .required(),
   birthDate: yup.string().required(),
 });
 
@@ -99,6 +101,10 @@ const profileEditSchema: ObjectSchema<ProfileEditFormType> = yup.object({
 export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
   const router = useRouter();
   const [prefix = "010", middle = "", last = ""] = user.phone?.split("-") ?? [];
+  // --- 1. 이메일 도메인 상태 추가 ---
+  const [emailDomain, setEmailDomain] = useState(
+    user.email?.split("@")[1] || "gmail.com",
+  );
 
   const {
     register,
@@ -178,7 +184,7 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
   };
 
   return (
-    <M.Contents isEdit={true}>
+    <M.Contents>
       <h2>회원 정보 수정</h2>
       <span />
 
@@ -199,7 +205,13 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
             isEdit={true}
           />
 
-          <EmailComponent control={control} errors={errors} isEdit={true} />
+          <EmailComponent
+            control={control}
+            errors={errors}
+            emailDomain={emailDomain}
+            setEmailDomain={setEmailDomain}
+            isEdit={true}
+          />
 
           <BirthdayInputComponent
             control={control}
@@ -209,11 +221,7 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
         </P.Form_Inner>
 
         {/*  회원가입 버튼 */}
-        <P.Signup_Button
-          isEdit={true}
-          style={{ marginTop: "50px" }}
-          type="submit"
-        >
+        <P.Signup_Button style={{ marginTop: "50px" }} type="submit">
           수정하기
         </P.Signup_Button>
       </P.Form>

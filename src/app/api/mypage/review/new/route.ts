@@ -13,8 +13,15 @@ export async function POST(req: NextRequest) {
 
     const orderItemId = Number(formData.get("orderItemId"));
     const rating = Number(formData.get("rating"));
-    const content = formData.get("content");
+    let content = formData.get("content");
     const loginUserId = Number(formData.get("userId")); // 프론트에서 보내는 userId
+
+    // content가 null이라면 빈 문자열로 처리
+    if (content === null) {
+      content = ""; // or you can throw an error if content is required
+    } else {
+      content = content.toString(); // 문자열로 변환
+    }
 
     if (!orderItemId || !loginUserId) {
       return NextResponse.json(

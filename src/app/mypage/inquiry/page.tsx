@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Column, table } from "@/components/Table/page";
+import { Column, Table } from "@/components/Table/page";
 import * as P from "../style";
 import { useState } from "react";
 
@@ -130,7 +130,7 @@ export default function Inquiry() {
   };
 
   return (
-    <P.Contents isEdit={false}>
+    <P.Contents>
       <h2>상품 문의</h2>
 
       {/* 상태 선택 탭 */}
@@ -174,7 +174,7 @@ export default function Inquiry() {
       </div>
 
       {/* 테이블 목록 */}
-      <table inquiry columns={InquiryColumns} data={currentItems} />
+      <Table inquiry columns={InquiryColumns} data={currentItems} />
     </P.Contents>
   );
 }

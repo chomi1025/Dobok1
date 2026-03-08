@@ -1,26 +1,31 @@
 "use client";
 import * as S from "./style";
-import { Control, Controller, FieldErrors } from "react-hook-form";
-import type { FormType } from "./types";
+import {
+  Control,
+  Controller,
+  FieldErrors,
+  FieldValues,
+  Path,
+} from "react-hook-form";
 
-type Props = {
-  control: Control<FormType>;
-  errors: FieldErrors<FormType>;
+type Props<T extends FieldValues> = {
+  control: Control<T>;
+  errors: FieldErrors<T>;
   isEdit?: boolean;
 };
 
-export default function PersonalInfoInputComponent({
+export default function PersonalInfoInputComponent<T extends FieldValues>({
   control,
   errors,
   isEdit,
-}: Props) {
+}: Props<T>) {
   return (
     <S.PersonalInfo>
       <legend>개인 정보</legend>
 
       {/* 이름 */}
       <Controller
-        name="name"
+        name={"name" as Path<T>}
         control={control}
         render={({ field }) => (
           <div className="field">
@@ -32,7 +37,7 @@ export default function PersonalInfoInputComponent({
 
               {/* 수정 모드 아닐 때만 에러 표시 */}
               {!isEdit && errors.name && (
-                <p className="error">{errors.name.message}</p>
+                <p className="error">{String(errors.name.message)}</p>
               )}
             </S.Error_Wrapper>
 
@@ -51,18 +56,15 @@ export default function PersonalInfoInputComponent({
           {isEdit && <p className="error">핸드폰 번호는 변경할 수 없습니다.</p>}
 
           {/* 회원가입일 때만 에러 */}
-          {!isEdit &&
-            (errors.phone?.prefix ||
-              errors.phone?.middle ||
-              errors.phone?.last) && (
-              <p style={{ color: "red" }}>핸드폰 번호를 확인해주세요.</p>
-            )}
+          {!isEdit && (errors.phone as any) && (
+            <p style={{ color: "red" }}>핸드폰 번호를 확인해주세요.</p>
+          )}
         </S.Error_Wrapper>
 
         <div>
           {/* prefix */}
           <Controller
-            name="phone.prefix"
+            name={"phone.prefix" as Path<T>}
             control={control}
             render={({ field }) => (
               <select {...field}>
@@ -78,7 +80,7 @@ export default function PersonalInfoInputComponent({
 
           {/* middle */}
           <Controller
-            name="phone.middle"
+            name={"phone.middle" as Path<T>}
             control={control}
             render={({ field }) => (
               <input
@@ -97,7 +99,7 @@ export default function PersonalInfoInputComponent({
 
           {/* last */}
           <Controller
-            name="phone.last"
+            name={"phone.last" as Path<T>}
             control={control}
             render={({ field }) => (
               <input

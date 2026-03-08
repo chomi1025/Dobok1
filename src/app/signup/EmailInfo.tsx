@@ -1,39 +1,44 @@
 "use client";
 import * as S from "./style";
-import { Control, Controller, FieldErrors } from "react-hook-form";
-import { FormType } from "./types";
+import {
+  Control,
+  Controller,
+  FieldErrors,
+  FieldValues,
+  Path,
+} from "react-hook-form";
 
-type Props = {
-  control: Control<FormType>;
-  errors: FieldErrors<FormType>;
+// 1. Props에 제네릭 <T extends FieldValues> 적용
+type Props<T extends FieldValues> = {
+  control: Control<T>;
+  errors: FieldErrors<T>;
   emailDomain: string;
   setEmailDomain: (domain: string) => void;
-  isEdit: boolean;
+  isEdit?: boolean;
 };
 
-export default function EmailComponent({
+export default function EmailComponent<T extends FieldValues>({
   control,
   errors,
   emailDomain,
   setEmailDomain,
   isEdit,
-}: Props) {
+}: Props<T>) {
   return (
     <S.EmailInfo>
       <Controller
-        name="email"
+        name={"email" as Path<T>} // 2. as Path<T> 추가
         control={control}
         render={({ field: { value, onChange } }) => (
           <S.Email className="field">
             <S.Error_Wrapper>
               <label htmlFor="email">이메일</label>
 
-              {/* 수정 모드면 변경 불가 메시지 */}
               {isEdit && <p className="error">이메일은 변경할 수 없습니다.</p>}
 
-              {/* 수정 모드 아닐 때만 에러 표시 */}
+              {/* 3. 에러 메시지 String 처리 */}
               {!isEdit && errors.email && (
-                <p className="error">{errors.email.message}</p>
+                <p className="error">{String(errors.email.message)}</p>
               )}
             </S.Error_Wrapper>
 
@@ -42,20 +47,22 @@ export default function EmailComponent({
                 id="email"
                 type="text"
                 placeholder="이메일"
-                value={value.split("@")[0] || ""}
+                // 4. value가 undefined일 경우를 대비해 (value || "") 추가
+                value={(value || "").split("@")[0] || ""}
                 onChange={(e) => onChange(`${e.target.value}@${emailDomain}`)}
-                disabled={isEdit} // ← 수정 모드면 입력 불가
+                disabled={isEdit}
               />
 
               <S.Email_Selectwrapper>
                 <select
                   value={emailDomain}
                   onChange={(e) => {
-                    setEmailDomain(e.target.value);
-                    const localPart = value.split("@")[0];
-                    onChange(`${localPart}@${e.target.value}`);
+                    const newDomain = e.target.value;
+                    setEmailDomain(newDomain);
+                    const localPart = (value || "").split("@")[0];
+                    onChange(`${localPart}@${newDomain}`);
                   }}
-                  disabled={isEdit} // ← 수정 모드면 입력 불가
+                  disabled={isEdit}
                 >
                   <option value="gmail.com">gmail.com</option>
                   <option value="naver.com">naver.com</option>

@@ -10,14 +10,14 @@ interface Params {
 export async function GET(req: Request, { params }: Params) {
   const { orderNumber } = params;
 
-  // order + items + user 배송 정보
   const order = await prisma.order.findUnique({
     where: { orderNumber },
     include: {
-      user: true, // ✅ 그대로
+      user: true,
       items: {
         include: {
-          reviews: true, // ✅ 리뷰 여부 판단용만 추가
+          reviews: true,
+          product: true,
         },
       },
     },
@@ -50,9 +50,7 @@ export async function GET(req: Request, { params }: Params) {
       productName: item.productName,
       quantity: item.quantity,
       totalPrice: item.totalPrice,
-
-      // 🔥 추가 필드 (리뷰 선택 페이지용)
-      img: item.img ?? "/sample.png",
+      img: item.product.thumbnail ?? "/sample.png",
       reviewWritten: item.reviews.length > 0,
     })),
   };

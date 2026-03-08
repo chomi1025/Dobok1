@@ -1,0 +1,32 @@
+import styled from "@emotion/styled";
+
+export const Inner = styled.div`
+  flex: 1;
+
+  > h3 {
+    font-size: 32px;
+    margin-bottom: 30px;
+  }
+
+  > ul {
+    > li {
+      border-bottom: 1px solid #ddd;
+      padding: 17px 0;
+
+      > button {
+        text-align: left;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      > div {
+        margin-top: 12px;
+        color: #555;
+        background-color: #ddd;
+        border-radius: 4px;
+        padding: 20px 20px 30px;
+      }
+    }
+  }
+`;

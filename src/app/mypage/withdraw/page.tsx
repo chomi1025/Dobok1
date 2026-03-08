@@ -44,7 +44,7 @@ export default function WithDraw() {
   };
 
   return (
-    <M.Contents withDraw>
+    <M.Contents>
       <h2>회원 탈퇴</h2>
 
       <M.WithDraw>

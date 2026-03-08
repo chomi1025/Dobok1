@@ -23,7 +23,7 @@ interface PhoneType {
 
 type TermsType = "service" | "privacy";
 
-export const schema: ObjectSchema<FormType> = yup.object({
+const schema: ObjectSchema<FormType> = yup.object({
   username: yup
     .string()
     .required("아이디는 필수입니다.")

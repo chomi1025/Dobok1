@@ -5,9 +5,11 @@ interface OrderInfoProps {
   align?: "left" | "center" | "right";
 }
 
-export const Section = styled.section`
+export const Section = styled.section<{ pricing: boolean }>`
+  flex: 1;
   font-size: 15px;
   position: relative;
+  margin-top: ${(props) => props.pricing && "15px"};
 `;
 
 export const InquiryButton = styled.button`
@@ -41,7 +43,7 @@ export const Row = styled.div`
   display: flex;
   align-items: center;
   border-bottom: 1px solid #ddd;
-  padding: 20px 0;
+  padding: 10px 0;
 
   a {
     text-decoration: underline;

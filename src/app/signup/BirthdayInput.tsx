@@ -1,22 +1,28 @@
 "use client";
 import * as S from "./style";
-import { Control, Controller, FieldErrors } from "react-hook-form";
+import {
+  Control,
+  Controller,
+  FieldErrors,
+  FieldValues,
+  Path,
+} from "react-hook-form";
 import type { FormType } from "./types";
 
-type Props = {
-  control: Control<FormType>;
-  errors: FieldErrors<FormType>;
-  isEdit: boolean;
+type Props<T extends FieldValues> = {
+  control: Control<T>;
+  errors: FieldErrors<T>;
+  isEdit?: boolean;
 };
 
-export default function BirthdayInputComponent({
+export default function BirthdayInputComponent<T extends FieldValues>({
   control,
   errors,
   isEdit,
-}: Props) {
+}: Props<T>) {
   return (
     <Controller
-      name="birthDate"
+      name={"birthDate" as Path<T>}
       control={control}
       render={({ field: { value, onChange } }) => {
         const [year, month, day] = value ? value.split("-") : ["", "", ""];
@@ -45,7 +51,7 @@ export default function BirthdayInputComponent({
 
               {/* 수정 모드 아닐 때만 에러 표시 */}
               {!isEdit && errors.birthDate && (
-                <p className="error">{errors.birthDate.message}</p>
+                <p className="error">{String(errors.birthDate.message)}</p>
               )}
             </S.Error_Wrapper>
 
@@ -57,7 +63,7 @@ export default function BirthdayInputComponent({
                   onChange={(e) =>
                     handleChange(e.target.value, month || "", day || "")
                   }
-                  disabled={isEdit} // ← 수정 모드면 선택 불가
+                  disabled={isEdit}
                 >
                   <option value="">----</option>
                   {Array.from({ length: 100 }, (_, i) => 2026 - i).map((y) => (

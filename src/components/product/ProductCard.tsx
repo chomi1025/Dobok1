@@ -4,31 +4,33 @@ import Image from "next/image";
 import * as S from "./style";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import { Prisma } from "@prisma/client";
 
-export interface Product {
-  id: string;
-  name: string;
-  price: number;
-  saleRate?: number; // optional
-  thumbnail: string;
-  mainSlug: string;
-  subSlug: string;
-  originalPrice?: number; // optional
-  isBest?: boolean; // optional
-  stock: number;
-  isNew?: boolean; // optional
-  rating?: number; // optional
-  reviewCount?: number; // optional
-}
+type ProductWithFullDetails = Prisma.ProductGetPayload<{
+  include: {
+    options: true;
+    category: {
+      include: { parent: true }; // 카테고리 '안에' 부모가 있어야 함
+    };
+  };
+}>;
 
 interface Props {
-  product: Product;
+  product: ProductWithFullDetails;
 }
 
 export default function ProductCard({ product }: Props) {
-  const { name, price, saleRate, thumbnail, mainSlug, subSlug, id } = product;
+  const { name, thumbnail, id, options, category } = product;
   const [loading, setLoading] = useState(false);
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
+
+  const defaultOption = options[0];
+  const price = defaultOption?.price || 0;
+  const stock = defaultOption?.stock || 0;
+  const saleRate = defaultOption?.sale || 0;
+
+  const mainSlug = category?.parent?.slug || "all";
+  const subSlug = category?.slug || "item";
 
   const salePrice =
     (saleRate ?? 0) > 0
@@ -36,7 +38,6 @@ export default function ProductCard({ product }: Props) {
       : price;
 
   // 장바구니 함수
-
   const addToCart = async (e: React.MouseEvent) => {
     e.preventDefault(); // Link 이동 막기 (중요)
     e.stopPropagation();
@@ -48,7 +49,7 @@ export default function ProductCard({ product }: Props) {
       if (session) {
         setLoading(true);
 
-        const res = await fetch("/api/cart", {
+        const result = await fetch("/api/cart", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -57,7 +58,7 @@ export default function ProductCard({ product }: Props) {
           }),
         });
 
-        if (!res.ok) {
+        if (!result.ok) {
           throw new Error("장바구니 추가 실패");
         }
 
@@ -67,11 +68,10 @@ export default function ProductCard({ product }: Props) {
         const storedCart = localStorage.getItem("guestCart");
         let cart = storedCart ? JSON.parse(storedCart) : [];
 
-        // 중복있는지 체크
         const existingIndex = cart.findIndex(
-          (item: any) => item.product.id === id,
+          (item: any) =>
+            item.productId === id && item.optionId === defaultOption?.id,
         );
-
         // 중복 있으면
         if (existingIndex !== -1) {
           cart[existingIndex].quantity += 1;
@@ -79,12 +79,10 @@ export default function ProductCard({ product }: Props) {
           // 중복 없으면(새로추가)
           cart.push({
             id: Date.now(),
+            productId: id,
+            optionId: defaultOption?.id,
             quantity: 1,
-            product: {
-              id: id,
-              name: name,
-              price: price,
-            },
+            product: { name, price, thumbnail },
           });
         }
 
@@ -104,7 +102,7 @@ export default function ProductCard({ product }: Props) {
     <li>
       <Link href={`/products/${mainSlug}/${subSlug}/${id}`}>
         <S.Image_Wrapper>
-          <Image src={thumbnail} alt={name} width={500} height={500} />
+          <Image src={thumbnail || "/default.png"} alt={name} fill />
 
           {/* 장바구니 아이콘 */}
           <span onClick={addToCart} />

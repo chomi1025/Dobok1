@@ -1,6 +1,16 @@
 import styled from "@emotion/styled";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+
+interface StepItem {
+  label: string;
+  step: number;
+  path: string;
+}
+
+interface BreadCrumbProps {
+  steps: StepItem[];
+  currentStep?: number;
+}
 
 const Wrapper = styled.nav`
   ul {
@@ -33,23 +43,18 @@ const Step = styled.li<{ $isCurrent: boolean }>`
   }
 `;
 
-export default function BreadCrumb({ steps }) {
+export default function BreadCrumb({ steps }: BreadCrumbProps) {
   const pathname = usePathname();
 
   const currentStep =
     steps.find((step) => pathname.startsWith(step.path))?.step ?? 0;
 
-  console.log(pathname);
   return (
     <Wrapper>
       <ul>
         {steps.map((step) => (
-          <Step
-            key={step.path}
-            // 이제 $isPassed는 필요 없으니 $isCurrent만 넘겨줘!
-            $isCurrent={step.step === currentStep}
-          >
-            <Link href={step.path}>{step.label}</Link>
+          <Step key={step.path} $isCurrent={step.step === currentStep}>
+            {step.label}
           </Step>
         ))}
       </ul>

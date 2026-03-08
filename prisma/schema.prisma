@@ -52,29 +52,57 @@ model Category {
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique
+  id          Int             @id @default(autoincrement())
+  name        String
   description String?
-  price       Float
-  stock       Int
-  categoryId  Int
+  thumbnail   String?          // 대표 이미지 URL
+  images      String[]         // 상세 이미지 URL 배열
+  material    String        @default("")
+  origin      String        @default("")
   createdAt   DateTime @default(now())
-  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  // --- 옵션 관련 ---
+  options     ProductOption[]  // 색상/사이즈/가격/재고 등
+
+  // --- 카테고리 ---
+  categoryId  Int
+  category    Category         @relation(fields: [categoryId], references: [id])
+
+  // --- 관계 ---
+  cartItems   CartItem[]
   orderItems  OrderItem[]
-  productQnas ProductQna[] // 상품 문의 목록 추가
-  cartItems CartItem[]   // 👈 이거 추가
+
+  productQnas ProductQna[]
+}
+
+model ProductOption {
+  id     Int @id @default(autoincrement())
+
+  color  String?
+  size   String?
+
+  price  Int
+  stock  Int
+
+  status String @default("판매중")
+  sale   Int?
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+
+  cartItems   CartItem[]   // ← 여기 역관계 추가
 }
 
 model CartItem {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  productId Int
-  quantity  Int      @default(1)
-  createdAt DateTime @default(now())
+  id          Int           @id @default(autoincrement())
+  userId      Int
+  productId   Int
+  productOptionId Int      // 선택된 옵션 ID 추가
+  quantity    Int           @default(1)
+  createdAt   DateTime      @default(now())
 
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  option      ProductOption @relation(fields: [productOptionId], references: [id])
 }
-
 
 enum OrderStatus {
   PAYMENT_COMPLETE
@@ -109,8 +137,9 @@ model OrderItem {
   createdAt    DateTime @default(now())
   reviews      Review[]
   claims       Claim[]
-  product      Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
+
 
 model Claim {
   id          Int    @id @default(autoincrement())
@@ -142,7 +171,7 @@ enum ClaimStatus {
 model Review {
   id          Int      @id @default(autoincrement())
   orderItemId Int
-  orderItem   OrderItem @relation(fields: [orderItemId], references: [id])
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
   userId      Int
   user        User @relation(fields: [userId], references: [id])
   rating      Int
@@ -157,7 +186,7 @@ model Review {
 model ReviewReply {
   id        Int      @id @default(autoincrement())
   reviewId  Int      @unique
-  review    Review   @relation(fields: [reviewId], references: [id])
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
   adminId   Int
   admin     User     @relation(fields: [adminId], references: [id])
   content   String
