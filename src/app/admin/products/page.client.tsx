@@ -26,7 +26,7 @@ const STATUS_MAP = {
 interface Category {
   id: string | number;
   name: string;
-  parentId?: string | number;
+  parentId?: string | number | null;
 }
 
 interface CategoryWithChildren extends Category {
@@ -35,8 +35,8 @@ interface CategoryWithChildren extends Category {
 
 interface AdminProductFilterForm {
   status: "ALL" | "ONSALE" | "SOLDOUT" | "HIDDEN";
-  mainCategory: string;
-  subCategory: string;
+  mainCategory?: string;
+  subCategory?: string;
   keyword: string;
 }
 
@@ -57,7 +57,7 @@ interface ProductType {
 interface Props {
   products: ProductType[];
   totalPages: number;
-  categories: CategoryWithChildren;
+  categories: CategoryWithChildren[];
 }
 
 const schema: yup.ObjectSchema<AdminProductFilterForm> = yup

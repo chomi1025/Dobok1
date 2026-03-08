@@ -1,16 +1,11 @@
-"use client";
-import Sidebar from "./components/Sidebar";
-import * as L from "./style";
+import MypageClientLayout from "./MypageClientLayout";
+
+export const dynamic = "force-dynamic";
 
 export default function MypageLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <L.Inner>
-      <Sidebar />
-      {children}
-    </L.Inner>
-  );
+  return <MypageClientLayout>{children}</MypageClientLayout>;
 }

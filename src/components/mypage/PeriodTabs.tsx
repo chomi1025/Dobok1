@@ -2,6 +2,11 @@ import DatePicker from "react-datepicker";
 import * as P from "./style";
 import { ko } from "date-fns/locale";
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+
+const Editor = dynamic(() => import("./ReviewEditor"), {
+  ssr: false,
+});
 
 type PeriodType = "1MONTH" | "3MONTH" | "6MONTH" | "12MONTH" | "CUSTOM";
 

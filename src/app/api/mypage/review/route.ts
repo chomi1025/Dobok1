@@ -4,9 +4,11 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/options";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: Request) {
   try {
-    // 1️⃣ 세션 가져오기
+    //  세션 가져오기
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
@@ -15,14 +17,14 @@ export async function GET(req: Request) {
 
     const userId = Number(session.user.id);
 
-    // 2️⃣ OrderItem 기준으로 가져오기 + 리뷰 포함
+    // OrderItem 기준으로 가져오기 + 리뷰 포함
     const orderItems = await prisma.orderItem.findMany({
       where: { order: { userId } }, // 본인 주문만
       include: { reviews: true },
       orderBy: { createdAt: "desc" },
     });
 
-    // 3️⃣ 프론트용 포맷 변환
+    // 프론트용 포맷 변환
     const formattedReviews = orderItems.map((item) => ({
       id: item.id,
       productName: item.productName,

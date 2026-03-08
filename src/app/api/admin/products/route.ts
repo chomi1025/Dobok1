@@ -27,7 +27,7 @@ export async function GET() {
   }
 }
 
-export async function Delete() {
+export async function DELETE() {
   try {
   } catch (err) {
     return NextResponse.json(err);

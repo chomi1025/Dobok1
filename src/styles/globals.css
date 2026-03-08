@@ -91,6 +91,9 @@ button {
   border: none;
   background: none;
 }
+fieldset {
+  border: none;
+}
 
 /* 4. 에디터 스타일 (ProseMirror) */
 .ProseMirror {

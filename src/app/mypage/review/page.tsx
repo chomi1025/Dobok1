@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Column, Table } from "@/components/Table/page";
 import * as M from "../style";
 import PeriodTabsComponent from "@/components/mypage/PeriodTabs";
-import { useSession } from "next-auth/react";
 import ReactPaginate from "react-paginate";
 
 type PeriodType = "1MONTH" | "3MONTH" | "6MONTH" | "12MONTH" | "CUSTOM";
