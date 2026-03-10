@@ -10,7 +10,7 @@ type ProductWithFullDetails = Prisma.ProductGetPayload<{
   include: {
     options: true;
     category: {
-      include: { parent: true }; // 카테고리 '안에' 부모가 있어야 함
+      include: { parent: true };
     };
   };
 }>;
