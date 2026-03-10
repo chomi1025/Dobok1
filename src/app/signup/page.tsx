@@ -15,12 +15,6 @@ import CheckComponent from "./Checkinput";
 import TermsModal from "@/components/terms/Termsmodal";
 import type { FormType } from "./types";
 
-interface PhoneType {
-  prefix: string;
-  middle: string;
-  last: string;
-}
-
 type TermsType = "service" | "privacy";
 
 const schema: ObjectSchema<FormType> = yup.object({
@@ -65,13 +59,14 @@ const schema: ObjectSchema<FormType> = yup.object({
   address: yup
     .object({
       address: yup.string().required("주소를 입력해주세요"),
-      zipCode: yup.string().required("우편번호를 입력해주세요"),
-      address2: yup.string().required("상세주소를 입력해주세요"),
+      postCode: yup.string().required("우편번호를 입력해주세요"),
+      detailAddress: yup.string().required("상세주소를 입력해주세요"),
     })
     .test(
       "all-fields-filled",
       "주소를 정확히 입력해주세요.",
-      (value) => !!value?.address && !!value?.zipCode && !!value?.address2,
+      (value) =>
+        !!value?.address && !!value?.postCode && !!value?.detailAddress,
     )
     .required(),
   birthDate: yup.string().required("생년월일은 필수입니다."),
@@ -96,17 +91,17 @@ export default function SignupClient() {
     mode: "onSubmit",
     defaultValues: {
       username: "",
-      usernameChecked: false, // ✅
+      usernameChecked: false,
       password: "",
       passwordConfirm: "",
       name: "",
-      phone: { prefix: "010", middle: "", last: "" }, // <- 여기 중요!!!
+      phone: { prefix: "010", middle: "", last: "" },
       email: "",
-      address: { address: "", zipCode: "", address2: "" },
+      address: { address: "", postCode: "", detailAddress: "" },
       birthDate: "",
       agreeTerms: false,
     },
-    shouldUnregister: true, // defaultValue에 따라 오류 초기화
+    shouldUnregister: true,
   });
 
   //모달관련(약관동의)
@@ -116,11 +111,11 @@ export default function SignupClient() {
   // 우편번호 찾기(다음)
   const [isPostOpen, setIsPostOpen] = useState(false);
 
-  const [emailDomain, setEmailDomain] = useState("gmail.com"); // 기본값
+  const [emailDomain, setEmailDomain] = useState("gmail.com");
 
   // 회원가입 버튼
   const onSubmit: SubmitHandler<FormType> = async (data) => {
-    console.log("submit", data); // <- 여기 꼭 찍어보기
+    console.log("submit", data);
     const fullPhone = `${data.phone.prefix}-${data.phone.middle}-${data.phone.last}`;
 
     try {
@@ -206,7 +201,7 @@ export default function SignupClient() {
           {/* 모달창 */}
           <TermsModal
             open={termsOpen}
-            type={termsType} // ✅ 이거 추가
+            type={termsType}
             onClose={() => setTermsOpen(false)}
           />
 

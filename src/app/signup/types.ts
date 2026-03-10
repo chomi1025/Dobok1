@@ -13,8 +13,8 @@ export interface FormType {
   email: string;
   address: {
     address: string;
-    zipCode: string;
-    address2: string;
+    postCode: string;
+    detailAddress: string;
   };
   birthDate: string;
   agreeTerms: boolean;
