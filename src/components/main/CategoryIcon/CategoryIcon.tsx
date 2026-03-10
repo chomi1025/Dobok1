@@ -2,9 +2,16 @@ import { prisma } from "@/lib/prisma";
 import styles from "./CategoryIcon.module.scss";
 import Image from "next/image";
 import Link from "next/link";
+interface MainCategory {
+  id: number;
+  name: string;
+  slug: string;
+  imageUrl: string | null; // ✅ null 가능성 체크!
+  parentId?: number | null;
+}
 
 export default async function CategoryIconComponent() {
-  const mainCategory = await prisma.category.findMany({
+  const mainCategory: MainCategory[] = await prisma.category.findMany({
     where: {
       parentId: null,
     },
@@ -27,7 +34,11 @@ export default async function CategoryIconComponent() {
               <Link href={`/products/${cat.slug}`}>
                 <figure className={styles.circle}>
                   <div className={styles.imageContainer}>
-                    <Image src={cat.imageUrl || null} alt={cat.name} fill />
+                    <Image
+                      src={cat.imageUrl ?? "/images/no-image.png"}
+                      alt={cat.name}
+                      fill
+                    />
                   </div>
                 </figure>
                 <p>{cat.name}</p>

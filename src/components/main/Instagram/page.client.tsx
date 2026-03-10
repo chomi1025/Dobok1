@@ -1,7 +1,7 @@
 "use client";
 import styles from "./page.module.scss";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Autoplay } from "swiper/modules";
+import { Autoplay } from "swiper/modules";
 import Image from "next/image";
 
 export default function InstagramClientComponent() {

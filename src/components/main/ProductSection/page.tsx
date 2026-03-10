@@ -3,24 +3,35 @@ import { useState } from "react";
 import styles from "./ProductSection.module.scss";
 import Image from "next/image";
 
-interface CatProps {
-  categories: { id: number; name: string; slug: string | null }[];
-  products: {
-    id: number;
-    name: string;
-    categoryId: number;
-    price: number;
-    discount: number;
-    img: string;
-    isBest: boolean;
-    tag: string;
-  };
-  title: {
-    name: string;
-    contents: string;
-  };
+interface Category {
+  id: number;
+  name: string;
+  slug: string | null;
 }
 
+interface Product {
+  id: number;
+  name: string;
+  categoryId: number;
+  price: number;
+  discount: number;
+  img: string;
+  isBest: boolean;
+  tag: string;
+  sale?: number;
+}
+
+interface Title {
+  name: string;
+  contents: string;
+  button: string;
+}
+
+interface CatProps {
+  categories: Category[];
+  products: Product[];
+  title: Title;
+}
 export default function ProductSectionClientComponent({
   title,
   categories,
