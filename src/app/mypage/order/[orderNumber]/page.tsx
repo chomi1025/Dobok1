@@ -1,8 +1,6 @@
 import OrderDetailClientPage from "./page.client";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { Order as PrismaOrder, User as PrismaUser } from "@prisma/client";
-
 // Props 인터페이스 정의
 interface Props {
   params: { orderNumber: string };

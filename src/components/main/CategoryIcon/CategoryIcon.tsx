@@ -2,11 +2,12 @@ import { prisma } from "@/lib/prisma";
 import styles from "./CategoryIcon.module.scss";
 import Image from "next/image";
 import Link from "next/link";
+
 interface MainCategory {
   id: number;
   name: string;
   slug: string;
-  imageUrl: string | null; // ✅ null 가능성 체크!
+  imageUrl: string | null;
   parentId?: number | null;
 }
 
@@ -19,6 +20,7 @@ export default async function CategoryIconComponent() {
       id: "asc",
     },
   });
+
   console.log(mainCategory);
 
   return (
