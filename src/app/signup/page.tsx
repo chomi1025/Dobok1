@@ -113,9 +113,7 @@ export default function SignupClient() {
 
   const [emailDomain, setEmailDomain] = useState("gmail.com");
 
-  // 회원가입 버튼
   const onSubmit: SubmitHandler<FormType> = async (data) => {
-    console.log("submit", data);
     const fullPhone = `${data.phone.prefix}-${data.phone.middle}-${data.phone.last}`;
 
     try {
@@ -133,6 +131,12 @@ export default function SignupClient() {
           birth_date: data.birthDate,
         }),
       });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("서버 에러 발생! 내용:", errorText);
+        return alert("서버에서 에러가 났어. 콘솔을 확인해봐!");
+      }
 
       const resData = await res.json();
       if (resData.error) return alert(resData.error);

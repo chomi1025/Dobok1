@@ -1,0 +1,96 @@
+@import "../../style/variables.module";
+
+.inner {
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: rem(40);
+
+  h2 {
+    font-size: rem(32);
+    margin-bottom: rem(6);
+  }
+
+  p {
+    color: #666;
+    font-size: rem(14);
+  }
+}
+
+.icon {
+  margin-top: rem(160);
+
+  nav {
+    ul {
+      display: flex;
+      justify-content: center;
+      gap: rem(30);
+
+      li {
+        width: rem(132);
+
+        figure {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 1 / 1;
+          margin-bottom: rem(15);
+
+          div {
+            width: 50%;
+          }
+          img {
+            width: rem(43);
+            height: 100%;
+            object-fit: cover;
+            border-radius: rem(999);
+            box-sizing: border-box;
+          }
+        }
+
+        p {
+          font-size: rem(15);
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+
+.circle {
+  position: relative;
+  width: rem(132);
+  height: rem(132);
+  background-color: #f8f8f8;
+  border-radius: 50%;
+  margin: 0 auto rem(15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid #f8f8f8;
+  flex-shrink: 0;
+
+  .imageContainer {
+    position: relative;
+    width: 85%;
+    height: 85%;
+
+    img {
+      object-fit: contain !important;
+
+      image-rendering: -webkit-optimize-contrast;
+    }
+  }
+  // 호버 시 살짝 커지는 효과 (선택)
+  &:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-5px);
+  }
+}

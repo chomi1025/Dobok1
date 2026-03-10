@@ -1,5 +1,4 @@
-"use client";
-import * as F from "./Footer.styles";
+import styles from "./Footer.module.scss";
 import Link from "next/link";
 import Image from "next/image";
 import kakao from "@/assets/Image/footer/icon_sns_kakao (1) 1.png";
@@ -13,9 +12,9 @@ const navigation = [
 
 export default function Footer() {
   return (
-    <F.Footer>
-      <F.Inner>
-        <F.Footer_links>
+    <footer className={styles.footer}>
+      <div className={styles.inner}>
+        <nav className={styles.footer_links}>
           <ul>
             {navigation.map((nav) => (
               <li key={nav.name}>
@@ -23,9 +22,9 @@ export default function Footer() {
               </li>
             ))}
           </ul>
-        </F.Footer_links>
+        </nav>
 
-        <F.Address>
+        <address className={styles.address}>
           <div>
             <p>도복일번지(롯데스포츠)</p>
             <p>대표 : 김영옥</p>
@@ -42,11 +41,13 @@ export default function Footer() {
             <p>메일 : tkd0792@hanmail.net</p>
             <p>대표번호 : 055-265-3118</p>
           </div>
-        </F.Address>
+        </address>
 
-        <F.Small>© 2025 도복일번지(롯데스포츠). All rights reserved.</F.Small>
+        <small className={styles.small}>
+          © 2025 도복일번지(롯데스포츠). All rights reserved.
+        </small>
 
-        <F.Right_Wrapper>
+        <div className={styles.right_Wrapper}>
           <div>
             <Link href="/">
               <Image src={kakao} alt="카카오톡 로고" width={24} height={24} />
@@ -61,8 +62,8 @@ export default function Footer() {
             <p>주말,공유일 휴무</p>
             <p>상담시간 : 10:00 - 18:00 (점심 12:00 - 13:00)</p>
           </div>
-        </F.Right_Wrapper>
-      </F.Inner>
-    </F.Footer>
+        </div>
+      </div>
+    </footer>
   );
 }

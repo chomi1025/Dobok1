@@ -1,4 +1,4 @@
-import { PrismaClient, OrderStatus, ClaimType } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
@@ -7,6 +7,8 @@ async function main() {
       name: "도복·띠",
       slug: "ttibok",
       sortOrder: 1,
+      imageUrl:
+        "https://rchecuchaugxhqoxcuki.supabase.co/storage/v1/object/public/category/ttibok.jpg",
       subMenu: [
         { name: "태권도복", slug: "taekwondo", sortOrder: 1 },
         { name: "합기도복", slug: "hapkido", sortOrder: 2 },
@@ -18,6 +20,8 @@ async function main() {
     {
       name: "보호장비",
       slug: "protection",
+      imageUrl:
+        "https://rchecuchaugxhqoxcuki.supabase.co/storage/v1/object/public/category/protection.jpg",
       sortOrder: 2,
       subMenu: [
         { name: "머리 보호대", slug: "headgear", sortOrder: 1 },
@@ -31,6 +35,8 @@ async function main() {
     {
       name: "훈련·격파용품",
       slug: "training",
+      imageUrl:
+        "https://rchecuchaugxhqoxcuki.supabase.co/storage/v1/object/public/category/training.jpg",
       sortOrder: 3,
       subMenu: [
         { name: "미트·쉴드", slug: "mit-shield", sortOrder: 1 },
@@ -43,6 +49,8 @@ async function main() {
     {
       name: "도장설비",
       slug: "studio",
+      imageUrl:
+        "https://rchecuchaugxhqoxcuki.supabase.co/storage/v1/object/public/category/mattress-pit.jpg",
       sortOrder: 4,
       subMenu: [
         { name: "매트리스·뜀틀", slug: "mattress-pit", sortOrder: 1 },
@@ -53,6 +61,8 @@ async function main() {
     {
       name: "부가용품",
       slug: "accessories",
+      imageUrl:
+        "https://rchecuchaugxhqoxcuki.supabase.co/storage/v1/object/public/category/accessories.jpg",
       sortOrder: 5,
       subMenu: [
         { name: "신발·실내화", slug: "shoes", sortOrder: 1 },
@@ -62,41 +72,54 @@ async function main() {
     },
   ];
 
+  // 1차
   for (const cat of categories) {
     const parent = await prisma.category.upsert({
       where: { slug: cat.slug },
-      update: { name: cat.name, sortOrder: cat.sortOrder ?? undefined },
+      update: {
+        name: cat.name,
+        sortOrder: cat.sortOrder,
+        imageUrl: cat.imageUrl,
+      },
       create: {
         name: cat.name,
         slug: cat.slug,
-        sortOrder: cat.sortOrder ?? undefined,
+        sortOrder: cat.sortOrder,
+        imageUrl: cat.imageUrl,
+        parentId: null,
       },
     });
 
+    console.log(`📦 1차 카테고리 완료: ${parent.name}`);
+
+    // 2차
     if (cat.subMenu) {
-      await Promise.all(
-        cat.subMenu.map((sub) =>
-          prisma.category.upsert({
-            where: { slug: sub.slug },
-            update: {
-              name: sub.name,
-              sortOrder: sub.sortOrder ?? undefined,
-              parentId: parent.id,
-            },
-            create: {
-              name: sub.name,
-              slug: sub.slug,
-              sortOrder: sub.sortOrder ?? undefined,
-              parentId: parent.id,
-            },
-          }),
-        ),
-      );
+      for (const sub of cat.subMenu) {
+        await prisma.category.upsert({
+          where: { slug: sub.slug },
+          update: {
+            name: sub.name,
+            sortOrder: sub.sortOrder,
+            parentId: parent.id,
+          },
+          create: {
+            name: sub.name,
+            slug: sub.slug,
+            sortOrder: sub.sortOrder,
+            parentId: parent.id,
+          },
+        });
+      }
+      console.log(`   └─ ${cat.name}의 2차 메뉴 완료`);
     }
   }
-  console.log("✅ 카테고리 & 서브카테고리 삽입 완료!");
 }
 
 main()
-  .catch((e) => console.error(e))
-  .finally(async () => await prisma.$disconnect());
+  .catch((e) => {
+    console.error("❌ 시딩 중 에러 발생:", e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

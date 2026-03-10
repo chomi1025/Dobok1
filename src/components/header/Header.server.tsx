@@ -3,6 +3,8 @@ import HeaderClient from "./Header.client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/options";
 
+export const revalidate = 3600;
+
 export default async function HeaderServer() {
   const { grouped } = await getCategories();
   const session = await getServerSession(authOptions);

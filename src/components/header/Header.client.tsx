@@ -1,11 +1,10 @@
-// src/components/Header.tsx
 "use client";
+import styles from "./Header.module.scss";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/assets/Image/header/logo@2x.png";
 import cart from "@/assets/Image/header/cil_cart.png";
 import myPage from "@/assets/Image/header/bi_person.png";
-import * as H from "./Header.styles";
 import { useRef, useState } from "react";
 import { Session } from "next-auth";
 import AuthIcons from "./AuthIcons.client";
@@ -35,27 +34,23 @@ export default function HeaderClient({
   categories: Category[];
   session: Session | null;
 }) {
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-
   const [openMenu, setOpenMenu] = useState(false);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 메뉴 열기
   const handleMouseEnter = () => {
     if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
     setOpenMenu(true);
   };
 
-  // 메뉴 닫기 (딜레이)
   const handleMouseLeave = () => {
     closeTimeoutRef.current = setTimeout(() => {
       setOpenMenu(false);
-    }, 150); // 150ms 딜레이
+    }, 150);
   };
 
   return (
     <header>
-      <H.TopHeader>
+      <div className={styles.topHeader}>
         <h1>
           <Link href="/">
             <Image
@@ -64,88 +59,77 @@ export default function HeaderClient({
               width={281}
               height={114}
               priority
-              loading="eager"
-              decoding="sync"
-              fetchPriority="high"
+              className={styles.logoImage}
             />
           </Link>
         </h1>
 
-        <H.IconGroup>
+        <div className={styles.iconGroup}>
           <Link href="/mypage">
             <Image
+              className={styles.iconImage}
               src={myPage}
-              alt="도복일번지 마이페이지"
+              alt="마이페이지"
               width={24}
               height={24}
-              priority
-              loading="eager"
-              decoding="sync"
-              fetchPriority="high"
             />
           </Link>
 
-          {/* 로그인상태에 따라 로그아웃/로그인 아이콘 바뀜 */}
           <AuthIcons session={session} />
 
           <Link href="/cart">
             <Image
+              className={styles.iconImage}
               src={cart}
-              alt="도복일번지 장바구니"
+              alt="장바구니"
               width={24}
               height={24}
-              priority
-              loading="eager"
-              decoding="sync"
-              fetchPriority="high"
             />
           </Link>
-        </H.IconGroup>
-      </H.TopHeader>
+        </div>
+      </div>
 
-      <H.BottomHeader as="nav" style={{ position: "relative" }}>
-        <H.Navigation>
+      <nav className={styles.bottomHeader}>
+        <ul className={styles.navigation}>
           {navigation.map((nav, idx) => (
-            <H.Li
+            <li
               key={nav.name}
-              isFirst={idx === 0}
+              className={styles.list}
               onMouseEnter={idx === 0 ? handleMouseEnter : undefined}
-              onMouseLeave={handleMouseLeave}
+              onMouseLeave={idx === 0 ? handleMouseLeave : undefined}
             >
-              <Link href={idx === 0 ? "" : nav.href} passHref legacyBehavior>
-                <H.NavLink isFirst={idx === 0}>{nav.name}</H.NavLink>
+              <Link
+                href={idx === 0 ? "#" : nav.href}
+                className={`${styles.navLink} ${idx === 0 ? styles.isFirst : ""}`}
+              >
+                {nav.name}
               </Link>
 
-              {/* 전상품 메뉴만 열기 */}
-
-              {/* 항상 렌더링 */}
               {idx === 0 && (
-                <H.Menu
-                  isOpen={openMenu}
+                <div
+                  className={`${styles.menu} ${openMenu ? styles.isOpen : ""}`}
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
                 >
                   {categories.map((cat) => (
                     <ul key={cat.id}>
-                      <H.B_category>{cat.name}</H.B_category>
-
-                      <H.line />
-
+                      <li className={styles.bCategory}>{cat.name}</li>
+                      <div className={styles.line} />
                       {cat.children?.map((el) => (
-                        <H.S_Category key={el.id}>
+                        <li key={el.id} className={styles.sCategory}>
                           <Link href={`/products/${cat.slug}/${el.slug}`}>
                             {el.name}
                           </Link>
-                        </H.S_Category>
+                        </li>
                       ))}
                     </ul>
                   ))}
-                </H.Menu>
+                </div>
               )}
-            </H.Li>
+            </li>
           ))}
-        </H.Navigation>
-      </H.BottomHeader>
+        </ul>
+      </nav>
     </header>
   );
 }

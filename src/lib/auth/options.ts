@@ -32,7 +32,6 @@ export const authOptions: NextAuthOptions = {
 
           if (!isValid) return null;
 
-          // 🔥 여기까지는 OK
           return {
             id: user.id.toString(),
             username: user.username,

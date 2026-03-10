@@ -1,0 +1,164 @@
+@import "../../style/variables.module";
+
+.inner {
+  margin: 0 auto;
+  max-width: rem(1040);
+  width: 100%;
+  padding: 0 rem(20);
+  box-sizing: border-box;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: rem(40);
+
+  h2 {
+    font-size: rem(32);
+    margin-bottom: rem(6);
+    @include mobile {
+      font-size: rem(24);
+    }
+  }
+
+  p {
+    color: #666;
+    font-size: rem(14);
+    @include mobile {
+      font-size: rem(12);
+    }
+  }
+}
+
+.navigation {
+  ul {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    font-size: rem(15);
+    flex-wrap: wrap;
+
+    li {
+      padding: rem(6) rem(12);
+      border: 1px solid #ddd;
+      border-radius: rem(30);
+      color: #666;
+      font-size: rem(15);
+      transition: all 0.2s ease;
+      cursor: pointer;
+      user-select: none;
+
+      &:hover {
+        border-color: #333;
+        color: #333;
+      }
+
+      &.active {
+        background-color: #222;
+        border-color: #333;
+        color: #fff;
+        font-weight: 600;
+      }
+
+      &.active {
+        border: 1px solid #333;
+        color: white;
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+.productList {
+  margin-top: rem(95);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: rem(30);
+
+  @include tablet {
+    margin-top: rem(60);
+    grid-template-columns: repeat(3, minmax(0, 1fr)); // 수정
+    gap: rem(20);
+    width: 100%;
+  }
+
+  @include mobile {
+    margin-top: rem(40);
+    grid-template-columns: repeat(2, minmax(0, 1fr)); // 수정
+    gap: rem(15);
+  }
+
+  li {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+
+    figure {
+      width: 100%;
+      position: relative;
+      aspect-ratio: 4 / 5;
+      border-radius: rem(10);
+      overflow: hidden;
+
+      img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover;
+      }
+
+      span {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 10;
+      }
+    }
+
+    div {
+      margin-top: rem(15);
+      font-weight: 700;
+
+      p {
+        font-size: rem(16);
+        margin-bottom: rem(8);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        @include mobile {
+          font-size: rem(14);
+        }
+      }
+
+      strong {
+        font-size: rem(18);
+        @include mobile {
+          font-size: rem(15);
+        }
+        span {
+          font-size: rem(22);
+          @include mobile {
+            font-size: rem(18);
+          }
+        }
+      }
+    }
+  }
+}
+
+.moreBtn {
+  font-size: 18px;
+  margin-top: rem(120);
+  display: flex;
+  justify-self: center;
+  border: 1px solid #333;
+  background: white;
+  color: #333;
+  font-weight: 600;
+  padding: rem(20) rem(140);
+  transition: all 0.5s ease;
+  border-radius: 999px;
+}
+
+.moreBtn:hover {
+  background: #222;
+  color: white;
+}

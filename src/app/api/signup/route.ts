@@ -7,7 +7,6 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    // 프론트에서 언더스코어로 보낸 값
     const {
       email,
       username,
@@ -15,7 +14,7 @@ export async function POST(req: NextRequest) {
       passwordConfirm,
       name,
       phone,
-      birth_date, // ✅ 언더스코어
+      birth_date,
       address,
     } = body;
 
@@ -27,10 +26,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 2️⃣ phone
-    const phoneStr = phone || null; // 이미 문자열이므로 그대로 사용
+    const phoneStr = phone || null;
 
-    // 3️⃣ birth_date 문자열 → Date 변환 & 유효성 체크
     const birth = birth_date ? new Date(birth_date) : null;
     if (!birth || isNaN(birth.getTime())) {
       return NextResponse.json(
@@ -38,8 +35,6 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
-
-    // 4️⃣ unique 필드 중복 체크
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
@@ -63,10 +58,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 5️⃣ 비밀번호 해싱
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 6️⃣ 유저 생성
     const user = await prisma.user.create({
       data: {
         email,

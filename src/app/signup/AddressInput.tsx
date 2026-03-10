@@ -26,11 +26,9 @@ export default function AddressInputComponent<T extends FieldValues>({
     <Controller
       name={"address" as Path<T>}
       control={control}
-      // 1. defaultValue 구조 변경
       defaultValue={{ address: "", postCode: "", detailAddress: "" } as any}
       render={({ field: { value, onChange } }) => {
         const handleComplete = (data: any) => {
-          // 2. onChange 시 바뀐 변수명 적용
           onChange({
             ...value,
             postCode: data.zonecode,
@@ -39,7 +37,6 @@ export default function AddressInputComponent<T extends FieldValues>({
           setIsPostOpen(false);
         };
 
-        // 안전하게 값을 꺼내오기 (Optional Chaining)
         const postCode = value?.postCode || "";
         const address = value?.address || "";
         const detailAddress = value?.detailAddress || "";
@@ -57,7 +54,7 @@ export default function AddressInputComponent<T extends FieldValues>({
               <input
                 type="text"
                 placeholder="우편번호"
-                value={postCode} // 3. 바뀐 변수 사용
+                value={postCode}
                 readOnly
               />
               <button type="button" onClick={() => setIsPostOpen(true)}>
@@ -67,17 +64,12 @@ export default function AddressInputComponent<T extends FieldValues>({
 
             {isPostOpen && <DaumPostcodeEmbed onComplete={handleComplete} />}
 
-            <input
-              type="text"
-              placeholder="주소"
-              value={address} // 3. 바뀐 변수 사용
-              readOnly
-            />
+            <input type="text" placeholder="주소" value={address} readOnly />
 
             <input
               type="text"
               placeholder="상세주소"
-              value={detailAddress} // 3. 바뀐 변수 사용
+              value={detailAddress}
               onChange={(e) =>
                 onChange({ ...value, detailAddress: e.target.value })
               }
