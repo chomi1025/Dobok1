@@ -1,4 +1,9 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
+
+type CategoryWithChildren = Prisma.CategoryGetPayload<{
+  include: { children: true };
+}>;
 
 export type Category = {
   id: number;
@@ -6,11 +11,11 @@ export type Category = {
   slug: string;
   parentId: number | null;
   sortOrder: number | null;
-  children: Category[];
+  children?: Category[];
 };
 
 export const getCategories = async (): Promise<{ grouped: Category[] }> => {
-  const main = await prisma.category.findMany({
+  const main: CategoryWithChildren[] = await prisma.category.findMany({
     where: { parentId: null },
     orderBy: { sortOrder: "asc" },
     include: {
@@ -26,7 +31,7 @@ export const getCategories = async (): Promise<{ grouped: Category[] }> => {
     slug: cat.slug,
     parentId: cat.parentId,
     sortOrder: cat.sortOrder,
-    children: cat.children.map((child) => ({
+    children: cat.children.map((child: any) => ({
       id: child.id,
       name: child.name,
       slug: child.slug,

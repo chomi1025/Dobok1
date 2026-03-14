@@ -22,6 +22,7 @@
     "@emotion/utils": "^1.4.2",
     "@floating-ui/dom": "^1.7.6",
     "@hookform/resolvers": "^5.2.2",
+    "@prisma/client": "6",
     "@supabase/supabase-js": "^2.90.1",
     "@tiptap/core": "^3.20.1",
     "@tiptap/extension-image": "^3.20.1",
@@ -44,6 +45,7 @@
     "next-auth": "^4.24.13",
     "next-connect": "^1.0.0",
     "pg": "^8.17.1",
+    "prisma": "6",
     "react": "18.2.0",
     "react-datepicker": "^9.1.0",
     "react-daum-postcode": "^3.2.0",
@@ -61,14 +63,12 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
-    "@prisma/client": "5.14.0",
     "@prisma/config": "^7.4.2",
     "@types/bcrypt": "^6.0.0",
     "@types/bcryptjs": "^3.0.0",
     "@types/multer": "^2.0.0",
     "@types/react-datepicker": "^7.0.0",
     "@types/sanitize-html": "^2.16.0",
-    "prisma": "5.14.0",
     "ts-node": "^10.9.2"
   }
 }

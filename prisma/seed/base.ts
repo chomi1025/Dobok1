@@ -89,7 +89,7 @@ async function main() {
       },
     });
 
-    console.log(`📦 1차 카테고리 완료: ${parent.name}`);
+    console.log(`1차 카테고리 완료: ${parent.name}`);
 
     if (cat.subMenu) {
       for (const sub of cat.subMenu) {
@@ -108,14 +108,14 @@ async function main() {
           },
         });
       }
-      console.log(`   └─ ${cat.name}의 2차 메뉴 완료`);
+      console.log(` 2차 메뉴 완료`);
     }
   }
 }
 
 main()
   .catch((e) => {
-    console.error("❌ 시딩 중 에러 발생:", e);
+    console.error("시딩 중 에러 발생:", e);
     process.exit(1);
   })
   .finally(async () => {
