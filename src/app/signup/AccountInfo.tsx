@@ -54,7 +54,7 @@ export default function AccountComponent<T extends FieldValues>({
       const data = await res.json();
 
       if (data.exists) {
-        setCheckMessage("❌ 이미 사용 중인 아이디 입니다.");
+        setCheckMessage("이미 사용 중인 아이디 입니다.");
         setValue?.("usernameChecked" as Path<T>, false as any);
       } else {
         setCheckMessage("✅ 사용 가능한 아이디 입니다!");

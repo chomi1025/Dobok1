@@ -32,7 +32,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json(formattedReviews);
   } catch (err) {
-    console.error("❌ route error:", err);
+    console.error(" route error:", err);
     return NextResponse.json({ message: "Server Error" }, { status: 500 });
   }
 }

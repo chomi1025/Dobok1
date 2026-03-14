@@ -116,7 +116,7 @@ export async function DELETE(req: Request, { params }: Params) {
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error("❌ 리뷰 삭제 에러:", err);
+    console.error("리뷰 삭제 에러:", err);
     return NextResponse.json({ error: "서버 에러" }, { status: 500 });
   }
 }
