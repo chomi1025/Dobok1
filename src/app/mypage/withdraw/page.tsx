@@ -8,7 +8,7 @@ export default function WithDraw() {
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [reason, setReason] = useState("");
-  const [otherReason, setOtherReason] = useState(""); // <- 여기 정의
+  const [otherReason, setOtherReason] = useState("");
   const [agree, setAgree] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,7 +34,7 @@ export default function WithDraw() {
       }
 
       alert("회원 탈퇴가 완료되었습니다.");
-      // 로그아웃 후 메인으로
+
       await signOut({ redirect: false });
       router.push("/");
     } catch (err) {
@@ -87,7 +87,7 @@ export default function WithDraw() {
                   {/* 기타 선택 시 입력창 */}
                   {item.value === "other" && reason === "other" && (
                     <input
-                      required // ⭐ 이거 추가
+                      required
                       type="text"
                       placeholder="탈퇴 사유를 작성해주세요"
                       value={otherReason}

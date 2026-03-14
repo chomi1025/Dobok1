@@ -92,7 +92,7 @@ export default function OrderDetailClientPage({ order }: { order: Order }) {
         {order.items.map((item) => (
           <O.ProductCard key={item.id}>
             <Image
-              src="/sample.png" // 또는 item.imageUrl
+              src="/sample.png"
               alt={item.productName}
               width={80}
               height={80}

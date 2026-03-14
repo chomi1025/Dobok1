@@ -269,7 +269,7 @@ export const ReplyText = styled.div`
   font-size: 14px;
   color: #333;
   margin-top: 8px;
-  white-space: pre-wrap; // 줄바꿈 유지
+  white-space: pre-wrap;
 `;
 
 export const Textarea_Admin = styled.textarea`

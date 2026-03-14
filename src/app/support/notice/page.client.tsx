@@ -6,7 +6,7 @@ import Link from "next/link";
 interface NoticeRow {
   id: number;
   date: string;
-  orderNumber?: string; // 공지사항에 주문번호가 필요 없다면 나중에 수정!
+  orderNumber?: string;
   img?: string;
   name: string;
   quantity?: number;

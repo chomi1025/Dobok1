@@ -41,7 +41,6 @@ export const PolicyBox = styled.section`
   }
 `;
 
-// 약관 리스트 스타일링
 export const TermsList = styled.ul`
   list-style: none;
   padding: 0;
@@ -51,7 +50,6 @@ export const TermsList = styled.ul`
     font-size: 14px;
     font-weight: 700;
 
-    // 하위 리스트 (세부 항목)
     ul {
       list-style: none;
       padding-left: 10px;
@@ -65,7 +63,6 @@ export const TermsList = styled.ul`
       }
     }
 
-    // 하위 문장 (보유 기간 등)
     p {
       font-size: 13px;
       font-weight: 400;
@@ -76,7 +73,6 @@ export const TermsList = styled.ul`
   }
 `;
 
-// 체크박스 영역
 export const ConsentWrapper = styled.p`
   font-size: 13px;
   display: flex;

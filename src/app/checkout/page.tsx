@@ -24,7 +24,7 @@ export default async function CheckoutPage() {
     });
 
     if (dbUser) {
-      const userAddress = dbUser.address as any; // Prisma JsonValue 타입일 수 있음
+      const userAddress = dbUser.address as any;
       memberUser = {
         id: dbUser.id,
         name: dbUser.name,

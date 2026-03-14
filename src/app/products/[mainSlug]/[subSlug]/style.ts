@@ -39,10 +39,9 @@ export const Breadcrumb = styled.nav`
   }
 
   span {
-    /* span 자체는 비워두고 before로만 표시 */
     &.withSeparator::before {
       content: ">";
-      margin: 0 4px; // 좌우 여백
+      margin: 0 4px;
       color: #666;
     }
   }
@@ -59,7 +58,9 @@ export const TabMenuWrapper = styled.nav`
       border-radius: 20px;
       color: #888;
       font-size: 15px;
-      transition: border-color 0.25s ease, color 0.25s ease;
+      transition:
+        border-color 0.25s ease,
+        color 0.25s ease;
 
       a {
         display: inline-block;

@@ -161,21 +161,19 @@ export default function OrdersPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 5;
 
-  // 날짜관련
   const [period, setPeriod] = useState<PeriodType>("1MONTH"); //기본탭 : 1개월
   const [customRange, setCustomRange] = useState<{
     start: Date;
     end: Date;
-  } | null>(null); //커스텀 탭
+  } | null>(null);
 
-  // 서버에서 주문 데이터를 fetch하는 함수
   async function fetchOrders() {
     const res = await fetch("/api/mypage/orders", {
-      credentials: "include", // 이거 필수!
+      credentials: "include",
     });
     return res.json();
   }
-  // 서버 데이터 fetch
+
   const [loading, setLoading] = useState(true);
 
   const periodToMonths: Record<FixedPeriod, number> = {
@@ -185,7 +183,6 @@ export default function OrdersPage() {
     "12MONTH": 12,
   };
 
-  //날짜 함수
   const filterByPeriod = (orders: Order[] | undefined, period: FixedPeriod) => {
     if (!Array.isArray(orders)) return [];
 
@@ -206,13 +203,11 @@ export default function OrdersPage() {
       });
     }
 
-    // 🔥 여기서 새로운 변수에 담아줘야 함
     const fixedPeriod: FixedPeriod = period;
 
     return filterByPeriod(orders, fixedPeriod);
   };
 
-  // 주문배송이력 로딩
   useEffect(() => {
     const loadOrders = async () => {
       try {
@@ -221,7 +216,7 @@ export default function OrdersPage() {
         const data: Order[] = await fetchOrders();
 
         setAllOrders(data);
-        setOrders(filterByPeriod(data, "1MONTH")); // 초기 1개월
+        setOrders(filterByPeriod(data, "1MONTH"));
       } catch (e) {
         console.error(e);
       } finally {
@@ -237,7 +232,6 @@ export default function OrdersPage() {
     setCurrentPage(0);
   }, [period, customRange, allOrders]);
 
-  // 페이지네이션
   const pageCount = Math.ceil(orders.length / itemsPerPage);
 
   const currentItems = orders.slice(
@@ -245,7 +239,6 @@ export default function OrdersPage() {
     (currentPage + 1) * itemsPerPage,
   );
 
-  // 페이지 변경 핸들러
   const handlePageClick = (selectedItem: { selected: number }) => {
     setCurrentPage(selectedItem.selected);
   };
@@ -259,7 +252,7 @@ export default function OrdersPage() {
         period={period}
         onPeriodChange={(p) => {
           setPeriod(p);
-          setCustomRange(null); // 🔥 탭 누르면 커스텀 초기화
+          setCustomRange(null);
         }}
         onCustomSubmit={(start, end) => {
           setPeriod("CUSTOM");

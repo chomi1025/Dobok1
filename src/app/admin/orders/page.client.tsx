@@ -16,7 +16,7 @@ interface OrderRow {
   totalPrice: number;
   orderStatus: string;
   deliveryStatus: string;
-  manage?: string; // 추가
+  manage?: string;
 }
 
 interface Column<T> {

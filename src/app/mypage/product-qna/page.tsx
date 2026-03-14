@@ -9,7 +9,7 @@ export interface Qna {
   productName: string;
   img: string;
   qnaTitle: string;
-  qnaAt: string; // 배송완료일 (날짜)
+  qnaAt: string;
   qnaStatus: "답변대기" | "답변완료";
 }
 
@@ -88,7 +88,7 @@ const QnaColumns: Column<Qna>[] = [
 ];
 
 export default function ProductQna() {
-  const [currentPage, setCurrentPage] = useState(0); // react-paginate는 0부터 시작
+  const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 10;
 
   const pageCount = Math.ceil(qnas.length / itemsPerPage);
@@ -98,7 +98,6 @@ export default function ProductQna() {
     (currentPage + 1) * itemsPerPage,
   );
 
-  // 페이지 변경 핸들러
   const handlePageClick = (selectedItem: { selected: number }) => {
     setCurrentPage(selectedItem.selected);
   };

@@ -1,4 +1,3 @@
-// src/lib/auth/options.ts
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
@@ -50,7 +49,6 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
 
-  // ⭐⭐⭐ 이게 핵심
   callbacks: {
     async jwt({ token, user }) {
       if (user) {

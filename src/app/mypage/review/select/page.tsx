@@ -28,7 +28,7 @@ export default function ReviewSelectPage() {
 
   useEffect(() => {
     if (!orderNumber) {
-      setLoading(false); // 🔥 이거 중요
+      setLoading(false);
       return;
     }
 

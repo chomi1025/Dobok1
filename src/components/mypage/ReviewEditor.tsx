@@ -34,8 +34,6 @@ export default function ReviewEditor({ value, onChange }: Props) {
     },
   });
 
-  // 마지막 줄 빈 블록 강제 + 포커스 가능하게
-  // 수정 진입 시 content 초기화
   useEffect(() => {
     if (editor && value !== editor.getHTML()) {
       editor.commands.setContent(value);

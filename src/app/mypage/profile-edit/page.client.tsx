@@ -12,21 +12,17 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import type { ObjectSchema } from "yup";
-import Router from "next/router";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-/* =======================
-   타입
-======================= */
 interface ProfileEditProps {
   user: ProfileEditUser;
   isEdit: boolean;
 }
 
 export interface ProfileEditUser {
-  id: number; // 내부용
-  username: string; // 👈 사용자 아이디
+  id: number;
+  username: string;
   name: string;
   email: string;
   phone: string | null;
@@ -39,7 +35,7 @@ export interface ProfileEditUser {
 }
 
 export interface ProfileEditFormType {
-  username?: string; // 👈 추가
+  username?: string;
   password?: string;
   passwordConfirm?: string;
   name: string;
@@ -57,14 +53,11 @@ export interface ProfileEditFormType {
   birthDate: string;
 }
 
-/* =======================
-   yup schema
-======================= */
 const profileEditSchema: ObjectSchema<ProfileEditFormType> = yup.object({
-  username: yup.string().optional(), // 👈 추가
+  username: yup.string().optional(),
   password: yup
     .string()
-    .transform((value) => (value === "" ? undefined : value)) // 빈 문자열은 무시
+    .transform((value) => (value === "" ? undefined : value))
     .optional()
     .min(8, "8글자 이상")
     .max(20, "20글자 이하")
@@ -95,13 +88,9 @@ const profileEditSchema: ObjectSchema<ProfileEditFormType> = yup.object({
   birthDate: yup.string().required(),
 });
 
-/* =======================
-   component
-======================= */
 export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
   const router = useRouter();
   const [prefix = "010", middle = "", last = ""] = user.phone?.split("-") ?? [];
-  // --- 1. 이메일 도메인 상태 추가 ---
   const [emailDomain, setEmailDomain] = useState(
     user.email?.split("@")[1] || "gmail.com",
   );
@@ -158,7 +147,6 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
       alert("회원정보가 수정되었습니다!");
 
       if (data.password) {
-        // 비밀번호 바꾼 경우 새 세션 받고 이동
         const signInResult = await signIn("credentials", {
           redirect: false,
           username: user.username,
@@ -170,12 +158,11 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
           return;
         }
 
-        // 세션 반영을 잠깐 기다리기 (200ms 정도)
         await new Promise((resolve) => setTimeout(resolve, 200));
 
-        router.push("/"); // 새 세션 적용 후 홈으로 이동
+        router.push("/");
       } else {
-        router.push("/mypage"); // 비밀번호 안 바꾸면 기존대로 마이페이지
+        router.push("/mypage");
       }
     } catch (err) {
       console.error(err);

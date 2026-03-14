@@ -1,8 +1,6 @@
-// app/api/mypage/orders/[orderNumber]/route.ts
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-// 주문배송 - 리뷰쓰기에서 리뷰작성한 상품인지 조회
 interface Params {
   params: { orderNumber: string };
 }
@@ -30,9 +28,7 @@ export async function GET(req: Request, { params }: Params) {
     );
   }
 
-  // 필요한 필드만 가공
   const formatted = {
-    // ===== 기존 =====
     id: order.id,
     orderNumber: order.orderNumber,
     date: order.createdAt.toISOString().slice(0, 10),
@@ -44,7 +40,6 @@ export async function GET(req: Request, { params }: Params) {
       address: order.user.address,
     },
 
-    // ===== items 유지 + 확장 =====
     items: order.items.map((item) => ({
       id: item.id,
       productName: item.productName,

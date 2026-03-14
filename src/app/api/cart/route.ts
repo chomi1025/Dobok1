@@ -31,7 +31,7 @@ export async function POST(req: Request) {
       data: {
         userId,
         productId,
-        productOptionId, // 선택된 옵션 ID
+        productOptionId,
         quantity,
       },
     });
@@ -52,7 +52,7 @@ export async function GET() {
       userId: Number(session.user.id),
     },
     include: {
-      product: true, // 상품 정보 같이 가져오기
+      product: true,
     },
   });
 

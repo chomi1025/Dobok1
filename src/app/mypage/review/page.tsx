@@ -97,7 +97,6 @@ export default function ReviewPage() {
     (currentPage + 1) * itemsPerPage,
   );
 
-  // ✅ fetch + session 체크 + console.log 브라우저 출력
   useEffect(() => {
     const fetchReviews = async () => {
       try {

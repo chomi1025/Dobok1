@@ -84,7 +84,7 @@ export default function ReviewNewPage() {
       if (!res.ok) throw new Error("리뷰 등록 실패");
 
       alert("리뷰가 등록되었습니다!");
-      router.push(`/mypage/review/${result.reviewId}`); // 상세 페이지로 이동
+      router.push(`/mypage/review/${result.reviewId}`);
     } catch {
       alert("리뷰 등록 중 오류가 발생했습니다");
     }

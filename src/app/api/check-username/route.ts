@@ -16,7 +16,7 @@ export async function GET(req: Request) {
 
   try {
     const user = await prisma.user.findUnique({
-      where: { username }, // DB에서 username 컬럼 기준 조회
+      where: { username },
     });
 
     const exists = !!user;

@@ -12,8 +12,8 @@ type PeriodType = "1MONTH" | "3MONTH" | "6MONTH" | "12MONTH" | "CUSTOM";
 
 interface Props {
   period: PeriodType;
-  onPeriodChange: (p: PeriodType) => void; // 탭용 (즉시)
-  onCustomSubmit: (start: Date, end: Date) => void; // 조회 버튼용
+  onPeriodChange: (p: PeriodType) => void;
+  onCustomSubmit: (start: Date, end: Date) => void;
 }
 
 const tabMap: { label: string; value: PeriodType; months: number }[] = [
@@ -42,10 +42,9 @@ export default function PeriodTabsComponent({
     setStartDate(start);
     setEndDate(end);
 
-    onPeriodChange(value); // ✅ 즉시 조회
+    onPeriodChange(value);
   };
 
-  // 최초 진입 시 1개월
   useEffect(() => {
     applyPeriod(1, "1MONTH");
   }, []);
@@ -90,7 +89,7 @@ export default function PeriodTabsComponent({
         <button
           onClick={() => {
             if (!startDate || !endDate) return;
-            onCustomSubmit(startDate, endDate); // 🔥 이것만
+            onCustomSubmit(startDate, endDate);
           }}
         >
           조회

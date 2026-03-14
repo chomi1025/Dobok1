@@ -101,16 +101,15 @@ const claimColumns: Column<Claim>[] = [
 ];
 
 export default function ClaimsPage() {
-  // 날짜관련
-  const [period, setPeriod] = useState<PeriodType>("1MONTH"); //기본탭 : 1개월
+  const [period, setPeriod] = useState<PeriodType>("1MONTH");
   const [customRange, setCustomRange] = useState<{
     start: Date;
     end: Date;
-  } | null>(null); //커스텀 탭
+  } | null>(null);
   const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [currentPage, setCurrentPage] = useState(0); // react-paginate는 0부터 시작
+  const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 10;
 
   const pageCount = Math.ceil(claims.length / itemsPerPage);
@@ -120,7 +119,6 @@ export default function ClaimsPage() {
     (currentPage + 1) * itemsPerPage,
   );
 
-  // 페이지 변경 핸들러
   const handlePageClick = (selectedItem: { selected: number }) => {
     setCurrentPage(selectedItem.selected);
   };
@@ -168,7 +166,7 @@ export default function ClaimsPage() {
       {/* 페이지네이션 */}
       <M.Pagination>
         <ReactPaginate
-          pageCount={pageCount > 0 ? pageCount : 1} // 페이지 없으면 1로
+          pageCount={pageCount > 0 ? pageCount : 1}
           pageRangeDisplayed={5}
           marginPagesDisplayed={2}
           onPageChange={handlePageClick}

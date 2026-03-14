@@ -1,11 +1,9 @@
-// app/api/mypage/orders/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/options";
 
 export async function GET() {
-  // 1️⃣ 세션 가져오기
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
@@ -15,20 +13,18 @@ export async function GET() {
     );
   }
 
-  // 2️⃣ 로그인한 유저 기준으로 주문 조회 (order만)
   const orders = await prisma.order.findMany({
     where: { userId: Number(session.user.id) },
     include: {
       items: {
         include: {
-          claims: true, // 👈 여기 중요
+          claims: true,
         },
       },
     },
     orderBy: { createdAt: "desc" },
   });
 
-  // 3️⃣ 목록에 필요한 필드 가공
   const formatted = orders
     .map((o) => {
       if (!o.items.length) return null;
@@ -50,7 +46,7 @@ export async function GET() {
         total: o.total,
         status: o.status,
         items: o.items,
-        claims: o.items.flatMap((item) => item.claims ?? []), // item.claims 모아서 배열로
+        claims: o.items.flatMap((item) => item.claims ?? []),
       };
     })
     .filter(Boolean);

@@ -72,7 +72,6 @@ async function main() {
     },
   ];
 
-  // 1차
   for (const cat of categories) {
     const parent = await prisma.category.upsert({
       where: { slug: cat.slug },
@@ -92,7 +91,6 @@ async function main() {
 
     console.log(`📦 1차 카테고리 완료: ${parent.name}`);
 
-    // 2차
     if (cat.subMenu) {
       for (const sub of cat.subMenu) {
         await prisma.category.upsert({

@@ -3,7 +3,6 @@ import ProductList from "@/components/product/ProductList";
 import * as N from "./style";
 
 export default function NewProductPage() {
-  // 1. 화면 확인용 가짜 데이터 (나중에 실제 데이터로 바꿀 거야!)
   const mockProducts = [
     {
       id: 1,

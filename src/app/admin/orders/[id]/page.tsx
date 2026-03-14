@@ -60,17 +60,6 @@ const ORDER_STATUS: Record<PaymentMethod, OrderStatus[]> = {
   card: ["결제완료", "상품준비중", "배송중", "배송완료"],
 };
 
-// 무통장
-// const order: Order = {
-//   orderId: "20260224001",
-//   customerName: "김이모션",
-//   paymentMethod: "bank",
-//   paymentStatus: "입금대기",
-//   bankName: "국민은행",
-//   depositorName: "김이모션",
-// };
-
-// 카드
 const order: Order = {
   orderId: "20260224002",
   customerName: "김이모션",
@@ -105,7 +94,7 @@ export default function AdminOrderDetailPage() {
       {
         date: new Date().toLocaleString(),
         content,
-        admin: "관리자", // 나중엔 로그인 유저 이름
+        admin: "관리자",
       },
     ]);
   };
@@ -120,7 +109,6 @@ export default function AdminOrderDetailPage() {
 
     setError("");
 
-    // 히스토리 기록
     addHistory(`주문상태 → ${orderStatus}`);
 
     if (orderStatus === "배송중") {

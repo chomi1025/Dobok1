@@ -18,7 +18,7 @@ export interface Inquiry {
   inquiryType: InquiryType;
   img: string;
   inquiryTitle: string;
-  inquiryAt: string; // 배송완료일 (날짜)
+  inquiryAt: string;
   inquiryStatus: "답변대기" | "답변완료";
 }
 
@@ -114,7 +114,7 @@ const InquiryColumns: Column<Inquiry>[] = [
 ];
 
 export default function Inquiry() {
-  const [currentPage, setCurrentPage] = useState(0); // react-paginate는 0부터 시작
+  const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 10;
 
   const pageCount = Math.ceil(inquiries.length / itemsPerPage);
@@ -124,7 +124,6 @@ export default function Inquiry() {
     (currentPage + 1) * itemsPerPage,
   );
 
-  // 페이지 변경 핸들러
   const handlePageClick = (selectedItem: { selected: number }) => {
     setCurrentPage(selectedItem.selected);
   };

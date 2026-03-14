@@ -1,4 +1,3 @@
-// firebaseClient.ts
 import { initializeApp } from "firebase/app";
 import {
   getDownloadURL,
@@ -24,5 +23,5 @@ export const uploadImage = async (file: File, folder: string = "products") => {
   const storageRef = ref(storage, `${folder}/${Date.now()}-${file.name}`);
   const snapshot = await uploadBytesResumable(storageRef, file);
   const url = await getDownloadURL(snapshot.ref);
-  return url; // DB에 저장할 URL
+  return url;
 };

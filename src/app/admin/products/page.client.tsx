@@ -87,7 +87,7 @@ export const StatusWrapper = styled.div`
     background-color: rgba(0, 0, 0, 0.85);
     color: #fff;
     font-size: 12px;
-    white-space: nowrap; // 줄바꿈 방지
+    white-space: nowrap;
     border-radius: 4px;
     opacity: 0;
     visibility: hidden;
@@ -129,7 +129,7 @@ export const StatusCircle = styled.span<{ color: string }>`
 export default function AdminProductClientPage({
   products,
   totalPages,
-  categories, // 서버에서 넘겨준 데이터
+  categories,
 }: Props) {
   const route = useRouter();
   const pathname = usePathname();

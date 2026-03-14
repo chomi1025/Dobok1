@@ -55,8 +55,8 @@ export default function ProductInfoComponent() {
                 onChange={(e) => {
                   const parentId = Number(e.target.value);
                   setSelectedParent(parentId);
-                  setValue("parentCategoryId", parentId); // 🟢 form에 등록
-                  setValue("categoryId", null); // 2차 선택 전에는 null
+                  setValue("parentCategoryId", parentId);
+                  setValue("categoryId", null);
                 }}
               >
                 <A.HiddenOption value="" hidden>
@@ -75,7 +75,7 @@ export default function ProductInfoComponent() {
               <select
                 onChange={(e) => {
                   const childId = Number(e.target.value);
-                  setValue("categoryId", childId); // 🟢 실제 서버에 보낼 categoryId
+                  setValue("categoryId", childId);
                 }}
               >
                 <A.HiddenOption value="" hidden>

@@ -1,4 +1,3 @@
-// app/api/mypage/claims/[claimNumber]/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
@@ -23,7 +22,7 @@ export async function GET(req: Request, { params }: Params) {
     include: {
       orderItem: {
         include: {
-          order: true, // order 정보까지 필요하면
+          order: true,
         },
       },
     },
@@ -42,7 +41,6 @@ export async function GET(req: Request, { params }: Params) {
   if (claim.orderItem.order.userId !== Number(session.user.id))
     return NextResponse.json({ message: "권한 없음" }, { status: 403 });
 
-  // 원하는 필드만 가공
   const formatted = {
     id: claim.id,
     type: claim.claimType,

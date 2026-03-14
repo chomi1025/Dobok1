@@ -1,6 +1,5 @@
 import styled from "@emotion/styled";
 
-// 사이드바
 export const Inner = styled.aside<{ isEdit: boolean }>`
   width: 212px;
   margin-right: 20px;

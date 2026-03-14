@@ -150,10 +150,10 @@ export const PrimaryButton = styled.button`
   transition: background 0.2s ease;
 
   &:hover {
-    background: #333; // 호버 시 조금 밝게
+    background: #333;
   }
 
   &:active {
-    background: #111; // 클릭 시 살짝 어둡게
+    background: #111;
   }
 `;

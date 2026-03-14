@@ -13,7 +13,7 @@ export default async function ProfileEditPage() {
     where: { id: Number(userId) },
   });
 
-  if (!user) return null; // ⭐ 핵심 안전장치
+  if (!user) return null;
 
   const address = (user.address ?? {}) as {
     address?: string;
@@ -22,8 +22,8 @@ export default async function ProfileEditPage() {
   };
 
   const profileUser = {
-    id: user.id, // 시스템 식별자
-    username: user.username, // 👈 사용자 아이디 (표시용)
+    id: user.id,
+    username: user.username,
     name: user.name,
     email: user.email,
     phone: user.phone,

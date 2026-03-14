@@ -5,13 +5,11 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
-// 1. 이미지 객체 타입 정의 (보통 file과 preview용 url을 같이 들고 있지?)
 interface ImageFile {
   file: File;
   url?: string;
 }
 
-// 2. 상품 등록 body 타입 정의
 interface CreateProductBody {
   name: string;
   description?: string;
@@ -19,8 +17,8 @@ interface CreateProductBody {
   origin: string;
   material: string;
   categoryId: number;
-  price: number; // 기본 가격
-  stock: number; // 기본 재고
+  price: number;
+  stock: number;
   options: {
     color?: string | null;
     size?: string | null;
@@ -30,7 +28,6 @@ interface CreateProductBody {
   }[];
 }
 
-// 이미지 업로드 함수
 export const uploadImage = async (
   file: Blob | File,
   bucket: string,
@@ -49,14 +46,12 @@ export const uploadImage = async (
   return urlData.publicUrl;
 };
 
-// 파일들을 스토리지에 업로드하는 함수
 export const uploadFilesToStorage = async (
   thumbnail: ImageFile | null,
   images: ImageFile[],
 ) => {
   let thumbnailUrl = "";
   if (thumbnail?.file) {
-    // compressImage 함수가 있다고 가정 (없으면 에러날 수 있으니 확인!)
     const compressedThumbnail = await (window as any).compressImage(
       thumbnail.file,
       800,
@@ -85,7 +80,6 @@ export const uploadFilesToStorage = async (
   return { thumbnailUrl, imagesUrls };
 };
 
-// 상품 등록 함수
 export const createProduct = async (
   body: CreateProductBody,
   thumbnail: ImageFile | null,

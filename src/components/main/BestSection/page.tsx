@@ -4,10 +4,10 @@ import ProductSectionClientComponent from "../ProductSection/page";
 export const MOCK_PRODUCTS = [
   {
     id: 1,
-    categoryId: 1, // 예를 들어 '도복' 카테고리
+    categoryId: 1,
     name: "프리미엄 골드 에디션 유도복",
     price: 189000,
-    discount: 10, // 10% 할인
+    discount: 10,
     img: "https://images.unsplash.com/photo-1555597673-b21d5c935865?q=80&w=500",
     isBest: true,
     tag: "NEW",
@@ -24,7 +24,7 @@ export const MOCK_PRODUCTS = [
   },
   {
     id: 3,
-    categoryId: 2, // '띠' 카테고리
+    categoryId: 2,
     name: "자수 장인 블랙벨트 (고급형)",
     price: 45000,
     discount: 5,
@@ -34,7 +34,7 @@ export const MOCK_PRODUCTS = [
   },
   {
     id: 4,
-    categoryId: 3, // '보호대' 카테고리
+    categoryId: 3,
     name: "충격 흡수 무릎 보호대 세트",
     price: 32000,
     discount: 15,
@@ -100,7 +100,6 @@ export default async function BestSectionComponent() {
     },
   });
 
-  console.log(mainCategory);
   return (
     <>
       <ProductSectionClientComponent

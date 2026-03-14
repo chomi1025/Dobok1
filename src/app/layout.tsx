@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 import "@/styles/globals.css";
 import { ReactNode } from "react";
-import HeaderServer from "@/components/header/Header.server"; // 혹은 Header
+import HeaderServer from "@/components/header/Header.server";
 import AuthProvider from "@/components/providers/AuthProvider";
 import { pretendard } from "@/styles/fonts";
 import EmotionRegistry from "@/lib/emotion-registry";

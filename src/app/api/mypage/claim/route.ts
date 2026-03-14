@@ -15,7 +15,6 @@ export async function GET() {
     );
   }
 
-  // 유저 기준 claim 조회
   const claims = await prisma.claim.findMany({
     where: {
       orderItem: {
@@ -32,7 +31,7 @@ export async function GET() {
 
   const formatted = claims.map((c) => ({
     id: c.id,
-    type: c.claimType.toLowerCase(), // cancel | exchange | return
+    type: c.claimType.toLowerCase(),
     requestedAt: c.requestedAt.toISOString().slice(0, 10),
     claimNumber: c.claimNumber,
     name: c.orderItem?.productName ?? "알 수 없음",
@@ -65,7 +64,6 @@ export async function POST(req: Request) {
     );
   }
 
-  // 선택한 상품들마다 Claim 생성
   try {
     const createdClaims = await Promise.all(
       orderItemIds.map((itemId: number) =>

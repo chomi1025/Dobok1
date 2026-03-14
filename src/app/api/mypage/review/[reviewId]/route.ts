@@ -36,9 +36,6 @@ export async function GET(req: Request, { params }: Params) {
   }
 }
 
-/* =========================
-   PUT: 리뷰 수정 (sanitize-html 적용)
-========================= */
 export async function PUT(req: Request, { params }: Params) {
   try {
     const session = await getServerSession(authOptions);
@@ -65,7 +62,6 @@ export async function PUT(req: Request, { params }: Params) {
       return NextResponse.json({ error: "권한 없음" }, { status: 403 });
     }
 
-    // 🔹 sanitize-html 적용
     const cleanContent = sanitizeHtml(content, {
       allowedTags: ["p", "br", "strong", "em", "ul", "ol", "li", "img"],
       allowedAttributes: {
@@ -76,13 +72,13 @@ export async function PUT(req: Request, { params }: Params) {
     const updated = await prisma.review.update({
       where: { id: reviewId },
       data: {
-        content: cleanContent, // 안전하게 저장
+        content: cleanContent,
       },
     });
 
     return NextResponse.json(updated);
   } catch (err) {
-    console.error("❌ 리뷰 수정 에러:", err);
+    console.error("리뷰 수정 에러:", err);
     return NextResponse.json({ error: "서버 에러" }, { status: 500 });
   }
 }
@@ -96,7 +92,7 @@ export async function DELETE(req: Request, { params }: Params) {
 
     const reviewId = Number(params.reviewId);
     const userId = Number(session.user.id);
-    const role = session.user.role; // "admin" | "user"
+    const role = session.user.role;
 
     const review = await prisma.review.findUnique({
       where: { id: reviewId },

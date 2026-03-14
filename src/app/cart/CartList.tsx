@@ -7,8 +7,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface Column<T> {
-  key: keyof T | string; // key를 string도 허용하도록 변경
-  label: React.ReactNode; // label을 string이 아니라 React.ReactNode로 변경하여 JSX 요소를 허용
+  key: keyof T | string;
+  label: React.ReactNode;
   width?: string;
   flex?: number;
   align?: "left" | "center" | "right";
@@ -16,13 +16,13 @@ interface Column<T> {
 }
 
 interface CartItem {
-  id: number; // 장바구니 아이템 고유 ID
-  name: string; // 상품 이름
-  img: string; // 상품 이미지 URL
-  option?: string; // 상품 옵션 (선택적)
-  price: number; // 가격
-  quantity: number; // 수량
-  close?: boolean; // 삭제 여부 (선택적)
+  id: number;
+  name: string;
+  img: string;
+  option?: string;
+  price: number;
+  quantity: number;
+  close?: boolean;
 }
 
 type TableCartItem = Pick<
@@ -105,22 +105,18 @@ const Buttons = styled.div`
 
 export default function CartListComponent({ cart, setCart }: Props) {
   const { data: session } = useSession();
-  // 체크된 상품 ID 배열
-  const [checkedItems, setCheckedItems] = useState<number[]>([]); // productId 배열
+
+  const [checkedItems, setCheckedItems] = useState<number[]>([]);
   const router = useRouter();
 
-  console.log("현재배열:", checkedItems);
-  // 전체 상품 선택
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      // 전체 상품의 productId만 넣기
       setCheckedItems(cart.map((item) => Number(item.product.id)));
     } else {
       setCheckedItems([]);
     }
   };
 
-  //개별 상품 선택
   const toggleCheck = (productId: number) => {
     setCheckedItems((prev) =>
       prev.includes(productId)
@@ -129,14 +125,11 @@ export default function CartListComponent({ cart, setCart }: Props) {
     );
   };
 
-  // 전체선택 체크 여부
   const isAllChecked = cart.length > 0 && checkedItems.length === cart.length;
 
-  // 선택한 아이템 삭제
   const removeItem = async (productId: number) => {
     try {
       if (session) {
-        // 회원일때 !
         const result = await fetch(`/api/cart/${productId}`, {
           method: "DELETE",
         });
@@ -157,7 +150,6 @@ export default function CartListComponent({ cart, setCart }: Props) {
     }
   };
 
-  // 모든 장바구니 아이템 삭제
   const removeall = () => {
     alert("장바구니를 비웠습니다");
 
@@ -221,7 +213,7 @@ export default function CartListComponent({ cart, setCart }: Props) {
     },
     {
       key: "quantity",
-      label: "수량", // 문자열로 변경
+      label: "수량",
       flex: 1.5,
       render: (row) => (
         <span style={{ display: "flex" }}>{row.quantity}개</span>
@@ -229,7 +221,7 @@ export default function CartListComponent({ cart, setCart }: Props) {
     },
     {
       key: "price",
-      label: "상품금액", // 문자열로 변경
+      label: "상품금액",
       flex: 1.2,
       render: (row) => (
         <span style={{ display: "flex", justifyContent: "center" }}>
@@ -239,7 +231,7 @@ export default function CartListComponent({ cart, setCart }: Props) {
     },
     {
       key: "close",
-      label: "삭제", // 문자열로 변경
+      label: "삭제",
       flex: 0.5,
       render: (row) => (
         <Image
@@ -259,7 +251,7 @@ export default function CartListComponent({ cart, setCart }: Props) {
   const tableData = cart.map((item) => ({
     id: item.product.id,
     name: item.product.name,
-    img: "/img/default.png", // 나중에 product.image 넣으면 됨
+    img: "/img/default.png",
     price: item.product.price,
     quantity: item.quantity,
   }));
@@ -275,15 +267,13 @@ export default function CartListComponent({ cart, setCart }: Props) {
   const goToCheckout = (all: boolean) => {
     try {
       const selectedItems = all
-        ? cart // 전체상품
-        : cart.filter((item) => checkedItems.includes(item.product.id)); // 선택상품
+        ? cart
+        : cart.filter((item) => checkedItems.includes(item.product.id));
 
       if (session) {
-        // 회원
         const ids = selectedItems.map((item) => item.product.id).join(",");
         router.push(`/checkout?ids=${ids}`);
       } else {
-        // 비회원
         localStorage.setItem("checkoutItems", JSON.stringify(selectedItems));
         router.push("/checkout");
       }

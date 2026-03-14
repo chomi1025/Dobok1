@@ -2,14 +2,14 @@ import styled from "@emotion/styled";
 
 export const Pagination = styled.div`
   display: flex;
-  justify-content: center; // 중앙정렬
-  width: 100%; // 부모 전체 차지
+  justify-content: center;
+  width: 100%;
   margin-top: 70px;
   padding: 0;
 
   .pagination {
-    display: flex; // ul flex로
-    flex-wrap: wrap; // 버튼 많으면 다음 줄로 넘어감
+    display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     list-style: none;
     margin: 0;
@@ -21,8 +21,8 @@ export const Pagination = styled.div`
   }
 
   .page-link {
-    padding: 6px 12px; // 글로벌 초기화 덮어쓰기
-    height: 36px; // 높이 고정
+    padding: 6px 12px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -37,7 +37,6 @@ export const Pagination = styled.div`
   }
 `;
 
-// style.ts
 export const StatusActions = styled.div`
   display: flex;
   flex-direction: column;

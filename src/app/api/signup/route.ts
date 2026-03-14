@@ -1,4 +1,3 @@
-// src/app/api/signup/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
@@ -18,7 +17,6 @@ export async function POST(req: NextRequest) {
       address,
     } = body;
 
-    // 1️⃣ 비밀번호 확인
     if (!password || password.trim() !== passwordConfirm?.trim()) {
       return NextResponse.json(
         { error: "비밀번호 확인이 일치하지 않습니다." },

@@ -249,7 +249,6 @@ export default function ProductDetailClientPage({ product }: Prop) {
     setAddedOptions((prev) => prev.filter((item) => item.id !== id));
   };
 
-  //   색상,사이즈있는지 여부
   const hasColor = product.options.some((opt) => opt.color && opt.color !== "");
   const hasSize = product.options.some((opt) => opt.size && opt.size !== "");
 

@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import * as L from "./style";
 import Link from "next/link";
 import { useState } from "react";
-import { signIn } from "next-auth/react"; // ✅ 여기 import 필수
+import { signIn } from "next-auth/react";
 
 export default function Login() {
   const router = useRouter();

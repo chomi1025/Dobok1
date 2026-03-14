@@ -98,11 +98,11 @@ export const ProductDetail = styled.div<{ header?: boolean }>`
 `;
 
 export const PriceInfo = styled.div`
-  flex: 1.2; // 상품금액/수량
+  flex: 1.2;
   text-align: center;
 `;
 
 export const TotalPrice = styled.div`
-  flex: 1.2; // 합계금액
+  flex: 1.2;
   text-align: center;
 `;

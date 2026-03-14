@@ -206,14 +206,14 @@ export const Pagination = styled.div`
     display: flex;
     align-items: center;
     font-weight: bold;
-    color: #fff; /* 🔹 active 글자색 */
-    background: #333; /* 🔹 active 배경색 */
+    color: #fff;
+    background: #333;
     height: 100%;
   }
 
   .prev .page-link img,
   .next .page-link img {
-    width: 24px; // 원하는 화살표 크기
+    width: 24px;
     height: 24px;
     object-fit: contain;
   }
@@ -224,7 +224,6 @@ export const Pagination = styled.div`
   }
 `;
 
-// style.ts
 export const StatusActions = styled.div`
   display: flex;
   flex-direction: column;

@@ -1,4 +1,3 @@
-// src/styles/fonts.ts
 import localFont from "next/font/local";
 
 export const pretendard = localFont({
@@ -22,6 +21,6 @@ export const pretendard = localFont({
       weight: "800",
     },
   ],
-  variable: "--font-pretendard", // CSS 변수로 활용 가능
-  display: "swap", // 폰트 로딩 중에도 텍스트를 보여줘서 LCP 방어!
+  variable: "--font-pretendard",
+  display: "swap",
 });

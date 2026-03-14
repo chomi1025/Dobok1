@@ -197,7 +197,6 @@ export const SelectedItem = styled.div`
   }
 `;
 
-// 3. 수량 조절 컴포넌트
 export const Counter = styled.div`
   display: flex;
   align-items: center;

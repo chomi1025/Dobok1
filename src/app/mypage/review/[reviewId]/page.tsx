@@ -6,14 +6,12 @@ import Image from "next/image";
 import * as R from "./style";
 import ReviewEditor from "@/components/mypage/ReviewEditor";
 
-// 답변(Reply) 타입
 type ReplyType = {
   id: number;
   content: string;
   createdAt: string;
 };
 
-// 리뷰 상세 데이터 타입
 type ReviewType = {
   id: number;
   rating: number;
@@ -40,11 +38,10 @@ export default function ReviewDetailPage() {
   const [replyContent, setReplyContent] = useState("");
   const router = useRouter();
   const { data: session } = useSession();
-  const loginUserRole = session?.user?.role?.toLowerCase(); // admin / user
+  const loginUserRole = session?.user?.role?.toLowerCase();
 
   const [isEditingReply, setIsEditingReply] = useState(false);
 
-  // 리뷰 가져오기
   useEffect(() => {
     if (!reviewId) return;
 
@@ -55,7 +52,6 @@ export default function ReviewDetailPage() {
         const data = await res.json();
         setReview(data);
 
-        // TipTap용 content 변환 (줄바꿈 -> <p><br></p>)
         const formatted = data.content
           .split("\n")
           .map((line: string) => (line ? `<p>${line}</p>` : "<p><br></p>"))
@@ -72,7 +68,6 @@ export default function ReviewDetailPage() {
 
   if (!review) return <R.Wrapper>로딩중...</R.Wrapper>;
 
-  // 리뷰수정후 등록함수
   const handleUpdateReview = async () => {
     if (!reviewContent) return alert("내용을 입력해주세요");
 
@@ -99,7 +94,6 @@ export default function ReviewDetailPage() {
     }
   };
 
-  // 리뷰삭제
   const handleDeleteReview = async () => {
     if (!confirm("리뷰를 삭제하시겠습니까?")) return;
 
@@ -117,7 +111,6 @@ export default function ReviewDetailPage() {
     }
   };
 
-  // 댓글등록
   const handleSubmitReply = async () => {
     if (!replyContent) return alert("답변 내용을 입력해주세요");
 
@@ -136,8 +129,8 @@ export default function ReviewDetailPage() {
         reply: updated,
       }));
 
-      setReplyContent(updated.content); // ⭐ 핵심
-      setIsEditingReply(false); // ⭐ 핵심
+      setReplyContent(updated.content);
+      setIsEditingReply(false);
 
       alert("답변이 등록되었습니다!");
     } catch (err) {
@@ -196,7 +189,6 @@ export default function ReviewDetailPage() {
           </>
         ) : (
           <>
-            {/* ⭐ 여기 */}
             <ReviewEditor
               //key={review.id}
               value={reviewContent}

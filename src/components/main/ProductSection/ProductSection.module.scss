@@ -76,14 +76,14 @@
 
   @include tablet {
     margin-top: rem(60);
-    grid-template-columns: repeat(3, minmax(0, 1fr)); // 수정
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: rem(20);
     width: 100%;
   }
 
   @include mobile {
     margin-top: rem(40);
-    grid-template-columns: repeat(2, minmax(0, 1fr)); // 수정
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: rem(15);
   }
 

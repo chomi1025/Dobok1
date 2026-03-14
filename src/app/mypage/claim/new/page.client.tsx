@@ -28,7 +28,7 @@ export default function ClaimNewClientPage({ order }: { order: Order }) {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [reason, setReason] = useState("");
   const [detail, setDetail] = useState("");
-  const [claimType, setClaimType] = useState<"RETURN" | "EXCHANGE">("RETURN"); // 기본값 반품
+  const [claimType, setClaimType] = useState<"RETURN" | "EXCHANGE">("RETURN");
 
   const toggleItem = (id: number) => {
     setSelectedItems((prev) =>
@@ -47,7 +47,7 @@ export default function ClaimNewClientPage({ order }: { order: Order }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          orderId: order.id, // ✅ 이거 추가
+          orderId: order.id,
           orderItemIds: selectedItems,
           reason,
           detail,
@@ -64,7 +64,7 @@ export default function ClaimNewClientPage({ order }: { order: Order }) {
       }
 
       alert("반품/교환 신청이 완료되었습니다!");
-      router.push("/mypage/order"); // 신청 후 이동
+      router.push("/mypage/order");
     } catch (e) {
       console.error("Fetch 에러:", e);
       alert("신청 중 오류가 발생했습니다.");

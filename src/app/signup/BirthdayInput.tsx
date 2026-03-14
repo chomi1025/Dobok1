@@ -7,7 +7,6 @@ import {
   FieldValues,
   Path,
 } from "react-hook-form";
-import type { FormType } from "./types";
 
 type Props<T extends FieldValues> = {
   control: Control<T>;
@@ -44,19 +43,16 @@ export default function BirthdayInputComponent<T extends FieldValues>({
             <S.Error_Wrapper>
               <label htmlFor="birthDate">생년월일</label>
 
-              {/* 수정 모드면 변경 불가 메시지 */}
               {isEdit && (
                 <p className="error">생년월일은 변경할 수 없습니다.</p>
               )}
 
-              {/* 수정 모드 아닐 때만 에러 표시 */}
               {!isEdit && errors.birthDate && (
                 <p className="error">{String(errors.birthDate.message)}</p>
               )}
             </S.Error_Wrapper>
 
             <div style={{ display: "flex", gap: "5px" }}>
-              {/* Year */}
               <S.Select_box>
                 <select
                   value={year || ""}
@@ -81,7 +77,7 @@ export default function BirthdayInputComponent<T extends FieldValues>({
                   onChange={(e) =>
                     handleChange(year || "", e.target.value, day || "")
                   }
-                  disabled={isEdit} // ← 수정 모드면 선택 불가
+                  disabled={isEdit}
                 >
                   <option value="">--</option>
                   {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
@@ -92,14 +88,13 @@ export default function BirthdayInputComponent<T extends FieldValues>({
                 </select>
               </S.Select_box>
 
-              {/* Day */}
               <S.Select_box>
                 <select
                   value={day || ""}
                   onChange={(e) =>
                     handleChange(year || "", month || "", e.target.value)
                   }
-                  disabled={isEdit} // ← 수정 모드면 선택 불가
+                  disabled={isEdit}
                 >
                   <option value="">--</option>
                   {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (

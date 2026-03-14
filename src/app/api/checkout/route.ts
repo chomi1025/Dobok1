@@ -10,10 +10,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { ids } = await req.json(); // 클라이언트에서 보낸 선택 상품 ID 배열
+  const { ids } = await req.json();
   const productIds = ids.map(Number);
 
-  // DB에서 실제 유저 장바구니에 있는 상품만 가져오기
   const cartItems = await prisma.cartItem.findMany({
     where: {
       userId: Number(session.user.id),
@@ -32,7 +31,6 @@ export async function POST(req: Request) {
     );
   }
 
-  // 가격 계산 등 처리
   const total = cartItems.reduce(
     (acc, item) => acc + item.quantity * (item.option?.price || 0),
     0,

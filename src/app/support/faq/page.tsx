@@ -48,12 +48,9 @@ const faqs = [
 ];
 
 export default function FaqPage() {
-  // 아무것도 안열려있는 상태
   const [openId, setOpenId] = useState<number | null>(null);
 
-  // 열었다 닫았다
   const toggle = (id: number) => {
-    // setOpenId((open) => (open === id ? null : id));
     setOpenId(openId === id ? null : id);
   };
 

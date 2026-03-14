@@ -7,7 +7,6 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { id, password } = body;
 
-    // 1️⃣ 입력 체크
     if (!id || !password) {
       return NextResponse.json(
         { error: "아이디와 비밀번호를 입력해주세요." },
@@ -15,9 +14,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // 2️⃣ username 기준 유저 조회
     const user = await prisma.user.findUnique({
-      where: { username: id }, // 여기서 id → username 매핑
+      where: { username: id },
     });
 
     if (!user) {
@@ -27,7 +25,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // 3️⃣ 비밀번호 검증
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
       return NextResponse.json(
@@ -36,8 +33,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // 4️⃣ 로그인 성공
-    // 여기서 JWT 발급하거나 쿠키 세션 추가 가능
     return NextResponse.json({
       ok: true,
       user: {

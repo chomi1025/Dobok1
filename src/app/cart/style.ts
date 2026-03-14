@@ -17,8 +17,6 @@ export const SectionHeader = styled.div`
   }
 `;
 
-// CartEmpty
-
 export const List_Wrapper = styled.div``;
 
 export const List = styled.div`

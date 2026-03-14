@@ -22,11 +22,8 @@ const schema: ObjectSchema<FormType> = yup.object({
     .string()
     .required("아이디는 필수입니다.")
     .min(4, "4글자 이상")
-    .max(20, "20글자 이하") // 원하는 최대 글자수
-    .matches(
-      /^[A-Za-z0-9]+$/, // ✅ 영어 대소문자 + 숫자만 허용
-      "아이디는 영어와 숫자만 사용 가능합니다.",
-    ),
+    .max(20, "20글자 이하")
+    .matches(/^[A-Za-z0-9]+$/, "아이디는 영어와 숫자만 사용 가능합니다."),
   usernameChecked: yup
     .boolean()
     .required("아이디 중복체크를 해주세요.")

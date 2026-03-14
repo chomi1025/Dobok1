@@ -12,7 +12,7 @@ export const PaginationWrapper = styled.div`
     display: flex;
     list-style: none;
     padding: 0;
-    gap: 8px; // 버튼 사이 간격
+    gap: 8px;
     align-items: center;
   }
 
@@ -22,7 +22,6 @@ export const PaginationWrapper = styled.div`
     align-items: center;
   }
 
-  /* 숫자와 이전/다음 공통 스타일 */
   .pagination li a {
     display: flex;
     justify-content: center;
@@ -41,28 +40,24 @@ export const PaginationWrapper = styled.div`
     user-select: none;
   }
 
-  /* 호버 효과 */
   .pagination li a:hover:not(.disabled) {
     background-color: #f8f9fa;
     border-color: #000;
   }
 
-  /* 활성화된 페이지 (현재 페이지) */
   .pagination .active a {
-    background-color: #000; // 검은색으로 포인트를 주면 더 세련돼 보여!
+    background-color: #000;
     color: #fff;
     border-color: #000;
     font-weight: 600;
   }
 
-  /* 이전/다음 글자 스타일 */
   .pagination .previous a,
   .pagination .next a {
     font-weight: 500;
     border-color: #e1e2e3;
   }
 
-  /* 비활성화 상태 (첫 페이지에서 '이전' 등) */
   .pagination .disabled a {
     color: #ccc;
     cursor: not-allowed;
@@ -70,7 +65,6 @@ export const PaginationWrapper = styled.div`
     border-color: #eee;
   }
 
-  /* 생략 부호 (...) 스타일 */
   .pagination .break a {
     border: none;
     background: none;
@@ -100,7 +94,7 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
         previousLabel={"이전"}
         nextLabel={"다음"}
         pageCount={totalPages}
-        forcePage={currentPage - 1} // 현재 페이지 강제 적용
+        forcePage={currentPage - 1}
         onPageChange={handlePageChange}
         containerClassName={"pagination"}
         activeClassName={"active"}

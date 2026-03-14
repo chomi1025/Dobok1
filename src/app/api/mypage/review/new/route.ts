@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import fs from "fs";
 import path from "path";
 
-// 업로드 폴더
 const uploadDir = path.join(process.cwd(), "public/uploads");
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -14,13 +13,12 @@ export async function POST(req: NextRequest) {
     const orderItemId = Number(formData.get("orderItemId"));
     const rating = Number(formData.get("rating"));
     let content = formData.get("content");
-    const loginUserId = Number(formData.get("userId")); // 프론트에서 보내는 userId
+    const loginUserId = Number(formData.get("userId"));
 
-    // content가 null이라면 빈 문자열로 처리
     if (content === null) {
-      content = ""; // or you can throw an error if content is required
+      content = "";
     } else {
-      content = content.toString(); // 문자열로 변환
+      content = content.toString();
     }
 
     if (!orderItemId || !loginUserId) {
@@ -30,7 +28,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 이미지 업로드
     const images: string[] = [];
     const files = formData.getAll("images") as File[];
     for (const file of files) {
@@ -38,10 +35,9 @@ export async function POST(req: NextRequest) {
       const buffer = Buffer.from(await file.arrayBuffer());
       const filename = Date.now() + "-" + file.name;
       await fs.promises.writeFile(path.join(uploadDir, filename), buffer);
-      images.push("/uploads/" + filename); // 클라이언트에서 접근 가능하도록 경로 포함
+      images.push("/uploads/" + filename);
     }
 
-    // Prisma DB 저장
     const createdReview = await prisma.review.create({
       data: {
         orderItemId,
@@ -52,14 +48,13 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // ✅ 생성된 리뷰 ID 반환
     return NextResponse.json({
       message: "리뷰 등록 성공",
       reviewId: createdReview.id,
     });
   } catch (err) {
     console.error(err);
-    // ❌ catch에서는 createdReview.id 쓰면 안 됨
+
     return NextResponse.json({ error: "리뷰 등록 실패" }, { status: 500 });
   }
 }

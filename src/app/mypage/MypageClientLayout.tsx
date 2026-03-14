@@ -1,4 +1,3 @@
-// src/app/mypage/MypageClientLayout.tsx
 "use client";
 
 import Sidebar from "./components/Sidebar";

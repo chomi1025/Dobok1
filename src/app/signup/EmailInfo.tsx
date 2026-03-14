@@ -8,7 +8,6 @@ import {
   Path,
 } from "react-hook-form";
 
-// 1. Props에 제네릭 <T extends FieldValues> 적용
 type Props<T extends FieldValues> = {
   control: Control<T>;
   errors: FieldErrors<T>;
@@ -27,7 +26,7 @@ export default function EmailComponent<T extends FieldValues>({
   return (
     <S.EmailInfo>
       <Controller
-        name={"email" as Path<T>} // 2. as Path<T> 추가
+        name={"email" as Path<T>}
         control={control}
         render={({ field: { value, onChange } }) => (
           <S.Email className="field">
@@ -47,7 +46,6 @@ export default function EmailComponent<T extends FieldValues>({
                 id="email"
                 type="text"
                 placeholder="이메일"
-                // 4. value가 undefined일 경우를 대비해 (value || "") 추가
                 value={(value || "").split("@")[0] || ""}
                 onChange={(e) => onChange(`${e.target.value}@${emailDomain}`)}
                 disabled={isEdit}

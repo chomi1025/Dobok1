@@ -9,17 +9,11 @@ import {
   UseFormSetValue,
 } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { FormType } from "./types";
-
-type User = {
-  id: string;
-  username: string;
-};
 
 type Props<T extends FieldValues> = {
   register: UseFormRegister<T>;
   errors: FieldErrors<T>;
-  setValue?: UseFormSetValue<T>; // 선택사항으로 변경 (수정페이지에선 안 쓸 수도 있으니)
+  setValue?: UseFormSetValue<T>;
   clearErrors?: UseFormClearErrors<T>;
   isEdit: boolean;
   user?: { id: string; username: string };
@@ -46,8 +40,7 @@ export default function AccountComponent<T extends FieldValues>({
       return;
     }
 
-    // ✅ 프론트에서 yup 검증
-    const usernameRegex = /^[A-Za-z0-9]+$/; // 영어+숫자만
+    const usernameRegex = /^[A-Za-z0-9]+$/;
     if (!usernameRegex.test(username)) {
       setCheckMessage("아이디는 영어와 숫자만 사용 가능합니다.");
       return;
@@ -57,7 +50,6 @@ export default function AccountComponent<T extends FieldValues>({
     setCheckMessage(null);
 
     try {
-      // 서버 API 호출 (예: /api/check-username?username=...)
       const res = await fetch(`/api/check-username?username=${username}`);
       const data = await res.json();
 
@@ -79,16 +71,14 @@ export default function AccountComponent<T extends FieldValues>({
     }
   };
 
-  // ✅ checkMessage가 바뀌면 3초 후 자동 사라지게
   useEffect(() => {
     if (checkMessage) {
-      // 3초 후 fadeOut 시작
       const timer1 = setTimeout(() => setFadeOut(true), 2000);
-      // fadeOut 끝나면 DOM 제거
+
       const timer2 = setTimeout(() => {
         setCheckMessage(null);
         setFadeOut(false);
-      }, 3500); // transition duration(0.5s) 후 제거
+      }, 3500);
 
       return () => {
         clearTimeout(timer1);
@@ -104,10 +94,9 @@ export default function AccountComponent<T extends FieldValues>({
       <div className="field">
         <S.Error_Wrapper>
           <label htmlFor="username">아이디</label>
-          {/* 회원정보 수정일 때 항상 표시 */}
+
           {isEdit && <p className="error">아이디는 변경할 수 없습니다.</p>}
 
-          {/* 회원가입일 때만 기존 에러 */}
           {!isEdit && errors.usernameChecked && (
             <p className="error">{String(errors.usernameChecked.message)}</p>
           )}
@@ -119,7 +108,6 @@ export default function AccountComponent<T extends FieldValues>({
           )}
         </S.Error_Wrapper>
 
-        {/* ✅ 토스트 팝업 */}
         {checkMessage && (
           <div
             style={{

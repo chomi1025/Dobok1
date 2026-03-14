@@ -7,7 +7,6 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-// 주문 상품 타입
 export interface Order {
   id: number;
   orderId: number;
@@ -21,7 +20,6 @@ export interface Order {
   totalPrice?: number;
 }
 
-// 장바구니 아이템 타입
 interface CartItem {
   product: {
     id: number;
@@ -31,7 +29,6 @@ interface CartItem {
   quantity: number;
 }
 
-// 사용자 정보 타입
 export interface GuestUser {
   postcode: string;
   address: string;
@@ -41,7 +38,6 @@ export interface GuestUser {
   email: string;
 }
 
-// 배송 정보 타입
 interface ShippingInfo {
   postcode: string;
   address: string;
@@ -50,7 +46,6 @@ interface ShippingInfo {
   cellphone: string;
 }
 
-// Props 타입
 interface GuestCheckoutPageProps {
   user?: GuestUser | null;
 }
@@ -77,7 +72,6 @@ export default function GuestCheckoutPage({ user }: GuestCheckoutPageProps) {
   useEffect(() => {
     if (status === "loading") return;
 
-    // 1️⃣ URL에서 ids 가져오기
     const idsParam = searchParams.get("ids") || "";
     const requestedIds = idsParam
       .split(",")
@@ -88,7 +82,6 @@ export default function GuestCheckoutPage({ user }: GuestCheckoutPageProps) {
       let actualCart: CartItem[] = [];
 
       if (session) {
-        // 회원: 서버에서 장바구니 가져오기
         const res = await fetch("/api/cart");
         if (!res.ok) return;
         const data: CartItem[] = await res.json();
@@ -139,7 +132,6 @@ export default function GuestCheckoutPage({ user }: GuestCheckoutPageProps) {
     fetchCartItems();
   }, [session, status, searchParams]);
 
-  // 배송지 선택 변경 시 자동 채워주기
   useEffect(() => {
     if (selectedShipping === "same" && user) {
       setShippingInfo({
@@ -150,23 +142,20 @@ export default function GuestCheckoutPage({ user }: GuestCheckoutPageProps) {
         cellphone: user.phone,
       });
     }
-    // 다른 선택지는 직접 입력 또는 기본/최근 배송지 로직 추가 가능
   }, [selectedShipping, user]);
 
-  // 1. 전체 상품의 총 금액 계산 (상품금액 * 수량의 총합)
   const totalOrderPrice = cartItems.reduce(
     (acc, cur) => acc + cur.unitPrice * cur.quantity,
     0,
   );
 
-  // 2. 전체 금액이 50,000원 이상인지 여부
   const isFreeDelivery = totalOrderPrice >= 50000;
 
   const orderColumns: Column<Order>[] = [
     {
       key: "productName",
       label: "상품명",
-      flex: 3, // 상품명은 좀 더 넓게
+      flex: 3,
       render: (row) => (
         <div style={{ display: "flex" }}>
           <img

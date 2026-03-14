@@ -37,9 +37,8 @@ export default function ProductCard({ product }: Props) {
       ? Math.floor(price * (1 - (saleRate ?? 0) / 100))
       : price;
 
-  // 장바구니 함수
   const addToCart = async (e: React.MouseEvent) => {
-    e.preventDefault(); // Link 이동 막기 (중요)
+    e.preventDefault();
     e.stopPropagation();
 
     if (loading) return;

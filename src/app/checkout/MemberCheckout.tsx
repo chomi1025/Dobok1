@@ -50,7 +50,7 @@ interface Props {
 }
 
 interface ShippingForm {
-  shippingType: "default" | "custom"; // 추가
+  shippingType: "default" | "custom";
   receiverName: string;
   postcode: string;
   address: string;
@@ -66,9 +66,8 @@ export default function MemberCheckoutPage({ user }: Props) {
   const [cartItems, setCartItems] = useState<Order[]>([]);
   const [selectedShipping, setSelectedShipping] = useState("default");
 
-  // Yup validation schema
   const schema = yup.object().shape({
-    shippingType: yup.string().oneOf(["default", "custom"]).required(), // 추가
+    shippingType: yup.string().oneOf(["default", "custom"]).required(),
     receiverName: yup.string().required("받는 분 이름을 입력하세요"),
     postcode: yup.string().required("우편번호를 입력하세요"),
     address: yup.string().required("주소를 입력하세요"),
@@ -79,7 +78,7 @@ export default function MemberCheckoutPage({ user }: Props) {
       .matches(
         /^01[0-9]-[0-9]{3,4}-[0-9]{4}$/,
         "전화번호 형식이 올바르지 않습니다",
-      ), // phone -> cellphone으로 수정
+      ),
     message: yup.string().required("배송 메시지를 입력하세요"),
     paymentMethod: yup.string().required(),
     agree: yup.boolean().oneOf([true], "구매 진행에 동의해주세요").required(),
@@ -97,16 +96,16 @@ export default function MemberCheckoutPage({ user }: Props) {
     defaultValues: {
       shippingType: "default",
       receiverName: user.name,
-      postcode: user.postcode, // zipCode -> postcode로 수정
+      postcode: user.postcode,
       address: user.address,
-      detailAddress: user.detailAddress, // address2 -> detailAddress로 수정
-      cellphone: user.phone, // phone -> cellphone으로 수정
+      detailAddress: user.detailAddress,
+      cellphone: user.phone,
       message: undefined,
-      paymentMethod: "card", // 기본 결제 수단 설정
-      agree: false, // 동의 여부 기본값
+      paymentMethod: "card",
+      agree: false,
     },
   });
-  // URL에서 주문할 상품 IDs 가져오기 + 서버 장바구니 fetch
+
   useEffect(() => {
     const idsParam = searchParams.get("ids") || "";
     const requestedIds = idsParam
@@ -115,7 +114,7 @@ export default function MemberCheckoutPage({ user }: Props) {
       .filter(Boolean);
 
     const fetchCartItems = async () => {
-      const res = await fetch("/api/cart"); // 서버 장바구니 API
+      const res = await fetch("/api/cart");
       if (!res.ok) return;
       const data: CartItem[] = await res.json();
 
@@ -123,7 +122,6 @@ export default function MemberCheckoutPage({ user }: Props) {
         ? data.filter((item) => requestedIds.includes(item.product.id))
         : data;
 
-      // URL 안전하게 조정
       if (requestedIds.length !== filteredItems.length) {
         const safeIds = filteredItems.map((item) => item.product.id).join(",");
         window.history.replaceState(
@@ -151,7 +149,6 @@ export default function MemberCheckoutPage({ user }: Props) {
     fetchCartItems();
   }, [searchParams]);
 
-  // 배송지 선택 시 주문자 정보로 자동 채우기
   useEffect(() => {
     if (selectedShipping === "default") {
       reset({
@@ -174,20 +171,18 @@ export default function MemberCheckoutPage({ user }: Props) {
     }
   }, [selectedShipping, user, reset]);
 
-  // 총 금액 계산
   const totalOrderPrice = cartItems.reduce(
     (acc, cur) => acc + cur.unitPrice * cur.quantity,
     0,
   );
 
-  // 전체 금액이 50,000원 이상인지
   const isFreeDelivery = totalOrderPrice >= 50000;
 
   const orderColumns: Column<Order>[] = [
     {
       key: "productName",
       label: "상품명",
-      flex: 3, // 상품명은 좀 더 넓게
+      flex: 3,
       render: (row) => (
         <div style={{ display: "flex" }}>
           <img
@@ -241,7 +236,6 @@ export default function MemberCheckoutPage({ user }: Props) {
     },
   ];
 
-  console.log(user);
   return (
     <C.Wrapper>
       <form action="">

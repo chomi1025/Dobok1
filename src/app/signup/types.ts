@@ -1,4 +1,3 @@
-// signup/types.ts
 export interface FormType {
   username: string;
   usernameChecked: boolean;

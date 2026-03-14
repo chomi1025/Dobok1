@@ -13,7 +13,7 @@ export default async function ProductDetailPage({
   console.log(productId);
 
   const product = await prisma.product.findUnique({
-    where: { id: Number(productId) }, // ID가 숫자라면 변환 필수!
+    where: { id: Number(productId) },
     include: {
       options: true,
       category: {
