@@ -10,7 +10,7 @@ export type Category = {
   slug: string;
   parentId: number | null;
   sortOrder: number | null;
-  children: Category[];
+  children?: Category[];
 };
 
 type Props = {
@@ -21,7 +21,7 @@ type Props = {
 
 export default function PageClient({ grouped, mainSlug, subSlug }: Props) {
   const currentMain = grouped.find((m) => m.slug === mainSlug);
-  const currentSub = currentMain?.children.find((s) => s.slug === subSlug);
+  const currentSub = currentMain?.children?.find((s) => s.slug === subSlug);
 
   return (
     <P.Container>
@@ -47,7 +47,7 @@ export default function PageClient({ grouped, mainSlug, subSlug }: Props) {
 
         <P.TabMenuWrapper>
           <ul>
-            {currentMain?.children.map((sub) => (
+            {currentMain?.children?.map((sub) => (
               <li
                 key={sub.id}
                 className={sub.slug === subSlug ? "activeTab" : ""}

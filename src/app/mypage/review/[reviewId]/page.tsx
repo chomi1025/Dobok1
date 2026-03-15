@@ -216,7 +216,7 @@ export default function ReviewDetailPage() {
         <h3>답변</h3>
 
         {/* 관리자 */}
-        {loginUserRole === "admin" ? (
+        {loginUserRole === "ADMIN" ? (
           isEditingReply || !review.reply ? (
             <R.Textarea_Admin
               value={replyContent}
@@ -238,7 +238,7 @@ export default function ReviewDetailPage() {
       </R.Answer>
 
       <R.Button_Wrapper>
-        {loginUserRole === "admin" && (
+        {loginUserRole === "ADMIN" && (
           <>
             {!review.reply && (
               <R.Button_submit onClick={handleSubmitReply}>

@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { Role } from "@prisma/client";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -35,8 +36,8 @@ export const authOptions: NextAuthOptions = {
             id: user.id.toString(),
             username: user.username,
             name: user.name,
-            role: user.role,
-          };
+            role: user.role as string,
+          } as any;
         } catch (err) {
           console.error("authorize error:", err);
           return null;
@@ -63,7 +64,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.username = token.username as string;
-        session.user.role = token.role as string;
+        session.user.role = token.role as Role;
       }
       return session;
     },

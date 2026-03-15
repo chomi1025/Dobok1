@@ -1,9 +1,17 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 
 interface Params {
   params: { orderNumber: string };
 }
+
+type OrderItemWithDetails = Prisma.OrderItemGetPayload<{
+  include: {
+    reviews: true;
+    product: true;
+  };
+}>;
 
 export async function GET(req: Request, { params }: Params) {
   const { orderNumber } = params;
@@ -40,7 +48,7 @@ export async function GET(req: Request, { params }: Params) {
       address: order.user.address,
     },
 
-    items: order.items.map((item) => ({
+    items: order.items.map((item: OrderItemWithDetails) => ({
       id: item.id,
       productName: item.productName,
       quantity: item.quantity,

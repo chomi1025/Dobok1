@@ -2,6 +2,19 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/options";
+import { Prisma } from "@prisma/client";
+
+type OrderWithItemsAndClaims = Prisma.OrderGetPayload<{
+  include: {
+    items: {
+      include: {
+        claims: true;
+      };
+    };
+  };
+}>;
+
+type OrderItemWithClaims = OrderWithItemsAndClaims["items"][number];
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -26,7 +39,7 @@ export async function GET() {
   });
 
   const formatted = orders
-    .map((o) => {
+    .map((o: OrderWithItemsAndClaims) => {
       if (!o.items.length) return null;
 
       const firstItem = o.items[0];

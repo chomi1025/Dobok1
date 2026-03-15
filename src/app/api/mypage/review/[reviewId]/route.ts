@@ -102,7 +102,7 @@ export async function DELETE(req: Request, { params }: Params) {
       return NextResponse.json({ error: "리뷰 없음" }, { status: 404 });
     }
 
-    if (role !== "admin" && review.userId !== userId) {
+    if (role !== "ADMIN" && review.userId !== userId) {
       return NextResponse.json({ error: "권한 없음" }, { status: 403 });
     }
 

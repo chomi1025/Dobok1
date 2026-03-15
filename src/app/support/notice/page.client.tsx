@@ -13,7 +13,7 @@ interface NoticeRow {
 }
 
 interface Props {
-  role?: string;
+  role?: "ADMIN" | "USER" | string | null;
 }
 
 const noticeColumns = [
@@ -74,7 +74,7 @@ export default function NoticeClientPage({ role }: Props) {
     <N.Inner>
       <h3>공지사항</h3>
 
-      {role == "admin" && <button>글쓰기</button>}
+      {role == "ADMIN" && <button>글쓰기</button>}
 
       <Table columns={noticeColumns} inquiry={false} data={mockNotices} />
     </N.Inner>

@@ -2,8 +2,12 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/options";
-
+import { Prisma } from "@prisma/client";
 export const dynamic = "force-dynamic";
+
+type OrderItemWithReviews = Prisma.OrderItemGetPayload<{
+  include: { reviews: true };
+}>;
 
 export async function GET(req: Request) {
   try {
@@ -21,7 +25,7 @@ export async function GET(req: Request) {
       orderBy: { createdAt: "desc" },
     });
 
-    const formattedReviews = orderItems.map((item) => ({
+    const formattedReviews = orderItems.map((item: OrderItemWithReviews) => ({
       id: item.id,
       productName: item.productName,
       img: item.productImage || "/sample.png",

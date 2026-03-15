@@ -1,9 +1,17 @@
 import OrderDetailClientPage from "./page.client";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import { Prisma } from "@prisma/client";
+
+type OrderWithDetails = Prisma.OrderGetPayload<{
+  include: {
+    items: true;
+    user: true;
+  };
+}>;
 
 interface Props {
-  params: { orderNumber: string };
+  params: Promise<{ orderNumber: string }>;
 }
 
 type Address = {
@@ -31,13 +39,15 @@ interface FormattedOrder {
 }
 
 export default async function OrderDetailPage({ params }: Props) {
-  const order = await prisma.order.findUnique({
-    where: { orderNumber: params.orderNumber },
+  const { orderNumber } = await params;
+
+  const order = (await prisma.order.findUnique({
+    where: { orderNumber },
     include: {
       items: true,
       user: true,
     },
-  });
+  })) as OrderWithDetails | null;
 
   if (!order) notFound();
 

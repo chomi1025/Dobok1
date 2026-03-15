@@ -24,7 +24,7 @@ type Category = {
   slug: string;
   parentId: number | null;
   sortOrder: number | null;
-  children: Category[];
+  children?: Category[];
 };
 
 export default function HeaderClient({

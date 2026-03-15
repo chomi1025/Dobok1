@@ -1,9 +1,13 @@
-// app/api/mypage/claims/route.ts
 export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/options";
+import { Prisma } from "@prisma/client";
+
+type ClaimWithOrderItem = Prisma.ClaimGetPayload<{
+  include: { orderItem: true };
+}>;
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -29,7 +33,7 @@ export async function GET() {
     orderBy: { requestedAt: "desc" },
   });
 
-  const formatted = claims.map((c) => ({
+  const formatted = claims.map((c: ClaimWithOrderItem) => ({
     id: c.id,
     type: c.claimType.toLowerCase(),
     requestedAt: c.requestedAt.toISOString().slice(0, 10),

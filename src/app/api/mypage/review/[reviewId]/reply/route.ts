@@ -10,7 +10,7 @@ interface Params {
 export async function POST(req: Request, { params }: Params) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== "admin") {
+    if (!session || session.user.role !== "ADMIN") {
       return NextResponse.json({ error: "관리자만 가능" }, { status: 403 });
     }
 

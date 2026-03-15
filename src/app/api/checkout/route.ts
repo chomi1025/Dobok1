@@ -1,8 +1,12 @@
-// app/api/checkout/route.ts (POST)
 import { authOptions } from "@/lib/auth/options";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
+
+type CartItemWithProduct = Prisma.CartItemGetPayload<{
+  include: { product: true; option: true };
+}>;
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -31,10 +35,10 @@ export async function POST(req: Request) {
     );
   }
 
-  const total = cartItems.reduce(
-    (acc, item) => acc + item.quantity * (item.option?.price || 0),
-    0,
-  );
+  const total = cartItems.reduce((acc: number, item: CartItemWithProduct) => {
+    const itemPrice = item.option?.price ?? 0; // 옵션이 없으면 0원
+    return acc + item.quantity * itemPrice;
+  }, 0);
 
   return NextResponse.json({ success: true, items: cartItems, total });
 }
