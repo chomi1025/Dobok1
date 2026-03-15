@@ -1,13 +1,16 @@
 import { createClient } from "@supabase/supabase-js";
 
 export const createServerClient = () => {
-  return createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      auth: {
-        persistSession: false,
-      },
-    },
-  );
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!url || !key) {
+    throw new Error(
+      "Supabase 환경 변수가 설정되지 않았습니다. Vercel 설정을 확인하세요!",
+    );
+  }
+
+  return createClient(url, key, {
+    auth: { persistSession: false },
+  });
 };
