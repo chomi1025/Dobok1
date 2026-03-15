@@ -40,7 +40,6 @@ export interface ProductFormValues {
   options: ProductOption[];
 }
 
-// 상단 import 문에서 ProductImagecomponent는 지우고 아래처럼 추가
 const ProductImagecomponent = dynamic(() => import("./ProductImage"), {
   ssr: false,
   loading: () => (
@@ -129,8 +128,6 @@ const schema: yup.ObjectSchema<ProductFormValues> = yup.object({
 });
 
 export default function AdminProductNewClient() {
-  const [images, setImages] = useState([]);
-  const [thumbnail, setThumbnail] = useState(null);
   const router = useRouter();
 
   const onInvalid: SubmitErrorHandler<ProductFormValues> = (errors) => {
@@ -139,8 +136,6 @@ export default function AdminProductNewClient() {
     if (errors.options && Array.isArray(errors.options)) {
       errors.options.forEach((opt) => {
         if (opt) {
-          const optionError = opt as any;
-
           if ("price" in opt) messages.push(FIELD_LABELS["price"]);
           if ("stock" in opt) messages.push(FIELD_LABELS["stock"]);
         }

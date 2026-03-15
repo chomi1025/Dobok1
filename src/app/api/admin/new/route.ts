@@ -22,7 +22,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // options 배열 없으면 단일 옵션으로 만들어주기
     const optionsData =
       body.options && body.options.length > 0
         ? body.options
@@ -37,7 +36,6 @@ export async function POST(req: NextRequest) {
             },
           ];
 
-    // 실제 DB 저장
     const product = await prisma.product.create({
       data: {
         name: body.name,

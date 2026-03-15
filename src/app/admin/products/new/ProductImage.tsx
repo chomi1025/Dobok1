@@ -67,6 +67,7 @@ function SortableItem({ id, preview, fileName, onRemove }: SortableItemProps) {
       >
         [미리보기]
       </a>
+
       <span
         style={{
           fontSize: "14px",
@@ -77,10 +78,11 @@ function SortableItem({ id, preview, fileName, onRemove }: SortableItemProps) {
       >
         {fileName}
       </span>
+
       <button
         type="button"
         onClick={(e) => {
-          e.stopPropagation(); // drag로 이벤트 전파 방지
+          e.stopPropagation();
           onRemove();
         }}
         style={{
@@ -98,7 +100,6 @@ function SortableItem({ id, preview, fileName, onRemove }: SortableItemProps) {
   );
 }
 
-// 메인 컴포넌트
 export default function ProductImagecomponent() {
   const [tempThumbnail, setTempThumbnail] = useState(null);
   const { setValue, watch } = useFormContext<ProductFormValues>();
@@ -108,7 +109,7 @@ export default function ProductImagecomponent() {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 5, // 5px 이상 움직여야 드래그 시작 (그 이하는 클릭으로 간주)
+        distance: 5,
       },
     }),
   );
@@ -128,11 +129,13 @@ export default function ProductImagecomponent() {
   const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
       const files = Array.from(e.target.files || []);
+
       const newImages = files.map((file, idx) => ({
         id: `${Date.now()}-${idx}`,
         file,
         preview: URL.createObjectURL(file),
       }));
+
       setValue("images", [...images, ...newImages], { shouldValidate: true });
     } catch (err) {
       console.log(err);
@@ -151,7 +154,7 @@ export default function ProductImagecomponent() {
       console.log(err);
     }
   };
-  // DND 종료
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
