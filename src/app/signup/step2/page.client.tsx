@@ -6,14 +6,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ObjectSchema } from "yup";
-import BirthdayInputComponent from "./BirthdayInput";
-import PersonalInfoInputComponent from "./PersonalInfo";
-import AddressInputComponent from "./AddressInput";
-import AccountComponent from "./AccountInfo";
-import EmailComponent from "./EmailInfo";
 import TermsModal from "@/components/terms/Termsmodal";
 import type { FormType } from "./types";
 import toast from "react-hot-toast";
+import AccountComponent from "./AccountInfo";
+import PersonalInfoInputComponent from "./PersonalInfo";
+import AddressInputComponent from "./AddressInput";
+import EmailComponent from "./EmailInfo";
+import BirthdayInputComponent from "./BirthdayInput";
 
 type TermsType = "service" | "privacy";
 
