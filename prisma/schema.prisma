@@ -3,41 +3,44 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id               Int                @id @default(autoincrement())
-  email            String             @unique
-  password         String
-  name             String
-  username         String             @unique
-  role             String             @default("user") // "user" | "admin"
-  phone            String?            @unique
-  birthDate        DateTime
-  address          Json?
-  createdAt        DateTime           @default(now())
-
-  // --- 관계 설정 ---
-  orders           Order[]
-  reviews          Review[]
-
-  // 리뷰 답변 (어드민일 경우)
-  reviewReplies    ReviewReply[]
-
-  // 1:1 문의 (Inquiry)
-  inquiries        Inquiry[]
-  inquiryReplies   InquiryReply[]     // 어드민이 작성한 1:1 문의 답변
-
-  // 상품 Q&A (ProductQna)
-  productQnas      ProductQna[]
-  productQnaReplies ProductQnaReply[] // 어드민이 작성한 상품 Q&A 답변
+  ci                String?            @unique
+  id                Int               @id @default(autoincrement())
+  email             String            @unique
+  password          String
+  name              String
+  username          String            @unique
+  role              String            @default("user")
+  phone             String?           @unique
+  birthDate         DateTime
+  address           Json?
+  createdAt         DateTime          @default(now())
+  inquiries         Inquiry[]
+  inquiryReplies    InquiryReply[]
+  orders            Order[]
+  productQnas       ProductQna[]
+  productQnaReplies ProductQnaReply[]
+  reviews           Review[]
+  reviewReplies     ReviewReply[]
 }
 
-enum Role {
-  USER
-  ADMIN
+model Verification {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  code      String
+  createdAt DateTime @default(now())
+}
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  token     String   @unique
+  expires   DateTime
+  createdAt DateTime @default(now())
 }
 
 model Category {
@@ -47,7 +50,7 @@ model Category {
   slug      String     @unique
   imageUrl  String?
   sortOrder Int?
-  parent    Category?  @relation("CategoryToCategory", fields: [parentId], references: [id], onDelete: SetNull)
+  parent    Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
   children  Category[] @relation("CategoryToCategory")
   products  Product[]
 }
@@ -56,61 +59,41 @@ model Product {
   id          Int             @id @default(autoincrement())
   name        String
   description String?
-  thumbnail   String?          // 대표 이미지 URL
-  images      String[]         // 상세 이미지 URL 배열
-  material    String        @default("")
-  origin      String        @default("")
-  createdAt   DateTime @default(now())
-  // --- 옵션 관련 ---
-  options     ProductOption[]  // 색상/사이즈/가격/재고 등
-
-  // --- 카테고리 ---
+  thumbnail   String?
+  images      String[]
+  material    String          @default("")
+  origin      String          @default("")
+  createdAt   DateTime        @default(now())
   categoryId  Int
-  category    Category         @relation(fields: [categoryId], references: [id])
-
-  // --- 관계 ---
   cartItems   CartItem[]
   orderItems  OrderItem[]
-
+  category    Category        @relation(fields: [categoryId], references: [id])
+  options     ProductOption[]
   productQnas ProductQna[]
 }
 
 model ProductOption {
-  id     Int @id @default(autoincrement())
-
-  color  String?
-  size   String?
-
-  price  Int
-  stock  Int
-
-  status String @default("판매중")
-  sale   Int?
-
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id        Int        @id @default(autoincrement())
+  color     String?
+  size      String?
+  price     Int
+  stock     Int
+  status    String     @default("판매중")
+  sale      Int?
   productId Int
-
-  cartItems   CartItem[]   // ← 여기 역관계 추가
+  cartItems CartItem[]
+  product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model CartItem {
-  id          Int           @id @default(autoincrement())
-  userId      Int
-  productId   Int
-  productOptionId Int      // 선택된 옵션 ID 추가
-  quantity    Int           @default(1)
-  createdAt   DateTime      @default(now())
-
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  option      ProductOption @relation(fields: [productOptionId], references: [id])
-}
-
-enum OrderStatus {
-  PAYMENT_COMPLETE
-  PREPARING
-  SHIPPING
-  DELIVERED
-  CANCELLED
+  id              Int           @id @default(autoincrement())
+  userId          Int
+  productId       Int
+  productOptionId Int
+  quantity        Int           @default(1)
+  createdAt       DateTime      @default(now())
+  product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  option          ProductOption @relation(fields: [productOptionId], references: [id])
 }
 
 model Order {
@@ -127,7 +110,6 @@ model Order {
 model OrderItem {
   id           Int      @id @default(autoincrement())
   orderId      Int
-  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId    Int
   productName  String
   productImage String?
@@ -136,23 +118,101 @@ model OrderItem {
   quantity     Int
   totalPrice   Int
   createdAt    DateTime @default(now())
-  reviews      Review[]
   claims       Claim[]
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  reviews      Review?
 }
 
-
 model Claim {
-  id          Int    @id @default(autoincrement())
-  claimNumber String @unique @default(uuid())
+  id          Int         @id @default(autoincrement())
+  claimNumber String      @unique @default(uuid())
   claimType   ClaimType
   status      ClaimStatus @default(REQUESTED)
   requestedAt DateTime    @default(now())
   detail      String
   orderItemId Int?
-  orderItem   OrderItem?  @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
   reason      String?
   processedAt DateTime?
+  orderItem   OrderItem?  @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id          Int          @id @default(autoincrement())
+  orderItemId Int          @unique
+  userId      Int
+  rating      Int
+  content     String
+  createdAt   DateTime     @default(now())
+  images      String[]     @default([])
+  orderItem   OrderItem    @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id])
+  reply       ReviewReply?
+}
+
+model ReviewReply {
+  id        Int      @id @default(autoincrement())
+  reviewId  Int      @unique
+  adminId   Int
+  content   String
+  createdAt DateTime @default(now())
+  admin     User     @relation(fields: [adminId], references: [id])
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+}
+
+model Inquiry {
+  id        Int            @id @default(autoincrement())
+  userId    Int
+  content   String
+  createdAt DateTime       @default(now())
+  user      User           @relation(fields: [userId], references: [id])
+  replies   InquiryReply[]
+}
+
+model InquiryReply {
+  id        Int      @id @default(autoincrement())
+  inquiryId Int
+  adminId   Int
+  content   String
+  createdAt DateTime @default(now())
+  admin     User     @relation(fields: [adminId], references: [id])
+  inquiry   Inquiry  @relation(fields: [inquiryId], references: [id])
+}
+
+model ProductQna {
+  id        Int              @id @default(autoincrement())
+  content   String
+  isSecret  Boolean          @default(false)
+  productId Int
+  userId    Int
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  product   Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reply     ProductQnaReply?
+}
+
+model ProductQnaReply {
+  id           Int        @id @default(autoincrement())
+  content      String
+  productQnaId Int        @unique
+  adminId      Int
+  createdAt    DateTime   @default(now())
+  admin        User       @relation(fields: [adminId], references: [id])
+  productQna   ProductQna @relation(fields: [productQnaId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum OrderStatus {
+  PAYMENT_COMPLETE
+  PREPARING
+  SHIPPING
+  DELIVERED
+  CANCELLED
 }
 
 enum ClaimType {
@@ -166,80 +226,4 @@ enum ClaimStatus {
   APPROVED
   COMPLETED
   REJECTED
-}
-
-//리뷰
-model Review {
-  id          Int      @id @default(autoincrement())
-  orderItemId Int
-  orderItem   OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
-  userId      Int
-  user        User @relation(fields: [userId], references: [id])
-  rating      Int
-  content     String
-  createdAt   DateTime @default(now())
-  images      String[] @default([])
-  reply       ReviewReply? // 1:1 답변
-  @@unique([orderItemId])
-}
-
-//리뷰 댓글
-model ReviewReply {
-  id        Int      @id @default(autoincrement())
-  reviewId  Int      @unique
-  // 여기 끝에 onDelete: Cascade 추가!
-  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
-  adminId   Int
-  admin     User     @relation(fields: [adminId], references: [id])
-  content   String
-  createdAt DateTime @default(now())
-}
-
-//1:1문의
-model Inquiry {
-  id       Int      @id @default(autoincrement())
-  userId   Int
-  user     User     @relation(fields: [userId], references: [id])
-  content  String
-  createdAt DateTime @default(now())
-  replies  InquiryReply[]
-}
-
-//1:1문의 댓글
-model InquiryReply {
-  id        Int      @id @default(autoincrement())
-  inquiryId Int
-  inquiry   Inquiry  @relation(fields: [inquiryId], references: [id])
-  adminId   Int
-  admin     User     @relation(fields: [adminId], references: [id])
-  content   String
-  createdAt DateTime @default(now())
-}
-
-//상품 Qna
-model ProductQna {
-  id        Int      @id @default(autoincrement())
-  content   String   @db.Text
-  isSecret  Boolean  @default(false)
-
-  productId Int
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  reply     ProductQnaReply?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model ProductQnaReply {
-  id           Int        @id @default(autoincrement())
-  content      String     @db.Text
-  productQnaId Int        @unique
-  productQna   ProductQna @relation(fields: [productQnaId], references: [id], onDelete: Cascade)
-  adminId      Int
-  admin        User       @relation(fields: [adminId], references: [id])
-  createdAt    DateTime   @default(now())
 }

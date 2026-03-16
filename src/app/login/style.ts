@@ -56,7 +56,7 @@ export const Field = styled.div`
     border-radius: 5px;
     font-size: 16px;
     font-weight: 600;
-    background-color: #444;
+    background-color: #222;
     color: white;
     margin-bottom: 12px;
   }

@@ -166,7 +166,7 @@ export const SelectedItem = styled.div`
       font-size: 14px;
       font-weight: 500;
       color: #333;
-      padding-right: 20px; /* 삭제 버튼이랑 안 겹치게 */
+      padding-right: 20px;
     }
 
     .remove_btn {
@@ -342,7 +342,7 @@ export const ReviewArea = styled.section`
   margin: 0 auto;
   min-height: 400px;
 
-  > div {
+  > div:first-of-type {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
@@ -382,6 +382,14 @@ export const ReviewButtonArea = styled.div`
   }
 `;
 
+export const NoReview = styled.div`
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+`;
+
 export const ReviewList = styled.ul``;
 
 export const ReviewRow = styled.li`
@@ -415,40 +423,7 @@ export const ReviewDate = styled.div`
 `;
 
 export const ShoppingGuide = styled.section`
+  padding-bottom: 300px;
   margin: 0 auto;
   width: 1040px;
-`;
-
-export const GuideSection = styled.div`
-  &:not(:last-of-type) {
-    margin-bottom: 50px;
-  }
-
-  > div {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px;
-
-    h3 {
-    }
-  }
-
-  > ul {
-    li {
-      display: flex;
-      border-bottom: 1px solid #ddd;
-      padding: 25px 0;
-
-      p {
-        &:first-of-type {
-          width: 25%;
-          padding-left: 23px;
-        }
-
-        &:last-of-type {
-          width: 75%;
-        }
-      }
-    }
-  }
 `;

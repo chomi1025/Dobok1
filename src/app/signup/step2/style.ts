@@ -6,7 +6,12 @@ export const Inner = styled.section`
   margin: 0 auto;
   position: relative;
 
-  .field {
+  select {
+    color: #444;
+  }
+  input {
+    color: #444;
+    border-radius: 4px;
   }
 `;
 
@@ -105,34 +110,20 @@ export const Form_Inner = styled.div`
 
 export const Phone = styled.div`
   div:last-of-type {
-    display: flex;
-    gap: 5px;
+    display: grid;
     color: #444;
 
-    select {
-      appearance: none;
-      background-image: url("https://firebasestorage.googleapis.com/v0/b/myfirebase-34805.appspot.com/o/Keyboard%20arrow%20down.png?alt=media&token=b4055887-17dc-4dab-ac01-26e699caf8db");
-      background-repeat: no-repeat;
-      background-position: right 10px center;
-      background-size: 24px;
-      width: 90px;
-      padding: 11px 15px;
-      color: #444;
-    }
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    align-items: center;
 
     input {
       color: #444;
-      &:first-of-type {
-        width: 100px;
-      }
-
-      &:last-of-type {
-        width: 100px;
-      }
     }
 
     > button {
       display: flex;
+      justify-content: center;
       padding: 13px 20px;
       background-color: #444;
       border-radius: 4px;
@@ -271,12 +262,17 @@ export const Email_Selectwrapper = styled.div`
 `;
 
 export const Birthday = styled.div`
+  width: 100%;
+
   label {
     font-size: 14px;
   }
 
   > div {
     display: flex;
+    width: 100%;
+    gap: 12px;
+    align-items: center;
 
     > span {
       display: flex;
@@ -285,57 +281,38 @@ export const Birthday = styled.div`
   }
 `;
 
-export const Select_box = styled.span`
-  select {
-    padding: 11px 15px;
-    font-size: 14px;
-    color: #444;
-    border: 1px solid #ddd;
-    background-image: url("https://firebasestorage.googleapis.com/v0/b/myfirebase-34805.appspot.com/o/Keyboard%20arrow%20down.png?alt=media&token=b4055887-17dc-4dab-ac01-26e699caf8db");
-    background-repeat: no-repeat;
-    background-size: 24px;
-  }
+export const Input = styled.span`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
 
   &:nth-of-type(1) {
-    select {
-      width: 100px;
-      background-position: right 10px center;
-    }
-
-    &::after {
-      content: "년";
-      margin: 0 18px 0 8px;
-      color: #333;
-      font-weight: 600;
-    }
+    flex: 1.5;
   }
 
-  &:nth-of-type(2) {
-    select {
-      width: 70px;
-      background-position: right 7px center;
-    }
-
-    &::after {
-      content: "월";
-      margin: 0 18px 0 8px;
-      color: #333;
-      font-weight: 600;
-    }
+  input {
+    background-color: #f9fafb;
+    width: 100%;
+    min-width: 0;
+    padding: 12px 20px;
+    box-sizing: border-box;
   }
 
-  &:nth-of-type(3) {
-    select {
-      width: 70px;
-      background-position: right 7px center;
-    }
-
-    &::after {
-      content: "일";
-      margin: 0 18px 0 8px;
-      color: #333;
-      font-weight: 600;
-    }
+  &:nth-of-type(1)::after {
+    content: "년";
+    margin-left: 4px;
+    white-space: nowrap;
+  }
+  &:nth-of-type(2)::after {
+    content: "월";
+    margin-left: 4px;
+    white-space: nowrap;
+  }
+  &:nth-of-type(3)::after {
+    content: "일";
+    margin-left: 4px;
+    white-space: nowrap;
   }
 `;
 
@@ -345,37 +322,4 @@ export const Line2 = styled.span`
   height: 1px;
   background-color: #ddd;
   margin: 50px 0 60px;
-`;
-
-export const Check_Wrapper = styled.div`
-  > fieldset {
-    > label {
-      display: flex;
-      align-items: center;
-      font-size: 14px;
-      margin-bottom: 25px;
-
-      > input {
-        width: 20px;
-        height: 20px;
-        margin-right: 8px;
-      }
-
-      > p {
-        font-weight: 600;
-
-        span {
-          color: #c1272d;
-        }
-      }
-
-      > button {
-        margin-left: 30px;
-        font-weight: 500;
-        font-size: 12px;
-        color: #888;
-        text-decoration: underline;
-      }
-    }
-  }
 `;

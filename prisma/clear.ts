@@ -8,7 +8,6 @@ async function main() {
   await prisma.product.deleteMany({});
   await prisma.category.deleteMany({});
   await prisma.user.deleteMany({});
-  console.log("✅ DB 초기화 완료!");
 }
 
 main()

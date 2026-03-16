@@ -1,5 +1,7 @@
 "use client";
+
 import * as S from "./style";
+
 import {
   FieldErrors,
   FieldValues,
@@ -9,6 +11,7 @@ import {
   UseFormSetValue,
 } from "react-hook-form";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 type Props<T extends FieldValues> = {
   register: UseFormRegister<T>;
@@ -17,6 +20,8 @@ type Props<T extends FieldValues> = {
   clearErrors?: UseFormClearErrors<T>;
   isEdit: boolean;
   user?: { id: string; username: string };
+  getValues: any;
+  watch: any;
 };
 
 export default function AccountComponent<T extends FieldValues>({
@@ -24,40 +29,42 @@ export default function AccountComponent<T extends FieldValues>({
   errors,
   setValue,
   clearErrors,
+  getValues,
+  watch,
   isEdit,
-  user,
 }: Props<T>) {
   const [checkMessage, setCheckMessage] = useState<string | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
+  const username = watch?.("username" as Path<T>);
+  const password = watch?.("password" as Path<T>);
+  const passwordConfirm = watch?.("passwordConfirm" as Path<T>);
 
   const handleCheckUsername = async () => {
-    const username = (document.getElementById("username") as HTMLInputElement)
-      .value;
+    const usernameValue = getValues("username" as Path<T>);
 
-    if (!username) {
-      setCheckMessage("아이디를 입력해주세요!");
+    if (!usernameValue) {
+      toast.error("아이디를 입력해주세요! 🥋");
       return;
     }
 
     const usernameRegex = /^[A-Za-z0-9]+$/;
-    if (!usernameRegex.test(username)) {
-      setCheckMessage("아이디는 영어와 숫자만 사용 가능합니다.");
+    if (!usernameRegex.test(usernameValue)) {
+      toast.error("아이디는 영어와 숫자만 사용 가능합니다.");
       return;
     }
 
     setIsChecking(true);
-    setCheckMessage(null);
 
     try {
       const res = await fetch(`/api/check-username?username=${username}`);
       const data = await res.json();
 
       if (data.exists) {
-        setCheckMessage("이미 사용 중인 아이디 입니다.");
+        toast.error("이미 사용 중인 아이디 입니다.");
         setValue?.("usernameChecked" as Path<T>, false as any);
       } else {
-        setCheckMessage("✅ 사용 가능한 아이디 입니다!");
+        toast.success("✅ 사용 가능한 아이디 입니다!");
         setValue?.("usernameChecked" as Path<T>, true as any, {
           shouldValidate: true,
         });
@@ -65,11 +72,17 @@ export default function AccountComponent<T extends FieldValues>({
       }
     } catch (error) {
       console.error(error);
-      setCheckMessage("⚠️ 서버 오류가 발생했습니다.");
+      toast.error("⚠️ 서버 오류가 발생했습니다.");
     } finally {
       setIsChecking(false);
     }
   };
+
+  useEffect(() => {
+    if (!isEdit) {
+      setValue?.("usernameChecked" as Path<T>, false as any);
+    }
+  }, [username, setValue, clearErrors, isEdit]);
 
   useEffect(() => {
     if (checkMessage) {
@@ -102,7 +115,15 @@ export default function AccountComponent<T extends FieldValues>({
           )}
 
           {isEdit || (
-            <button type="button" onClick={handleCheckUsername}>
+            <button
+              type="button"
+              onClick={handleCheckUsername}
+              disabled={isChecking}
+              style={{
+                opacity: isChecking ? 0.5 : 1,
+                cursor: isChecking ? "not-allowed" : "pointer",
+              }}
+            >
               중복체크
             </button>
           )}
@@ -169,6 +190,7 @@ export default function AccountComponent<T extends FieldValues>({
       <div className="field">
         <S.Error_Wrapper>
           <label htmlFor="passwordConfirm">비밀번호 확인</label>
+
           {errors.passwordConfirm && (
             <p className="error">
               {errors.passwordConfirm.message?.toString()}

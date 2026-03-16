@@ -3,7 +3,7 @@ import * as S from "./style";
 import * as yup from "yup";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ObjectSchema } from "yup";
 import BirthdayInputComponent from "./BirthdayInput";
@@ -11,13 +11,13 @@ import PersonalInfoInputComponent from "./PersonalInfo";
 import AddressInputComponent from "./AddressInput";
 import AccountComponent from "./AccountInfo";
 import EmailComponent from "./EmailInfo";
-import CheckComponent from "./Checkinput";
 import TermsModal from "@/components/terms/Termsmodal";
 import type { FormType } from "./types";
+import toast from "react-hot-toast";
 
 type TermsType = "service" | "privacy";
 
-const schema: ObjectSchema<FormType> = yup.object({
+const schema: ObjectSchema<Omit<FormType, "agreeTerms">> = yup.object({
   username: yup
     .string()
     .required("아이디는 필수입니다.")
@@ -67,13 +67,9 @@ const schema: ObjectSchema<FormType> = yup.object({
     )
     .required(),
   birthDate: yup.string().required("생년월일은 필수입니다."),
-  agreeTerms: yup
-    .boolean()
-    .oneOf([true], "약관에 동의해야 합니다")
-    .required("약관 체크는 필수입니다."),
 });
 
-export default function SignupClient() {
+export default function SignupStep2Client() {
   const router = useRouter();
 
   const {
@@ -82,9 +78,11 @@ export default function SignupClient() {
     control,
     setValue,
     clearErrors,
+    getValues,
+    watch,
     formState: { errors },
   } = useForm<FormType>({
-    resolver: yupResolver<FormType, any, any>(schema),
+    resolver: yupResolver(schema) as any,
     mode: "onSubmit",
     defaultValues: {
       username: "",
@@ -92,11 +90,10 @@ export default function SignupClient() {
       password: "",
       passwordConfirm: "",
       name: "",
-      phone: { prefix: "010", middle: "", last: "" },
+      phone: { prefix: "", middle: "", last: "" },
       email: "",
       address: { address: "", postCode: "", detailAddress: "" },
       birthDate: "",
-      agreeTerms: false,
     },
     shouldUnregister: true,
   });
@@ -107,12 +104,12 @@ export default function SignupClient() {
 
   // 우편번호 찾기(다음)
   const [isPostOpen, setIsPostOpen] = useState(false);
-
+  const [userCi, setUserCi] = useState<string | null>(null);
   const [emailDomain, setEmailDomain] = useState("gmail.com");
 
   const onSubmit: SubmitHandler<FormType> = async (data) => {
     const fullPhone = `${data.phone.prefix}-${data.phone.middle}-${data.phone.last}`;
-
+    console.log(data);
     try {
       const res = await fetch("/api/signup", {
         method: "POST",
@@ -126,25 +123,47 @@ export default function SignupClient() {
           phone: fullPhone,
           address: data.address,
           birth_date: data.birthDate,
+          ci: userCi,
         }),
       });
 
+      const resData = await res.json();
+
       if (!res.ok) {
-        const errorText = await res.text();
-        console.error("서버 에러 발생! 내용:", errorText);
-        return alert("서버에서 에러가 났어. 콘솔을 확인해봐!");
+        throw new Error(
+          resData.message || resData.error || "회원가입에 실패했습니다.",
+        );
       }
 
-      const resData = await res.json();
-      if (resData.error) return alert(resData.error);
-
-      alert("회원가입 완료!");
-      router.push("/");
-    } catch (err) {
-      console.error(err);
-      alert("회원가입 실패");
+      alert("회원가입 완료! 🥋");
+      sessionStorage.removeItem("signup_step1");
+      router.push("/login");
+    } catch (err: any) {
+      toast.error(err.message, { duration: 3000 });
     }
   };
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem("signup_step1");
+    if (!saved) {
+      alert("인증 정보가 없습니다. 다시 인증해주세요.");
+      router.replace("/signup/step1");
+      return;
+    }
+
+    const data = JSON.parse(saved);
+    setValue("name", data.name);
+    setValue("birthDate", data.birthday);
+
+    if (data.phone) {
+      const purePhone = data.phone.replace(/-/g, "");
+      setValue("phone.prefix", purePhone.slice(0, 3));
+      setValue("phone.middle", purePhone.slice(3, 7));
+      setValue("phone.last", purePhone.slice(7, 11));
+    }
+
+    setValue("agreeTerms", true);
+  }, [setValue, router]);
 
   return (
     <>
@@ -159,17 +178,18 @@ export default function SignupClient() {
         <S.Form onSubmit={handleSubmit(onSubmit)}>
           <S.Form_Inner>
             {/* 계정정보:아이디,비밀번호 */}
-
             <AccountComponent
               register={register}
               errors={errors}
               setValue={setValue}
+              getValues={getValues}
+              watch={watch}
               clearErrors={clearErrors}
               isEdit={false}
             />
 
             {/* 개인정보:이름,핸드폰번호 */}
-            <PersonalInfoInputComponent control={control} errors={errors} />
+            <PersonalInfoInputComponent setValue={setValue} control={control} />
 
             {/* 주소 */}
             <AddressInputComponent control={control} errors={errors} />
@@ -188,16 +208,6 @@ export default function SignupClient() {
 
           {/* 구분선 */}
           <S.Line2 />
-
-          {/* 약관 동의 */}
-          <CheckComponent
-            register={register}
-            errors={errors}
-            onOpenTerms={(type) => {
-              setTermsType(type);
-              setTermsOpen(true);
-            }}
-          />
 
           {/* 모달창 */}
           <TermsModal

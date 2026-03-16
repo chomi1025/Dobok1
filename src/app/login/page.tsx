@@ -3,7 +3,8 @@ import { useRouter } from "next/navigation";
 import * as L from "./style";
 import Link from "next/link";
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
+import toast from "react-hot-toast";
 
 export default function Login() {
   const router = useRouter();
@@ -25,12 +26,16 @@ export default function Login() {
       setLoading(false);
 
       if (!res?.ok) {
-        console.log("로그인 실패: " + res?.error);
+        toast.error("아이디나 비밀번호를 다시 확인해주세요");
         router.refresh();
         return;
       }
+      const session = await getSession();
+      const userName = session?.user?.name || id;
+      toast.success(`${userName}님, 반가워요! 🥋`, {
+        duration: 2000,
+      });
 
-      alert("로그인 성공");
       router.push("/");
     } catch (err) {
       setLoading(false);
@@ -46,7 +51,7 @@ export default function Login() {
         <p>도복일번지에 가입하시고 다양한 혜택을 받아보세요! </p>
       </L.Title_Wrapper>
 
-      <L.Line></L.Line>
+      <L.Line />
 
       <L.Form onSubmit={handleSubmit}>
         <L.Field>
@@ -74,15 +79,15 @@ export default function Login() {
 
           <ul>
             <li>
-              <Link href="/">아이디 찾기</Link>
+              <Link href="/find/id">아이디 찾기</Link>
             </li>
             <li>
-              <Link href="/">비밀번호 찾기</Link>
+              <Link href="/find/password">비밀번호 찾기</Link>
             </li>
           </ul>
 
           <button type="submit">{loading ? "로그인 중..." : "로그인"}</button>
-          <L.LinkButton href="/signup">회원가입</L.LinkButton>
+          <L.LinkButton href="/signup/step1">회원가입</L.LinkButton>
         </L.Field>
       </L.Form>
     </L.Inner>

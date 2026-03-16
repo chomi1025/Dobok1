@@ -1,8 +1,9 @@
 "use client";
 import Image from "next/image";
 import * as P from "./style";
-import { ReactEventHandler, useState } from "react";
+import { useState } from "react";
 import PagenationComponent from "@/components/pagenation/page";
+import GuideSectionComponent from "@/components/product/detailpage/GuideComponent";
 
 interface Product {
   id: number;
@@ -28,124 +29,173 @@ interface Prop {
   product: Product;
 }
 
-export const mockReviews = [
-  {
-    id: 1,
-    userId: "user_01",
-    userName: "김철수",
-    rating: 5,
-    content:
-      "도복 원단이 진짜 짱짱해요! 세탁해도 수축이 거의 없어서 놀랐습니다. 역시 초미네 가게네요. 🥋",
-    images: ["https://picsum.photos/400/400?random=1"],
-    createdAt: "2026-02-15T10:00:00Z",
-    option: "블루 / A1",
-  },
-  {
-    id: 2,
-    userId: "user_02",
-    userName: "이영희",
-    rating: 4,
-    content:
-      "배송이 조금 늦었지만 상품은 만족합니다. 가벼운 도복 찾으시는 분들께 추천해요!",
-    images: [],
-    createdAt: "2026-02-20T14:30:00Z",
-    option: "화이트 / A0",
-  },
-  {
-    id: 3,
-    userId: "user_03",
-    userName: "박지성",
-    rating: 5,
-    content:
-      "관장님이 어디서 샀냐고 물어보시네요. 핏이 예술입니다. 하나 더 사려구요.",
-    images: [
-      "https://picsum.photos/400/400?random=2",
-      "https://picsum.photos/400/400?random=3",
-    ],
-    createdAt: "2026-02-28T09:15:00Z",
-    option: "블랙 / A2",
-  },
-  {
-    id: 4,
-    userId: "user_04",
-    userName: "손흥민",
-    rating: 5,
-    content:
-      "움직임이 너무 편해요. 겨드랑이 쪽 보강 처리가 잘 되어 있어서 튼튼합니다. 🥊",
-    images: [],
-    createdAt: "2026-03-01T18:20:00Z",
-    option: "네이비 / A1",
-  },
-  {
-    id: 5,
-    userId: "user_05",
-    userName: "노새친구",
-    rating: 3,
-    content:
-      "생각보다 색감이 조금 어두워요. 그래도 가성비는 나쁘지 않은 듯합니다.",
-    images: ["https://picsum.photos/400/400?random=4"],
-    createdAt: "2026-03-02T11:40:00Z",
-    option: "그레이 / A2",
-  },
-  {
-    id: 6,
-    userId: "user_06",
-    userName: "주짓수왕",
-    rating: 5,
-    content:
-      "이 가격에 이 퀄리티 실화인가요? 패치도 깔끔하게 붙어있어서 너무 예뻐요.",
-    images: [],
-    createdAt: "2026-03-03T20:10:00Z",
-    option: "화이트 / A1",
-  },
-  {
-    id: 7,
-    userId: "user_07",
-    userName: "강백호",
-    rating: 4,
-    content:
-      "사이즈가 살짝 큰 편인 것 같아요. 한 사이즈 작게 사도 될 뻔 했네요. 교환은 귀찮아서 그냥 입습니다!",
-    images: ["https://picsum.photos/400/400?random=5"],
-    createdAt: "2026-03-04T12:05:00Z",
-    option: "블루 / A3",
-  },
-  {
-    id: 8,
-    userId: "user_08",
-    userName: "서태웅",
-    rating: 5,
-    content: "집중하기 좋은 무게감입니다. 만족.",
-    images: [],
-    createdAt: "2026-03-05T22:50:00Z",
-    option: "블랙 / A2L",
-  },
-  {
-    id: 9,
-    userId: "user_09",
-    userName: "초미팬",
-    rating: 5,
-    content:
-      "포장이 너무 정성스러워서 뜯기 아까웠어요. 사은품으로 주신 띠도 잘 쓰겠습니다!",
-    images: ["https://picsum.photos/400/400?random=6"],
-    createdAt: "2026-03-06T15:33:00Z",
-    option: "핑크 / A0",
-  },
-  {
-    id: 10,
-    userId: "user_10",
-    userName: "운동하는직장인",
-    rating: 2,
-    content:
-      "실밥 처리가 마감이 덜 된 부분이 있네요. 검수 좀 더 신경 써주세요.",
-    images: ["https://picsum.photos/400/400?random=7"],
-    createdAt: "2026-03-07T08:12:00Z",
-    option: "네이비 / A2",
-  },
-];
+// export const mockReviews = [
+//   {
+//     id: 1,
+//     userId: "user_01",
+//     userName: "김철수",
+//     rating: 5,
+//     content:
+//       "도복 원단이 진짜 짱짱해요! 세탁해도 수축이 거의 없어서 놀랐습니다. 역시 초미네 가게네요. 🥋",
+//     images: ["https://picsum.photos/400/400?random=1"],
+//     createdAt: "2026-02-15T10:00:00Z",
+//     option: "블루 / A1",
+//   },
+//   {
+//     id: 2,
+//     userId: "user_02",
+//     userName: "이영희",
+//     rating: 4,
+//     content:
+//       "배송이 조금 늦었지만 상품은 만족합니다. 가벼운 도복 찾으시는 분들께 추천해요!",
+//     images: [],
+//     createdAt: "2026-02-20T14:30:00Z",
+//     option: "화이트 / A0",
+//   },
+//   {
+//     id: 3,
+//     userId: "user_03",
+//     userName: "박지성",
+//     rating: 5,
+//     content:
+//       "관장님이 어디서 샀냐고 물어보시네요. 핏이 예술입니다. 하나 더 사려구요.",
+//     images: [
+//       "https://picsum.photos/400/400?random=2",
+//       "https://picsum.photos/400/400?random=3",
+//     ],
+//     createdAt: "2026-02-28T09:15:00Z",
+//     option: "블랙 / A2",
+//   },
+//   {
+//     id: 4,
+//     userId: "user_04",
+//     userName: "손흥민",
+//     rating: 5,
+//     content:
+//       "움직임이 너무 편해요. 겨드랑이 쪽 보강 처리가 잘 되어 있어서 튼튼합니다. 🥊",
+//     images: [],
+//     createdAt: "2026-03-01T18:20:00Z",
+//     option: "네이비 / A1",
+//   },
+//   {
+//     id: 5,
+//     userId: "user_05",
+//     userName: "노새친구",
+//     rating: 3,
+//     content:
+//       "생각보다 색감이 조금 어두워요. 그래도 가성비는 나쁘지 않은 듯합니다.",
+//     images: ["https://picsum.photos/400/400?random=4"],
+//     createdAt: "2026-03-02T11:40:00Z",
+//     option: "그레이 / A2",
+//   },
+//   {
+//     id: 6,
+//     userId: "user_06",
+//     userName: "주짓수왕",
+//     rating: 5,
+//     content:
+//       "이 가격에 이 퀄리티 실화인가요? 패치도 깔끔하게 붙어있어서 너무 예뻐요.",
+//     images: [],
+//     createdAt: "2026-03-03T20:10:00Z",
+//     option: "화이트 / A1",
+//   },
+//   {
+//     id: 7,
+//     userId: "user_07",
+//     userName: "강백호",
+//     rating: 4,
+//     content:
+//       "사이즈가 살짝 큰 편인 것 같아요. 한 사이즈 작게 사도 될 뻔 했네요. 교환은 귀찮아서 그냥 입습니다!",
+//     images: ["https://picsum.photos/400/400?random=5"],
+//     createdAt: "2026-03-04T12:05:00Z",
+//     option: "블루 / A3",
+//   },
+//   {
+//     id: 8,
+//     userId: "user_08",
+//     userName: "서태웅",
+//     rating: 5,
+//     content: "집중하기 좋은 무게감입니다. 만족.",
+//     images: [],
+//     createdAt: "2026-03-05T22:50:00Z",
+//     option: "블랙 / A2L",
+//   },
+//   {
+//     id: 9,
+//     userId: "user_09",
+//     userName: "초미팬",
+//     rating: 5,
+//     content:
+//       "포장이 너무 정성스러워서 뜯기 아까웠어요. 사은품으로 주신 띠도 잘 쓰겠습니다!",
+//     images: ["https://picsum.photos/400/400?random=6"],
+//     createdAt: "2026-03-06T15:33:00Z",
+//     option: "핑크 / A0",
+//   },
+//   {
+//     id: 10,
+//     userId: "user_10",
+//     userName: "운동하는직장인",
+//     rating: 2,
+//     content:
+//       "실밥 처리가 마감이 덜 된 부분이 있네요. 검수 좀 더 신경 써주세요.",
+//     images: ["https://picsum.photos/400/400?random=7"],
+//     createdAt: "2026-03-07T08:12:00Z",
+//     option: "네이비 / A2",
+//   },
+// ];
 
-export const SHOPPING_POLICY = {
-  delivery: {
+export const mockReviews = [];
+
+export const SHOPPING_POLICY = [
+  {
+    title: "상품 정보 고시",
+    expandedHeight: "740px",
+    items: [
+      {
+        label: "제품명",
+        content: [],
+      },
+      {
+        label: "제품소재",
+        content: [],
+      },
+      {
+        label: "색상",
+        content: [],
+      },
+      {
+        label: "치수",
+        content: [],
+      },
+      {
+        label: "제조사",
+        content: [],
+      },
+      {
+        label: "치수",
+        content: [],
+      },
+      {
+        label: "제조국",
+        content: [],
+      },
+      {
+        label: "세탁방법 및 주의사항",
+        content: [],
+      },
+      {
+        label: "품질보증기준",
+        content: [],
+      },
+      {
+        label: "A/S 책임자 전화번호",
+        content: [],
+      },
+    ],
+  },
+  {
     title: "배송 안내",
+    expandedHeight: "360px",
     items: [
       { label: "배송 업체", content: ["CJ 대한통운"] },
       {
@@ -167,8 +217,10 @@ export const SHOPPING_POLICY = {
       { label: "배송 지역", content: ["전국(일부 지역 제외)"] },
     ],
   },
-  refund: {
+
+  {
     title: "교환 및 반품 안내",
+    expandedHeight: "670px",
     items: [
       {
         label: "신청 기간",
@@ -220,7 +272,7 @@ export const SHOPPING_POLICY = {
       },
     ],
   },
-};
+];
 
 const totalPages = 5;
 
@@ -432,77 +484,50 @@ export default function ProductDetailClientPage({ product }: Prop) {
 
         <hr />
 
-        <P.ReviewList>
-          {mockReviews.map((review) => (
-            <>
-              <P.ReviewRow>
-                <P.Rating>
-                  {Array.from({ length: 5 }, (_, i) => (
-                    <span key={i}>{i < review.rating ? "★" : "☆"}</span>
-                  ))}
-                </P.Rating>
+        {mockReviews.length >= 1 ? (
+          // 리뷰 1개이상
+          <P.ReviewList>
+            {mockReviews.map((review) => (
+              <>
+                <P.ReviewRow>
+                  <P.Rating>
+                    {Array.from({ length: 5 }, (_, i) => (
+                      <span key={i}>{i < review.rating ? "★" : "☆"}</span>
+                    ))}
+                  </P.Rating>
 
-                <P.ReviewText>{review.content}</P.ReviewText>
+                  <P.ReviewText>{review.content}</P.ReviewText>
 
-                <P.ReviewWriter>
-                  <p>{review.userName}</p>
-                </P.ReviewWriter>
+                  <P.ReviewWriter>
+                    <p>{review.userName}</p>
+                  </P.ReviewWriter>
 
-                <P.ReviewDate>
-                  <p>{new Date(review.createdAt).toISOString().slice(0, 10)}</p>
-                </P.ReviewDate>
-              </P.ReviewRow>
-            </>
-          ))}
-        </P.ReviewList>
+                  <P.ReviewDate>
+                    <p>
+                      {new Date(review.createdAt).toISOString().slice(0, 10)}
+                    </p>
+                  </P.ReviewDate>
+                </P.ReviewRow>
+              </>
+            ))}
 
-        {/* 페이지네이션 리뷰갯수 10개이상 부터 */}
-        {mockReviews.length >= 10 && (
-          <PagenationComponent totalPages={totalPages} />
+            {/* 페이지네이션 리뷰갯수 10개이상 부터 */}
+            {mockReviews.length >= 10 && (
+              <PagenationComponent totalPages={totalPages} />
+            )}
+          </P.ReviewList>
+        ) : (
+          // 리뷰없으면
+          <P.NoReview>
+            아직 작성된 후기가 없습니다. 첫 후기를 남겨보세요! 🥋
+          </P.NoReview>
         )}
       </P.ReviewArea>
 
-      <P.ShoppingGuide>
-        {/* 상품정보 고시 */}
-
-        {/* 배송 안내 */}
-        <P.GuideSection>
-          {/* 큰제목 */}
-          <div>
-            <h3>{SHOPPING_POLICY.delivery.title}</h3>
-            <span>화살표</span>
-          </div>
-
-          <hr />
-
-          <ul>
-            {SHOPPING_POLICY.delivery.items.map((el) => (
-              <li>
-                <p>{el.label}</p>
-                <p>{el.content}</p>
-              </li>
-            ))}
-          </ul>
-        </P.GuideSection>
-
-        {/* 교환반품 */}
-        <P.GuideSection>
-          {/* 큰제목 */}
-          <div>
-            <h3>{SHOPPING_POLICY.refund.title}</h3>
-          </div>
-
-          <hr />
-
-          <ul>
-            {SHOPPING_POLICY.refund.items.map((el) => (
-              <li>
-                <p>{el.label}</p>
-                <p>{el.content}</p>
-              </li>
-            ))}
-          </ul>
-        </P.GuideSection>
+      <P.ShoppingGuide id="info">
+        {SHOPPING_POLICY.map((el) => {
+          return <GuideSectionComponent key={el.title} data={el} />;
+        })}
       </P.ShoppingGuide>
     </>
   );

@@ -21,8 +21,6 @@ export default async function CategoryIconComponent() {
     },
   });
 
-  console.log(mainCategory);
-
   return (
     <section className={`${styles.inner} ${styles.icon}`}>
       <div className={styles.title}>

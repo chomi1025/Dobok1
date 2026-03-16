@@ -4,6 +4,7 @@ import React from "react";
 import ReactPaginate from "react-paginate";
 
 export const PaginationWrapper = styled.div`
+  width: 100%;
   display: flex;
   justify-content: center;
   margin: 40px 0;

@@ -134,7 +134,6 @@ export default function AdminProductClientPage({
   const route = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  console.log(searchParams);
   const { control, handleSubmit, register, setValue, reset } =
     useForm<AdminProductFilterForm>({
       defaultValues: {
