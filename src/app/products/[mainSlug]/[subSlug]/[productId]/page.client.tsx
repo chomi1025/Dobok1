@@ -5,6 +5,18 @@ import { useState } from "react";
 import PagenationComponent from "@/components/pagenation/page";
 import GuideSectionComponent from "@/components/product/detailpage/GuideComponent";
 
+interface ProductOption {
+  id: number;
+  color: string | null;
+  size: string | null;
+  price: number;
+  stock: number;
+}
+
+interface SelectedOption extends ProductOption {
+  quantity: number;
+}
+
 interface Product {
   id: number;
   name: string;
@@ -15,7 +27,7 @@ interface Product {
   origin: string | null;
   createdAt: Date;
   categoryId: number;
-  options: any[];
+  options: ProductOption[]; // any[]에서 구체화
   category: {
     id: number;
     name: string;
@@ -29,7 +41,17 @@ interface Prop {
   product: Product;
 }
 
-// export const mockReviews = [
+interface Review {
+  id: number;
+  userId: string;
+  userName: string;
+  rating: number;
+  content: string;
+  images: string[];
+  createdAt: string;
+  option: string;
+}
+// export const mockReviews: Review[] = [
 //   {
 //     id: 1,
 //     userId: "user_01",
@@ -144,7 +166,7 @@ interface Prop {
 //   },
 // ];
 
-export const mockReviews = [];
+export const mockReviews: Review[] = [];
 
 export const SHOPPING_POLICY = [
   {
@@ -344,7 +366,7 @@ export default function ProductDetailClientPage({ product }: Prop) {
               <div>
                 <strong>
                   {/* 첫번째 상품의 가격 */}
-                  <span>{product.options[0].price.toLocaleString()}</span>
+                  <span>{product.options[0]?.price.toLocaleString()}</span>
                 </strong>
                 원
               </div>

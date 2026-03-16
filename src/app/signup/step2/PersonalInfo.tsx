@@ -6,6 +6,7 @@ import {
   FieldErrors,
   FieldValues,
   Path,
+  UseFormSetValue,
 } from "react-hook-form";
 import Script from "next/script";
 
@@ -17,7 +18,9 @@ declare global {
 
 type Props<T extends FieldValues> = {
   control: Control<T>;
-  setValue: any;
+  setValue: UseFormSetValue<T>;
+  isEdit?: boolean;
+  errors?: FieldErrors<T>;
 };
 
 export default function PersonalInfo<T extends FieldValues>({
@@ -57,12 +60,9 @@ export default function PersonalInfo<T extends FieldValues>({
               setValue("phone.last" as Path<T>, p.slice(7, 11));
             }
 
-            const { data } = await response.json();
-            const [y, m, d] = data.birthday.split("-");
-
-            setValue("birthDate.year", y);
-            setValue("birthDate.month", m);
-            setValue("birthDate.day", d);
+            if (userData.birthday) {
+              setValue("birthDate" as Path<T>, userData.birthday);
+            }
 
             alert("본인인증이 완료되었습니다.");
           }

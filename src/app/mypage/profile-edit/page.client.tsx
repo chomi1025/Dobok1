@@ -2,18 +2,19 @@
 
 import { signIn } from "next-auth/react";
 import * as M from "../style";
-import * as P from "../../signup/style";
-import AccountComponent from "@/app/signup/AccountInfo";
-import PersonalInfoInputComponent from "@/app/signup/PersonalInfo";
-import AddressInputComponent from "@/app/signup/AddressInput";
-import EmailComponent from "@/app/signup/EmailInfo";
-import BirthdayInputComponent from "@/app/signup/BirthdayInput";
+import * as P from "../../signup/step2/style";
+
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import type { ObjectSchema } from "yup";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import AccountInfo from "@/app/signup/step2/AccountInfo";
+import PersonalInfo from "@/app/signup/step2/PersonalInfo";
+import AddressInput from "@/app/signup/step2/AddressInput";
+import EmailInfo from "@/app/signup/step2/EmailInfo";
+import BirthdayInput from "@/app/signup/step2/BirthdayInput";
 
 interface ProfileEditProps {
   user: ProfileEditUser;
@@ -99,6 +100,10 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
     register,
     control,
     handleSubmit,
+    setValue,
+    getValues,
+    watch,
+    clearErrors,
     formState: { errors },
   } = useForm<ProfileEditFormType>({
     resolver: yupResolver(profileEditSchema),
@@ -178,21 +183,26 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
       <P.Form onSubmit={handleSubmit(onSubmit)}>
         <P.Form_Inner>
           {/* 비밀번호 변경 (선택) */}
-          <AccountComponent register={register} errors={errors} isEdit={true} />
+          <AccountInfo
+            register={register}
+            errors={errors}
+            isEdit={true}
+            setValue={setValue}
+            getValues={getValues}
+            watch={watch}
+            clearErrors={clearErrors}
+          />
 
-          <PersonalInfoInputComponent
-            control={control}
+          <PersonalInfo
+            control={control as any}
+            setValue={setValue as any}
             errors={errors}
             isEdit={true}
           />
 
-          <AddressInputComponent
-            control={control}
-            errors={errors}
-            isEdit={true}
-          />
+          <AddressInput control={control} errors={errors} isEdit={true} />
 
-          <EmailComponent
+          <EmailInfo
             control={control}
             errors={errors}
             emailDomain={emailDomain}
@@ -200,11 +210,7 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
             isEdit={true}
           />
 
-          <BirthdayInputComponent
-            control={control}
-            errors={errors}
-            isEdit={true}
-          />
+          <BirthdayInput control={control} errors={errors} isEdit={true} />
         </P.Form_Inner>
 
         {/*  회원가입 버튼 */}

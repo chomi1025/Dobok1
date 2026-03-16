@@ -30,8 +30,8 @@ export async function GET(req: Request) {
       productName: item.productName,
       img: item.productImage || "/sample.png",
       deliveredAt: item.createdAt.toISOString().split("T")[0],
-      reviewStatus: item.reviews.length > 0 ? "리뷰작성완료" : "리뷰작성가능",
-      reviewId: item.reviews[0]?.id,
+      reviewStatus: item.reviews ? "리뷰작성완료" : "리뷰작성가능",
+      reviewId: item.reviews?.id,
     }));
 
     return NextResponse.json(formattedReviews);

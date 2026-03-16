@@ -54,7 +54,7 @@ export async function GET(req: Request, { params }: Params) {
       quantity: item.quantity,
       totalPrice: item.totalPrice,
       img: item.product.thumbnail ?? "/sample.png",
-      reviewWritten: item.reviews.length > 0,
+      reviewWritten: !!item.reviews,
     })),
   };
 
