@@ -17,7 +17,7 @@ type Props<T extends FieldValues> = {
   isEdit?: boolean;
 };
 
-export default function AddressInputComponent<T extends FieldValues>({
+export default function AddressInput<T extends FieldValues>({
   control,
   errors,
 }: Props<T>) {

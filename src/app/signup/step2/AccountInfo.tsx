@@ -24,7 +24,7 @@ type Props<T extends FieldValues> = {
   watch: any;
 };
 
-export default function AccountComponent<T extends FieldValues>({
+export default function AccountInfo<T extends FieldValues>({
   register,
   errors,
   setValue,

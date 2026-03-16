@@ -14,7 +14,7 @@ type Props<T extends FieldValues> = {
   isEdit?: boolean;
 };
 
-export default function BirthdayInputComponent<T extends FieldValues>({
+export default function BirthdayInput<T extends FieldValues>({
   control,
   errors,
   isEdit,

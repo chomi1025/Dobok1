@@ -9,11 +9,11 @@ import type { ObjectSchema } from "yup";
 import TermsModal from "@/components/terms/Termsmodal";
 import type { FormType } from "./types";
 import toast from "react-hot-toast";
-import AccountComponent from "./AccountInfo";
-import PersonalInfoInputComponent from "./PersonalInfo";
-import AddressInputComponent from "./AddressInput";
-import EmailComponent from "./EmailInfo";
-import BirthdayInputComponent from "./BirthdayInput";
+import AccountInfo from "./AccountInfo";
+import PersonalInfo from "./PersonalInfo";
+import AddressInput from "./AddressInput";
+import EmailInfo from "./EmailInfo";
+import BirthdayInput from "./BirthdayInput";
 
 type TermsType = "service" | "privacy";
 
@@ -178,7 +178,7 @@ export default function SignupStep2Client() {
         <S.Form onSubmit={handleSubmit(onSubmit)}>
           <S.Form_Inner>
             {/* 계정정보:아이디,비밀번호 */}
-            <AccountComponent
+            <AccountInfo
               register={register}
               errors={errors}
               setValue={setValue}
@@ -189,13 +189,13 @@ export default function SignupStep2Client() {
             />
 
             {/* 개인정보:이름,핸드폰번호 */}
-            <PersonalInfoInputComponent setValue={setValue} control={control} />
+            <PersonalInfo setValue={setValue} control={control} />
 
             {/* 주소 */}
-            <AddressInputComponent control={control} errors={errors} />
+            <AddressInput control={control} errors={errors} />
 
             {/* 이메일 */}
-            <EmailComponent
+            <EmailInfo
               control={control}
               errors={errors}
               emailDomain={emailDomain}
@@ -203,7 +203,7 @@ export default function SignupStep2Client() {
             />
 
             {/* 생년월일 */}
-            <BirthdayInputComponent control={control} errors={errors} />
+            <BirthdayInput control={control} errors={errors} />
           </S.Form_Inner>
 
           {/* 구분선 */}

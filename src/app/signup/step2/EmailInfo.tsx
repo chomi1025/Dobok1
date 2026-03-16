@@ -16,7 +16,7 @@ type Props<T extends FieldValues> = {
   isEdit?: boolean;
 };
 
-export default function EmailComponent<T extends FieldValues>({
+export default function EmailInfo<T extends FieldValues>({
   control,
   errors,
   emailDomain,

@@ -20,7 +20,7 @@ type Props<T extends FieldValues> = {
   setValue: any;
 };
 
-export default function PersonalInfoInputComponent<T extends FieldValues>({
+export default function PersonalInfo<T extends FieldValues>({
   control,
   setValue,
 }: Props<T>) {
