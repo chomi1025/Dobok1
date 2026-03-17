@@ -9,7 +9,7 @@ type OrderItemWithReviews = Prisma.OrderItemGetPayload<{
   include: { reviews: true };
 }>;
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 

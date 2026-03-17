@@ -1,11 +1,29 @@
 @import "../../style/variables.module";
 
+.productListWrapper {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: slideIn 0.5s ease-out forwards;
+}
+
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.customMinHeight {
+  min-height: 650px;
+}
+
 .inner {
   margin: 0 auto;
   max-width: rem(1040);
   width: 100%;
   padding: 0 rem(20);
   box-sizing: border-box;
+  min-height: 1040px;
 }
 
 .title {
@@ -25,45 +43,6 @@
     font-size: rem(14);
     @include mobile {
       font-size: rem(12);
-    }
-  }
-}
-
-.navigation {
-  ul {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    font-size: rem(15);
-    flex-wrap: wrap;
-
-    li {
-      padding: rem(6) rem(12);
-      border: 1px solid #ddd;
-      border-radius: rem(30);
-      color: #666;
-      font-size: rem(15);
-      transition: all 0.2s ease;
-      cursor: pointer;
-      user-select: none;
-
-      &:hover {
-        border-color: #333;
-        color: #333;
-      }
-
-      &.active {
-        background-color: #222;
-        border-color: #333;
-        color: #fff;
-        font-weight: 600;
-      }
-
-      &.active {
-        border: 1px solid #333;
-        color: white;
-        font-weight: 700;
-      }
     }
   }
 }
@@ -104,13 +83,6 @@
         height: 100% !important;
         object-fit: cover;
       }
-
-      span {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        z-index: 10;
-      }
     }
 
     div {
@@ -140,6 +112,39 @@
           }
         }
       }
+    }
+  }
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+
+  .cartIcon {
+    position: absolute;
+    right: 15px;
+    bottom: 15px;
+    z-index: 20;
+
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(4px);
+
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 1);
+      transform: translateY(-0.5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
   }
 }

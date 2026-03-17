@@ -1,33 +1,20 @@
-"use client";
-import * as S from "./style";
+import styles from "./page.module.scss";
 import ProductCard from "./ProductCard";
-import { Prisma } from "@prisma/client";
+import { Product } from "@/types/types";
 
-type ProductWithFullDetails = Prisma.ProductGetPayload<{
-  include: {
-    options: true;
-    category: {
-      include: { parent: true };
-    };
-  };
-}>;
-
-interface Props {
-  products: ProductWithFullDetails[];
+interface ProductListProps {
+  products: Product[];
+  className?: string;
 }
 
-export default function ProductList({ products }: Props) {
-  const hasProducts = products && products.length > 0;
-
+export default function ProductList({ products, className }: ProductListProps) {
   return (
     <>
-      <S.ProductList>
-        {hasProducts ? (
-          products?.map((p) => <ProductCard key={p.id} product={p} />)
-        ) : (
-          <span>없음</span>
-        )}
-      </S.ProductList>
+      <ul className={`${styles.productList} ${className || ""}`}>
+        {products.map((prd) => (
+          <ProductCard product={prd} />
+        ))}
+      </ul>
     </>
   );
 }

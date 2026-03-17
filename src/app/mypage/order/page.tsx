@@ -2,30 +2,64 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import * as M from "../style";
-import * as O from "../style";
 import "react-datepicker/dist/react-datepicker.css";
-import ReactPaginate from "react-paginate";
-import { Column, Table } from "@/components/Table/page";
+import { Table, Space } from "antd";
+import type { ColumnsType } from "antd/es/table";
 import OrderSkeleton from "./OrderSkeleton";
 import PeriodTabsComponent from "@/components/mypage/PeriodTabs";
-import { useRouter } from "next/navigation";
+import styled from "@emotion/styled";
 
 export type OrderStatus =
-  | "PAYMENT_COMPLETE" // 결제완료
-  | "PREPARING" // 상품준비중
-  | "SHIPPING" // 배송중
-  | "DELIVERED"; // 배송완료
+  | "PAYMENT_COMPLETE"
+  | "PREPARING"
+  | "SHIPPING"
+  | "DELIVERED";
 
 type PeriodType = "1MONTH" | "3MONTH" | "6MONTH" | "12MONTH" | "CUSTOM";
 
-type FixedPeriod = Exclude<PeriodType, "CUSTOM">;
+const StyledAntTable = styled(Table)`
+  margin-top: 25px !important;
+  width: 100%;
 
-const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
-  PAYMENT_COMPLETE: "결제완료",
-  PREPARING: "상품준비중",
-  SHIPPING: "배송중",
-  DELIVERED: "배송완료",
-};
+  .ant-table-thead > tr > th {
+    background-color: #ffffff !important;
+    border-top: 1px solid #111 !important;
+    border-bottom: 1px solid #dddddd !important;
+    color: #111 !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    padding: 10px !important;
+  }
+
+  .ant-table-tbody > tr > td {
+    border-bottom: 1px solid #f0f0f0 !important;
+    padding: 24px 16px !important;
+    color: #333;
+    text-align: center;
+  }
+
+  .ant-table-tbody > tr:hover > td {
+    background-color: #fafafa !important;
+  }
+
+  .ant-table-tbody > tr:last-child > td {
+    border-bottom: 1px solid #111 !important;
+  }
+
+  .ant-pagination {
+    margin-top: 40px !important;
+    justify-content: center !important;
+    display: flex !important;
+  }
+
+  .ant-pagination-item-active {
+    border-color: #111 !important;
+    background-color: #111 !important;
+    a {
+      color: #fff !important;
+    }
+  }
+`;
 
 export interface Order {
   id: number;
@@ -45,203 +79,204 @@ export interface Order {
   reviewWritten?: boolean;
 }
 
-const orderColumns: Column<Order>[] = [
+const mockOrders: Order[] = [
   {
-    key: "date",
-    label: "날짜/주문번호",
-    flex: 1.4,
-    render: (row) => (
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <span>{row.date}</span>
-
-        <Link href={`/mypage/orders/${row.orderNumber}`}>
-          <span style={{ textDecoration: "underline" }}>{row.orderNumber}</span>
-        </Link>
-      </div>
-    ),
+    id: 1,
+    date: "2026-03-16",
+    orderNumber: "ORD-20260316-001",
+    img: "https://via.placeholder.com/60",
+    name: "프리미엄 선수용 도복 - 화이트",
+    price: 125000,
+    quantity: 1,
+    total: 125000,
+    status: "DELIVERED",
+    reviewWritten: false,
   },
   {
-    key: "name",
-    label: "상품명/옵션",
-    flex: 3,
-    align: "left",
-    render: (row) => (
-      <div style={{ display: "flex", alignItems: "center", gap: "23px" }}>
-        <Link href={`/mypage/order/${row.orderNumber}`}>
-          <img src={row.img} width={90} height={90} />
-        </Link>
-
-        <Link href={`/mypage/order/${row.orderNumber}`}>
-          <span>{row.name}</span>
-        </Link>
-      </div>
-    ),
+    id: 2,
+    date: "2026-03-15",
+    orderNumber: "ORD-20260315-042",
+    img: "https://via.placeholder.com/60",
+    name: "컴팩트 훈련용 도복 - 블루",
+    price: 89000,
+    quantity: 2,
+    total: 178000,
+    status: "SHIPPING",
   },
   {
-    key: "price",
-    label: "수량",
-    flex: 1,
-    render: (row) => (
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <span>총 {row.quantity}개</span>
-      </div>
-    ),
+    id: 3,
+    date: "2026-03-10",
+    orderNumber: "ORD-20260310-015",
+    img: "https://via.placeholder.com/60",
+    name: "고급 면 띠 - 블랙",
+    price: 25000,
+    quantity: 1,
+    total: 25000,
+    status: "DELIVERED",
+    reviewWritten: true,
   },
   {
-    key: "total",
-    label: "합계금액",
-    flex: 1,
-    render: (row) => <strong>{row.total.toLocaleString()}원</strong>,
+    id: 4,
+    date: "2026-03-05",
+    orderNumber: "ORD-20260305-088",
+    img: "https://via.placeholder.com/60",
+    name: "경량 스파링 보호구 세트",
+    price: 45000,
+    quantity: 1,
+    total: 45000,
+    status: "PREPARING",
   },
   {
-    key: "status",
-    label: "상태 / 처리",
-    flex: 1.2,
-    render: (row) => {
-      const router = useRouter();
-      const claim = (row as any).claims?.[0];
-
-      return (
-        <O.StatusActions>
-          <span>{ORDER_STATUS_LABEL[row.status]}</span>
-
-          {row.status === "PAYMENT_COMPLETE" && (
-            <O.SecondaryButton>주문취소</O.SecondaryButton>
-          )}
-
-          {row.status === "SHIPPING" && (
-            <O.SecondaryButton>배송조회</O.SecondaryButton>
-          )}
-
-          {row.status === "DELIVERED" && (
-            <>
-              {/* 리뷰 버튼 */}
-              {!row.reviewWritten && !claim && (
-                <O.PrimaryButton
-                  onClick={() =>
-                    router.push(
-                      `/mypage/review/select?orderNumber=${row.orderNumber}`,
-                    )
-                  }
-                >
-                  리뷰작성
-                </O.PrimaryButton>
-              )}
-
-              {/* 반품/교환 버튼 */}
-              {claim ? (
-                <O.SecondaryButton
-                  onClick={() =>
-                    router.push(`/mypage/claim/${claim.claimNumber}`)
-                  }
-                >
-                  {claim.claimType === "RETURN" ? "반품 신청됨" : "교환 신청됨"}{" "}
-                  - {claim.status === "REQUESTED" ? "처리중" : "완료"}
-                </O.SecondaryButton>
-              ) : (
-                <O.SecondaryButton
-                  onClick={() =>
-                    router.push(`/mypage/claim/new?orderId=${row.id}`)
-                  }
-                >
-                  반품/교환 신청
-                </O.SecondaryButton>
-              )}
-            </>
-          )}
-        </O.StatusActions>
-      );
-    },
+    id: 5,
+    date: "2026-02-28",
+    orderNumber: "ORD-20260228-011",
+    img: "https://via.placeholder.com/60",
+    name: "도복 전용 가방 - 라지",
+    price: 35000,
+    quantity: 1,
+    total: 35000,
+    status: "PAYMENT_COMPLETE",
+  },
+  {
+    id: 6,
+    date: "2026-02-20",
+    orderNumber: "ORD-20260220-099",
+    img: "https://via.placeholder.com/60",
+    name: "입문자용 도복 - 네이비",
+    price: 65000,
+    quantity: 1,
+    total: 65000,
+    status: "DELIVERED",
+    reviewWritten: false,
+    claims: [{ id: 101, claimType: "EXCHANGE", status: "REQUESTED" }], // 교환 신청 테스트용
+  },
+  {
+    id: 7,
+    date: "2026-02-15",
+    orderNumber: "ORD-20260215-023",
+    img: "https://via.placeholder.com/60",
+    name: "운동용 기능성 티셔츠",
+    price: 19000,
+    quantity: 3,
+    total: 57000,
+    status: "DELIVERED",
+    reviewWritten: true,
+  },
+  {
+    id: 8,
+    date: "2026-02-10",
+    orderNumber: "ORD-20260210-055",
+    img: "https://via.placeholder.com/60",
+    name: "패딩 도복 코트",
+    price: 158000,
+    quantity: 1,
+    total: 158000,
+    status: "DELIVERED",
+    reviewWritten: false,
+  },
+  {
+    id: 9,
+    date: "2026-01-25",
+    orderNumber: "ORD-20260125-077",
+    img: "https://via.placeholder.com/60",
+    name: "무릎 보호대 - M",
+    price: 12000,
+    quantity: 2,
+    total: 24000,
+    status: "DELIVERED",
+    reviewWritten: false,
+  },
+  {
+    id: 10,
+    date: "2026-01-05",
+    orderNumber: "ORD-20260105-012",
+    img: "https://via.placeholder.com/60",
+    name: "프로용 글러브 12oz",
+    price: 88000,
+    quantity: 1,
+    total: 88000,
+    status: "DELIVERED",
+    reviewWritten: true,
   },
 ];
 
 export default function OrdersPage() {
   const [allOrders, setAllOrders] = useState<Order[]>([]);
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 5;
-
-  const [period, setPeriod] = useState<PeriodType>("1MONTH"); //기본탭 : 1개월
+  const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState<PeriodType>("1MONTH");
   const [customRange, setCustomRange] = useState<{
     start: Date;
     end: Date;
   } | null>(null);
 
-  async function fetchOrders() {
-    const res = await fetch("/api/mypage/orders", {
-      credentials: "include",
-    });
-    return res.json();
-  }
-
-  const [loading, setLoading] = useState(true);
-
-  const periodToMonths: Record<FixedPeriod, number> = {
-    "1MONTH": 1,
-    "3MONTH": 3,
-    "6MONTH": 6,
-    "12MONTH": 12,
-  };
-
-  const filterByPeriod = (orders: Order[] | undefined, period: FixedPeriod) => {
-    if (!Array.isArray(orders)) return [];
-
-    const now = new Date();
-    const months = periodToMonths[period];
-    const fromDate = new Date(now.getFullYear(), now.getMonth() - months, 1);
-
-    return orders.filter((o) => new Date(o.date) >= fromDate);
-  };
-
-  const filterOrders = (orders: Order[], period: PeriodType) => {
-    if (period === "CUSTOM") {
-      if (!customRange) return orders;
-
-      return orders.filter((o) => {
-        const date = new Date(o.date);
-        return date >= customRange.start && date <= customRange.end;
-      });
-    }
-
-    const fixedPeriod: FixedPeriod = period;
-
-    return filterByPeriod(orders, fixedPeriod);
-  };
-
   useEffect(() => {
     const loadOrders = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
-
-        const data: Order[] = await fetchOrders();
-
-        setAllOrders(data);
-        setOrders(filterByPeriod(data, "1MONTH"));
+        setTimeout(() => {
+          setAllOrders(mockOrders);
+          setLoading(false);
+        }, 500);
       } catch (e) {
         console.error(e);
-      } finally {
         setLoading(false);
       }
     };
-
     loadOrders();
   }, []);
 
-  useEffect(() => {
-    setOrders(filterOrders(allOrders, period));
-    setCurrentPage(0);
-  }, [period, customRange, allOrders]);
-
-  const pageCount = Math.ceil(orders.length / itemsPerPage);
-
-  const currentItems = orders.slice(
-    currentPage * itemsPerPage,
-    (currentPage + 1) * itemsPerPage,
-  );
-
-  const handlePageClick = (selectedItem: { selected: number }) => {
-    setCurrentPage(selectedItem.selected);
-  };
+  const columns: ColumnsType<Order> = [
+    {
+      title: "날짜/주문번호",
+      key: "orderNumber",
+      render: (_, record) => (
+        <Space direction="vertical" size={0}>
+          <span>{record.date}</span>
+          <Link
+            href={`/mypage/orders/${record.orderNumber}`}
+            style={{ textDecoration: "underline", color: "#1677ff" }}
+          >
+            {record.orderNumber}
+          </Link>
+        </Space>
+      ),
+    },
+    {
+      title: "상품명/옵션",
+      key: "name",
+      width: 400,
+      align: "left",
+      render: (_, record) => (
+        <Space size={16}>
+          <img
+            src={record.img}
+            alt={record.name}
+            width={60}
+            height={60}
+            style={{ borderRadius: 4 }}
+          />
+          <span>{record.name}</span>
+        </Space>
+      ),
+    },
+    {
+      title: "상품금액/수량",
+      key: "priceAndQuantity",
+      render: (_, record) => (
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <span>{record.price.toLocaleString()}원</span>
+          <span style={{ color: "#8c8c8c", fontSize: "12px" }}>
+            {record.quantity}개
+          </span>
+        </div>
+      ),
+    },
+    {
+      title: "합계금액",
+      key: "total",
+      render: (t) => <strong>{t.toLocaleString()}원</strong>,
+    },
+  ];
 
   return (
     <M.Contents>
@@ -261,33 +296,7 @@ export default function OrdersPage() {
       />
 
       {/* 테이블 목록 */}
-      <Table
-        columns={orderColumns}
-        inquiry={false}
-        data={loading ? [] : currentItems}
-      />
-
       {loading && <OrderSkeleton />}
-
-      {/* 페이지네이션 */}
-      <O.Pagination>
-        <ReactPaginate
-          pageCount={pageCount > 0 ? pageCount : 1} // 페이지 없으면 1로
-          pageRangeDisplayed={5}
-          marginPagesDisplayed={2}
-          onPageChange={handlePageClick}
-          containerClassName="pagination"
-          pageClassName="page-item"
-          pageLinkClassName="page-link"
-          previousClassName={`page-item prev ${currentPage === 0 ? "disabled" : ""}`}
-          previousLinkClassName="page-link"
-          nextClassName={`page-item next ${currentPage + 1 === pageCount ? "disabled" : ""}`}
-          nextLinkClassName="page-link"
-          activeClassName="active"
-          previousLabel={<img src="/image/active-left.png" alt="이전" />}
-          nextLabel={<img src="/image/active-right.png" alt="다음" />}
-        />
-      </O.Pagination>
     </M.Contents>
   );
 }

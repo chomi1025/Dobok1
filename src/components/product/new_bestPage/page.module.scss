@@ -1,0 +1,31 @@
+@import "../../../components/style/variables.module";
+
+.inner {
+  width: 1200px;
+  padding: rem(90) 0 rem(200);
+  margin: 0 auto;
+
+  hr {
+    display: flex;
+    justify-self: center;
+    border: none;
+    background-color: #f1f1f1;
+    height: 1px;
+    width: rem(940);
+    margin: rem(60) 0 rem(120);
+  }
+}
+
+.title {
+  text-align: center;
+
+  h2 {
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-size: 14px;
+    color: #666;
+  }
+}

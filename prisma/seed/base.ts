@@ -8,7 +8,7 @@ async function main() {
       slug: "ttibok",
       sortOrder: 1,
       imageUrl:
-        "https://rchecuchaugxhqoxcuki.supabase.co/storage/v1/object/public/category/ttibok.jpg",
+        "https://images.unsplash.com/photo-1609516629191-4e4668d29759?q=80&w=400&auto=format&fit=crop",
       subMenu: [
         { name: "태권도복", slug: "taekwondo", sortOrder: 1 },
         { name: "합기도복", slug: "hapkido", sortOrder: 2 },
@@ -21,7 +21,7 @@ async function main() {
       name: "보호장비",
       slug: "protection",
       imageUrl:
-        "https://rchecuchaugxhqoxcuki.supabase.co/storage/v1/object/public/category/protection.jpg",
+        "https://images.unsplash.com/photo-1599863266223-5e933a25d2bd?q=80&w=400&auto=format&fit=crop",
       sortOrder: 2,
       subMenu: [
         { name: "머리 보호대", slug: "headgear", sortOrder: 1 },
@@ -35,8 +35,7 @@ async function main() {
     {
       name: "훈련·격파용품",
       slug: "training",
-      imageUrl:
-        "https://rchecuchaugxhqoxcuki.supabase.co/storage/v1/object/public/category/training.jpg",
+      imageUrl: "https://placehold.co/400x300/e0e0e0/333333?text=Training+Gear",
       sortOrder: 3,
       subMenu: [
         { name: "미트·쉴드", slug: "mit-shield", sortOrder: 1 },
@@ -50,7 +49,7 @@ async function main() {
       name: "도장설비",
       slug: "studio",
       imageUrl:
-        "https://rchecuchaugxhqoxcuki.supabase.co/storage/v1/object/public/category/mattress-pit.jpg",
+        "https://placehold.co/400x300/e0e0e0/333333?text=Studio+Equipment",
       sortOrder: 4,
       subMenu: [
         { name: "매트리스·뜀틀", slug: "mattress-pit", sortOrder: 1 },
@@ -61,8 +60,7 @@ async function main() {
     {
       name: "부가용품",
       slug: "accessories",
-      imageUrl:
-        "https://rchecuchaugxhqoxcuki.supabase.co/storage/v1/object/public/category/accessories.jpg",
+      imageUrl: "https://placehold.co/400x300/e0e0e0/333333?text=Accessories",
       sortOrder: 5,
       subMenu: [
         { name: "신발·실내화", slug: "shoes", sortOrder: 1 },
@@ -85,7 +83,6 @@ async function main() {
         slug: cat.slug,
         sortOrder: cat.sortOrder,
         imageUrl: cat.imageUrl,
-        parentId: null,
       },
     });
 
@@ -108,14 +105,91 @@ async function main() {
           },
         });
       }
-      console.log(` 2차 메뉴 완료`);
+      console.log(`  ㄴ ${parent.name} 하위 메뉴 완료`);
     }
   }
+
+  await seedProducts(prisma);
+}
+
+async function seedProducts(prisma: PrismaClient) {
+  const subCategories = [
+    "taekwondo",
+    "hapkido",
+    "judo",
+    "kendo",
+    "belt",
+    "headgear",
+    "body",
+    "limbs",
+    "gloves",
+    "band",
+    "mouthpiece",
+    "mit-shield",
+    "sandbag-square",
+    "wood-board",
+    "nunchaku",
+    "jump-rope",
+    "mattress-pit",
+    "air-mat",
+    "puzzle-roll-mat",
+    "shoes",
+    "trophy",
+    "stationery",
+  ];
+
+  const products = [];
+
+  for (let i = 1; i <= 100; i++) {
+    const slug = subCategories[i % subCategories.length];
+    const isBest = i % 10 === 0;
+    const isNew = i % 5 === 0;
+
+    products.push({
+      name: `[도복일번지] ${slug.toUpperCase()} 추천 상품 ${i}호`,
+      slug: slug,
+      isBest: isBest,
+      isNew: isNew,
+
+      thumbnail: `https://images.unsplash.com/photo-1552072092-7f9b8d63efcb?q=80&w=500&auto=format&fit=crop&sig=${i}`,
+      description: `전문가들이 추천하는 최고의 ${slug} 전용 용품입니다. 내구성과 성능을 모두 잡았습니다.`,
+      material: i % 2 === 0 ? "최고급 면 100%" : "기능성 혼방 소재",
+      origin: i % 3 === 0 ? "대한민국" : "해외 OEM",
+      options: [
+        { size: "S", color: "Basic", price: 20000 + i * 500, stock: 50 },
+        { size: "L", color: "Premium", price: 35000 + i * 500, stock: 30 },
+      ],
+    });
+  }
+
+  for (const item of products) {
+    const category = await prisma.category.findUnique({
+      where: { slug: item.slug },
+    });
+    if (category) {
+      await prisma.product.create({
+        data: {
+          name: item.name,
+          description: item.description,
+          thumbnail: item.thumbnail,
+          isBest: item.isBest,
+          isNew: item.isNew,
+          material: item.material,
+          origin: item.origin,
+          categoryId: category.id,
+          options: {
+            create: item.options,
+          },
+        },
+      });
+    }
+  }
+  console.log("🔥 100개 상품 데이터 생성 완료!");
 }
 
 main()
   .catch((e) => {
-    console.error("시딩 중 에러 발생:", e);
+    console.error("❌ 추가 에러:", e);
     process.exit(1);
   })
   .finally(async () => {

@@ -2,11 +2,14 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { Role } from "@prisma/client";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
 export const authOptions: NextAuthOptions = {
+  adapter: PrismaAdapter(prisma),
   secret: process.env.NEXTAUTH_SECRET,
-
+  session: {
+    strategy: "jwt",
+  },
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -16,12 +19,10 @@ export const authOptions: NextAuthOptions = {
       },
 
       async authorize(credentials) {
-        let user = null;
+        if (!credentials?.username || !credentials?.password) return null;
 
         try {
-          if (!credentials) return null;
-
-          user = await prisma.user.findUnique({
+          const user = await prisma.user.findUnique({
             where: { username: credentials.username },
           });
 
@@ -35,11 +36,11 @@ export const authOptions: NextAuthOptions = {
           if (!isValid) return null;
 
           return {
-            id: user.id.toString(),
+            id: String(user.id),
             username: user.username,
             name: user.name,
-            role: user.role as string,
-          } as any;
+            role: user.role,
+          };
         } catch (err) {
           console.error("authorize error:", err);
           return null;
@@ -48,16 +49,12 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
-  session: {
-    strategy: "jwt",
-  },
-
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.username = user.username;
-        token.role = user.role;
+        token.username = (user as any).username;
+        token.role = (user as any).role;
       }
       return token;
     },
@@ -66,7 +63,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.username = token.username as string;
-        session.user.role = token.role as Role;
+        session.user.role = token.role as any;
       }
       return session;
     },
@@ -74,6 +71,5 @@ export const authOptions: NextAuthOptions = {
 
   pages: {
     signIn: "/login",
-    error: "/login",
   },
 };

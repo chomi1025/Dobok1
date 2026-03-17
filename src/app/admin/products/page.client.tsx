@@ -56,7 +56,9 @@ interface ProductType {
 
 interface Props {
   products: ProductType[];
-  totalPages: number;
+  totalCount: number;
+  currentPage: number;
+  pageSize: number;
   categories: CategoryWithChildren[];
 }
 
@@ -128,7 +130,9 @@ export const StatusCircle = styled.span<{ color: string }>`
 
 export default function AdminProductClientPage({
   products,
-  totalPages,
+  totalCount,
+  currentPage,
+  pageSize,
   categories,
 }: Props) {
   const route = useRouter();
@@ -434,7 +438,11 @@ export default function AdminProductClientPage({
         <Table columns={ProductColumns} data={products} />
 
         {/* 페이지네이션 컴포넌트 */}
-        <PagenationComponent totalPages={totalPages} />
+        <PagenationComponent
+          total={totalCount}
+          pageSize={pageSize}
+          currentPage={currentPage}
+        />
       </form>
     </A.Inner>
   );

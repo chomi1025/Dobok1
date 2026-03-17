@@ -1,96 +1,43 @@
-"use client";
-import { useState } from "react";
-import styles from "./ProductSection.module.scss";
-import Image from "next/image";
+import ProductSectionClientComponent from "./page.client";
+import { Category, Product, Title } from "../../../types/types";
 
-interface Category {
-  id: number;
-  name: string;
-  slug: string | null;
+export interface ProductSectionProps {
+  categories: Category[];
+  dbProducts: any[];
+  title: Title;
 }
 
-interface Product {
-  id: number;
-  name: string;
-  categoryId: number;
-  price: number;
-  discount: number;
-  img: string;
-  isBest: boolean;
-  tag: string;
-  sale?: number;
-}
-
-interface Title {
-  name: string;
-  contents: string;
-  button: string;
-}
-
-interface CatProps {
+export interface ProductClientProps {
   categories: Category[];
   products: Product[];
   title: Title;
 }
-export default function ProductSectionClientComponent({
-  title,
+
+export default async function ProductSectionComponent({
   categories,
-  products,
-}: CatProps) {
-  const [activeTab, setActiveTab] = useState<number | string>("all");
+  title,
+  dbProducts,
+}: ProductSectionProps) {
+  const products = dbProducts.map((p) => ({
+    id: p.id,
+    name: p.name,
+    categoryId: p.categoryId,
+    price: p.options?.[0]?.price ?? 0,
+    discount: 0,
+    img: p.thumbnail ?? "/no-image.png",
+    thumbnail: p.thumbnail ?? "/no-image.png",
+    options: p.options ?? [],
+    category: p.categoryId,
+    isBest: p.isBest,
+    isNew: p.isNew ?? false,
+    tag: "",
+  }));
 
   return (
-    <section className={styles.inner}>
-      <div className={styles.title}>
-        <h2>{title.name}</h2>
-        <p>{title.contents}</p>
-      </div>
-
-      <nav className={styles.navigation}>
-        <ul className={styles.list}>
-          <li
-            className={activeTab === "all" ? styles.active : ""}
-            onClick={() => setActiveTab("all")}
-          >
-            <span>전체</span>
-          </li>
-
-          {categories?.map((cat) => (
-            <li
-              key={cat.id}
-              className={activeTab === cat.id ? styles.active : ""}
-              onClick={() => setActiveTab(cat.id)}
-            >
-              <span>{cat.name}</span>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-      <ul className={styles.productList}>
-        {products?.map((prd) => (
-          <li>
-            <figure>
-              <Image alt={prd.name} src={prd.img} fill />
-              <span>장</span>
-            </figure>
-
-            <div>
-              <p>{prd.name}</p>
-
-              <strong>
-                <span>{prd.price.toLocaleString()}</span> 원
-              </strong>
-
-              {prd.sale ? <small>{}</small> : ""}
-            </div>
-          </li>
-        ))}
-      </ul>
-
-      <button className={styles.moreBtn}>
-        {title.button} <span>→</span>
-      </button>
-    </section>
+    <ProductSectionClientComponent
+      categories={categories}
+      title={title}
+      products={products}
+    />
   );
 }

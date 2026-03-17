@@ -47,40 +47,6 @@ export const Breadcrumb = styled.nav`
   }
 `;
 
-export const TabMenuWrapper = styled.nav`
-  ul {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-
-    li {
-      border: 1px solid #ddd;
-      border-radius: 20px;
-      color: #888;
-      font-size: 15px;
-      transition:
-        border-color 0.25s ease,
-        color 0.25s ease;
-
-      a {
-        display: inline-block;
-        padding: 7px 12px;
-      }
-
-      &:hover {
-        border: 1px solid #222;
-        color: #222;
-      }
-
-      &.activeTab {
-        border-color: #222;
-        background-color: #222;
-        color: white;
-      }
-    }
-  }
-`;
-
 export const ProductList = styled.div`
   margin-top: 40px;
 `;

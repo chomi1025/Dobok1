@@ -71,13 +71,13 @@ export default async function AdminProductPage({
     }),
   ]);
 
-  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
-
   return (
     <AdminProductClientPage
-      products={rawProducts}
-      totalPages={totalPages}
-      categories={categories}
+      products={rawProducts as any}
+      totalCount={totalCount}
+      currentPage={currentPage}
+      pageSize={ITEMS_PER_PAGE}
+      categories={categories as any}
     />
   );
 }

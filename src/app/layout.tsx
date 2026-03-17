@@ -8,6 +8,7 @@ import EmotionRegistry from "@/lib/emotion-registry";
 import Footer from "@/components/footer/page";
 import MobileNavPage from "@/components/mobileNav/page";
 import { Toaster } from "react-hot-toast";
+import { ConfigProvider } from "antd";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

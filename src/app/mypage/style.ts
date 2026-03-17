@@ -14,6 +14,10 @@ export const Inner = styled.main`
 
 export const Contents = styled.section`
   padding-bottom: 300px;
+
+  h2 {
+    margin-bottom: 20px;
+  }
 `;
 
 export const WithDraw = styled.div`

@@ -13,10 +13,6 @@ interface ProductOption {
   stock: number;
 }
 
-interface SelectedOption extends ProductOption {
-  quantity: number;
-}
-
 interface Product {
   id: number;
   name: string;
@@ -27,7 +23,7 @@ interface Product {
   origin: string | null;
   createdAt: Date;
   categoryId: number;
-  options: ProductOption[]; // any[]에서 구체화
+  options: ProductOption[];
   category: {
     id: number;
     name: string;
@@ -51,7 +47,6 @@ interface Review {
   createdAt: string;
   option: string;
 }
-// export const mockReviews: Review[] = [
 //   {
 //     id: 1,
 //     userId: "user_01",
@@ -534,9 +529,6 @@ export default function ProductDetailClientPage({ product }: Prop) {
             ))}
 
             {/* 페이지네이션 리뷰갯수 10개이상 부터 */}
-            {mockReviews.length >= 10 && (
-              <PagenationComponent totalPages={totalPages} />
-            )}
           </P.ReviewList>
         ) : (
           // 리뷰없으면

@@ -4,17 +4,13 @@ import { useState } from "react";
 import styled from "@emotion/styled";
 import toast from "react-hot-toast";
 
-// 탭이나 레이아웃은 부모(layout.tsx)에서 잡았다고 가정하고 폼 로직에 집중!
 export default function FindIdPage() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [loading, setLoading] = useState(false);
-
-  // 입력 데이터 상태
   const [info, setInfo] = useState({ name: "", email: "" });
   const [authCode, setAuthCode] = useState("");
   const [resultId, setResultId] = useState("");
 
-  // 1. 인증번호 발송 함수
   const sendCode = async () => {
     if (!info.name || !info.email)
       return toast.error("이름과 이메일을 입력해줘!");
@@ -40,7 +36,6 @@ export default function FindIdPage() {
     }
   };
 
-  // 2. 인증번호 확인 함수
   const verifyCode = async () => {
     if (!authCode) return toast.error("인증번호를 입력해주세요.");
 
@@ -167,8 +162,14 @@ const SubmitBtn = styled.button`
     background: #ccc;
   }
 `;
+
 const ResultBox = styled.div`
   text-align: center;
+
+  p {
+    font-size: 15px;
+  }
+
   .id-card {
     margin: 20px 0;
     padding: 30px;
@@ -177,6 +178,7 @@ const ResultBox = styled.div`
     font-size: 20px;
   }
 `;
+
 const LoginBtn = styled.a`
   display: block;
   padding: 14px;

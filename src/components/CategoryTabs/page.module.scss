@@ -1,0 +1,53 @@
+@import "../../components/style/variables.module";
+
+.list {
+  li {
+    transition: all 0.3s ease;
+    cursor: pointer;
+
+    &.active {
+      color: #000;
+      font-weight: bold;
+    }
+  }
+}
+
+.navigation {
+  margin-bottom: 70px;
+  ul {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    font-size: rem(15);
+    flex-wrap: wrap;
+
+    li {
+      padding: rem(6) rem(12);
+      border: 1px solid #ddd;
+      border-radius: rem(30);
+      color: #666;
+      font-size: rem(15);
+      transition: all 0.2s ease;
+      cursor: pointer;
+      user-select: none;
+
+      &:hover {
+        border-color: #333;
+        color: #333;
+      }
+
+      &.active {
+        background-color: #222;
+        border-color: #333;
+        color: #fff;
+        font-weight: 600;
+      }
+
+      &.active {
+        border: 1px solid #333;
+        color: white;
+        font-weight: 700;
+      }
+    }
+  }
+}

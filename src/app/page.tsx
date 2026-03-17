@@ -6,8 +6,25 @@ import NewSectionComponent from "@/components/main/NewSection/page";
 import Image from "next/image";
 import InstagramComponent from "@/components/main/Instagram/page";
 import ScrollAnimation from "./../components/common/ScrollAnimation";
+import { prisma } from "@/lib/prisma";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const categories = await prisma.category.findMany({
+    where: {
+      parentId: null,
+    },
+    include: {
+      children: {
+        orderBy: {
+          sortOrder: "asc",
+        },
+      },
+    },
+    orderBy: {
+      sortOrder: "asc",
+    },
+  });
+
   return (
     <main className={styles.main}>
       {/* 캐러샐 슬라이드 */}
@@ -23,7 +40,7 @@ export default function HomePage() {
 
       {/* 베스트상품 */}
       <ScrollAnimation>
-        <BestSectionComponent />
+        <BestSectionComponent categories={categories} />
       </ScrollAnimation>
 
       {/* 메인배너 */}
@@ -45,7 +62,7 @@ export default function HomePage() {
 
       {/* 신제품 */}
       <ScrollAnimation>
-        <NewSectionComponent />
+        <NewSectionComponent categories={categories} />
       </ScrollAnimation>
 
       {/* 구분선 */}
