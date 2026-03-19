@@ -1,13 +1,13 @@
-"use client";
 import SupportSidebar from "./components/sidebar";
-import * as S from "./style";
+import styles from "./page.module.scss";
 import { ReactNode } from "react";
 
 export default function SupportLayout({ children }: { children: ReactNode }) {
   return (
-    <S.Inner>
+    <div className={styles.inner}>
       <SupportSidebar />
-      {children}
-    </S.Inner>
+
+      <div>{children}</div>
+    </div>
   );
 }

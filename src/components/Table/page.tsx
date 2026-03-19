@@ -20,7 +20,6 @@ export const Table = <T extends { id?: number }>({
   columns,
   data,
   inquiry,
-  pricing,
 }: tableProps<T>) => {
   return (
     <O.Section pricing>

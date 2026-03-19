@@ -1,0 +1,33 @@
+@import "../../../components/style/variables.module";
+
+.inner {
+  width: rem(212);
+  margin-right: rem(20);
+  position: sticky;
+  align-self: flex-start;
+  top: rem(100);
+
+  h1 {
+    display: block;
+    font-size: rem(36);
+    margin-bottom: rem(30);
+  }
+}
+
+.navigation {
+  > ul {
+    display: flex;
+    flex-direction: column;
+    gap: rem(12);
+  }
+}
+
+.list {
+  font-weight: 400;
+  color: #666;
+}
+
+.active {
+  font-weight: 800;
+  color: #333;
+}

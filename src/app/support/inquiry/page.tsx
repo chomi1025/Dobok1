@@ -74,7 +74,7 @@ export default function InquiryPage() {
       date: "2026.03.04",
       orderNumber: "ORD-12345",
       img: "https://via.placeholder.com/90",
-      name: "초미 프리미엄 유도복",
+      name: "프리미엄 유도복",
       quantity: 1,
     },
   ];

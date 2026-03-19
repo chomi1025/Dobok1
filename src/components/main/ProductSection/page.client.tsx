@@ -2,32 +2,50 @@
 import { useState } from "react";
 import styles from "./page.module.scss";
 import ProductList from "@/components/product/ProductList";
-import { Category } from "../../../types/types";
+import { Category, Product } from "../../../types/types";
 import { ProductClientProps } from "./page";
 import CategoryTabs from "@/components/CategoryTabs/page";
+
+export interface ProductWithCategory extends Product {
+  category: {
+    id: number;
+    name: string;
+    parentId: number | null;
+    parent?: {
+      id: number;
+      name: string;
+    } | null;
+  };
+}
+
+interface CustomProductClientProps {
+  title: {
+    name: string;
+    contents: string;
+    button: string;
+  };
+  categories: Category[];
+  products: ProductWithCategory[];
+}
 
 export default function ProductSectionClientComponent({
   title,
   categories,
   products = [],
-}: ProductClientProps) {
+}: CustomProductClientProps) {
   const [activeTab, setActiveTab] = useState<number | string>("all");
 
   const categoryList = Array.isArray(categories)
     ? categories
     : (categories as any).categories || [];
 
-  const filteredProducts = products.filter((p) => {
-    if (activeTab === "all") return true;
+  const filteredProducts = products
+    .filter((p) => {
+      if (activeTab === "all") return true;
 
-    const productCategory = categories
-      .flatMap((cat) => cat.children || [])
-      .find((child) => child.id === p.categoryId);
-
-    if (!productCategory) return false;
-
-    return productCategory.parentId === activeTab;
-  });
+      return p.category?.parent?.id === activeTab;
+    })
+    .slice(0, 8);
 
   return (
     <section className={styles.inner}>
@@ -41,6 +59,7 @@ export default function ProductSectionClientComponent({
         categories={categoryList}
         activeTab={activeTab}
         onTabChange={setActiveTab}
+        className={styles.customMargin}
       />
 
       {/* 상품리스트 */}

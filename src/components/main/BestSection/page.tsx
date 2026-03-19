@@ -15,10 +15,14 @@ interface Props {
 export default async function BestSectionComponent({ categories }: Props) {
   const dbProducts: Product[] = await prisma.product.findMany({
     where: { isBest: true },
-    take: 8,
+    take: 40,
     include: {
       options: true,
-      category: true,
+      category: {
+        include: {
+          parent: true,
+        },
+      },
     },
   });
 

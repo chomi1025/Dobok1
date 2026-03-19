@@ -32,12 +32,6 @@ export default function ProductPageComponent({
       <div>
         <ProductList products={products} />
       </div>
-
-      <PaginationWrapper
-        total={totalItems}
-        pageSize={pageSize}
-        currentPage={currentPage}
-      />
     </section>
   );
 }

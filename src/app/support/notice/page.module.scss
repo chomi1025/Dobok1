@@ -1,0 +1,33 @@
+@import "../../../components/style/variables.module";
+
+.titleWrapper {
+  > h1 {
+    font-size: rem(32);
+    margin-bottom: rem(20);
+  }
+}
+
+.mainContents {
+  position: relative;
+
+  > div {
+    position: relative;
+    height: 0;
+    display: flex;
+    justify-content: space-between;
+
+    button {
+      position: absolute;
+      right: 0px;
+      top: -40px;
+      padding: rem(8) rem(15);
+      color: white;
+      background-color: $main-blue;
+      border-radius: 5px;
+    }
+  }
+
+  h2 {
+    @include sr-only;
+  }
+}

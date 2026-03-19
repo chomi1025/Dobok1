@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "신상품",
+  title: "신제품 | 도복일번지",
   description: "도복일번지에 갓 들어온 따끈따끈한 신상 도복들을 만나보세요!",
 };
 

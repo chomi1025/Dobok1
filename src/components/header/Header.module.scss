@@ -28,16 +28,16 @@
     align-items: center;
     height: 60px;
   }
+}
 
-  h1 {
-    width: 25%;
-    max-width: 281px;
-    min-width: 130px;
+.logoWrapper {
+  width: 25%;
+  max-width: 281px;
+  min-width: 130px;
 
-    a {
-      display: block;
-      width: 100%;
-    }
+  a {
+    display: block;
+    width: 100%;
   }
 }
 

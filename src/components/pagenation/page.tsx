@@ -1,5 +1,5 @@
 "use client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import styles from "./page.module.scss";
 
 interface PaginationProps {
@@ -14,16 +14,18 @@ export default function SimplePagination({
   currentPage,
 }: PaginationProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
-
   const totalPages = Math.ceil(total / pageSize);
 
   const movePage = (page: number) => {
     if (page < 1 || page > totalPages) return;
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", page.toString());
-    router.push(`?${params.toString()}`, { scroll: false } as any);
+    router.push(`${pathname}?${params.toString()}`, { scroll: false } as any);
   };
+
+  if (totalPages <= 1) return null;
 
   return (
     <nav className={styles.container}>

@@ -32,11 +32,11 @@ export default function Login() {
       }
       const session = await getSession();
       const userName = session?.user?.name || id;
+      router.push("/");
+
       toast.success(`${userName}님, 반가워요! 🥋`, {
         duration: 2000,
       });
-
-      router.push("/");
     } catch (err) {
       setLoading(false);
       console.error(err);

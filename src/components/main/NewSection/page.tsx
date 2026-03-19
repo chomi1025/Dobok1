@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import ProductSectionComponent from "../ProductSection/page";
-import { Category } from "../../../types/types";
+import { Category, Product } from "../../../types/types";
 
 interface Props {
   categories: Category[];
@@ -13,29 +13,25 @@ const title = {
 };
 
 export default async function NewSectionComponent({ categories }: Props) {
-  const productsPromise = categories.map((cat) =>
-    prisma.product.findMany({
-      where: { isNew: true, categoryId: cat.id },
-      take: 8,
-      include: { options: true },
-    }),
-  );
-
-  const allProductsPromise = prisma.product.findMany({
+  const dbProducts: Product[] = await prisma.product.findMany({
     where: { isNew: true },
-    take: 8,
-    include: { options: true },
+    take: 40,
+    include: {
+      options: true,
+      category: {
+        include: {
+          parent: true,
+        },
+      },
+    },
   });
-
-  const results = await Promise.all([...productsPromise, allProductsPromise]);
-  const allFetchedProducts = results.flat();
 
   return (
     <>
       <ProductSectionComponent
         categories={categories}
         title={title}
-        dbProducts={allFetchedProducts}
+        dbProducts={dbProducts}
       />
     </>
   );
