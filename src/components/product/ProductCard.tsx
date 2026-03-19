@@ -11,9 +11,8 @@ export default function ProductCard({ product }: ProductCardProps) {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("장바구니 담기:", product.id);
   };
-  console.log(product);
+
   return (
     <li>
       <Link href={`/product/${product.id}`} className={styles.linkWrapper}>

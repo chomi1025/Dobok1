@@ -104,8 +104,6 @@ export default function OrdersClientPage() {
     setPeriod(period);
   };
 
-  console.log("선택된날짜:", period);
-
   return (
     <O.Inner>
       <h2>주문 관리</h2>
