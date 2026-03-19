@@ -25,4 +25,6 @@ jobs:
         run: echo "No tests defined, skipping..."
 
       - name: Build project
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_UNPOOLED }}
         run: yarn build
