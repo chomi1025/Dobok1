@@ -18,26 +18,26 @@ export default async function ProductSectionComponent({
   title,
   dbProducts,
 }: ProductSectionProps) {
-  const products = dbProducts.map((p) => ({
-    id: p.id,
-    name: p.name,
-    categoryId: p.categoryId,
-    price: p.options?.[0]?.price ?? 0,
-    discount: 0,
-    img: p.thumbnail ?? "/no-image.png",
-    thumbnail: p.thumbnail ?? "/no-image.png",
-    options: p.options ?? [],
-    category: p.categoryId,
-    isBest: p.isBest,
-    isNew: p.isNew ?? false,
-    tag: "",
-  }));
+  // const products = dbProducts.map((p) => ({
+  //   id: p.id,
+  //   name: p.name,
+  //   categoryId: p.categoryId,
+  //   price: p.options?.[0]?.price ?? 0,
+  //   discount: 0,
+  //   img: p.thumbnail ?? "/no-image.png",
+  //   thumbnail: p.thumbnail ?? "/no-image.png",
+  //   options: p.options ?? [],
+  //   category: p.categoryId,
+  //   isBest: p.isBest,
+  //   isNew: p.isNew ?? false,
+  //   tag: "",
+  // }));
 
   return (
     <ProductSectionClientComponent
       categories={categories}
       title={title}
-      products={products}
+      products={dbProducts}
     />
   );
 }

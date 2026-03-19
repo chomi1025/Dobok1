@@ -9,7 +9,7 @@ const navigation = [
   { name: "베스트", href: "/products/best" },
   { name: "이벤트", href: "/events" },
   { name: "커뮤니티", href: "/community" },
-  { name: "고객센터", href: "/support" },
+  { name: "고객센터", href: "/support/notice" },
 ];
 
 interface HeaderClientProps {

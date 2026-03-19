@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import * as S from "./style";
+import styles from "./page.module.scss";
 import { useSelectedLayoutSegment } from "next/navigation";
 
 const menuItems = [
@@ -15,18 +15,23 @@ export default function SupportSidebar() {
   const segment = useSelectedLayoutSegment();
 
   return (
-    <S.Inner>
-      <h2> 고객센터</h2>
+    <div className={styles.inner}>
+      <section>
+        <h1> 고객센터</h1>
+      </section>
 
-      <S.Navigation>
+      <nav className={styles.navigation}>
         <ul>
           {menuItems.map((menu) => (
-            <S.List key={menu.slug} active={segment === menu.slug}>
+            <li
+              className={`${styles.list} ${segment === menu.slug && styles.active}`}
+              key={menu.slug}
+            >
               <Link href={`/support/${menu.slug}`}>{menu.label}</Link>
-            </S.List>
+            </li>
           ))}
         </ul>
-      </S.Navigation>
-    </S.Inner>
+      </nav>
+    </div>
   );
 }

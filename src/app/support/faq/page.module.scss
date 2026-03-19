@@ -1,11 +1,17 @@
-import styled from "@emotion/styled";
+@import "../../../components/style/variables.module";
 
-export const Inner = styled.div`
+.inner {
   flex: 1;
 
-  > h3 {
+  > h1 {
     font-size: 32px;
     margin-bottom: 30px;
+  }
+}
+
+.contentSection {
+  h2 {
+    @include sr-only;
   }
 
   > ul {
@@ -23,10 +29,18 @@ export const Inner = styled.div`
       > div {
         margin-top: 12px;
         color: #555;
-        background-color: #ddd;
+        background-color: #f8f9fa;
         border-radius: 4px;
         padding: 20px 20px 30px;
       }
     }
   }
-`;
+}
+
+.answer {
+  display: none;
+
+  &.isOpen {
+    display: block;
+  }
+}

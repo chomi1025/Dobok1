@@ -1,0 +1,73 @@
+@import "../../../components/style/variables.module";
+
+.inner {
+  max-width: rem(1200);
+  margin: 0 auto;
+  padding: rem(120) 0 rem(200);
+
+  > header {
+    text-align: center;
+  }
+}
+
+.title {
+  margin-bottom: rem(24);
+
+  h1 {
+    font-size: rem(28);
+    font-weight: 700;
+    margin-top: rem(12);
+  }
+
+  nav {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    font-size: rem(14);
+    color: #666;
+
+    .withSeparator {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: rem(12);
+      height: 100%;
+      color: #999;
+
+      &::before {
+        content: ">";
+        display: block;
+        font-size: rem(12);
+      }
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    > span:last-child:not(.withSeparator) {
+      font-weight: 600;
+      color: #333;
+    }
+  }
+}
+
+.pagenationWrapper {
+  margin: rem(80) 0 rem(80);
+}
+
+.customMinHeight {
+  min-height: rem(500);
+}
+
+.customMargin {
+  margin: rem(40) 0 rem(120);
+}
+
+.sr-only {
+  @include sr-only;
+}

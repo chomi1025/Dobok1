@@ -19,7 +19,9 @@ export default function HeaderDropdown({ categories }: HeaderDropdownProps) {
     <>
       {categories.map((cat) => (
         <ul key={cat.id}>
-          <li className={styles.bCategory}>{cat.name}</li>
+          <li className={styles.bCategory}>
+            <Link href={`/products/${cat.slug}`}>{cat.name}</Link>
+          </li>
 
           <div className={styles.line} />
           {cat.children?.map((el) => (

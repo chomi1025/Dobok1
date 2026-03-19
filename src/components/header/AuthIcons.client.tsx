@@ -31,13 +31,11 @@ export default function AuthIcons({ session }: Props) {
       callbackUrl: "/",
     });
 
+    router.push(data.url);
+
     toast.success(`로그아웃이 완료되었습니다`, {
       duration: 2000,
     });
-
-    setTimeout(() => {
-      router.push(data.url);
-    }, 1500);
   };
 
   if (isUserLoggedIn) {

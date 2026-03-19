@@ -19,7 +19,6 @@
 # production
 .prettierignore
 /build
-.env
 .env.local
 /prisma/seed.ts
 

@@ -9,7 +9,6 @@ export const Section = styled.section<{ pricing: boolean }>`
   flex: 1;
   font-size: 15px;
   position: relative;
-  margin-top: ${(props) => props.pricing && "15px"};
 `;
 
 export const InquiryButton = styled.button`

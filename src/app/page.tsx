@@ -7,6 +7,12 @@ import Image from "next/image";
 import InstagramComponent from "@/components/main/Instagram/page";
 import ScrollAnimation from "./../components/common/ScrollAnimation";
 import { prisma } from "@/lib/prisma";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "도복일번지",
+  description: "스포츠용품,도복 전문 도복일번지 입니다!",
+};
 
 export default async function HomePage() {
   const categories = await prisma.category.findMany({
