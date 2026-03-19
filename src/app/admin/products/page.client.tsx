@@ -171,7 +171,6 @@ export default function AdminProductClientPage({
   const [keyword, setKeyword] = useState("");
 
   const onSubmit = (values: AdminProductFilterForm) => {
-    console.log("검색 필터 값:", values);
     const params = new URLSearchParams();
 
     if (values.status !== "ALL") params.set("status", values.status);

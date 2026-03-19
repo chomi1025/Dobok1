@@ -7,6 +7,7 @@ import logout from "@/assets/Image/header/mage_logout.png";
 import { Session } from "next-auth";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface Props {
   session: Session | null;
@@ -15,6 +16,9 @@ interface Props {
 export default function AuthIcons({ session }: Props) {
   const { data: clientSession, status } = useSession();
   const router = useRouter();
+  const [loggedIn, setLoggedIn] = useState<Session | null>(
+    session || clientSession,
+  );
 
   if (status === "loading") {
     return (
@@ -23,22 +27,23 @@ export default function AuthIcons({ session }: Props) {
       </Link>
     );
   }
-  const isUserLoggedIn = !!session || !!clientSession;
 
   const onClickSignout = async () => {
-    const data = await signOut({
+    await signOut({
       redirect: false,
       callbackUrl: "/",
     });
 
-    router.push(data.url);
+    setLoggedIn(null);
+
+    router.push("");
 
     toast.success(`로그아웃이 완료되었습니다`, {
       duration: 2000,
     });
   };
 
-  if (isUserLoggedIn) {
+  if (loggedIn) {
     return (
       <button type="button" onClick={onClickSignout}>
         <Image
