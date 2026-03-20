@@ -1,4 +1,4 @@
-name: Next.js CI/CD (Build Only)
+name: Next.js Firebase CI/CD (Safe Prisma)
 
 on:
   push:
@@ -7,22 +7,54 @@ on:
     branches: ["main"]
 
 jobs:
-  build:
+  test:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
-          node-version: "20"
+          node-version: "18"
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Skip tests
-        run: echo "No tests defined, skipping..."
+      - name: Run tests
+        run: yarn test
+
+  build-and-deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run tests
+        run: yarn test
+
+      # ✅ Prisma 마이그레이션 적용
+      - name: Run Prisma Migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx prisma migrate deploy
 
       - name: Build project
         run: yarn build
+
+      - name: Deploy to Firebase Hosting
+        uses: w9jds/firebase-action@v2.2.0
+        with:
+          args: deploy --only hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
