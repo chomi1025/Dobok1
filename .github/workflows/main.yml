@@ -1,4 +1,4 @@
-name: Next.js Firebase CI/CD (Safe Prisma)
+name: Next.js Vercel CI/CD (Safe Prisma)
 
 on:
   push:
@@ -53,14 +53,13 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx prisma migrate deploy
 
-      - name: Build project
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: "--prod"
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: yarn build
-
-      - name: Deploy to Firebase Hosting
-        uses: w9jds/firebase-action@v2.2.0
-        with:
-          args: deploy --only hosting
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
