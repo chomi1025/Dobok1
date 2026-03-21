@@ -43,7 +43,6 @@ jobs:
       - name: Run tests
         run: yarn test
 
-      # ✅ Prisma 마이그레이션 적용
       - name: Run Prisma Migrations
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
