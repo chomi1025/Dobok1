@@ -12,6 +12,7 @@ interface BoardLayoutProps {
   pageSize?: number;
   currentPage?: number;
   children: React.ReactNode;
+  onWriteClick?: () => void;
 }
 
 export default function BoardLayout({
@@ -24,8 +25,10 @@ export default function BoardLayout({
   total,
   pageSize,
   currentPage,
+  onWriteClick,
 }: BoardLayoutProps) {
-  const showWriteButton = writeHref && (!adminOnly || role === "ADMIN");
+  const showWriteButton =
+    (writeHref || onWriteClick) && (!adminOnly || role === "ADMIN");
   const showPagination =
     total !== undefined &&
     pageSize !== undefined &&
@@ -40,7 +43,11 @@ export default function BoardLayout({
 
       <article className={styles.mainContents}>
         {showWriteButton && (
-          <Button href={writeHref} variant="primary">
+          <Button
+            onClick={onWriteClick}
+            href={onWriteClick ? undefined : writeHref}
+            variant="primary"
+          >
             작성하기
           </Button>
         )}

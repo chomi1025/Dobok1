@@ -22,6 +22,12 @@
     right: 0px;
   }
 
+  > button {
+    position: absolute;
+    top: -40px;
+    right: 0px;
+  }
+
   h2 {
     @include sr-only;
   }

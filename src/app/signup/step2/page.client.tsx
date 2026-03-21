@@ -134,8 +134,7 @@ export default function SignupStep2Client() {
           resData.message || resData.error || "회원가입에 실패했습니다.",
         );
       }
-
-      alert("회원가입 완료! 🥋");
+      toast.success("회원가입이 완료되었습니다.");
       sessionStorage.removeItem("signup_step1");
       router.push("/login");
     } catch (err: any) {
@@ -189,7 +188,7 @@ export default function SignupStep2Client() {
             />
 
             {/* 개인정보:이름,핸드폰번호 */}
-            <PersonalInfo setValue={setValue} control={control} />
+            <PersonalInfo control={control} />
 
             {/* 주소 */}
             <AddressInput control={control} errors={errors} />

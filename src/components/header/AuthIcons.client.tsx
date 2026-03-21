@@ -14,7 +14,6 @@ interface Props {
 
 export default function AuthIcons({ session }: Props) {
   const { data: clientSession, status } = useSession();
-  const router = useRouter();
 
   if (status === "loading") {
     return (
@@ -26,16 +25,38 @@ export default function AuthIcons({ session }: Props) {
   const isUserLoggedIn = !!session || !!clientSession;
 
   const onClickSignout = async () => {
-    const data = await signOut({
-      redirect: false,
-      callbackUrl: "/",
-    });
+    try {
+      await signOut({
+        redirect: false,
+        callbackUrl: "/",
+      });
 
-    router.push(data.url);
+      const cookiesToClear = [
+        "next-auth.session-token",
+        "__Secure-next-auth.session-token",
+        "next-auth.csrf-token",
+        "__Host-next-auth.csrf-token",
+        "next-auth.callback-url",
+        "__Secure-next-auth.callback-url",
+      ];
 
-    toast.success(`로그아웃이 완료되었습니다`, {
-      duration: 2000,
-    });
+      cookiesToClear.forEach((name) => {
+        document.cookie = `${name}=; Max-Age=0; path=/;`;
+
+        document.cookie = `${name}=; Max-Age=0; path=/; domain=localhost;`;
+
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;
+      });
+
+      toast.success(`로그아웃이 완료되었습니다`, {
+        duration: 2000,
+      });
+
+      window.location.replace("/");
+    } catch (error) {
+      console.error("로그아웃 중 에러 발생:", error);
+      toast.error("로그아웃에 실패했습니다.");
+    }
   };
 
   if (isUserLoggedIn) {
