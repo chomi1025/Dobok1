@@ -115,12 +115,6 @@ export default function AdminOrderDetailPage() {
       addHistory(`송장 등록 (${carrier} / ${trackingNumber})`);
     }
 
-    console.log({
-      orderStatus,
-      carrier,
-      trackingNumber,
-    });
-
     alert("저장 완료");
   };
 
