@@ -1,0 +1,77 @@
+@import "../../../components/style/variables.module";
+
+.innerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: rem(30);
+  position: relative;
+
+  h1 {
+    font-size: rem(32);
+    font-weight: 700;
+  }
+
+  a {
+    position: absolute;
+    top: 30px;
+    right: 0;
+  }
+}
+
+.tableWrapper {
+  position: relative;
+
+  a {
+    position: absolute;
+    top: -40px;
+    right: 0px;
+  }
+
+  h2 {
+    @include sr-only;
+  }
+}
+
+.titleLink {
+  display: flex;
+  gap: rem(8);
+  text-decoration: none;
+  color: #111;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    color: #000;
+    .text {
+      text-decoration: underline;
+    }
+  }
+
+  &.locked {
+    color: #999;
+    cursor: pointer;
+
+    &:hover {
+      color: #666;
+      .text {
+        text-decoration: underline;
+      }
+    }
+
+    .lockIcon {
+      filter: grayscale(100%);
+      opacity: 0.6;
+    }
+  }
+
+  .lockIcon {
+    font-size: rem(13);
+  }
+}
+
+.pagenationWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: rem(40);
+}

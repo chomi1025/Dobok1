@@ -1,13 +1,14 @@
-"use client";
-import * as S from "./style";
+import styles from "./page.module.scss";
 
 export default function ShippingPage() {
   return (
-    <S.Inner>
-      <h2>교환 / 반품 / 환불 안내</h2>
+    <div className={styles.inner}>
+      <header aria-label="페이지 헤더">
+        <h1>교환 / 반품 / 환불 안내</h1>
+      </header>
 
-      <section>
-        <h3>1. 교환 및 반품 신청</h3>
+      <section aria-label="교환 및 반품 신청 안내">
+        <h2>1. 교환 및 반품 신청</h2>
         <ul>
           <li>· 상품 수령 후 7일 이내 신청 가능합니다.</li>
           <li>
@@ -20,8 +21,8 @@ export default function ShippingPage() {
         </ul>
       </section>
 
-      <section>
-        <h3>2. 불량 상품 안내</h3>
+      <section aria-label="불량 상품 안내">
+        <h2>2. 불량 상품 안내</h2>
         <ul>
           <li>
             · 상품 불량 또는 오배송의 경우, 확인 후 교환 또는 환불
@@ -34,8 +35,8 @@ export default function ShippingPage() {
         </ul>
       </section>
 
-      <section>
-        <h3>3. 환불 안내</h3>
+      <section aria-label="환불 안내">
+        <h2>3. 환불 안내</h2>
         <ul>
           <li>
             · 반품 상품이 입고 및 검수 완료된 후 2~5영업일 이내 환불 처리됩니다.
@@ -43,6 +44,6 @@ export default function ShippingPage() {
           <li>· 결제 수단에 따라 환불 소요 기간이 달라질 수 있습니다.</li>
         </ul>
       </section>
-    </S.Inner>
+    </div>
   );
 }

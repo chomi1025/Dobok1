@@ -113,23 +113,17 @@ export const Phone = styled.div`
     display: grid;
     color: #444;
 
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 8px;
     align-items: center;
 
     input {
       color: #444;
-    }
-
-    > button {
-      display: flex;
-      justify-content: center;
-      padding: 13px 20px;
-      background-color: #444;
-      border-radius: 4px;
-      color: white;
-      font-weight: 500;
-      font-size: 12px;
+      background-color: #f9fafb;
+      width: 100%;
+      min-width: 0;
+      padding: 12px 20px;
+      box-sizing: border-box;
     }
   }
 `;
@@ -196,8 +190,11 @@ export const address = styled.fieldset`
 
 export const PersonalInfo = styled.fieldset`
   input {
+    background-color: #f9fafb;
     width: 100%;
+    min-width: 0;
     padding: 12px 20px;
+    box-sizing: border-box;
   }
 
   .field {

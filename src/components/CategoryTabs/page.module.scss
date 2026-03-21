@@ -13,40 +13,38 @@
 }
 
 .navigation {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+
   ul {
     display: flex;
     justify-content: center;
     gap: 10px;
     font-size: rem(15);
     flex-wrap: wrap;
+  }
+}
 
-    li {
-      padding: rem(6) rem(12);
-      border: 1px solid #ddd;
-      border-radius: rem(30);
-      color: #666;
-      font-size: rem(15);
-      transition: all 0.2s ease;
-      cursor: pointer;
-      user-select: none;
+.catBtn {
+  padding: 10px 20px;
+  border-radius: 30px;
+  border: 1px solid #eee;
+  background: #fff;
+  color: #888;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
 
-      &:hover {
-        border-color: #333;
-        color: #333;
-      }
+  &:hover {
+    border-color: #ddd;
+    color: #333;
+  }
 
-      &.active {
-        background-color: #222;
-        border-color: #333;
-        color: #fff;
-        font-weight: 600;
-      }
-
-      &.active {
-        border: 1px solid #333;
-        color: white;
-        font-weight: 700;
-      }
-    }
+  &.active {
+    background: #333;
+    border-color: #333;
+    color: #fff;
   }
 }

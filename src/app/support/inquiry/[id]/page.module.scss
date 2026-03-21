@@ -1,0 +1,350 @@
+@import "../../../../components/style/variables.module";
+
+.inquiryWrapper {
+  max-width: rem(900);
+  margin: 0 auto;
+  padding: 0 rem(20) rem(200);
+
+  .header h1 {
+    font-size: rem(32);
+    margin-bottom: rem(30);
+    font-weight: 700;
+  }
+}
+
+/* 질문 본문 */
+.inquiryContent {
+  background-color: #fff;
+  padding: rem(40);
+  border-radius: 12px;
+  margin-bottom: rem(25);
+  border: 1px solid #eee;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+
+  .contentTitle {
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: rem(20);
+    margin-bottom: rem(25);
+    flex: 1;
+    align-items: flex-end;
+
+    .titleFlex {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: rem(10);
+
+      strong {
+        font-size: rem(22);
+        color: #111;
+        font-weight: 700;
+      }
+
+      > button {
+        position: absolute;
+        top: 0px;
+        right: 0;
+      }
+
+      .deleteBtn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: #fff;
+        border: 1px solid #fa5252;
+        padding: rem(6) rem(14);
+        border-radius: 6px;
+        font-size: rem(13);
+        cursor: pointer;
+        transition: 0.2s;
+        color: #fa5252;
+
+        &:hover {
+          background: #c92a2a;
+          border: 1px solid #c92a2a;
+          color: #fff;
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+      }
+    }
+
+    .date {
+      font-size: rem(14);
+      color: #999;
+      margin-top: rem(10);
+    }
+  }
+
+  .content {
+    font-size: rem(16);
+    line-height: 1.8;
+    color: #444;
+    white-space: pre-line;
+    padding: 0;
+  }
+}
+
+// 답변쪽 💗💗💗💗💗💗💗💗💗💗💗
+.replySection {
+  margin-top: rem(40);
+  border-top: 1px solid #eee;
+  padding-top: rem(30);
+}
+
+.replyBox {
+  background-color: #f8faff;
+  padding: rem(30);
+  border-radius: 12px;
+  border: 1px solid #e1e7f0;
+}
+.replyContent {
+  line-height: 1.7;
+  font-size: rem(15);
+  color: #333;
+  white-space: pre-wrap;
+}
+
+.replyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: rem(20);
+  padding-bottom: rem(15);
+  border-bottom: 1px solid #e1e7f0;
+
+  strong {
+    color: #333333;
+    font-size: rem(18);
+    margin-right: rem(10);
+    &::before {
+      content: "A. ";
+      font-weight: 800;
+    }
+  }
+}
+
+.sideGroup {
+  display: flex;
+  align-items: center;
+  gap: rem(15);
+
+  .editBtn {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: rem(6) rem(14);
+    border-radius: 6px;
+    font-size: rem(13);
+    cursor: pointer;
+    transition: 0.2s;
+    &:hover {
+      background: #3b82f6;
+      color: #fff;
+      border-color: #3b82f6;
+    }
+  }
+}
+
+.replyDate {
+  font-size: rem(14);
+  color: #999;
+}
+
+// 관리자 답변쪽
+.adminReplyForm {
+  background-color: #f0f7ff;
+  padding: rem(30);
+  border-radius: 12px;
+  border: 1px solid #dbeafe;
+  margin-top: rem(20);
+  animation: fadeIn 0.3s ease;
+  background-color: #f0f7ff;
+  border: 1px solid #dbeafe;
+
+  h3 {
+    font-size: rem(18);
+    color: #333;
+    margin-bottom: rem(20);
+  }
+
+  &.editMode {
+    background-color: #f8fbff;
+  }
+
+  .formHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h3 {
+      font-size: rem(18);
+      color: #333;
+    }
+  }
+
+  textarea {
+    width: 100%;
+    padding: rem(20);
+    border: 1px solid #eee;
+    border-radius: 8px;
+    font-size: rem(15);
+    resize: vertical;
+    outline: none;
+    margin-bottom: rem(15);
+
+    &:focus {
+      border-color: #bfdbfe;
+    }
+  }
+
+  .formFooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: rem(10);
+
+    .closeBtn {
+      background: #f1f3f5;
+      border: none;
+      padding: rem(10) rem(20);
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+
+      &:hover {
+        background: #e9ecef;
+      }
+    }
+
+    .submitBtn {
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      padding: rem(10) rem(25);
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      &:hover {
+        background: #2563eb;
+      }
+      &:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+.noReply {
+  padding: rem(60);
+  text-align: center;
+  background: #fdfdfd;
+  border: 1px dashed #ddd;
+  border-radius: 12px;
+  color: #999;
+}
+
+.back {
+  margin-top: rem(50);
+  display: flex;
+  justify-content: center;
+  a {
+    padding: rem(12) rem(40);
+    border-radius: 8px;
+    background-color: #495057;
+    color: #fff;
+    &:hover {
+      background-color: #212529;
+    }
+  }
+}
+
+.replyActions {
+  display: flex;
+  gap: 12px;
+
+  button {
+    font-size: rem(13);
+    cursor: pointer;
+  }
+
+  .replyDeleteBtn {
+    background: #fff;
+    border: 1px solid #fa5252;
+    padding: rem(6) rem(14);
+    border-radius: 6px;
+    font-size: rem(13);
+    cursor: pointer;
+    transition: 0.2s;
+    color: #fa5252;
+
+    &:hover {
+      background: #c92a2a;
+      border: 1px solid #c92a2a;
+      color: #fff;
+    }
+  }
+}
+
+// 비밀글
+.privateWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: rem(500);
+  background-color: #fbfbfb;
+  border-radius: 12px;
+  margin: rem(40) 0;
+  padding: rem(60) rem(20);
+}
+
+.privateContent {
+  text-align: center;
+  max-width: rem(400);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .iconCircle {
+    width: rem(80);
+    height: rem(80);
+    background-color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    margin-bottom: rem(30);
+    border: 1px solid #eee;
+
+    .lockIcon {
+      font-size: rem(32);
+      color: #333;
+    }
+  }
+
+  h2 {
+    font-size: rem(24);
+    font-weight: 800;
+    color: #111;
+    margin-bottom: rem(15);
+    letter-spacing: -0.5px;
+  }
+
+  p {
+    font-size: rem(15);
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: rem(40);
+    word-break: keep-all;
+  }
+
+  .backBtn {
+    padding: rem(12) rem(30);
+    font-size: rem(14);
+    font-weight: 600;
+  }
+}

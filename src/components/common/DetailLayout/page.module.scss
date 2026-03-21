@@ -1,0 +1,82 @@
+@import "../../style/variables.module";
+
+.inner {
+  padding: 0 0 rem(200);
+  margin: 0 auto;
+}
+
+.header {
+  h1 {
+    font-size: rem(32);
+    margin-bottom: rem(30);
+  }
+}
+
+.adminBtns {
+  display: flex;
+  gap: 10px;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.noticeContent {
+  background-color: #fff;
+  padding: rem(40);
+  border-radius: 5px;
+  margin-bottom: rem(25);
+  border: 1px solid #f0f0f0;
+}
+
+.contentTitle {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: rem(15);
+  margin-bottom: rem(20);
+
+  strong {
+    font-size: rem(20);
+    display: block;
+    margin-bottom: rem(10);
+  }
+
+  p {
+    font-size: rem(14);
+    color: #6c757d;
+  }
+}
+
+.titleFlex {
+  position: relative;
+  > button {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}
+
+.content {
+  font-size: rem(15);
+  line-height: 1.6;
+  padding: rem(10) 0 rem(60) rem(10);
+  white-space: pre-line;
+}
+
+.back {
+  margin-top: rem(30);
+  display: flex;
+  justify-content: center;
+
+  a {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 8px;
+    background-color: #495057;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.25s ease;
+
+    &:hover {
+      background-color: #343a40;
+    }
+  }
+}

@@ -43,10 +43,6 @@ export const Row = styled.div`
   align-items: center;
   border-bottom: 1px solid #ddd;
   padding: 10px 0;
-
-  a {
-    text-decoration: underline;
-  }
 `;
 
 export const Info = styled.div<OrderInfoProps>`

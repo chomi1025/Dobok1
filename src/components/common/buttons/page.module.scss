@@ -1,0 +1,68 @@
+@import "../../../components/style/variables.module";
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 6px;
+}
+
+.primary {
+  font-size: rem(14);
+  padding: rem(8) rem(12);
+  background-color: #527fe0;
+  color: #fff;
+  border-radius: 5px;
+
+  &:hover {
+    background-color: #366ada;
+  }
+
+  &:active {
+    background-color: #1d4ed8;
+  }
+}
+
+.delete {
+  background: #fff;
+  border: 1px solid #fa5252;
+  color: #fa5252;
+  padding: rem(6) rem(14);
+  font-size: rem(13);
+
+  &:hover {
+    background: #c92a2a;
+    border: 1px solid #c92a2a;
+    color: #fff;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.edit {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: rem(6) rem(14);
+  border-radius: 6px;
+  font-size: rem(13);
+  cursor: pointer;
+  transition: 0.2s;
+  color: #666;
+
+  &:hover {
+    background: #3b82f6;
+    color: #fff;
+    border-color: #3b82f6;
+  }
+}
+
+.absolute {
+  position: absolute;
+  top: 0;
+  right: 0;
+}

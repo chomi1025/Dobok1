@@ -1,0 +1,48 @@
+@import "../../../../components/style/variables.module";
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  position: relative;
+
+  label {
+    font-size: rem(14);
+    font-weight: 600;
+    color: #333;
+  }
+
+  input[type="text"],
+  textarea,
+  .selectField {
+    width: 100%;
+    padding: rem(15) rem(20);
+    border-radius: 6px;
+    font-size: rem(15);
+    transition: all 0.2s ease;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  textarea {
+    min-height: 400px;
+    line-height: 1.8;
+    resize: none;
+  }
+}
+
+.selectField {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 15px;
+}
+
+.errorMessage {
+  font-size: rem(13);
+  color: $main-red;
+}

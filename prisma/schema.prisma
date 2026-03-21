@@ -8,19 +8,19 @@ datasource db {
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             Int
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -34,17 +34,18 @@ model Session {
 }
 
 model User {
-  ci                String?            @unique
   id                Int               @id @default(autoincrement())
   email             String            @unique
   password          String
+  createdAt         DateTime          @default(now())
+  birthDate         DateTime
   name              String
+  phone             String?           @unique
   username          String            @unique
   role              String            @default("user")
-  phone             String?           @unique
-  birthDate         DateTime
   address           Json?
-  createdAt         DateTime          @default(now())
+  ci                String?           @unique
+  accounts          Account[]
   inquiries         Inquiry[]
   inquiryReplies    InquiryReply[]
   orders            Order[]
@@ -52,7 +53,6 @@ model User {
   productQnaReplies ProductQnaReply[]
   reviews           Review[]
   reviewReplies     ReviewReply[]
-  accounts          Account[]
   sessions          Session[]
 }
 
@@ -76,8 +76,8 @@ model Category {
   name      String
   parentId  Int?
   slug      String     @unique
-  imageUrl  String?
   sortOrder Int?
+  imageUrl  String?
   parent    Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
   children  Category[] @relation("CategoryToCategory")
   products  Product[]
@@ -86,13 +86,13 @@ model Category {
 model Product {
   id          Int             @id @default(autoincrement())
   name        String
+  categoryId  Int
+  createdAt   DateTime        @default(now())
   description String?
-  thumbnail   String?
   images      String[]
   material    String          @default("")
   origin      String          @default("")
-  createdAt   DateTime        @default(now())
-  categoryId  Int
+  thumbnail   String?
   isBest      Boolean         @default(false)
   isNew       Boolean         @default(false)
   cartItems   CartItem[]
@@ -104,13 +104,13 @@ model Product {
 
 model ProductOption {
   id        Int        @id @default(autoincrement())
+  productId Int
   color     String?
   size      String?
   price     Int
   stock     Int
-  status    String     @default("판매중")
   sale      Int?
-  productId Int
+  status    String     @default("판매중")
   cartItems CartItem[]
   product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
@@ -119,20 +119,20 @@ model CartItem {
   id              Int           @id @default(autoincrement())
   userId          Int
   productId       Int
-  productOptionId Int
   quantity        Int           @default(1)
   createdAt       DateTime      @default(now())
+  productOptionId Int
   product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
   option          ProductOption @relation(fields: [productOptionId], references: [id])
 }
 
 model Order {
   id          Int         @id @default(autoincrement())
-  orderNumber String      @unique
-  createdAt   DateTime    @default(now())
-  total       Int
-  status      OrderStatus
   userId      Int
+  status      OrderStatus
+  orderNumber String      @unique
+  total       Int
+  createdAt   DateTime    @default(now())
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   items       OrderItem[]
 }
@@ -141,13 +141,13 @@ model OrderItem {
   id           Int      @id @default(autoincrement())
   orderId      Int
   productId    Int
-  productName  String
-  productImage String?
-  optionText   String?
-  unitPrice    Int
   quantity     Int
-  totalPrice   Int
   createdAt    DateTime @default(now())
+  optionText   String?
+  productImage String?
+  productName  String
+  totalPrice   Int
+  unitPrice    Int
   claims       Claim[]
   order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -160,10 +160,10 @@ model Claim {
   claimType   ClaimType
   status      ClaimStatus @default(REQUESTED)
   requestedAt DateTime    @default(now())
-  detail      String
   orderItemId Int?
   reason      String?
   processedAt DateTime?
+  detail      String
   orderItem   OrderItem?  @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
 }
 
@@ -191,17 +191,21 @@ model ReviewReply {
 }
 
 model Inquiry {
-  id        Int            @id @default(autoincrement())
+  id        Int             @id @default(autoincrement())
   userId    Int
+  category  InquiryCategory @default(OTHER)
+  status    InquiryStatus   @default(WAITING)
+  isPrivate Boolean         @default(true)
+  title     String?
   content   String
-  createdAt DateTime       @default(now())
-  user      User           @relation(fields: [userId], references: [id])
+  createdAt DateTime        @default(now())
+  user      User            @relation(fields: [userId], references: [id])
   replies   InquiryReply[]
 }
 
 model InquiryReply {
   id        Int      @id @default(autoincrement())
-  inquiryId Int
+  inquiryId Int      @unique
   adminId   Int
   content   String
   createdAt DateTime @default(now())
@@ -232,24 +236,21 @@ model ProductQnaReply {
   productQna   ProductQna @relation(fields: [productQnaId], references: [id], onDelete: Cascade)
 }
 
-
 model Notice {
   id        Int      @id @default(autoincrement())
   title     String
-  content   String   @db.Text
+  content   String
   isFixed   Boolean  @default(false)
   createdAt DateTime @default(now())
 }
 
-
 model Faq {
-  id        Int      @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
   category  String
   question  String
-  answer    String   @db.Text
-  sortOrder Int      @default(0)
+  answer    String
+  sortOrder Int    @default(0)
 }
-
 
 enum Role {
   USER
@@ -275,4 +276,17 @@ enum ClaimStatus {
   APPROVED
   COMPLETED
   REJECTED
+}
+
+enum InquiryCategory {
+  PRODUCT
+  DELIVERY
+  ORDER
+  RETURN
+  OTHER
+}
+
+enum InquiryStatus {
+  WAITING
+  COMPLETED
 }

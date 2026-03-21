@@ -1,12 +1,11 @@
 "use client";
 import styles from "./page.module.scss";
-import { Category } from "@/types/types";
 
 interface CategoryTabsProps {
-  categories: Category[];
+  categories: { id: number | string; name: string }[];
   activeTab: number | string;
   onTabChange: (id: number | string) => void;
-  className: string;
+  className?: string;
 }
 
 export default function CategoryTabs({
@@ -22,7 +21,11 @@ export default function CategoryTabs({
           className={activeTab === "all" ? styles.active : ""}
           onClick={() => onTabChange("all")}
         >
-          <span>전체</span>
+          <button
+            className={`${styles.catBtn} ${activeTab === "all" ? styles.active : ""}`}
+          >
+            전체
+          </button>
         </li>
 
         {categories?.map((cat) => (
@@ -31,7 +34,11 @@ export default function CategoryTabs({
             className={activeTab == cat.id ? styles.active : ""}
             onClick={() => onTabChange(cat.id)}
           >
-            <span>{cat.name}</span>
+            <button
+              className={`${styles.catBtn} ${activeTab == cat.id ? styles.active : ""}`}
+            >
+              {cat.name}
+            </button>
           </li>
         ))}
       </ul>

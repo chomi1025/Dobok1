@@ -173,7 +173,7 @@ export default function Inquiry() {
       </div>
 
       {/* 테이블 목록 */}
-      <Table inquiry columns={InquiryColumns} data={currentItems} />
+      <Table columns={InquiryColumns} data={currentItems} />
     </P.Contents>
   );
 }
