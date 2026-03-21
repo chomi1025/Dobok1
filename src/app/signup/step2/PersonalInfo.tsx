@@ -6,7 +6,6 @@ import {
   FieldErrors,
   FieldValues,
   Path,
-  UseFormSetValue,
 } from "react-hook-form";
 
 declare global {
