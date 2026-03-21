@@ -54,6 +54,8 @@ jobs:
         run: npx prisma migrate deploy
 
       - name: Build project
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: yarn build
 
       - name: Deploy to Firebase Hosting
