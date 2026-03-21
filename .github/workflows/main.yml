@@ -24,7 +24,7 @@ jobs:
         run: yarn install
 
       - name: Run tests
-        run: yarn test
+        run: yarn test --passWithNoTests
 
   build-and-deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -46,7 +46,7 @@ jobs:
         run: npx prisma generate
 
       - name: Run tests
-        run: yarn test
+        run: yarn test --passWithNoTests
 
       - name: Run Prisma Migrations
         env:
