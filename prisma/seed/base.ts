@@ -105,7 +105,7 @@ async function main() {
           },
         });
       }
-      console.log(`  ㄴ ${parent.name} 하위 메뉴 완료`);
+      console.log(`   ㄴ ${parent.name} 하위 메뉴 완료`);
     }
   }
 
@@ -138,21 +138,17 @@ async function seedProducts(prisma: PrismaClient) {
     "stationery",
   ];
 
-  const products = [];
+  const products: any[] = [];
 
   for (let i = 1; i <= 100; i++) {
     const slug = subCategories[i % subCategories.length];
-    const isBest = i % 10 === 0;
-    const isNew = i % 5 === 0;
-
     products.push({
       name: `[도복일번지] ${slug.toUpperCase()} 추천 상품 ${i}호`,
       slug: slug,
-      isBest: isBest,
-      isNew: isNew,
-
+      isBest: i % 10 === 0,
+      isNew: i % 5 === 0,
       thumbnail: `https://images.unsplash.com/photo-1552072092-7f9b8d63efcb?q=80&w=500&auto=format&fit=crop&sig=${i}`,
-      description: `전문가들이 추천하는 최고의 ${slug} 전용 용품입니다. 내구성과 성능을 모두 잡았습니다.`,
+      description: `전문가들이 추천하는 최고의 전용 용품입니다.`,
       material: i % 2 === 0 ? "최고급 면 100%" : "기능성 혼방 소재",
       origin: i % 3 === 0 ? "대한민국" : "해외 OEM",
       options: [
@@ -166,6 +162,7 @@ async function seedProducts(prisma: PrismaClient) {
     const category = await prisma.category.findUnique({
       where: { slug: item.slug },
     });
+
     if (category) {
       await prisma.product.create({
         data: {
@@ -178,7 +175,7 @@ async function seedProducts(prisma: PrismaClient) {
           origin: item.origin,
           categoryId: category.id,
           options: {
-            create: item.options,
+            create: item.options, // 여기서 .map() 안 쓰고 그냥 넘겨도 Prisma가 알아서 처리해
           },
         },
       });

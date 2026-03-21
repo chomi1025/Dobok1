@@ -6,26 +6,21 @@ export interface Column<T> {
   width?: string;
   flex?: number;
   align?: "left" | "center" | "right";
-  render?: (row: T) => React.ReactNode;
+  render?: (row: T, idx: number) => React.ReactNode;
 }
 
 interface tableProps<T> {
   columns: Column<T>[];
   data: T[];
-  inquiry?: boolean;
   pricing?: boolean;
 }
 
 export const Table = <T extends { id?: number }>({
   columns,
   data,
-  inquiry,
 }: tableProps<T>) => {
   return (
     <O.Section pricing>
-      {/* 1:1문의 / 문의하기 버튼 */}
-      {inquiry && <O.InquiryButton>문의하기2</O.InquiryButton>}
-
       {/* 헤더 */}
       <O.Header>
         {columns?.map((col) => (
@@ -41,19 +36,37 @@ export const Table = <T extends { id?: number }>({
 
       {/* 데이터 */}
       <O.Body>
-        {data?.map((row) => (
-          <O.Row key={row.id}>
-            {columns?.map((col) => (
-              <O.Info
-                key={String(col.key)}
-                align={col.align}
-                style={{ flex: col.flex }}
-              >
-                {col.render ? col.render(row) : String(row[col.key as keyof T])}
-              </O.Info>
-            ))}
+        {data.length === 0 ? (
+          <O.Row>
+            <O.Info
+              style={{
+                flex: 1,
+                textAlign: "center",
+                color: "#999",
+                padding: "20px 0",
+              }}
+              align="center"
+            >
+              데이터가 없습니다.
+            </O.Info>
           </O.Row>
-        ))}
+        ) : (
+          data.map((row, idx) => (
+            <O.Row key={row.id}>
+              {columns?.map((col) => (
+                <O.Info
+                  key={String(col.key)}
+                  align={col.align}
+                  style={{ flex: col.flex }}
+                >
+                  {col.render
+                    ? col.render(row, idx)
+                    : String(row[col.key as keyof T])}
+                </O.Info>
+              ))}
+            </O.Row>
+          ))
+        )}
       </O.Body>
     </O.Section>
   );

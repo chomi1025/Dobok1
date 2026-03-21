@@ -2,64 +2,81 @@
 import styles from "./page.module.scss";
 import { Table } from "@/components/Table/page";
 import Link from "next/link";
+import BoardLayout from "@/components/common/boardLayout/page";
 
 interface NoticeRow {
   id: number;
   title: string;
   content: string;
   createdAt: string;
+  isFixed: boolean;
 }
 
 interface Props {
   role?: "ADMIN" | "USER" | string | null;
-  notice: [];
+  allNotices: NoticeRow[];
+  total: number;
+  pageSize: number;
+  currentPage: number;
 }
 
-const noticeColumns = [
-  {
-    key: "number",
-    label: "번호",
-    flex: 0.3,
-    render: (row: NoticeRow) => <span>{row.id}</span>,
-  },
-  {
-    key: "title",
-    label: "제목",
-    flex: 2,
+export default function NoticeClientPage({
+  role,
+  allNotices,
+  total,
+  pageSize,
+  currentPage,
+}: Props) {
+  const noticeColumns = [
+    {
+      key: "number",
+      label: "번호",
+      flex: 0.3,
+      render: (row: NoticeRow, index: number) => {
+        const virtualNumber = total - (currentPage - 1) * pageSize - index;
+        if (row.isFixed) return <span className={styles.fixedBadge}>공지</span>;
+        return <span>{virtualNumber}</span>;
+      },
+    },
+    {
+      key: "title",
+      label: "제목",
+      flex: 2,
 
-    render: (row: NoticeRow) => (
-      <Link href={`/notice/${row.id}`}>
-        <span>{row.title}</span>
-      </Link>
-    ),
-  },
-  {
-    key: "price",
-    label: "날짜",
-    flex: 0.6,
-    render: (row: NoticeRow) => (
-      <span>{new Date(row.createdAt).toLocaleDateString()}</span>
-    ),
-  },
-];
+      render: (row: NoticeRow) => (
+        <Link href={`/support/notice/${row.id}`} className={styles.title}>
+          <span className={styles.fixedNotice}>
+            {row.isFixed ? "[공지] " : ""}
+          </span>
 
-export default function NoticeClientPage({ role, notice }: Props) {
+          <span className={styles.titleText}>{row.title}</span>
+        </Link>
+      ),
+    },
+    {
+      key: "date",
+      label: "날짜",
+      flex: 0.6,
+      render: (row: NoticeRow) => (
+        <span>{new Date(row.createdAt).toLocaleDateString()}</span>
+      ),
+    },
+  ];
+
   return (
     <>
-      <section className={styles.titleWrapper}>
-        <h1>공지사항</h1>
-      </section>
-
-      <article className={styles.mainContents}>
-        <div>
-          {role == "ADMIN" && (
-            <button className={styles.adminActions}>작성하기</button>
-          )}
-        </div>
-
-        <h2>공지사항 테이블</h2>
-        <Table columns={noticeColumns} inquiry={false} data={notice} />
-      </article>
+      <BoardLayout
+        title="공지사항"
+        tableTitle="공지사항 테이블"
+        role={role}
+        writeHref="/support/notice/new"
+        total={total}
+        pageSize={pageSize}
+        currentPage={currentPage}
+        adminOnly={true}
+      >
+        <Table columns={noticeColumns} data={allNotices} />
+      </BoardLayout>
     </>
   );
 }

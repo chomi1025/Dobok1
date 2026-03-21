@@ -1,4 +1,4 @@
-name: Next.js Firebase CI/CD (Safe)
+name: Next.js Firebase CI/CD (Safe Prisma)
 
 on:
   push:
@@ -42,6 +42,11 @@ jobs:
 
       - name: Run tests
         run: yarn test
+
+      - name: Run Prisma Migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx prisma migrate deploy
 
       - name: Build project
         run: yarn build

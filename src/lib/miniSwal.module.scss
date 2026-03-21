@@ -1,0 +1,61 @@
+@import "../components/style/variables.module";
+
+.miniSwalPopup {
+  width: 320px !important;
+  background-color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4) !important;
+  border-radius: 12px !important;
+  padding: rem(20) !important;
+
+  :global(.swal2-title) {
+    font-size: rem(17) !important;
+    font-weight: 600 !important;
+    color: #000000 !important;
+    padding: 0 !important;
+    margin-top: rem(5) !important;
+  }
+
+  :global(.swal2-html-container) {
+    font-size: rem(13) !important;
+    color: #aaa !important;
+    margin: rem(10) 0 0 0 !important;
+    text-align: center !important;
+  }
+
+  :global(.swal2-actions) {
+    margin-top: rem(20) !important;
+    gap: 8px;
+    width: 100%;
+    justify-content: center !important;
+
+    button {
+      margin: 0 !important;
+      padding: 8px 20px !important;
+      font-size: rem(13) !important;
+      font-weight: 600 !important;
+      border-radius: 6px !important;
+    }
+  }
+
+  :global(.swal2-cancel) {
+    background-color: #f1f3f5 !important;
+    color: #495057 !important;
+    border: none !important;
+    padding: 10px 22px !important;
+    font-size: rem(13) !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    box-shadow: none !important;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #e9ecef !important;
+      color: #212529 !important;
+    }
+  }
+
+  :global(.swal2-icon) {
+    display: none !important;
+  }
+}

@@ -15,11 +15,9 @@
 }
 
 .navigation {
-  > ul {
-    display: flex;
-    flex-direction: column;
-    gap: rem(12);
-  }
+  display: flex;
+  flex-direction: column;
+  gap: rem(12);
 }
 
 .list {

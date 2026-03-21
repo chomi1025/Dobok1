@@ -136,14 +136,10 @@ export default function PersonalInfo<T extends FieldValues>({
                 inputMode="numeric"
                 maxLength={4}
                 placeholder="0000"
+                readOnly
               />
             )}
           />
-
-          <Script src="https://cdn.iamport.kr/v1/iamport.js" />
-          <button onClick={handleCertification} type="button">
-            본인인증
-          </button>
         </div>
       </S.Phone>
     </S.PersonalInfo>

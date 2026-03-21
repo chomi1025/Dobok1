@@ -25,31 +25,35 @@ export default function SimplePagination({
     router.push(`${pathname}?${params.toString()}`, { scroll: false } as any);
   };
 
-  if (totalPages <= 1) return null;
-
   return (
     <nav className={styles.container}>
       <button
         onClick={() => movePage(currentPage - 1)}
-        disabled={currentPage === 1}
+        disabled={currentPage === 1 || total === 0}
       >
         PREV
       </button>
 
       <div className={styles.pages}>
-        {[...Array(totalPages)].map((_, i) => {
-          const page = i + 1;
-
-          return (
-            <button
-              key={page}
-              onClick={() => movePage(page)}
-              className={currentPage === page ? styles.active : ""}
-            >
-              {page}
-            </button>
-          );
-        })}
+        {/* 데이터가 아예 없어도 '1' 페이지 번호 하나는 보여주고 싶을 때 */}
+        {total === 0 ? (
+          <button className={styles.active} disabled>
+            1
+          </button>
+        ) : (
+          [...Array(totalPages)].map((_, i) => {
+            const page = i + 1;
+            return (
+              <button
+                key={page}
+                onClick={() => movePage(page)}
+                className={currentPage === page ? styles.active : ""}
+              >
+                {page}
+              </button>
+            );
+          })
+        )}
       </div>
 
       <button

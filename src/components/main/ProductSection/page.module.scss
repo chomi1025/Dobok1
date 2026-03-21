@@ -24,6 +24,12 @@
   padding: 0 rem(20);
   box-sizing: border-box;
   min-height: 1040px;
+
+  nav {
+    ul {
+      width: 100%;
+    }
+  }
 }
 
 .title {
