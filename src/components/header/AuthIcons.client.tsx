@@ -7,7 +7,6 @@ import logout from "@/assets/Image/header/mage_logout.png";
 import { Session } from "next-auth";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 interface Props {
   session: Session | null;
@@ -15,10 +14,6 @@ interface Props {
 
 export default function AuthIcons({ session }: Props) {
   const { data: clientSession, status } = useSession();
-  const router = useRouter();
-  const [loggedIn, setLoggedIn] = useState<Session | null>(
-    session || clientSession,
-  );
 
   if (status === "loading") {
     return (
@@ -27,23 +22,44 @@ export default function AuthIcons({ session }: Props) {
       </Link>
     );
   }
+  const isUserLoggedIn = !!session || !!clientSession;
 
   const onClickSignout = async () => {
-    await signOut({
-      redirect: false,
-      callbackUrl: "/",
-    });
+    try {
+      await signOut({
+        redirect: false,
+        callbackUrl: "/",
+      });
 
-    setLoggedIn(null);
+      const cookiesToClear = [
+        "next-auth.session-token",
+        "__Secure-next-auth.session-token",
+        "next-auth.csrf-token",
+        "__Host-next-auth.csrf-token",
+        "next-auth.callback-url",
+        "__Secure-next-auth.callback-url",
+      ];
 
-    router.push("");
+      cookiesToClear.forEach((name) => {
+        document.cookie = `${name}=; Max-Age=0; path=/;`;
 
-    toast.success(`로그아웃이 완료되었습니다`, {
-      duration: 2000,
-    });
+        document.cookie = `${name}=; Max-Age=0; path=/; domain=localhost;`;
+
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;
+      });
+
+      toast.success(`로그아웃이 완료되었습니다`, {
+        duration: 2000,
+      });
+
+      window.location.replace("/");
+    } catch (error) {
+      console.error("로그아웃 중 에러 발생:", error);
+      toast.error("로그아웃에 실패했습니다.");
+    }
   };
 
-  if (loggedIn) {
+  if (isUserLoggedIn) {
     return (
       <button type="button" onClick={onClickSignout}>
         <Image

@@ -3,6 +3,8 @@ import { Table } from "@/components/Table/page";
 import Link from "next/link";
 import styles from "./page.module.scss";
 import BoardLayout from "@/components/common/boardLayout/page";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 interface InquiryRow {
   id: number;
@@ -42,6 +44,9 @@ export default function InquiryClientPage({
   pageSize,
   role,
 }: Props) {
+  const router = useRouter();
+  const isUserLoggedIn = session;
+
   const currentUserId = session?.user?.id ? Number(session.user.id) : null;
 
   const maskName = (name: string) => {
@@ -126,13 +131,25 @@ export default function InquiryClientPage({
     },
   ];
 
+  const handleWriteClick = () => {
+    if (!isUserLoggedIn) {
+      toast.error("로그인이 필요한 서비스입니다.", {
+        duration: 2000,
+      });
+
+      return;
+    }
+
+    router.push("/support/inquiry/new");
+  };
+
   return (
     <>
       <BoardLayout
         title="1:1 문의하기"
         tableTitle="1:1 문의하기 테이블"
         role={role}
-        writeHref="/support/inquiry/new"
+        onWriteClick={handleWriteClick}
         total={total}
         pageSize={pageSize}
         currentPage={currentPage}

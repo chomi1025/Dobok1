@@ -1,4 +1,3 @@
-export const dynamic = "force-dynamic";
 import "@/styles/globals.css";
 import { ReactNode } from "react";
 import HeaderServer from "@/components/header/Header.server";
