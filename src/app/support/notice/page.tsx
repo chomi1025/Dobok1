@@ -7,7 +7,6 @@ interface Props {
   searchParams: { [key: string]: string | string[] | undefined };
 }
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
 export default async function NoticeServerPage({ searchParams }: Props) {
   const currentPage = Number(searchParams.page) || 1;
