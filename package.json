@@ -7,7 +7,8 @@
     "build": "prisma generate && prisma db push && next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "ts-node prisma/seed.ts",
+    "test": "yarn jest"
   },
   "prisma": {
     "seed": "ts-node prisma/seed/base.ts"
@@ -78,6 +79,7 @@
     "@types/multer": "^2.0.0",
     "@types/react-datepicker": "^7.0.0",
     "@types/sanitize-html": "^2.16.0",
+    "jest": "^30.3.0",
     "prisma": "6",
     "ts-node": "^10.9.2"
   }
