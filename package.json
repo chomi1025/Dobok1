@@ -4,14 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && prisma db push && next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "ts-node prisma/seed.ts",
-    "test": "yarn jest"
-  },
-  "prisma": {
-    "seed": "ts-node prisma/seed/base.ts"
+    "seed": "ts-node prisma/seed/base.ts",
+    "test": "jest"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
@@ -84,5 +81,8 @@
     "jest": "^30.3.0",
     "prisma": "6",
     "ts-node": "^10.9.2"
+  },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed/base.ts"
   }
 }
