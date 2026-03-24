@@ -16,25 +16,31 @@ export async function POST(req: Request) {
 
   try {
     for (const item of items) {
+      const pId = Number(item.productId);
+      const oId = Number(item.productOptionId);
+      const qty = Number(item.quantity);
+
+      // oId가 0이거나 유효하지 않으면 여기서 터질 수 있으니 체크!
+      if (!oId) throw new Error("유효하지 않은 옵션 ID입니다.");
+
       await prisma.cartItem.upsert({
         where: {
           userId_productOptionId: {
             userId: userId,
-            productOptionId: Number(item.productOptionId),
+            productOptionId: oId,
           },
         },
         create: {
           userId: userId,
-          productId: Number(item.productId),
-          productOptionId: Number(item.productOptionId),
-          quantity: Number(item.quantity),
+          productId: pId,
+          productOptionId: oId,
+          quantity: qty,
         },
         update: {
-          quantity: { increment: Number(item.quantity) },
+          quantity: { increment: qty },
         },
       });
     }
-
     return NextResponse.json({ message: "장바구니 담기 성공!" });
   } catch (error) {
     return NextResponse.json({ message: "서버 에러 발생" }, { status: 500 });
