@@ -15,27 +15,25 @@ export async function POST(req: Request) {
   const { items } = await req.json();
 
   try {
-    await Promise.all(
-      items.map(async (item: any) => {
-        return prisma.cartItem.upsert({
-          where: {
-            userId_productOptionId: {
-              userId: userId,
-              productOptionId: item.productOptionId,
-            },
-          },
-          create: {
+    for (const item of items) {
+      await prisma.cartItem.upsert({
+        where: {
+          userId_productOptionId: {
             userId: userId,
-            productId: item.productId,
-            productOptionId: item.productOptionId,
-            quantity: item.quantity,
+            productOptionId: Number(item.productOptionId),
           },
-          update: {
-            quantity: { increment: item.quantity },
-          },
-        });
-      }),
-    );
+        },
+        create: {
+          userId: userId,
+          productId: Number(item.productId),
+          productOptionId: Number(item.productOptionId),
+          quantity: Number(item.quantity),
+        },
+        update: {
+          quantity: { increment: Number(item.quantity) },
+        },
+      });
+    }
 
     return NextResponse.json({ message: "장바구니 담기 성공!" });
   } catch (error) {
