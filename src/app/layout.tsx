@@ -19,6 +19,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
             <Toaster
               position="top-center"
+              containerStyle={{
+                zIndex: 99999,
+              }}
               toastOptions={{
                 style: {
                   minWidth: "280px",
