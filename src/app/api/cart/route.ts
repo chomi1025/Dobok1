@@ -19,10 +19,9 @@ export async function POST(req: Request) {
       items.map(async (item: any) => {
         return prisma.cartItem.upsert({
           where: {
-            userId_productId_productOptionId: {
+            userId_productOptionId: {
               userId: userId,
-              productId: item.productId,
-              productOptionId: item.productOptionId || 0,
+              productOptionId: item.productOptionId,
             },
           },
           create: {
