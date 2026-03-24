@@ -37,6 +37,7 @@ export default function ProductCard({ session, product }: ProductCardProps) {
       productName: product.name,
       thumbnail: product.thumbnail,
       price: targetOption.price,
+      quantity: 1,
     };
 
     const success = await addToCart(itemData, session?.user);
