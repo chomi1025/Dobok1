@@ -14,18 +14,35 @@ export interface ProductOption {
   stock: number;
 }
 
+export interface Announcement {
+  washing?: string;
+  quality?: string;
+  asPhone?: string;
+  manufacturer?: string;
+  precautions?: string;
+}
+
 export interface Product {
   id: number;
   name: string;
-  price?: number;
   categoryId: number;
   isBest: boolean;
   isNew: boolean;
   thumbnail: string;
+  images: string[];
+  description: string | null;
+  material: string | null;
+  origin: string | null;
+  announcement: Announcement;
   discount?: number;
   tag?: string;
   sale?: number;
   options: ProductOption[];
+  category: {
+    id: number;
+    name: string;
+    slug: string;
+  };
 }
 
 export interface Title {

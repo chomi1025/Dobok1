@@ -60,6 +60,7 @@
   }
 
   &:active {
+    transform: scale(0.98);
     background: #eeeeee;
   }
 }
@@ -68,4 +69,22 @@
   position: absolute;
   top: 0;
   right: 0;
+}
+
+.black {
+  font-size: rem(14);
+  padding: rem(8) rem(16);
+  background-color: #222;
+  color: #fff;
+  border: 1px solid #222;
+
+  &:hover {
+    background-color: #444;
+    border-color: #444;
+  }
+
+  &:active {
+    background-color: #000;
+    transform: scale(0.98);
+  }
 }

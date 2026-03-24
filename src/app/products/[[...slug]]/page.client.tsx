@@ -7,8 +7,11 @@ import { useRouter } from "next/navigation";
 import { CategoryWithChildren } from "./page";
 import ProductList from "@/components/product/ProductList";
 import PagenationComponent from "@/components/pagenation/page";
+import { Session } from "next-auth";
+import { ChevronRight, Home } from "lucide-react";
 
 type Props = {
+  session: Session | null;
   categories: CategoryWithChildren[];
   products: any[];
   mainSlug: string;
@@ -19,6 +22,7 @@ type Props = {
 };
 
 export default function PageClient({
+  session,
   categories,
   mainSlug,
   subSlug,
@@ -55,9 +59,9 @@ export default function PageClient({
           <h1>{currentMain?.name}</h1>
 
           <nav>
-            <Link href="/">전상품</Link>
+            <Link href="/">홈</Link>
 
-            <span className={styles.withSeparator} />
+            <ChevronRight size={14} className={styles.separator} />
 
             <Link href={`/products/${currentMain?.slug}`}>
               {currentMain?.name}
@@ -65,7 +69,8 @@ export default function PageClient({
 
             {currentSub && (
               <>
-                <span className={styles.withSeparator} />
+                <ChevronRight size={14} className={styles.separator} />
+
                 <span>{currentSub.name}</span>
               </>
             )}
@@ -85,7 +90,11 @@ export default function PageClient({
       {/* 상품목록 */}
       <article className={styles.contentSection}>
         <h2 className={styles["sr-only"]}>상품 목록</h2>
-        <ProductList products={products} className={styles.CustomMinHeight} />
+        <ProductList
+          session={session}
+          products={products}
+          className={styles.CustomMinHeight}
+        />
       </article>
 
       {/* 페이지네이션 */}

@@ -1,0 +1,63 @@
+@import "../../components/style/variables.module";
+
+.cartSummary {
+  > div:first-of-type {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: rem(30) 0 rem(25);
+
+    p {
+      font-size: rem(18);
+      strong {
+        font-weight: 700;
+        margin-left: rem(10);
+      }
+    }
+
+    span {
+      display: inline-block;
+      margin: 0 rem(5);
+
+      &:first-of-type {
+        background: url("/image/ic_baseline-plus.png") no-repeat center;
+        background-size: cover;
+        width: rem(24);
+        height: rem(24);
+      }
+
+      &:nth-of-type(2) {
+        background: url("/image/material-symbols_equal.png") no-repeat center;
+        background-size: cover;
+        width: rem(24);
+        height: rem(24);
+      }
+    }
+  }
+}
+
+.buttonsArea {
+  display: flex;
+  justify-content: flex-end;
+  gap: rem(13);
+
+  button {
+    font-size: rem(15);
+    padding: rem(15) rem(20);
+  }
+}
+
+.cartActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  margin-bottom: 40px;
+
+  button {
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+}

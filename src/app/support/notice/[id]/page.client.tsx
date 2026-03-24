@@ -3,7 +3,7 @@ import styles from "./page.module.scss";
 import DetailLayout from "@/components/common/DetailLayout/page";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { confirmDelete } from "@/lib/swal";
+import { customConfirm } from "@/lib/swal";
 
 interface Props {
   isAdmin: boolean;
@@ -19,7 +19,7 @@ export default function NoticeDetailClientPage({ isAdmin, notice }: Props) {
   const router = useRouter();
 
   const handleDeleteNotice = async () => {
-    const result = await confirmDelete("삭제하시겠습니까?");
+    const result = await customConfirm("삭제하시겠습니까?");
 
     if (result.isConfirmed) {
       try {

@@ -108,6 +108,7 @@ model Product {
   thumbnail   String?
   isBest      Boolean         @default(false)
   isNew       Boolean         @default(false)
+  announcement Json?
   cartItems   CartItem[]
   orderItems  OrderItem[]
   category    Category        @relation(fields: [categoryId], references: [id])
@@ -137,6 +138,7 @@ model CartItem {
   productOptionId Int
   product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
   option          ProductOption @relation(fields: [productOptionId], references: [id])
+  @@unique([userId, productOptionId])
 }
 
 model Order {

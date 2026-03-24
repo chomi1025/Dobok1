@@ -1,0 +1,41 @@
+.shoppingGuide {
+  padding-bottom: 300px;
+  margin: 0 auto;
+  width: 1040px;
+
+  &.active {
+    min-height: 60px;
+  }
+
+  &:not(:last-of-type) {
+    margin-bottom: 80px;
+  }
+
+  > div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  > ul {
+    display: none;
+    &.active {
+      display: block;
+    }
+
+    > li {
+      display: flex;
+      border-bottom: 1px solid #ddd;
+      padding: 25px 0;
+
+      > p {
+        width: 25%;
+      }
+
+      > div {
+        padding-left: 23px;
+        width: 75%;
+      }
+    }
+  }
+}
