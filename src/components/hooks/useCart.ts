@@ -1,33 +1,35 @@
-export const addToCart = async (item: any, user: any) => {
+export const addToCart = async (itemOrItems: any, user: any) => {
+  const items = Array.isArray(itemOrItems) ? itemOrItems : [itemOrItems];
+
   try {
     if (user) {
-      //  회원
       const res = await fetch("/api/cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          productId: item.productId,
-          productOptionId: item.productOptionId,
-          quantity: 1,
+          items: items.map((item) => ({
+            productId: Number(item.productId),
+            productOptionId: Number(item.productOptionId),
+            quantity: Number(item.quantity || 1),
+          })),
         }),
       });
       return res.ok;
     } else {
-      // 비회원
+      //  비회원
       const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-      const existingIndex = localCart.findIndex(
-        (val: any) => val.productOptionId === item.productOptionId,
-      );
+      items.forEach((item) => {
+        const existingIndex = localCart.findIndex(
+          (val: any) => val.productOptionId === item.productOptionId,
+        );
 
-      if (existingIndex > -1) {
-        localCart[existingIndex].quantity += 1;
-      } else {
-        localCart.push({
-          ...item,
-          quantity: 1,
-        });
-      }
+        if (existingIndex > -1) {
+          localCart[existingIndex].quantity += item.quantity || 1;
+        } else {
+          localCart.push({ ...item, quantity: item.quantity || 1 });
+        }
+      });
 
       localStorage.setItem("cart", JSON.stringify(localCart));
       window.dispatchEvent(new Event("cartUpdated"));

@@ -92,9 +92,7 @@ export default function QuickAddModal({ product, user, onClose }: Props) {
       const results = await Promise.all(promises);
 
       if (results.every((res) => res)) {
-        toast.success("선택한 모든 상품이 장바구니에 담겼습니다!", {
-          duration: 3000,
-        });
+        toast.success("담기 성공!");
         onClose();
       } else {
         toast.error("일부 상품 담기에 실패했습니다.");
