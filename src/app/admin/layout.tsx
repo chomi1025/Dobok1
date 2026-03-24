@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { ReactNode } from "react";
 import { authOptions } from "@/lib/auth/options";
 import { redirect } from "next/navigation";
+import styles from "./page.module.scss";
 
 export default async function AdminLayout({
   children,
@@ -16,16 +17,9 @@ export default async function AdminLayout({
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        width: "1140px",
-        minHeight: "100vh",
-        margin: "0 auto",
-        paddingTop: "80px",
-      }}
-    >
+    <div className={styles.inner}>
       <AdminSidebar />
+
       {children}
     </div>
   );

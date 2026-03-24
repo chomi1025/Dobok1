@@ -1,0 +1,15 @@
+@import "../../components/style/variables.module";
+
+.inner {
+  padding: rem(20) 0 rem(200);
+  display: flex;
+  width: 1140px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding-top: 80px;
+
+  > div {
+    flex: 1;
+    padding: rem(20) 0 0;
+  }
+}

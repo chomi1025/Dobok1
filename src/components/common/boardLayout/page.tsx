@@ -7,7 +7,7 @@ interface BoardLayoutProps {
   tableTitle: string;
   role?: string | null;
   writeHref?: string;
-  adminOnly?: boolean;
+  isRestricted?: boolean;
   total?: number;
   pageSize?: number;
   currentPage?: number;
@@ -20,7 +20,7 @@ export default function BoardLayout({
   tableTitle,
   role,
   writeHref,
-  adminOnly = false,
+  isRestricted = false,
   children,
   total,
   pageSize,
@@ -28,7 +28,7 @@ export default function BoardLayout({
   onWriteClick,
 }: BoardLayoutProps) {
   const showWriteButton =
-    (writeHref || onWriteClick) && (!adminOnly || role === "ADMIN");
+    (writeHref || onWriteClick) && (!isRestricted || role === "ADMIN");
   const showPagination =
     total !== undefined &&
     pageSize !== undefined &&

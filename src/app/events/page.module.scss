@@ -1,0 +1,9 @@
+@import "../../components/style/variables.module";
+
+.inner {
+  min-height: 100vh;
+  margin: 0 auto;
+  width: rem(1200);
+  padding: rem(80) 0 rem(200);
+  text-align: center;
+}

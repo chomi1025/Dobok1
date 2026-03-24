@@ -1,9 +1,13 @@
 import styled from "@emotion/styled";
 
 export const Inner = styled.div`
-  flex: 1;
   padding-bottom: 300px;
   min-height: 100vh;
+
+  /* 페이지네이션 */
+  nav {
+    margin: 30px 0;
+  }
 `;
 
 export const PaginationWrapper = styled.div`

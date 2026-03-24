@@ -1,6 +1,7 @@
 @import "../../components/style/variables.module";
 
 .inner {
+  padding: rem(20) 0 0;
   display: flex;
   width: 1140px;
   margin: 0 auto;
@@ -9,6 +10,6 @@
 
   > div {
     flex: 1;
-    padding: rem(20);
+    padding: rem(20) 0 0;
   }
 }

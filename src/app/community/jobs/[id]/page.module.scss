@@ -1,0 +1,219 @@
+@import "../../../../components/style/variables.module";
+
+.inner {
+  max-width: rem(900);
+  margin: 0 auto;
+
+  .topInfo {
+    display: flex;
+    gap: rem(8);
+    margin-bottom: rem(15);
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: rem(4) rem(10);
+      border-radius: rem(4);
+      font-size: rem(12);
+      font-weight: 700;
+      line-height: 1;
+
+      &.jobType {
+        background-color: #333;
+        color: #fff;
+        border: 1px solid #333;
+      }
+
+      &.jobRole {
+        background-color: #fff;
+        color: #333;
+        border: 1px solid #333;
+      }
+    }
+  }
+
+  > header {
+    > h1 {
+      font-size: rem(28);
+      margin-bottom: rem(15);
+      font-weight: 800;
+      color: #222;
+      margin-bottom: rem(30);
+    }
+  }
+}
+
+.postCard {
+  background: #ffffff;
+
+  .summaryBox {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: rem(25) rem(20);
+    background-color: #fafafa;
+    border-top: 1px solid #eee;
+
+    .infoItem {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: rem(8);
+
+      &:not(:last-child) {
+        border-right: 1px solid #eaeaea;
+      }
+
+      .label {
+        font-size: rem(13);
+        color: #888;
+        font-weight: 500;
+      }
+
+      .value {
+        font-size: rem(16);
+        color: #222;
+        font-weight: 700;
+      }
+    }
+  }
+
+  .postHeader {
+    padding: rem(15) rem(20) rem(20);
+    border-top: 1px solid #333;
+
+    .postTitle {
+      font-size: rem(20);
+      font-weight: 600;
+      color: #111;
+      margin-bottom: rem(15);
+      word-break: keep-all;
+    }
+
+    .metaList {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        font-size: rem(15);
+        color: #666;
+        display: flex;
+        align-items: center;
+
+        &:not(:last-child)::after {
+          content: "";
+          display: inline-block;
+          width: 3px;
+          height: 3px;
+          background-color: #ccc;
+          border-radius: 50%;
+          margin-left: 12px;
+        }
+
+        time {
+          color: #999;
+        }
+      }
+    }
+  }
+
+  .postContent {
+    min-height: rem(250);
+    font-size: 15px;
+    line-height: 1.5;
+    color: #333;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    padding: rem(40) rem(20) rem(90);
+
+    h3 {
+      @include sr-only;
+    }
+
+    :global(.ql-editor) {
+      padding: 0;
+      overflow: visible;
+
+      p {
+        margin-bottom: 1.2rem;
+      }
+
+      img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 12px;
+        margin: 20px 0;
+      }
+
+      strong {
+        font-weight: 600;
+        color: #000;
+      }
+    }
+  }
+
+  .postFooter {
+    margin-top: rem(60);
+    border-top: 1px solid #eee;
+
+    .applySection {
+      padding: rem(40) rem(20);
+      background-color: #fcfcfc;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+
+      .applyTitle {
+        font-size: rem(18);
+        font-weight: 700;
+        margin-bottom: rem(20);
+        color: #111;
+      }
+
+      .applyContent {
+        .applyMethods {
+          font-size: rem(15);
+          color: #666;
+          margin-bottom: rem(15);
+          strong {
+            color: #333;
+          }
+        }
+
+        .revealBtn {
+          background: #333;
+          color: #fff;
+          border: none;
+          padding: rem(12) rem(24);
+          font-size: rem(14);
+          font-weight: 600;
+          cursor: pointer;
+          border-radius: rem(4);
+          transition: background 0.2s;
+
+          &:hover {
+            background: #000;
+          }
+        }
+
+        .realContact {
+          display: flex;
+          flex-direction: column;
+          gap: rem(10);
+          font-size: rem(18);
+          font-weight: 700;
+          color: #1971c2;
+        }
+      }
+    }
+
+    .btnWrapper {
+      display: flex;
+      justify-content: center;
+      padding: rem(40) 0;
+    }
+  }
+}

@@ -18,6 +18,16 @@ export default function SimplePagination({
   const searchParams = useSearchParams();
   const totalPages = Math.ceil(total / pageSize);
 
+  const PAGE_GROUP_SIZE = 5;
+  const currentGroup = Math.ceil(currentPage / PAGE_GROUP_SIZE);
+  const startPage = (currentGroup - 1) * PAGE_GROUP_SIZE + 1;
+  const endPage = Math.min(startPage + PAGE_GROUP_SIZE - 1, totalPages);
+
+  const pages = [];
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i);
+  }
+
   const movePage = (page: number) => {
     if (page < 1 || page > totalPages) return;
     const params = new URLSearchParams(searchParams.toString());
@@ -26,7 +36,10 @@ export default function SimplePagination({
   };
 
   return (
-    <nav className={styles.container}>
+    <nav className={styles.inner}>
+      <button onClick={() => movePage(1)} disabled={currentPage === 1}>
+        {"<<"}
+      </button>
       <button
         onClick={() => movePage(currentPage - 1)}
         disabled={currentPage === 1 || total === 0}
@@ -35,32 +48,35 @@ export default function SimplePagination({
       </button>
 
       <div className={styles.pages}>
-        {/* 데이터가 아예 없어도 '1' 페이지 번호 하나는 보여주고 싶을 때 */}
         {total === 0 ? (
           <button className={styles.active} disabled>
             1
           </button>
         ) : (
-          [...Array(totalPages)].map((_, i) => {
-            const page = i + 1;
-            return (
-              <button
-                key={page}
-                onClick={() => movePage(page)}
-                className={currentPage === page ? styles.active : ""}
-              >
-                {page}
-              </button>
-            );
-          })
+          pages.map((page) => (
+            <button
+              key={page}
+              onClick={() => movePage(page)}
+              className={currentPage === page ? styles.active : ""}
+            >
+              {page}
+            </button>
+          ))
         )}
       </div>
 
       <button
         onClick={() => movePage(currentPage + 1)}
-        disabled={currentPage === totalPages}
+        disabled={currentPage === totalPages || total === 0}
       >
         NEXT
+      </button>
+
+      <button
+        onClick={() => movePage(totalPages)}
+        disabled={currentPage === totalPages || total === 0}
+      >
+        {">>"}
       </button>
     </nav>
   );

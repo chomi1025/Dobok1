@@ -2,7 +2,7 @@ export const compressImage = async (
   file: File,
   maxWidth: number = 1200,
   maxHeight: number = 1200,
-  quality: number = 0.5,
+  quality: number = 0.7,
 ): Promise<File> => {
   return new Promise((resolve, reject) => {
     const image = new Image();
@@ -49,12 +49,13 @@ export const compressImage = async (
             return;
           }
 
-          const compressedFile = new File([blob], file.name, {
-            type: "image/jpeg",
+          const newFileName = file.name.replace(/\.[^/.]+$/, "") + ".webp";
+          const compressedFile = new File([blob], newFileName, {
+            type: "image/webp",
           });
           resolve(compressedFile);
         },
-        "image/jpeg",
+        "image/webp",
         quality,
       );
     };

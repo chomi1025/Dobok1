@@ -1,0 +1,171 @@
+@import "../../../components/style/variables.module";
+
+.inner {
+  max-width: rem(720);
+}
+
+.header {
+  border-bottom: 1px solid #333;
+  padding-bottom: rem(30);
+  margin-bottom: rem(40);
+}
+
+.companyWrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.jobRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.form {
+  .fieldset {
+    label {
+      margin-bottom: rem(8);
+      font-weight: 600;
+
+      span {
+        display: block;
+        font-size: rem(13);
+        font-weight: 400;
+        color: #888;
+        margin-top: rem(6);
+      }
+    }
+
+    &:first-of-type {
+    }
+
+    .legend {
+      @include sr-only;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: rem(20);
+
+      input {
+        padding: rem(15) rem(18);
+        width: 100%;
+        border-radius: 6px;
+      }
+
+      select {
+        border-radius: 6px;
+        padding: rem(15) rem(18);
+
+        option {
+          padding: rem(15) rem(18);
+        }
+      }
+    }
+  }
+
+  .editorField {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    label {
+      margin-bottom: rem(8);
+      font-weight: 600;
+    }
+
+    .guide {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .editor {
+      :global {
+        .ql-toolbar {
+          border-top-left-radius: 8px;
+          border-top-right-radius: 8px;
+          border-color: #ddd;
+          background-color: #f9f9f9;
+        }
+        .ql-container {
+          border-bottom-left-radius: 8px;
+          border-bottom-right-radius: 8px;
+          border-color: #ddd;
+          min-height: 300px;
+          font-size: 15px;
+        }
+        .ql-editor.ql-blank::before {
+          font-style: normal;
+          color: #aaa;
+        }
+      }
+    }
+  }
+}
+
+.buttonWrapper {
+  display: flex;
+  gap: rem(10);
+  justify-self: center;
+
+  button {
+    margin: rem(60) 0 0;
+  }
+}
+
+.contactField {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px dashed #eee;
+
+  label {
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: block;
+
+    span {
+      font-size: 12px;
+      color: #888;
+      font-weight: 400;
+    }
+  }
+}
+
+.contactOptions {
+  display: flex;
+  gap: 20px;
+
+  .checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 400;
+
+    input {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.helperText {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #ff5a5f;
+}
+
+.checkboxLabel {
+  input {
+    cursor: default;
+    opacity: 1;
+    filter: none;
+    accent-color: #3b82f6;
+  }
+}

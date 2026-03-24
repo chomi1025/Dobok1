@@ -5,7 +5,7 @@ interface OrderInfoProps {
   align?: "left" | "center" | "right";
 }
 
-export const Section = styled.section<{ pricing: boolean }>`
+export const Section = styled.section`
   flex: 1;
   font-size: 15px;
   position: relative;

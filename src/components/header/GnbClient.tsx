@@ -8,7 +8,7 @@ const navigation = [
   { name: "신제품", href: "/products/new" },
   { name: "베스트", href: "/products/best" },
   { name: "이벤트", href: "/events" },
-  { name: "커뮤니티", href: "/community" },
+  { name: "커뮤니티", href: "/community/jobs" },
   { name: "고객센터", href: "/support/notice" },
 ];
 

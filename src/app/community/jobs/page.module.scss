@@ -1,0 +1,53 @@
+@import "../../../components/style/variables.module";
+
+.inner {
+  > section {
+    h1 {
+      font-size: rem(24);
+      margin-bottom: rem(5);
+    }
+
+    p {
+      margin-bottom: rem(20);
+      font-size: rem(14);
+      color: #888;
+    }
+  }
+
+  nav {
+    &:first-of-type {
+      margin-bottom: rem(15);
+    }
+    &:last-of-type {
+      margin: rem(30) 0;
+    }
+  }
+
+  article {
+    section {
+      min-height: rem(200);
+    }
+  }
+
+  a {
+    top: 15px;
+  }
+}
+
+.tableWrapper {
+  position: relative;
+
+  > a {
+    position: absolute;
+    top: -40px;
+    right: 0;
+  }
+
+  > section {
+    > div:last-of-type {
+      > div {
+        padding: 18px 0;
+      }
+    }
+  }
+}

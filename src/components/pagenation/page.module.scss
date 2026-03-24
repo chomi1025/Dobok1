@@ -1,8 +1,7 @@
-.container {
+.inner {
+  gap: 12px;
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 12px;
 
   button {
     background: none;
