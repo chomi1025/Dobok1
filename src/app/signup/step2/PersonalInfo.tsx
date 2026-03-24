@@ -6,9 +6,7 @@ import {
   FieldErrors,
   FieldValues,
   Path,
-  UseFormSetValue,
 } from "react-hook-form";
-import Script from "next/script";
 
 declare global {
   interface Window {
@@ -18,61 +16,13 @@ declare global {
 
 type Props<T extends FieldValues> = {
   control: Control<T>;
-  setValue: UseFormSetValue<T>;
   isEdit?: boolean;
   errors?: FieldErrors<T>;
 };
 
 export default function PersonalInfo<T extends FieldValues>({
   control,
-  setValue,
 }: Props<T>) {
-  const handleCertification = () => {
-    const { IMP } = window;
-    IMP.init(process.env.NEXT_PUBLIC_IMP_CODE);
-
-    IMP.certification(
-      {
-        pg: "inicis_unified.MIIiasTest",
-        merchant_uid: `cert_${new Date().getTime()}`,
-        popup: true,
-        name: "",
-        phone: "",
-      },
-
-      async (rsp: any) => {
-        if (rsp.success) {
-          const response = await fetch("/api/auth/verify-cert", {
-            method: "POST",
-            body: JSON.stringify({ imp_uid: rsp.imp_uid }),
-          });
-
-          if (response.ok) {
-            const result = await response.json();
-            const userData = result.data;
-
-            setValue("name" as Path<T>, userData.name);
-
-            if (userData.phone) {
-              const p = userData.phone;
-              setValue("phone.prefix" as Path<T>, p.slice(0, 3));
-              setValue("phone.middle" as Path<T>, p.slice(3, 7));
-              setValue("phone.last" as Path<T>, p.slice(7, 11));
-            }
-
-            if (userData.birthday) {
-              setValue("birthDate" as Path<T>, userData.birthday);
-            }
-
-            alert("본인인증이 완료되었습니다.");
-          }
-        } else {
-          alert(`인증 실패: ${rsp.error_msg}`);
-        }
-      },
-    );
-  };
-
   return (
     <S.PersonalInfo>
       <legend>개인 정보</legend>

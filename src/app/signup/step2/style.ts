@@ -9,6 +9,7 @@ export const Inner = styled.section`
   select {
     color: #444;
   }
+
   input {
     color: #444;
     border-radius: 4px;
@@ -30,6 +31,7 @@ export const Title_Wrapper = styled.div`
     font-size: 14px;
   }
 `;
+
 export const Error_Wrapper = styled.div`
   display: flex;
   align-items: center;
@@ -70,8 +72,8 @@ export const Form = styled.form`
 
   fieldset {
     legend {
-      font-size: 0; /* 글자 안보이게 */
-      width: 0; /* 영역 최소화 */
+      font-size: 0;
+      width: 0;
       height: 0;
       padding: 0;
       margin: 0;
@@ -109,10 +111,9 @@ export const Form_Inner = styled.div`
 `;
 
 export const Phone = styled.div`
-  div:last-of-type {
+  > div:last-of-type {
     display: grid;
     color: #444;
-
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
     align-items: center;
@@ -120,10 +121,6 @@ export const Phone = styled.div`
     input {
       color: #444;
       background-color: #f9fafb;
-      width: 100%;
-      min-width: 0;
-      padding: 12px 20px;
-      box-sizing: border-box;
     }
   }
 `;
@@ -150,7 +147,6 @@ export const Arrow = styled.span`
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  //pointer-events: none;
   font-size: 12px;
   color: #666;
 `;
@@ -190,15 +186,16 @@ export const address = styled.fieldset`
 
 export const PersonalInfo = styled.fieldset`
   input {
-    background-color: #f9fafb;
     width: 100%;
-    min-width: 0;
     padding: 12px 20px;
-    box-sizing: border-box;
   }
 
   .field {
     margin-bottom: 30px;
+
+    input {
+      background-color: #f9fafb;
+    }
   }
 `;
 

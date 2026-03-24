@@ -27,11 +27,15 @@ export default function Login() {
 
       if (!res?.ok) {
         toast.error("아이디나 비밀번호를 다시 확인해주세요");
-        router.refresh();
+
         return;
       }
+
       const session = await getSession();
       const userName = session?.user?.name || id;
+
+      router.refresh();
+
       router.push("/");
 
       toast.success(`${userName}님, 반가워요! 🥋`, {

@@ -195,7 +195,6 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
 
           <PersonalInfo
             control={control as any}
-            setValue={setValue as any}
             errors={errors}
             isEdit={true}
           />

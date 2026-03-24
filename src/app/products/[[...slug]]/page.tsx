@@ -1,7 +1,7 @@
-import { getCategories } from "@/lib/category";
 import PageClient from "./page.client";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { Metadata } from "next";
 
 export type CategoryWithChildren = Prisma.CategoryGetPayload<{
   include: { children: true };
@@ -18,6 +18,36 @@ export type ProductWithCategory = Prisma.ProductGetPayload<{
 interface PageProps {
   params: { slug?: string[] };
   searchParams: { page?: string };
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const slug = params.slug || [];
+  const mainSlug = slug[0];
+  const subSlug = slug[1];
+
+  const currentCategory = await prisma.category.findUnique({
+    where: { slug: subSlug || mainSlug },
+    include: { parent: true },
+  });
+
+  const title = currentCategory
+    ? `${currentCategory.name} | 도복1번지`
+    : "상품 카테고리 - 도복1번지";
+
+  const description = currentCategory
+    ? `${currentCategory.name} 카테고리의 최고급 용품들을 도복1번지에서 만나보세요.`
+    : "도복1번지의 다양한 무술 용품 카테고리입니다.";
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+    },
+  };
 }
 
 export default async function Page({ params, searchParams }: PageProps) {

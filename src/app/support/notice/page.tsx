@@ -31,7 +31,7 @@ export default async function NoticeServerPage({ searchParams }: Props) {
   ]);
 
   const allNotices = [...fixedNotices, ...normalNotices];
-  const role = session?.user?.role ?? null;
+  const role = session?.user?.role ?? "user";
 
   return (
     <NoticeClientPage
