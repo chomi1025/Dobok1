@@ -1,9 +1,10 @@
 import styles from "./page.module.scss";
 import ProductList from "@/components/product/ProductList";
-import PaginationWrapper from "@/components/pagenation/page";
 import { Product } from "@/types/types";
+import { Session } from "next-auth";
 
 interface ProductPageProps {
+  session: Session | null;
   title: {
     name: string;
     contents: string;
@@ -15,6 +16,7 @@ interface ProductPageProps {
 }
 
 export default function ProductPageComponent({
+  session,
   title,
   products,
   totalItems,
@@ -30,7 +32,7 @@ export default function ProductPageComponent({
       <hr />
 
       <div>
-        <ProductList products={products} />
+        <ProductList session={session} products={products} />
       </div>
     </section>
   );

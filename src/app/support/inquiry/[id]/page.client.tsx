@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import Button from "@/components/common/buttons/page";
-import { confirmDelete } from "@/lib/swal";
+import { customConfirm } from "@/lib/swal";
 import DetailLayout from "@/components/common/DetailLayout/page";
 import { FiLock } from "react-icons/fi";
 
@@ -62,9 +62,12 @@ export default function InquiryClientPage({
 
   const hasReply = inquiry.replies?.length > 0;
 
-  // 문의글 삭제 함수
   const handleDelete = async () => {
-    const result = await confirmDelete("게시글을 삭제하시겠습니까?");
+    const result = await customConfirm({
+      title: "이 문의글을 삭제하시겠습니까?",
+      confirmText: "삭제",
+      isDanger: true,
+    });
 
     if (result.isConfirmed) {
       try {
@@ -119,9 +122,12 @@ export default function InquiryClientPage({
     }
   };
 
-  // 관리자 답변 함수(삭제)
   const handleDeleteReply = async () => {
-    const result = await confirmDelete("답변을 삭제하시겠습니까?");
+    const result = await customConfirm({
+      title: "이 문의 답변을 삭제하시겠습니까?",
+      confirmText: "삭제",
+      isDanger: true,
+    });
 
     if (result.isConfirmed) {
       try {

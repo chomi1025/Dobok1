@@ -6,7 +6,7 @@ import { useState } from "react";
 import CategoryTabs from "@/components/CategoryTabs/page";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { confirmDelete } from "@/lib/swal";
+import { customConfirm } from "@/lib/swal";
 
 interface FaqsType {
   id: number;
@@ -43,7 +43,11 @@ export default function FaqClientPage({ faqs, isAdmin }: Props) {
       : faqs.filter((faq) => faq.category === activeTab);
 
   const handleDeleteFaq = async (id: number) => {
-    const result = await confirmDelete("이 FAQ를 삭제하시겠습니까?");
+    const result = await customConfirm({
+      title: "이 FAQ를 삭제하시겠습니까?",
+      confirmText: "삭제",
+      isDanger: true,
+    });
 
     if (result.isConfirmed) {
       try {

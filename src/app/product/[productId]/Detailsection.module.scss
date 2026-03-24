@@ -1,0 +1,48 @@
+@import "../../../components/style/variables.module";
+
+.tabArea {
+  background-color: white;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  > ul {
+    display: flex;
+    width: 1040px;
+    margin: 0 auto;
+
+    > li {
+      cursor: pointer;
+      padding: 25px 0;
+      text-align: center;
+      width: calc(100% / 3);
+      color: #666;
+      border-bottom: 2px solid #333;
+    }
+  }
+}
+
+.detailArea {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 100px 0;
+
+  > div {
+    margin: 0 auto;
+    padding: 100px 0;
+    position: relative;
+    max-width: 800px;
+
+    > img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+
+      &:not(:last-of-type) {
+        margin-bottom: 50px;
+      }
+    }
+  }
+}

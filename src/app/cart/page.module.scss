@@ -1,0 +1,17 @@
+@import "../../components/style/variables.module";
+
+.inner {
+  width: rem(850);
+  margin: 0 auto;
+  padding: rem(90) 0 rem(200);
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: rem(40);
+
+  h1 {
+    font-size: rem(32);
+    margin-bottom: rem(15);
+  }
+}

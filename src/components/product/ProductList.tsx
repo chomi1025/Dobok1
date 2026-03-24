@@ -1,18 +1,25 @@
+import { Session } from "next-auth";
 import styles from "./page.module.scss";
 import ProductCard from "./ProductCard";
 import { Product } from "@/types/types";
 
 interface ProductListProps {
+  session: Session | null;
   products: Product[];
   className?: string;
 }
 
-export default function ProductList({ products, className }: ProductListProps) {
+export default function ProductList({
+  session,
+  products,
+  className,
+}: ProductListProps) {
+  console.log(products);
   return (
     <>
       <ul className={`${styles.productList} ${className || ""}`}>
         {products.map((prd) => (
-          <ProductCard product={prd} />
+          <ProductCard session={session} product={prd} />
         ))}
       </ul>
     </>

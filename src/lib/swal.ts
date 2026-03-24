@@ -1,25 +1,36 @@
 import Swal from "sweetalert2";
 import styles from "./miniSwal.module.scss";
 
-export const confirmDelete = async (
-  title: string,
-  text: string = "복구할 수 없습니다.",
-) => {
+export const customConfirm = async ({
+  title,
+  text = "",
+  confirmText = "확인",
+  cancelText = "취소",
+  isDanger = false,
+}: {
+  title: string;
+  text?: string;
+  confirmText?: string;
+  cancelText?: string;
+  isDanger?: boolean;
+}) => {
   return await Swal.fire({
     title,
     text,
-    width: "320px",
-    padding: "1.5rem",
+    width: "340px",
     showCancelButton: true,
-    confirmButtonColor: "#c92a2a",
+    confirmButtonColor: isDanger ? "#c92a2a" : "#222",
     cancelButtonColor: "transparent",
-    confirmButtonText: "삭제",
-    cancelButtonText: "취소",
+    confirmButtonText: confirmText,
+    cancelButtonText: cancelText,
     reverseButtons: true,
     customClass: {
       popup: styles.miniSwalPopup,
       title: styles.miniSwalTitle,
       htmlContainer: styles.miniSwalText,
+      actions: styles.miniSwalActions,
+      confirmButton: styles.miniConfirmBtn,
+      cancelButton: styles.miniCancelBtn,
     },
   });
 };

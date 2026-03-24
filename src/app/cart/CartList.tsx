@@ -1,10 +1,13 @@
 "use client";
 import { Table } from "@/components/Table/page";
-import styled from "@emotion/styled";
-import { useSession } from "next-auth/react";
+import styles from "./CartList.module.scss";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { customConfirm } from "@/lib/swal";
+import Swal from "sweetalert2";
+import Button from "@/components/common/buttons/page";
 
 interface Column<T> {
   key: keyof T | string;
@@ -15,107 +18,28 @@ interface Column<T> {
   render?: (row: T) => React.ReactNode;
 }
 
-interface CartItem {
+interface UnifiedCartItem {
   id: number;
-  name: string;
-  img: string;
-  option?: string;
+  productId: number;
+  productOptionId?: number;
+  productName: string;
+  thumbnail: string;
   price: number;
   quantity: number;
-  close?: boolean;
-}
-
-type TableCartItem = Pick<
-  CartItem,
-  "id" | "name" | "img" | "price" | "quantity" | "option"
->;
-
-interface ApiCartItem {
-  id: number;
-  quantity: number;
-  product: {
-    id: number;
-    name: string;
-    price: number;
-  };
+  option?: string;
+  color?: string;
+  size?: string;
 }
 
 interface Props {
-  cart: ApiCartItem[];
-  setCart: React.Dispatch<React.SetStateAction<ApiCartItem[]>>;
+  user: any;
+  cart: any[];
+  setCart: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
-export const CartSummary = styled.section`
-  > div:first-of-type {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    margin: 30px 0 25px;
-
-    p {
-      font-size: 18px;
-      strong {
-        font-weight: 700;
-        margin-left: 10px;
-      }
-    }
-
-    span {
-      display: inline-block;
-      margin: 0 5px;
-
-      &:first-of-type {
-        background: url("/image/ic_baseline-plus.png") no-repeat center;
-        background-size: cover;
-        width: 24px;
-        height: 24px;
-      }
-
-      &:nth-of-type(2) {
-        background: url("/image/material-symbols_equal.png") no-repeat center;
-        background-size: cover;
-        width: 24px;
-        height: 24px;
-      }
-    }
-  }
-`;
-
-const Buttons = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 13px;
-
-  button {
-    &:first-of-type {
-      border: 1px solid #888;
-      border-radius: 4px;
-      width: 130px;
-      height: 45px;
-    }
-    &:last-of-type {
-      background-color: #1e40af;
-      color: white;
-      border-radius: 4px;
-      width: 130px;
-      height: 45px;
-    }
-  }
-`;
-
-export default function CartListComponent({ cart, setCart }: Props) {
-  const { data: session } = useSession();
-
+export default function CartListComponent({ user, cart, setCart }: Props) {
   const [checkedItems, setCheckedItems] = useState<number[]>([]);
   const router = useRouter();
-
-  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      setCheckedItems(cart.map((item) => Number(item.product.id)));
-    } else {
-      setCheckedItems([]);
-    }
-  };
 
   const toggleCheck = (productId: number) => {
     setCheckedItems((prev) =>
@@ -125,39 +49,113 @@ export default function CartListComponent({ cart, setCart }: Props) {
     );
   };
 
-  const isAllChecked = cart.length > 0 && checkedItems.length === cart.length;
+  // 개별삭제
+  const removeItem = async (id: number) => {
+    console.log("삭제 버튼 클릭됨! ID:", id);
+    console.log("전달받은 user 객체 상태:", user);
 
-  const removeItem = async (productId: number) => {
-    try {
-      if (session) {
-        const result = await fetch(`/api/cart/${productId}`, {
-          method: "DELETE",
-        });
+    if (!id) return;
 
-        if (!result.ok) {
-          throw new Error("회원 장바구니 삭제 실패");
+    const result = await customConfirm({
+      title: "상품을 삭제하시겠습니까?",
+      confirmText: "삭제",
+      isDanger: true,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        if (user) {
+          const res = await fetch(`/api/cart?ids=${id}`, { method: "DELETE" });
+
+          if (!res.ok) throw new Error("삭제 실패");
+          setCart((prev) => prev.filter((item) => item.id !== id));
+        } else {
+          const updatedCart = cart.filter(
+            (item) => (item.productOptionId || item.productId) !== id,
+          );
+          setCart(updatedCart);
+          localStorage.setItem("cart", JSON.stringify(updatedCart));
         }
-
-        setCart(cart.filter((item) => item.id !== productId));
-      } else {
-        const updatedCart = cart.filter((item) => item.id !== productId);
-
-        setCart(updatedCart);
-        localStorage.setItem("guestCart", JSON.stringify(updatedCart));
+        toast.success("상품이 삭제되었습니다.");
+      } catch (error) {
+        console.log(error);
+        toast.error("삭제에 실패했습니다.");
       }
-    } catch (error) {
-      console.log(error);
     }
   };
 
-  const removeall = () => {
-    alert("장바구니를 비웠습니다");
+  // 전체삭제
+  const removeall = async () => {
+    const result = await customConfirm({
+      title: "장바구니를 비우시겠습니까?",
+      text: "장바구니의 모든 상품이 삭제됩니다.",
+      confirmText: "삭제",
+      isDanger: true,
+    });
 
-    setCart([]);
-    localStorage.removeItem("guestCart");
+    if (result.isConfirmed) {
+      try {
+        if (user) {
+          const res = await fetch("/api/cart?type=all", { method: "DELETE" });
+          if (!res.ok) throw new Error("전체 삭제 실패");
+        }
+
+        setCart([]);
+        localStorage.removeItem("cart");
+
+        toast.success("장바구니가 비워졌습니다.");
+      } catch (error) {
+        console.error("전체 삭제 중 에러:", error);
+      }
+    }
   };
 
-  const cartColumns: Column<TableCartItem>[] = [
+  // 선택삭제
+  const removeSelected = async () => {
+    if (checkedItems.length === 0) {
+      return toast.error("삭제할 상품을 선택해주세요.");
+    }
+
+    const result = await customConfirm({
+      title: "선택한 상품을 삭제하시겠습니까?",
+      text: `총 ${checkedItems.length}개의 상품이 삭제됩니다.`,
+      confirmText: "선택 삭제",
+      isDanger: true,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        if (user) {
+          const idsString = checkedItems.join(",");
+
+          const res = await fetch(`/api/cart?ids=${idsString}`, {
+            method: "DELETE",
+          });
+
+          if (!res.ok) throw new Error("선택 삭제 실패");
+
+          setCart((prev) =>
+            prev.filter((item) => !checkedItems.includes(item.id)),
+          );
+        } else {
+          const updatedCart = cart.filter(
+            (item) =>
+              !checkedItems.includes(item.productOptionId || item.productId),
+          );
+          setCart(updatedCart);
+          localStorage.setItem("cart", JSON.stringify(updatedCart));
+        }
+
+        setCheckedItems([]);
+        toast.success("선택한 상품이 모두 삭제되었습니다.");
+      } catch (error) {
+        console.error("선택 삭제 실패:", error);
+        toast.error("삭제 중 오류가 발생했습니다.");
+      }
+    }
+  };
+
+  const cartColumns: Column<UnifiedCartItem>[] = [
     {
       key: "check",
       label: "선택",
@@ -174,7 +172,7 @@ export default function CartListComponent({ cart, setCart }: Props) {
       ),
     },
     {
-      key: "name",
+      key: "productName",
       label: "상품명",
       flex: 3.5,
       render: (row) => (
@@ -188,7 +186,7 @@ export default function CartListComponent({ cart, setCart }: Props) {
           }}
         >
           <Image
-            src={row.img}
+            src={row.thumbnail}
             width={90}
             height={90}
             alt="상품 이미지"
@@ -201,7 +199,7 @@ export default function CartListComponent({ cart, setCart }: Props) {
               textAlign: "left",
             }}
           >
-            <span style={{ fontWeight: 700 }}>{row.name}</span>
+            <span style={{ fontWeight: 700 }}>{row.productName}</span>
             {row.option && (
               <span style={{ marginTop: 8, color: "#888", fontSize: 15 }}>
                 {row.option}
@@ -234,27 +232,62 @@ export default function CartListComponent({ cart, setCart }: Props) {
       label: "삭제",
       flex: 0.5,
       render: (row) => (
-        <Image
-          alt={"삭제"}
-          src={"/image/meteor-icons_xmark.png"}
-          width={20}
-          height={20}
-          style={{ display: "flex", justifyContent: "center" }}
+        <button
+          type="button"
           onClick={() => {
             removeItem(row.id);
           }}
-        />
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: "8px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          title="상품 삭제"
+        >
+          <Image
+            alt={"장바구니 상품 개별삭제"}
+            src={"/image/meteor-icons_xmark.png"}
+            width={10}
+            height={10}
+            style={{
+              objectFit: "cover",
+            }}
+          />
+        </button>
       ),
     },
   ];
 
-  const tableData = cart.map((item) => ({
-    id: item.product.id,
-    name: item.product.name,
-    img: "/img/default.png",
-    price: item.product.price,
-    quantity: item.quantity,
-  }));
+  const tableData: UnifiedCartItem[] = cart.map((item) => {
+    if (item.product) {
+      return {
+        id: item.id || item.productOptionId || item.productId,
+        productId: item.product.id,
+        productName: item.product.name,
+        thumbnail: item.product.thumbnail || "/image/default.png",
+        price: item.product.price || 0,
+        quantity: item.quantity || 0,
+        option: item.productOption?.name || "",
+      };
+    }
+
+    return {
+      id: item.productOptionId || item.productId,
+      productId: item.productId,
+      productName: item.productName || "상품 정보 없음",
+      thumbnail: item.thumbnail || "/image/default.png",
+      price: item.price || 0,
+      quantity: item.quantity || 0,
+      color: item.color,
+      size: item.size,
+      option:
+        item.color || item.size ? `${item.color} ${item.size}`.trim() : "",
+    };
+  });
 
   const totalProductPrice = tableData.reduce((acc, item) => {
     return acc + item.price * item.quantity;
@@ -264,14 +297,25 @@ export default function CartListComponent({ cart, setCart }: Props) {
 
   const totalPayment = totalProductPrice + shippingFee;
 
+  // 주문페이지로 이동 ㄱㄱ
   const goToCheckout = (all: boolean) => {
     try {
+      if (cart.length === 0) {
+        return toast.error("장바구니에 담긴 상품이 없습니다.");
+      }
+
       const selectedItems = all
         ? cart
-        : cart.filter((item) => checkedItems.includes(item.product.id));
+        : cart.filter((item) => checkedItems.includes(item.id));
 
-      if (session) {
-        const ids = selectedItems.map((item) => item.product.id).join(",");
+      if (!selectedItems || selectedItems.length === 0) {
+        return toast.error(
+          all ? "장바구니가 비어있습니다." : "주문할 상품을 선택해주세요.",
+        );
+      }
+
+      if (user) {
+        const ids = selectedItems.map((item) => item.id).join(",");
         router.push(`/checkout?ids=${ids}`);
       } else {
         localStorage.setItem("checkoutItems", JSON.stringify(selectedItems));
@@ -279,6 +323,7 @@ export default function CartListComponent({ cart, setCart }: Props) {
       }
     } catch (error) {
       console.log(error);
+      toast.error("주문 페이지 이동 중 오류가 발생했습니다.");
     }
   };
 
@@ -286,7 +331,17 @@ export default function CartListComponent({ cart, setCart }: Props) {
     <>
       <Table columns={cartColumns} data={tableData} />
 
-      <CartSummary>
+      <div className={styles.cartActions}>
+        <Button variant="edit" onClick={removeSelected}>
+          선택 삭제
+        </Button>
+
+        <Button variant="delete" onClick={removeall}>
+          장바구니 비우기
+        </Button>
+      </div>
+
+      <section className={styles.cartSummary}>
         <div>
           <p>
             총 상품금액 <strong>{totalProductPrice.toLocaleString()}</strong>원
@@ -301,11 +356,14 @@ export default function CartListComponent({ cart, setCart }: Props) {
           </p>
         </div>
 
-        <Buttons>
-          <button onClick={() => goToCheckout(false)}>선택 상품 주문</button>
-          <button onClick={() => goToCheckout(true)}>전체 상품 주문</button>
-        </Buttons>
-      </CartSummary>
+        <div className={styles.buttonsArea}>
+          <Button variant="edit" onClick={() => goToCheckout(false)}>
+            선택 상품 주문
+          </Button>
+
+          <Button onClick={() => goToCheckout(true)}>전체 상품 주문</Button>
+        </div>
+      </section>
     </>
   );
 }

@@ -5,56 +5,92 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
+  if (!session)
+    return NextResponse.json(
+      { message: "로그인이 필요합니다." },
+      { status: 401 },
+    );
 
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const userId = Number(session.user.id);
+  const { items } = await req.json();
+
+  try {
+    await Promise.all(
+      items.map(async (item: any) => {
+        return prisma.cartItem.upsert({
+          where: {
+            userId_productId_productOptionId: {
+              userId: userId,
+              productId: item.productId,
+              productOptionId: item.productOptionId || 0,
+            },
+          },
+          create: {
+            userId: userId,
+            productId: item.productId,
+            productOptionId: item.productOptionId,
+            quantity: item.quantity,
+          },
+          update: {
+            quantity: { increment: item.quantity },
+          },
+        });
+      }),
+    );
+
+    return NextResponse.json({ message: "장바구니 담기 성공!" });
+  } catch (error) {
+    return NextResponse.json({ message: "서버 에러 발생" }, { status: 500 });
   }
+}
 
-  const { productId, quantity, productOptionId } = await req.json();
+export async function DELETE(request: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user) {
+    return NextResponse.json(
+      { error: "로그인이 필요합니다." },
+      { status: 401 },
+    );
+  }
 
   const userId = Number(session.user.id);
 
-  const existing = await prisma.cartItem.findFirst({
-    where: {
-      userId,
-      productId,
-    },
-  });
+  const { searchParams } = new URL(request.url);
+  const type = searchParams.get("type");
+  const idsString = searchParams.get("ids");
 
-  if (existing) {
-    await prisma.cartItem.update({
-      where: { id: existing.id },
-      data: { quantity: existing.quantity + quantity },
-    });
-  } else {
-    await prisma.cartItem.create({
-      data: {
-        userId,
-        productId,
-        productOptionId,
-        quantity,
-      },
-    });
+  try {
+    // 전체 삭제
+    if (type === "all") {
+      await prisma.cartItem.deleteMany({
+        where: { userId: userId },
+      });
+      return NextResponse.json({ message: "전체 삭제 성공" });
+    }
+
+    // 선택/개별 삭제
+    if (idsString) {
+      const ids = idsString.split(",").map((id) => Number(id));
+      console.log("숫자로 변환된 IDs 배열:", ids);
+      const result = await prisma.cartItem.deleteMany({
+        where: {
+          id: { in: ids },
+          userId: userId,
+        },
+      });
+
+      if (result.count === 0) {
+        return NextResponse.json(
+          { error: "삭제할 대상을 찾지 못함" },
+          { status: 404 },
+        );
+      }
+
+      return NextResponse.json({ message: "선택 삭제 성공" });
+    }
+
+    return NextResponse.json({ error: "잘못된 요청" }, { status: 400 });
+  } catch (error) {
+    return NextResponse.json({ error: "서버 에러" }, { status: 500 });
   }
-
-  return NextResponse.json({ success: true });
-}
-
-export async function GET() {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const cartItems = await prisma.cartItem.findMany({
-    where: {
-      userId: Number(session.user.id),
-    },
-    include: {
-      product: true,
-    },
-  });
-
-  return NextResponse.json(cartItems);
 }

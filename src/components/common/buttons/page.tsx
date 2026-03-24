@@ -3,7 +3,7 @@ import styles from "./page.module.scss";
 import Link from "next/link";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "edit" | "delete" | "list";
+  variant?: "primary" | "edit" | "delete" | "list" | "black";
   href?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   children: React.ReactNode;
