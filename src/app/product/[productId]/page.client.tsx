@@ -5,25 +5,8 @@ import { SHOPPING_POLICY } from "@/constants/policy";
 import ProductInfo from "./ProductInfo";
 import DetailSection from "./DetailSection";
 import ReviewSection from "./ReviewSection";
-import GuideSection from "@/app/product/[productId]/GuideSection";
 import { Product } from "@/types/types";
 import { Session } from "next-auth";
-
-interface ProductOption {
-  id: number;
-  color: string | null;
-  size: string | null;
-  price: number;
-  stock: number;
-}
-
-interface Announcement {
-  washing?: string;
-  quality?: string;
-  asPhone?: string;
-  manufacturer?: string;
-  precautions?: string;
-}
 
 interface Prop {
   product: Product;
@@ -42,8 +25,6 @@ interface Review {
 }
 
 export const mockReviews: Review[] = [];
-
-const totalPages = 5;
 
 export default function ProductDetailClientPage({ product, session }: Prop) {
   const [addedOptions, setAddedOptions] = useState<any[]>([]);

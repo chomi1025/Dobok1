@@ -8,6 +8,8 @@ import InstagramComponent from "@/components/main/Instagram/page";
 import ScrollAnimation from "./../components/common/ScrollAnimation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/options";
 
 export const metadata: Metadata = {
   title: "도복일번지",
@@ -15,21 +17,24 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const categories = await prisma.category.findMany({
-    where: {
-      parentId: null,
-    },
-    include: {
-      children: {
-        orderBy: {
-          sortOrder: "asc",
+  const [session, categories] = await Promise.all([
+    getServerSession(authOptions),
+    prisma.category.findMany({
+      where: {
+        parentId: null,
+      },
+      include: {
+        children: {
+          orderBy: {
+            sortOrder: "asc",
+          },
         },
       },
-    },
-    orderBy: {
-      sortOrder: "asc",
-    },
-  });
+      orderBy: {
+        sortOrder: "asc",
+      },
+    }),
+  ]);
 
   return (
     <main className={styles.main}>
@@ -46,7 +51,7 @@ export default async function HomePage() {
 
       {/* 베스트상품 */}
       <ScrollAnimation>
-        <BestSectionComponent categories={categories} />
+        <BestSectionComponent session={session} categories={categories} />
       </ScrollAnimation>
 
       {/* 메인배너 */}
@@ -68,7 +73,7 @@ export default async function HomePage() {
 
       {/* 신제품 */}
       <ScrollAnimation>
-        <NewSectionComponent categories={categories} />
+        <NewSectionComponent session={session} categories={categories} />
       </ScrollAnimation>
 
       {/* 구분선 */}

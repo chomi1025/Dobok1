@@ -1,6 +1,8 @@
 import ProductPageComponent from "@/components/product/new_bestPage/page";
+import { authOptions } from "@/lib/auth/options";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
+import { getServerSession } from "next-auth";
 
 export const metadata: Metadata = {
   title: "신제품 | 도복일번지",
@@ -21,7 +23,8 @@ export default async function NewProductPage({
   const currentPage = Number(params.page) || 1;
   const pageSize = 12;
 
-  const [totalItems, products] = await Promise.all([
+  const [session, totalItems, products] = await Promise.all([
+    getServerSession(authOptions),
     prisma.product.count({
       where: { isNew: true },
     }),
@@ -39,6 +42,7 @@ export default async function NewProductPage({
 
   return (
     <ProductPageComponent
+      session={session}
       title={title}
       products={products}
       totalItems={totalItems}

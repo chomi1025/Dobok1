@@ -3,22 +3,25 @@ import { useState } from "react";
 import styles from "./page.module.scss";
 import ProductList from "@/components/product/ProductList";
 import { Category, Product } from "../../../types/types";
-import { ProductClientProps } from "./page";
 import CategoryTabs from "@/components/CategoryTabs/page";
+import { Session } from "next-auth";
 
 export interface ProductWithCategory extends Product {
   category: {
     id: number;
     name: string;
+    slug: string;
     parentId: number | null;
     parent?: {
       id: number;
       name: string;
+      slug: string;
     } | null;
   };
 }
 
 interface CustomProductClientProps {
+  session: Session | null;
   title: {
     name: string;
     contents: string;
@@ -29,6 +32,7 @@ interface CustomProductClientProps {
 }
 
 export default function ProductSectionClientComponent({
+  session,
   title,
   categories,
   products = [],
@@ -66,6 +70,7 @@ export default function ProductSectionClientComponent({
       <div key={activeTab} className={styles.productListWrapper}>
         {filteredProducts.length > 0 ? (
           <ProductList
+            session={session}
             products={filteredProducts}
             className={styles.customMinHeight}
           />

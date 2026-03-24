@@ -19,7 +19,11 @@ export default function NoticeDetailClientPage({ isAdmin, notice }: Props) {
   const router = useRouter();
 
   const handleDeleteNotice = async () => {
-    const result = await customConfirm("삭제하시겠습니까?");
+    const result = await customConfirm({
+      title: "이 공지사항을 삭제하시겠습니까?",
+      confirmText: "삭제",
+      isDanger: true,
+    });
 
     if (result.isConfirmed) {
       try {

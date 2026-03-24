@@ -1,6 +1,21 @@
 import styles from "./ReviewSection.module.scss";
 
-export default function ReviewSection({ mockReviews }) {
+interface Review {
+  id: number;
+  userId: string;
+  userName: string;
+  rating: number;
+  content: string;
+  images: string[];
+  createdAt: string;
+  option: string;
+}
+
+interface ReviewSectionProps {
+  mockReviews: Review[];
+}
+
+export default function ReviewSection({ mockReviews }: ReviewSectionProps) {
   return (
     <>
       <section className={styles.reviewArea} id="review">

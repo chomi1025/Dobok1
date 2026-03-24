@@ -1,7 +1,12 @@
 import Image from "next/image";
 import styles from "./Detailsection.module.scss";
+import { Product } from "@/types/types";
 
-export default function DetailSection({ product }) {
+interface DetailSectionProps {
+  product: Product;
+}
+
+export default function DetailSection({ product }: DetailSectionProps) {
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {

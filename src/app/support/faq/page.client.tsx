@@ -43,7 +43,11 @@ export default function FaqClientPage({ faqs, isAdmin }: Props) {
       : faqs.filter((faq) => faq.category === activeTab);
 
   const handleDeleteFaq = async (id: number) => {
-    const result = await customConfirm("이 FAQ를 삭제하시겠습니까?");
+    const result = await customConfirm({
+      title: "이 FAQ를 삭제하시겠습니까?",
+      confirmText: "삭제",
+      isDanger: true,
+    });
 
     if (result.isConfirmed) {
       try {
