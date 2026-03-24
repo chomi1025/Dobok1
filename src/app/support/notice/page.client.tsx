@@ -73,7 +73,7 @@ export default function NoticeClientPage({
         total={total}
         pageSize={pageSize}
         currentPage={currentPage}
-        adminOnly={true}
+        isRestricted={false}
       >
         <Table columns={noticeColumns} data={allNotices} />
       </BoardLayout>

@@ -8,7 +8,6 @@ import ProductDescriptionComponent from "./ProductDescription";
 import { FormProvider, SubmitErrorHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { uploadImage } from "@/lib/supabase/supabaseClient";
-import { useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 
@@ -178,10 +177,6 @@ export default function AdminProductNewClient() {
       categoryId: 0,
     },
   });
-
-  const {
-    formState: { errors },
-  } = methods;
 
   const onSubmit = async (data: ProductFormValues) => {
     try {

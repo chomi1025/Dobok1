@@ -35,6 +35,11 @@ export const authOptions: NextAuthOptions = {
 
           if (!isValid) return null;
 
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { lastLoginAt: new Date() },
+          });
+
           return {
             id: String(user.id),
             username: user.username,

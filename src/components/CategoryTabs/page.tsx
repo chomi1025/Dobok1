@@ -6,6 +6,7 @@ interface CategoryTabsProps {
   activeTab: number | string;
   onTabChange: (id: number | string) => void;
   className?: string;
+  showAll?: boolean;
 }
 
 export default function CategoryTabs({
@@ -13,20 +14,23 @@ export default function CategoryTabs({
   activeTab,
   onTabChange,
   className,
+  showAll = true,
 }: CategoryTabsProps) {
   return (
     <nav className={`${styles.navigation} ${className}`}>
       <ul className={styles.list}>
-        <li
-          className={activeTab === "all" ? styles.active : ""}
-          onClick={() => onTabChange("all")}
-        >
-          <button
-            className={`${styles.catBtn} ${activeTab === "all" ? styles.active : ""}`}
+        {showAll && (
+          <li
+            className={activeTab === "all" ? styles.active : ""}
+            onClick={() => onTabChange("all")}
           >
-            전체
-          </button>
-        </li>
+            <button
+              className={`${styles.catBtn} ${activeTab === "all" ? styles.active : ""}`}
+            >
+              전체
+            </button>
+          </li>
+        )}
 
         {categories?.map((cat) => (
           <li

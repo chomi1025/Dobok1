@@ -1,0 +1,14 @@
+@import "../../components/style/variables.module";
+
+.inner {
+  display: flex;
+  width: rem(1140);
+  margin: 0 auto;
+  min-height: 100vh;
+  padding-top: rem(80);
+
+  > div {
+    flex: 1;
+    padding: rem(20) 0 rem(200);
+  }
+}

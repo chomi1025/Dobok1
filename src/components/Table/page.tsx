@@ -20,7 +20,7 @@ export const Table = <T extends { id?: number }>({
   data,
 }: tableProps<T>) => {
   return (
-    <O.Section pricing>
+    <O.Section>
       {/* 헤더 */}
       <O.Header>
         {columns?.map((col) => (

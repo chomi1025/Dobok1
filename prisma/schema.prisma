@@ -33,10 +33,18 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+enum UserStatus {
+  ACTIVE
+  WITHDRAWN
+  BANNED
+}
+
 model User {
   id                Int               @id @default(autoincrement())
   email             String            @unique
   password          String
+  lastLoginAt       DateTime?
+  updatedAt         DateTime          @updatedAt @default(now())
   createdAt         DateTime          @default(now())
   birthDate         DateTime
   name              String
@@ -54,6 +62,11 @@ model User {
   reviews           Review[]
   reviewReplies     ReviewReply[]
   sessions          Session[]
+  posts             Post[]
+  deletedAt         DateTime?
+  isDeleted         Boolean           @default(false)
+  status            UserStatus        @default(ACTIVE)
+  comments          Comment[]
 }
 
 model Verification {
@@ -210,7 +223,7 @@ model InquiryReply {
   content   String
   createdAt DateTime @default(now())
   admin     User     @relation(fields: [adminId], references: [id])
-  inquiry   Inquiry  @relation(fields: [inquiryId], references: [id])
+  inquiry   Inquiry  @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
 }
 
 model ProductQna {
@@ -222,7 +235,7 @@ model ProductQna {
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
   product   Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User             @relation(fields: [userId], references: [id])
   reply     ProductQnaReply?
 }
 
@@ -290,3 +303,79 @@ enum InquiryStatus {
   WAITING
   COMPLETED
 }
+
+enum PostType {
+  JOB
+  FREE
+  EVENT
+  RESOURCE
+}
+
+enum JobType {
+  HIRING
+  SEEKING
+}
+
+enum ExperienceLevel {
+  NEWBIE
+  JUNIOR
+  MID_LEVEL
+  SENIOR
+  IRRELEVANT
+}
+
+model Post {
+  id            Int          @id @default(autoincrement())
+  type          PostType
+  jobType       JobType?
+  title         String
+  content       String       @db.Text
+  authorId      Int
+  author        User         @relation(fields: [authorId], references: [id])
+  viewCount     Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  comments      Comment[]
+
+  jobRole       String?
+  companyName   String?
+  experience    ExperienceLevel? @default(IRRELEVANT)
+  city          String?
+  district      String?
+  applyMethod   String?
+
+
+  eventDate     DateTime?
+  eventVenue    String?
+
+  attachments   Attachment[]
+  @@index([type])
+  @@index([city])
+  @@index([jobRole])
+}
+
+model Attachment {
+  id        Int      @id @default(autoincrement())
+  fileUrl   String
+  fileName  String
+  fileSize  Int
+  fileType  String
+
+  postId    Int
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+
+  postId    Int
+  authorId  Int
+
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id])
+}
+

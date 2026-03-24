@@ -1,5 +1,7 @@
+"use client";
 import { createClient } from "@supabase/supabase-js";
 import { prisma } from "../prisma";
+import { compressImage } from "./../../utils/compressImage";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -52,7 +54,7 @@ export const uploadFilesToStorage = async (
 ) => {
   let thumbnailUrl = "";
   if (thumbnail?.file) {
-    const compressedThumbnail = await (window as any).compressImage(
+    const compressedThumbnail = await compressImage(
       thumbnail.file,
       800,
       800,
