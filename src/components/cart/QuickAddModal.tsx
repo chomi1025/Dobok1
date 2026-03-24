@@ -41,7 +41,7 @@ export default function QuickAddModal({ product, user, onClose }: Props) {
       (item) => item.productOptionId === opt.id,
     );
     if (isExist) {
-      return toast("이미 선택된 옵션입니다. 수량을 조절해주세요! ㅡㅡ🥊");
+      return toast("이미 선택된 옵션입니다. 수량을 조절해주세요.");
     }
 
     setSelectedItems([
