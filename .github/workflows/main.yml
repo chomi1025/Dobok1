@@ -43,15 +43,12 @@ jobs:
         run: yarn install
 
       - name: Generate Prisma Client
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx prisma generate
 
       - name: Run tests
         run: yarn test --passWithNoTests
-
-      - name: Run Prisma Migrations
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: npx prisma migrate deploy
 
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v20
