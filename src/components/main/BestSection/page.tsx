@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 
-import { Category, Product, Title } from "../../../types/types";
+import { Category, Title } from "../../../types/types";
 import { Session } from "next-auth";
 import ProductSectionComponent from "../ProductSection/page";
 
@@ -20,7 +20,7 @@ export default async function BestSectionComponent({
   session,
   categories,
 }: Props) {
-  const dbProducts: Product[] = await prisma.product.findMany({
+  const dbProducts = await prisma.product.findMany({
     where: { isBest: true },
     take: 40,
     include: {

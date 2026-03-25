@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { ProductWithCategory } from "../../../types/types";
+import { Category as CustomCategory } from "../../../types/types";
 import { Session } from "next-auth";
 import ProductSectionComponent from "../ProductSection/page";
 import { Category } from "@/lib/category";
@@ -20,7 +20,9 @@ export default async function NewSectionComponent({
   session,
   categories,
 }: Props) {
-  const dbProducts: ProductWithCategory[] = await prisma.product.findMany({
+  const formattedCategories = categories as CustomCategory[];
+
+  const dbProducts = await prisma.product.findMany({
     where: { isNew: true },
     take: 40,
     include: {
@@ -37,7 +39,7 @@ export default async function NewSectionComponent({
     <>
       <ProductSectionComponent
         session={session}
-        categories={categories}
+        categories={formattedCategories}
         title={title}
         products={dbProducts}
       />

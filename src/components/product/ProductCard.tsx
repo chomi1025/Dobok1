@@ -7,7 +7,6 @@ import { Session } from "next-auth";
 import { addToCart } from "../hooks/useCart";
 import { useState } from "react";
 import QuickAddModal from "../cart/QuickAddModal";
-import { Prisma } from "@prisma/client";
 import { ProductWithCategory } from "@/types/types";
 
 interface ProductCardProps {

@@ -1,20 +1,13 @@
 import { Prisma } from "@prisma/client";
 
-export interface Category {
-  id: number;
-  name: string;
-  slug: string | null;
-  parentId: number | null;
-  children?: Category[];
-}
+export type Category = Prisma.CategoryGetPayload<{
+  include: {
+    parent: true;
+    children: true;
+  };
+}>;
 
-export interface ProductOption {
-  id: number;
-  size?: string;
-  color?: string;
-  price: number;
-  stock: number;
-}
+export type ProductOption = Prisma.ProductOptionGetPayload<{}>;
 
 export interface Announcement {
   washing?: string;
@@ -24,16 +17,33 @@ export interface Announcement {
   precautions?: string;
 }
 
-export type ProductWithCategory = Prisma.ProductGetPayload<{
+type PrismaProduct = Prisma.ProductGetPayload<{
   include: {
+    category: { include: { parent: true } };
+    options: true;
+  };
+}>;
+
+type PrismaProductWithAll = Prisma.ProductGetPayload<{
+  include: {
+    options: true;
     category: {
       include: {
         parent: true;
       };
     };
-    options: true;
   };
 }>;
+
+export type ProductWithCategory = Omit<PrismaProductWithAll, "announcement"> & {
+  announcement?:
+    | {
+        washing?: string;
+        notice?: string;
+      }
+    | null
+    | any;
+};
 
 export interface Title {
   name: string;
