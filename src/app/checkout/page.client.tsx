@@ -21,7 +21,9 @@ export default function CheckoutClientPage({
   user,
   isMember,
 }: CheckoutClientPageProps) {
+  // 회원일때
   if (isMember && user) return <MemberCheckoutPage user={user} />;
 
+  // 비회원일떄
   return <GuestCheckoutPage />;
 }
