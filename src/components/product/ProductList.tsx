@@ -1,7 +1,6 @@
 import { Session } from "next-auth";
 import styles from "./page.module.scss";
 import ProductCard from "./ProductCard";
-import { Prisma } from "@prisma/client";
 import { ProductWithCategory } from "@/types/types";
 
 interface ProductListProps {

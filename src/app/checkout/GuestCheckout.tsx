@@ -2,7 +2,6 @@
 import * as C from "./style";
 import BreadCrumb from "@/components/breadcrumb";
 import { Column, Table } from "@/components/Table/page";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -21,33 +20,17 @@ export interface Order {
 }
 
 interface CartItem {
-  product: {
+  product?: {
     id: number;
     name: string;
     price: number;
+    img?: string;
   };
+  id?: number;
+  productName?: string;
+  unitPrice?: number;
   quantity: number;
-}
-
-export interface GuestUser {
-  postcode: string;
-  address: string;
-  detailAddress: string;
-  name: string;
-  phone: string;
-  email: string;
-}
-
-interface ShippingInfo {
-  postcode: string;
-  address: string;
-  detailAddress: string;
-  receiverName: string;
-  cellphone: string;
-}
-
-interface GuestCheckoutPageProps {
-  user?: GuestUser | null;
+  thumbnail?: string;
 }
 
 const STEPS = [
@@ -56,93 +39,72 @@ const STEPS = [
   { label: "주문완료", step: 2, path: "/order/success" },
 ];
 
-export default function GuestCheckoutPage({ user }: GuestCheckoutPageProps) {
-  const { data: session, status } = useSession();
+export default function GuestCheckoutPage() {
   const [cartItems, setCartItems] = useState<Order[]>([]);
   const searchParams = useSearchParams();
-  const [selectedShipping, setSelectedShipping] = useState("same"); // 디폴트 주문자정보와 동일
-  const [shippingInfo, setShippingInfo] = useState({
-    postcode: user?.postcode || "",
-    address: user?.address || "",
-    detailAddress: user?.detailAddress || "",
-    receiverName: user?.name || "",
-    cellphone: user?.phone || "",
-  });
 
   useEffect(() => {
-    if (status === "loading") return;
-
     const idsParam = searchParams.get("ids") || "";
     const requestedIds = idsParam
       .split(",")
       .map((id) => Number(id))
       .filter(Boolean);
 
-    const fetchCartItems = async () => {
+    const fetchCartItems = () => {
       let actualCart: CartItem[] = [];
 
-      if (session) {
-        const res = await fetch("/api/cart");
-        if (!res.ok) return;
-        const data: CartItem[] = await res.json();
-        actualCart = data.map((item) => ({
-          product: {
-            id: item.product.id,
-            name: item.product.name,
-            price: item.product.price,
-          },
-          quantity: item.quantity,
-        }));
-      } else {
-        // 비회원: 로컬스토리지
-        const localCart =
-          localStorage.getItem("checkoutItems") ||
-          localStorage.getItem("guestCart");
-        if (localCart) actualCart = JSON.parse(localCart);
+      const localCart = localStorage.getItem("cart");
+
+      if (localCart) {
+        actualCart = JSON.parse(localCart);
       }
 
       const filteredItems = requestedIds.length
-        ? actualCart.filter((item) => requestedIds.includes(item.product.id))
+        ? actualCart.filter((item) => {
+            const productId = item.product?.id || (item as any).id;
+            return productId && requestedIds.includes(productId);
+          })
         : actualCart;
 
       if (requestedIds.length !== filteredItems.length) {
-        const safeIds = filteredItems.map((item) => item.product.id).join(",");
-        if (safeIds) {
-          window.history.replaceState(null, "", `/checkout?ids=${safeIds}`);
-        } else {
-          window.history.replaceState(null, "", `/checkout`);
-        }
+        const safeIds = filteredItems
+          .map((item) => item.product?.id || item.id)
+
+          .filter(Boolean)
+          .join(",");
+
+        window.history.replaceState(
+          null,
+          "",
+          safeIds ? `/checkout?ids=${safeIds}` : `/checkout`,
+        );
       }
 
       setCartItems(
-        filteredItems.map((item) => ({
-          id: item.product.id,
-          orderId: 0,
-          productId: item.product.id,
-          productName: item.product.name,
-          ProductImage: "/img/default.png",
-          optionText: "",
-          unitPrice: item.product.price,
-          quantity: item.quantity,
-          totalPrice: item.product.price * item.quantity,
-        })),
+        filteredItems.map((item) => {
+          const productId = item.product?.id || (item as any).id;
+          const productName = item.product?.name || (item as any).productName;
+          const unitPrice = item.product?.price || (item as any).unitPrice;
+          const productImage =
+            item.thumbnail || item.product?.img || "/img/default.png";
+
+          return {
+            id: productId,
+            orderId: 0,
+            productId: productId,
+            productName: productName || "상품명 없음",
+            ProductImage: productImage,
+            optionText: "",
+            unitPrice: unitPrice || 0,
+            quantity: item.quantity,
+            totalPrice: (unitPrice || 0) * item.quantity,
+          };
+        }),
       );
     };
 
     fetchCartItems();
-  }, [session, status, searchParams]);
-
-  useEffect(() => {
-    if (selectedShipping === "same" && user) {
-      setShippingInfo({
-        postcode: user.postcode,
-        address: user.address,
-        detailAddress: user.detailAddress,
-        receiverName: user.name,
-        cellphone: user.phone,
-      });
-    }
-  }, [selectedShipping, user]);
+  }, [searchParams]);
 
   const totalOrderPrice = cartItems.reduce(
     (acc, cur) => acc + cur.unitPrice * cur.quantity,
@@ -157,19 +119,17 @@ export default function GuestCheckoutPage({ user }: GuestCheckoutPageProps) {
       label: "상품명",
       flex: 3,
       render: (row) => (
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
           <img
             src={row.ProductImage}
             alt={row.productName}
             style={{
               width: "90px",
               height: "90px",
-              display: "block",
-              backgroundColor: "#333",
+              backgroundColor: "#f4f4f4",
               margin: "0 25px 0 30px",
             }}
           />
-
           <div
             style={{
               display: "flex",
@@ -177,8 +137,10 @@ export default function GuestCheckoutPage({ user }: GuestCheckoutPageProps) {
               alignItems: "flex-start",
             }}
           >
-            <p>{row.productName}</p>
-            <p>빨강</p>
+            <p style={{ fontWeight: "bold" }}>{row.productName}</p>
+            <p style={{ fontSize: "0.9rem", color: "#666" }}>
+              {row.optionText || "기본옵션"}
+            </p>
           </div>
         </div>
       ),
@@ -193,73 +155,53 @@ export default function GuestCheckoutPage({ user }: GuestCheckoutPageProps) {
       key: "unitPrice",
       label: "상품금액",
       flex: 1,
-      render: (row) => (
-        <>
-          <p className="price-text">{row.unitPrice.toLocaleString()}원</p>
-        </>
-      ),
+      render: (row) => <p>{row.unitPrice.toLocaleString()}원</p>,
     },
     {
       key: "totalPrice",
       label: "합계금액",
       flex: 1,
       render: (row) => (
-        <p>{(row.quantity * row.unitPrice).toLocaleString()}원</p>
+        <p style={{ fontWeight: "bold" }}>
+          {(row.quantity * row.unitPrice).toLocaleString()}원
+        </p>
       ),
     },
   ];
 
-  console.log(user);
   return (
     <C.Wrapper>
-      <form action="">
+      <form onSubmit={(e) => e.preventDefault()}>
         <C.SectionHeader>
-          <h2>주문서 작성/결제</h2>
+          <h2>주문서 작성/결제 (비회원)</h2>
           <BreadCrumb steps={STEPS} />
         </C.SectionHeader>
 
-        {/* 비회원용 약관동의 */}
-        {!session && (
-          <C.PolicyBox>
-            <div>
-              <h4>비회원 개인정보 수집·이용 동의</h4>
-              <hr />
-              <C.TermsList>
-                <li>
-                  1. 개인정보 수집항목
-                  <ul>
-                    <li>- 주문자/수령인 정보(이름, 휴대전화, 주소, 이메일)</li>
-                    <li>- 결제정보(카드사명, 카드번호 일부 등)</li>
-                  </ul>
-                </li>
-
-                <li>
-                  2. 수집 및 이용목적
-                  <ul>
-                    <li>- 비회원 주문 확인 및 상품 배송 서비스 제공</li>
-                    <li>- 결제 및 환불 처리 등 계약의 이행</li>
-                    <li>- 배송 관련 안내 및 고객 상담(CS)</li>
-                  </ul>
-                </li>
-
-                <li>
-                  3. 개인정보의 보유 및 이용기간
-                  <p>
-                    - 목적 달성 후 즉시 파기 (단, 관계법령에 따라 5년간 보관)
-                  </p>
-                </li>
-              </C.TermsList>
-            </div>
-
-            <C.ConsentWrapper>
-              <input type="checkbox" id="privacy-check" />
-              <label htmlFor="privacy-check">
-                <span>(필수)</span> 비회원 개인정보 수집 이용에 대한 내용을
-                확인하였으며 이에 동의합니다.
-              </label>
-            </C.ConsentWrapper>
-          </C.PolicyBox>
-        )}
+        {/* 비회원 약관동의 */}
+        <C.PolicyBox>
+          <div>
+            <h4>비회원 개인정보 수집·이용 동의</h4>
+            <hr />
+            <C.TermsList>
+              <li>
+                1. 개인정보 수집항목: 주문자/수령인 정보(이름, 휴대전화, 주소,
+                이메일)
+              </li>
+              <li>
+                2. 수집 및 이용목적: 비회원 주문 확인 및 상품 배송, CS 응대
+              </li>
+              <li>
+                3. 보유 및 이용기간: 목적 달성 후 즉시 파기 (법령 기준 따름)
+              </li>
+            </C.TermsList>
+          </div>
+          <C.ConsentWrapper>
+            <input type="checkbox" id="privacy-check" required />
+            <label htmlFor="privacy-check">
+              <span>(필수)</span> 비회원 개인정보 수집 이용에 동의합니다.
+            </label>
+          </C.ConsentWrapper>
+        </C.PolicyBox>
 
         <C.ProductListWrapper>
           <h4>주문상품</h4>
@@ -269,36 +211,36 @@ export default function GuestCheckoutPage({ user }: GuestCheckoutPageProps) {
         <C.OrdererInfoWrapper>
           <fieldset>
             <legend>주문자 정보</legend>
-
             <hr />
-
             <C.InputRow>
               <label htmlFor="name">이름</label>
-              {user ? (
-                <span>{user.name}</span>
-              ) : (
-                <input type="text" id="name" placeholder="이름을 입력하세요" />
-              )}
+              <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="이름을 입력하세요"
+                required
+              />
             </C.InputRow>
             <C.InputRow>
               <label htmlFor="email">이메일 주소</label>
-              {user ? (
-                <span>{user.email}</span>
-              ) : (
-                <input
-                  type="email"
-                  id="email"
-                  placeholder="example@email.com"
-                />
-              )}
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="example@email.com"
+                required
+              />
             </C.InputRow>
             <C.InputRow>
               <label htmlFor="phone">휴대전화</label>
-              {user ? (
-                <span>{user.phone}</span>
-              ) : (
-                <input type="tel" id="phone" placeholder="010-0000-0000" />
-              )}
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="010-0000-0000"
+                required
+              />
             </C.InputRow>
           </fieldset>
         </C.OrdererInfoWrapper>
@@ -307,52 +249,72 @@ export default function GuestCheckoutPage({ user }: GuestCheckoutPageProps) {
           <fieldset>
             <legend>배송지 정보</legend>
             <hr />
-
-            <C.InputRow2 radio={false}>
+            <C.InputRow2>
               <label htmlFor="receiverName">받는 분</label>
               <input
                 type="text"
                 id="receiverName"
+                name="receiverName"
                 placeholder="이름을 입력하세요"
+                required
               />
             </C.InputRow2>
 
             <C.InputRow2>
               <label>주소</label>
-
               <div className="address-group">
                 <div>
                   <input
                     type="text"
                     id="postcode"
+                    name="postcode"
                     placeholder="우편번호"
                     readOnly
+                    required
                   />
                   <button type="button">우편번호 찾기</button>
                 </div>
-
-                <input type="text" id="address" placeholder="기본 주소" />
-                <input type="text" id="detailAddress" placeholder="상세 주소" />
+                <input
+                  type="text"
+                  id="address"
+                  name="address"
+                  placeholder="기본 주소"
+                  readOnly
+                  required
+                />
+                <input
+                  type="text"
+                  id="detailAddress"
+                  name="detailAddress"
+                  placeholder="상세 주소"
+                  required
+                />
               </div>
             </C.InputRow2>
 
             <C.InputRow2>
               <label htmlFor="cellphone">휴대전화</label>
-
               <input
                 id="cellphone"
+                name="cellphone"
                 type="tel"
-                inputMode="numeric"
                 maxLength={13}
                 placeholder="010-0000-0000"
+                required
               />
             </C.InputRow2>
 
             <C.InputRow2>
               <label htmlFor="message">배송메세지</label>
-
-              <select name="" id="message">
+              <select name="message" id="message">
                 <option value="">배송 요청사항을 선택해 주세요</option>
+                <option value="부재 시 문 앞에 놓아주세요">
+                  부재 시 문 앞에 놓아주세요
+                </option>
+                <option value="배송 전 미리 연락 바랍니다">
+                  배송 전 미리 연락 바랍니다
+                </option>
+                <option value="직접 입력">직접 입력</option>
               </select>
             </C.InputRow2>
           </fieldset>
@@ -360,26 +322,21 @@ export default function GuestCheckoutPage({ user }: GuestCheckoutPageProps) {
 
         <C.PayWrapper>
           <h3>결제 정보</h3>
-
           <hr />
-
           <dl>
             <C.SummaryRow>
               <dt>주문 상품</dt>
               <dd>{totalOrderPrice.toLocaleString()}원</dd>
             </C.SummaryRow>
-
             <C.SummaryRow>
               <dt>배송비</dt>
               <dd>{isFreeDelivery ? "0원" : "3,000원"}</dd>
             </C.SummaryRow>
-
             <C.SummaryRow total>
               <dt>최종 결제 금액</dt>
               <dd>
-                {(isFreeDelivery
-                  ? totalOrderPrice
-                  : totalOrderPrice + 3000
+                {(
+                  totalOrderPrice + (isFreeDelivery ? 0 : 3000)
                 ).toLocaleString()}
                 원
               </dd>
@@ -390,20 +347,21 @@ export default function GuestCheckoutPage({ user }: GuestCheckoutPageProps) {
         <C.PaymentMethodWrapper>
           <fieldset>
             <legend>결제 수단 선택</legend>
-
             <hr />
-
             <div>
               <label>
-                <input type="radio" name="paymentMethod" value="card" />
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="card"
+                  defaultChecked
+                />{" "}
                 신용카드
               </label>
-
               <label>
-                <input type="radio" name="paymentMethod" value="bank" />
+                <input type="radio" name="paymentMethod" value="bank" />{" "}
                 계좌이체
               </label>
-
               <label htmlFor="kakaoPay" className="payment-option">
                 <input
                   type="radio"
@@ -412,13 +370,12 @@ export default function GuestCheckoutPage({ user }: GuestCheckoutPageProps) {
                   value="kakaoPay"
                 />
                 <Image
-                  src={"/image/kakao_CI_logotype 1.png"}
+                  src="/image/kakao_CI_logotype 1.png"
                   width={95}
                   height={22}
                   alt="카카오페이"
                 />
               </label>
-
               <label htmlFor="naverPay" className="payment-option">
                 <input
                   type="radio"
@@ -427,29 +384,23 @@ export default function GuestCheckoutPage({ user }: GuestCheckoutPageProps) {
                   value="naverPay"
                 />
                 <Image
-                  src={"/image/NAVER NPAY LOGO_003 1.png"}
+                  src="/image/NAVER NPAY LOGO_003 1.png"
                   width={92}
                   height={34}
-                  alt="카카오페이"
+                  alt="네이버페이"
                 />
               </label>
             </div>
-
-            <p>
-              · 할부 최소 금액은 5만원이며 30만원 이상 결제 시 공인인증서가
-              필요합니다.
-            </p>
           </fieldset>
         </C.PaymentMethodWrapper>
 
         <C.TermsWrapper>
           <div>
-            <input type="checkbox" id="order-agree" />
+            <input type="checkbox" id="order-agree" required />
             <label htmlFor="order-agree">
               결제 정보를 확인하였으며, 구매 진행에 동의합니다.
             </label>
           </div>
-
           <button type="submit">결제하기</button>
         </C.TermsWrapper>
       </form>
