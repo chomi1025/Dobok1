@@ -1,3 +1,5 @@
+import { Prisma } from "@prisma/client";
+
 export interface Category {
   id: number;
   name: string;
@@ -22,31 +24,20 @@ export interface Announcement {
   precautions?: string;
 }
 
-export interface Product {
-  id: number;
-  name: string;
-  categoryId: number;
-  isBest: boolean;
-  isNew: boolean;
-  thumbnail: string;
-  images: string[];
-  description: string | null;
-  material: string | null;
-  origin: string | null;
-  announcement: Announcement;
-  discount?: number;
-  tag?: string;
-  sale?: number;
-  options: ProductOption[];
-  category: {
-    id: number;
-    name: string;
-    slug: string;
+export type ProductWithCategory = Prisma.ProductGetPayload<{
+  include: {
+    category: {
+      include: {
+        parent: true;
+      };
+    };
+    options: true;
   };
-}
+}>;
 
 export interface Title {
   name: string;
   contents: string;
   button: string;
+  href: string;
 }

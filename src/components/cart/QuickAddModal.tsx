@@ -1,14 +1,14 @@
 "use client";
 import { createPortal } from "react-dom";
-import { Product } from "@/types/types";
 import { X, Plus, Minus, Trash2 } from "lucide-react";
 import styles from "./QuickAddModal.module.scss";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { addToCart } from "./../hooks/useCart";
+import { ProductWithCategory } from "@/types/types";
 
 interface Props {
-  product: Product;
+  product: ProductWithCategory;
   user: any;
   onClose: () => void;
 }
@@ -102,6 +102,27 @@ export default function QuickAddModal({ product, user, onClose }: Props) {
       toast.error("장바구니 담기 중 오류가 발생했습니다.");
     }
   };
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+
+    const scrollbarWidth =
+      window.innerWidth - document.documentElement.clientWidth;
+    window.addEventListener("keydown", handleEsc);
+
+    document.body.style.overflow = "hidden";
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleEsc);
+      document.body.style.overflow = "unset";
+      document.body.style.paddingRight = "0px";
+    };
+  }, [onClose]);
 
   const modalContent = (
     <div className={styles.overlay} onClick={onClose}>

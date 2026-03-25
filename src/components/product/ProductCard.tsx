@@ -1,17 +1,18 @@
 "use client";
 import { ShoppingBasket } from "lucide-react";
 import styles from "./page.module.scss";
-import { Product } from "@/types/types";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { Session } from "next-auth";
 import { addToCart } from "../hooks/useCart";
 import { useState } from "react";
 import QuickAddModal from "../cart/QuickAddModal";
+import { Prisma } from "@prisma/client";
+import { ProductWithCategory } from "@/types/types";
 
 interface ProductCardProps {
   session: Session | null;
-  product: Product;
+  product: ProductWithCategory;
 }
 
 export default function ProductCard({ session, product }: ProductCardProps) {

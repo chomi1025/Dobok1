@@ -19,11 +19,20 @@
 
 .inner {
   margin: 0 auto;
-  max-width: rem(1040);
+  max-width: rem(1300);
   width: 100%;
   padding: 0 rem(20);
   box-sizing: border-box;
   min-height: 1040px;
+
+  > a {
+    display: flex;
+    justify-self: center;
+    margin-top: rem(80);
+    padding: rem(12) rem(24);
+    font-size: rem(14);
+    border-radius: rem(8);
+  }
 
   nav {
     ul {
@@ -100,6 +109,7 @@
         margin-bottom: rem(8);
         white-space: nowrap;
         overflow: hidden;
+
         text-overflow: ellipsis;
         @include mobile {
           font-size: rem(14);
@@ -157,7 +167,7 @@
 
 .moreBtn {
   font-size: 18px;
-  margin-top: rem(120);
+
   display: flex;
   justify-self: center;
   border: 1px solid #333;

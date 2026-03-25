@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <EmotionRegistry>
           <AuthProvider>
             <HeaderServer />
-            <main>{children}</main>
+            {children}
 
             <Toaster
               position="top-center"
