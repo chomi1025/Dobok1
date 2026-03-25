@@ -1,3 +1,5 @@
+@import "../components/style/variables.module";
+
 html,
 body,
 div,
@@ -29,11 +31,15 @@ button {
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
 }
 
 body {
   background-color: #fff;
-  color: #333;
+  color: $black-main;
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
