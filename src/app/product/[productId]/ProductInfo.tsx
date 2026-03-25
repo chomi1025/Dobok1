@@ -1,6 +1,6 @@
 import Image from "next/image";
 import styles from "./ProductInfo.module.scss";
-import { Product, ProductOption } from "@/types/types";
+import { ProductWithCategory, ProductOption } from "@/types/types";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Button from "@/components/common/buttons/page";
@@ -13,7 +13,7 @@ interface SelectedOption extends ProductOption {
 }
 
 interface Props {
-  product: Product;
+  product: ProductWithCategory;
   session: Session | null;
   addedOptions: SelectedOption[];
   setAddedOptions: React.Dispatch<React.SetStateAction<SelectedOption[]>>;

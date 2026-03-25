@@ -1,12 +1,14 @@
 import { prisma } from "@/lib/prisma";
-import ProductSectionComponent from "../ProductSection/page";
-import { Category, Product, Title } from "../../../types/types";
+
+import { Category, Title } from "../../../types/types";
 import { Session } from "next-auth";
+import ProductSectionComponent from "../ProductSection/page";
 
 const title: Title = {
   name: "베스트 상품",
   contents: "도복일번지의 베스트 상품을 모아왔어요",
   button: "베스트 더보기",
+  href: "/best",
 };
 
 interface Props {
@@ -18,7 +20,7 @@ export default async function BestSectionComponent({
   session,
   categories,
 }: Props) {
-  const dbProducts: Product[] = await prisma.product.findMany({
+  const dbProducts = await prisma.product.findMany({
     where: { isBest: true },
     take: 40,
     include: {
@@ -37,7 +39,7 @@ export default async function BestSectionComponent({
         session={session}
         categories={categories}
         title={title}
-        dbProducts={dbProducts}
+        products={dbProducts}
       />
     </>
   );

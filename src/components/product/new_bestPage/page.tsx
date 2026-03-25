@@ -1,6 +1,6 @@
 import styles from "./page.module.scss";
 import ProductList from "@/components/product/ProductList";
-import { Product } from "@/types/types";
+import { ProductWithCategory } from "@/types/types";
 import { Session } from "next-auth";
 
 interface ProductPageProps {
@@ -9,7 +9,7 @@ interface ProductPageProps {
     name: string;
     contents: string;
   };
-  products: Product[];
+  products: ProductWithCategory[];
   totalItems: number;
   currentPage: number;
   pageSize: number;

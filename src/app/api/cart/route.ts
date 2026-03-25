@@ -20,7 +20,6 @@ export async function POST(req: Request) {
       const oId = Number(item.productOptionId);
       const qty = Number(item.quantity);
 
-      // oId가 0이거나 유효하지 않으면 여기서 터질 수 있으니 체크!
       if (!oId) throw new Error("유효하지 않은 옵션 ID입니다.");
 
       await prisma.cartItem.upsert({

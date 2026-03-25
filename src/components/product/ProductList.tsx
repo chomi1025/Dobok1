@@ -1,11 +1,12 @@
 import { Session } from "next-auth";
 import styles from "./page.module.scss";
 import ProductCard from "./ProductCard";
-import { Product } from "@/types/types";
+import { Prisma } from "@prisma/client";
+import { ProductWithCategory } from "@/types/types";
 
 interface ProductListProps {
   session: Session | null;
-  products: Product[];
+  products: ProductWithCategory[];
   className?: string;
 }
 
@@ -14,7 +15,6 @@ export default function ProductList({
   products,
   className,
 }: ProductListProps) {
-  console.log(products);
   return (
     <>
       <ul className={`${styles.productList} ${className || ""}`}>

@@ -5,11 +5,11 @@ import { SHOPPING_POLICY } from "@/constants/policy";
 import ProductInfo from "./ProductInfo";
 import DetailSection from "./DetailSection";
 import ReviewSection from "./ReviewSection";
-import { Product } from "@/types/types";
+import { ProductWithCategory } from "@/types/types";
 import { Session } from "next-auth";
 
 interface Prop {
-  product: Product;
+  product: ProductWithCategory;
   session: Session | null;
 }
 
