@@ -1,7 +1,7 @@
 @import "../../style/variables.module";
 
 .inner {
-  margin: 0 auto;
+  margin: rem(200) auto 0;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -24,8 +24,6 @@
 }
 
 .icon {
-  margin-top: rem(160);
-
   nav {
     ul {
       display: flex;
