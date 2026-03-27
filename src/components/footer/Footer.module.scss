@@ -5,6 +5,10 @@
   background-color: $main-red;
   color: white;
   padding: rem(40) 0;
+
+  @include mobile {
+    margin-bottom: rem(60);
+  }
 }
 
 .inner {
@@ -12,16 +16,39 @@
   max-width: rem(1200);
   margin: 0 auto;
   padding: 0 rem(20);
-  position: relative;
+  align-items: flex-end;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
 
-  @include tablet {
+  @include mobile {
     display: flex;
     flex-direction: column;
-    gap: rem(40);
+  }
+}
+
+.mobileSmall {
+  display: none;
+
+  @include mobile {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: rem(30);
   }
 }
 
 .footer_links {
+  width: 100%;
+  margin-bottom: rem(20);
+
+  @include mobile {
+    display: flex;
+    flex-direction: column;
+    gap: rem(30);
+  }
+
   ul {
     display: flex;
     gap: rem(40);
@@ -29,30 +56,67 @@
     flex-wrap: wrap;
 
     @include mobile {
-      gap: rem(15);
-      font-size: rem(13);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: rem(10) rem(20);
+    }
+
+    li {
     }
   }
-
-  margin-bottom: rem(35);
 }
 
 .address {
-  font-size: rem(12);
-  line-height: 1.6;
+  font-size: rem(13);
+  line-height: 1.8;
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(4) rem(16);
+  margin-top: rem(20);
+  font-style: normal;
 
-  div {
-    display: flex;
-    gap: rem(20);
-    flex-wrap: wrap;
+  p {
+    position: relative;
+    white-space: nowrap;
 
-    &:nth-of-type(2) {
-      margin: rem(8) 0;
+    &:nth-child(4)::after {
+      content: "";
     }
 
-    @include mobile {
-      gap: rem(10);
-      flex-direction: column;
+    &:not(:nth-child(4), :last-child)::after {
+      content: "|";
+      margin-left: rem(16);
+      opacity: 0.3;
+      font-weight: 300;
+    }
+  }
+
+  @include mobile {
+    order: 1;
+    max-width: 100%;
+
+    color: rgba(255, 255, 255, 0.8);
+    display: block;
+    margin-top: 0;
+
+    p {
+      display: inline;
+      white-space: normal;
+      font-size: rem(14);
+
+      &::after {
+        content: "|";
+        margin: 0 rem(6);
+        opacity: 0.3;
+      }
+
+      &:nth-child(4)::after {
+        content: "";
+      }
+
+      &:last-child::after {
+        content: "";
+      }
     }
   }
 }
@@ -62,19 +126,22 @@
   font-size: rem(12);
   margin-top: rem(30);
   opacity: 0.8;
+
+  @include mobile {
+    display: none;
+  }
 }
 
 .right_Wrapper {
-  position: absolute;
-  top: 50%;
-  right: rem(20);
+  position: static;
+  transform: none;
   text-align: right;
-  transform: translateY(-50%);
+  min-width: rem(240);
 
-  @include tablet {
+  @include mobile {
     position: static;
     transform: none;
-    text-align: left;
+    padding-top: rem(20);
   }
 
   div:first-of-type {
@@ -82,29 +149,67 @@
     justify-content: flex-end;
     align-items: center;
     gap: 8px;
-
-    @include tablet {
-      justify-content: flex-start;
-    }
-
-    p {
-      font-size: rem(15);
-      font-weight: 600;
-    }
   }
 
   strong {
-    display: inline-block;
-    font-size: rem(24);
-    font-weight: 700;
-    margin: rem(10) 0 rem(20);
+    display: block;
+    font-size: rem(26);
+    margin: rem(10) 0;
+  }
+}
+
+.left_area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: rem(20);
+
+  @include mobile {
+    width: 100%;
+  }
+}
+
+.business_info {
+  margin-top: rem(20);
+
+  @include mobile {
+    margin: 0;
+  }
+  .toggle_btn {
+    display: none;
+
+    @include mobile {
+      display: flex;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+      gap: rem(4);
+      background: none;
+      border: none;
+      color: white;
+      font-size: rem(15);
+      font-weight: 600;
+      cursor: pointer;
+
+      .arrow {
+        transition: transform 0.3s;
+        &.up {
+          transform: rotate(180deg);
+        }
+      }
+    }
   }
 
-  div:last-of-type {
-    font-size: rem(12);
-    font-weight: 600;
-    p:first-of-type {
-      margin-bottom: rem(8);
+  .address_content {
+    @include mobile {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+
+      &.open {
+        max-height: rem(300);
+        margin-top: rem(10);
+      }
     }
   }
 }

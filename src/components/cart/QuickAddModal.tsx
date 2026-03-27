@@ -54,6 +54,7 @@ export default function QuickAddModal({ product, user, onClose }: Props) {
         optionDisplay: getOptionDisplay(opt),
         price: opt.price,
         quantity: 1,
+        isCustomizable: product.isCustomizable,
       },
     ]);
   };

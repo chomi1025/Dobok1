@@ -1,9 +1,13 @@
 @import "../../components/style/variables.module";
 
 .inner {
-  width: rem(850);
+  max-width: rem(850);
   margin: 0 auto;
   padding: rem(90) 0 rem(200);
+
+  @include mobile {
+    padding: rem(150) rem(20) rem(200);
+  }
 }
 
 .sectionHeader {

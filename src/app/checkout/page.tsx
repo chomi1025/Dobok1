@@ -37,7 +37,7 @@ export default async function CheckoutPage() {
     }
   }
 
-  const isMember = !!memberUser;
+  const isMember = memberUser ? true : false;
 
   return <CheckoutClientPage user={memberUser} isMember={isMember} />;
 }

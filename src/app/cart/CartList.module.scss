@@ -12,6 +12,10 @@
       strong {
         font-weight: 700;
         margin-left: rem(10);
+
+        @include mobile {
+          margin-left: 0;
+        }
       }
     }
 
@@ -41,6 +45,10 @@
   justify-content: flex-end;
   gap: rem(13);
 
+  @include mobile {
+    flex-direction: column;
+  }
+
   button {
     font-size: rem(15);
     padding: rem(15) rem(20);
@@ -59,5 +67,35 @@
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s;
+  }
+}
+
+.productNameArea {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: rem(25);
+  width: 100%;
+
+  @include mobile {
+    gap: rem(10);
+  }
+
+  > div:first-of-type {
+    position: relative;
+    width: rem(90);
+    height: rem(90);
+
+    img {
+      height: auto;
+      flex: 1;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: rem(8);
+    }
+  }
+
+  > div:last-of-type {
+    flex: 1;
   }
 }

@@ -90,11 +90,7 @@ export default function PageClient({
       {/* 상품목록 */}
       <article className={styles.contentSection}>
         <h2 className={styles["sr-only"]}>상품 목록</h2>
-        <ProductList
-          session={session}
-          products={products}
-          className={styles.CustomMinHeight}
-        />
+        <ProductList products={products} className={styles.CustomMinHeight} />
       </article>
 
       {/* 페이지네이션 */}

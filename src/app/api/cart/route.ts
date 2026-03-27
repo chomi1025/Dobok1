@@ -3,6 +3,82 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
+interface CartReqItem {
+  productId: number | string;
+  productOptionId: number | string;
+  quantity: number | string;
+}
+
+export async function GET() {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.email) {
+      return NextResponse.json([], { status: 200 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "유저를 찾을 수 없습니다." },
+        { status: 404 },
+      );
+    }
+
+    const cartItems = await prisma.cartItem.findMany({
+      where: { userId: user.id },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            thumbnail: true,
+            isCustomizable: true,
+          },
+        },
+        option: {
+          select: {
+            id: true,
+            color: true,
+            size: true,
+            price: true,
+            stock: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    const formattedItems = cartItems.map((item: any) => ({
+      cartItemId: item.id,
+      productId: item.productId,
+      productName: item?.product?.name || "상품명 없음",
+      thumbnail: item?.product?.thumbnail,
+      isCustomizable: item?.product?.isCustomizable || false,
+      optionId: item.productOptionId,
+
+      optionName: item.option
+        ? `${item.option.color || ""} ${item.option.size || ""}`.trim()
+        : "옵션 없음",
+      price: item.option?.price || 0,
+      quantity: item.quantity,
+    }));
+
+    return NextResponse.json(formattedItems, { status: 200 });
+  } catch (error) {
+    console.error("장바구니 조회 에러:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
+
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session)

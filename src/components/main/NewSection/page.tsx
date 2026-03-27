@@ -5,7 +5,6 @@ import ProductSectionComponent from "../ProductSection/page";
 import { Category } from "@/lib/category";
 
 interface Props {
-  session: Session | null;
   categories: Category[];
 }
 
@@ -16,10 +15,7 @@ const title = {
   href: "/new",
 };
 
-export default async function NewSectionComponent({
-  session,
-  categories,
-}: Props) {
+export default async function NewSectionComponent({ categories }: Props) {
   const formattedCategories = categories as CustomCategory[];
 
   const dbProducts = await prisma.product.findMany({
@@ -38,7 +34,6 @@ export default async function NewSectionComponent({
   return (
     <>
       <ProductSectionComponent
-        session={session}
         categories={formattedCategories}
         title={title}
         products={dbProducts}

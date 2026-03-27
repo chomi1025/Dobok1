@@ -8,6 +8,7 @@ import Footer from "@/components/footer/page";
 import MobileNavPage from "@/components/mobileNav/page";
 import { Toaster } from "react-hot-toast";
 import LogoutToastHandler from "@/components/common/LogoutToastHandler";
+import Script from "next/script";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -18,8 +19,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <HeaderServer />
             <LogoutToastHandler />
 
-            {children}
+            <main className="main">{children}</main>
 
+            <Script
+              src="https://cdn.iamport.kr/v1/iamport.js"
+              strategy="afterInteractive"
+            />
             <Toaster
               position="top-center"
               containerStyle={{

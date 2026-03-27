@@ -36,6 +36,7 @@ type PrismaProductWithAll = Prisma.ProductGetPayload<{
 }>;
 
 export type ProductWithCategory = Omit<PrismaProductWithAll, "announcement"> & {
+  isCustomizable: boolean;
   announcement?:
     | {
         washing?: string;
@@ -44,7 +45,6 @@ export type ProductWithCategory = Omit<PrismaProductWithAll, "announcement"> & {
     | null
     | any;
 };
-
 export interface Title {
   name: string;
   contents: string;

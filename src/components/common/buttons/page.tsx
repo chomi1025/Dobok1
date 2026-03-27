@@ -13,9 +13,9 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 export default function Button({
   variant = "primary",
   href,
-  onClick,
   children,
   className,
+  ...rest
 }: ButtonProps) {
   const combinedClass = `${styles.btn} ${styles[variant]} ${className || ""}`;
 
@@ -27,7 +27,7 @@ export default function Button({
     );
   }
   return (
-    <button onClick={onClick} className={combinedClass}>
+    <button className={combinedClass} {...rest}>
       {children}
     </button>
   );

@@ -2,20 +2,19 @@
 import { useState } from "react";
 import styles from "./page.module.scss";
 import ProductList from "@/components/product/ProductList";
-import { Category, ProductWithCategory, Title } from "../../../types/types";
+import { ProductWithCategory, Title } from "../../../types/types";
 import CategoryTabs from "@/components/CategoryTabs/page";
 import { Session } from "next-auth";
 import Button from "@/components/common/buttons/page";
+import { CategoryBase } from "@/lib/category";
 
 interface Props {
-  session: Session | null;
   title: Title;
-  categories: Category[];
+  categories: CategoryBase[];
   products: ProductWithCategory[];
 }
 
 export default function ProductSectionComponent({
-  session,
   title,
   categories,
   products = [],
@@ -53,7 +52,6 @@ export default function ProductSectionComponent({
       <div key={activeTab} className={styles.productListWrapper}>
         {filteredProducts.length > 0 ? (
           <ProductList
-            session={session}
             products={filteredProducts}
             className={styles.customMinHeight}
           />

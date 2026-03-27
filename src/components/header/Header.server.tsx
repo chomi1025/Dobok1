@@ -1,4 +1,4 @@
-import { getCategories } from "@/lib/category";
+import { getFullCategories } from "@/lib/category";
 import styles from "./Header.module.scss";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/options";
@@ -14,7 +14,7 @@ import Logo from "./Logo";
 export const revalidate = 3600;
 
 export default async function HeaderServer() {
-  const { grouped } = await getCategories();
+  const { grouped } = await getFullCategories();
   const session = await getServerSession(authOptions);
 
   return (

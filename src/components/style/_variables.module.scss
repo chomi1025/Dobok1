@@ -3,7 +3,7 @@ $main-blue: #1e40af;
 $white: #ffffff;
 $black-main: #1a1a1a;
 $black-deep: #111111;
-$gray-text: #666666;
+$gray: #666666;
 $white: #ffffff;
 
 // 반응형
@@ -37,4 +37,13 @@ $mobile: 768px;
   clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
+}
+
+.main-content {
+  padding-top: 0;
+
+  @media (max-width: 768px) {
+    padding-top: rem(60);
+    padding-bottom: rem(70);
+  }
 }

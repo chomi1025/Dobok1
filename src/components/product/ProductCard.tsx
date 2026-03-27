@@ -8,13 +8,15 @@ import { addToCart } from "../hooks/useCart";
 import { useState } from "react";
 import QuickAddModal from "../cart/QuickAddModal";
 import { ProductWithCategory } from "@/types/types";
+import { useSession } from "next-auth/react";
 
 interface ProductCardProps {
-  session: Session | null;
+  session?: Session | null;
   product: ProductWithCategory;
 }
 
-export default function ProductCard({ session, product }: ProductCardProps) {
+export default function ProductCard({ product }: ProductCardProps) {
+  const { data: session } = useSession();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleAddToCart = async (e: React.MouseEvent) => {
@@ -37,6 +39,7 @@ export default function ProductCard({ session, product }: ProductCardProps) {
       productName: product.name,
       thumbnail: product.thumbnail,
       price: targetOption.price,
+      isCustomizable: product.isCustomizable,
       quantity: 1,
     };
 

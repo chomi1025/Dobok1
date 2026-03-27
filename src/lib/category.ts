@@ -5,6 +5,14 @@ type CategoryWithChildren = Prisma.CategoryGetPayload<{
   include: { children: true };
 }>;
 
+export type CategoryBase = {
+  id: number;
+  name: string;
+  slug: string;
+  parentId: number | null;
+  sortOrder: number | null;
+};
+
 export type Category = {
   id: number;
   name: string;
@@ -14,7 +22,21 @@ export type Category = {
   children?: Category[];
 };
 
-export const getCategories = async (): Promise<{ grouped: Category[] }> => {
+export const getMainCategories = async (): Promise<CategoryBase[]> => {
+  return await prisma.category.findMany({
+    where: { parentId: null },
+    orderBy: { sortOrder: "asc" },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      parentId: true,
+      sortOrder: true,
+    },
+  });
+};
+
+export const getFullCategories = async (): Promise<{ grouped: Category[] }> => {
   const main: CategoryWithChildren[] = await prisma.category.findMany({
     where: { parentId: null },
     orderBy: { sortOrder: "asc" },

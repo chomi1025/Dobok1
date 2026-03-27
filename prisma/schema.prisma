@@ -109,6 +109,7 @@ model Product {
   isBest      Boolean         @default(false)
   isNew       Boolean         @default(false)
   announcement Json?
+  isCustomizable Boolean        @default(false)
   cartItems   CartItem[]
   orderItems  OrderItem[]
   category    Category        @relation(fields: [categoryId], references: [id])
@@ -141,15 +142,33 @@ model CartItem {
   @@unique([userId, productOptionId])
 }
 
+
 model Order {
-  id          Int         @id @default(autoincrement())
-  userId      Int
-  status      OrderStatus
-  orderNumber String      @unique
-  total       Int
-  createdAt   DateTime    @default(now())
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items       OrderItem[]
+  id              Int         @id @default(autoincrement())
+  userId          Int?
+  status          OrderStatus
+  orderNumber     String      @unique
+  total           Int
+  createdAt       DateTime    @default(now())
+
+
+  customRequest   String?     @db.Text
+  customFileUrl   String?
+
+// --- 비회원 및 주문 정보 조회를 위한 필드  ---
+  buyerName       String
+  buyerPhone      String
+  buyerEmail      String
+
+  receiverName    String
+  receiverPhone   String
+  postcode        String
+  address         String
+  detailAddress   String
+  // ------------------------------------------
+
+  user            User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items           OrderItem[]
 }
 
 model OrderItem {
@@ -163,6 +182,7 @@ model OrderItem {
   productName  String
   totalPrice   Int
   unitPrice    Int
+  isCustom     Boolean  @default(false)
   claims       Claim[]
   order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -273,6 +293,7 @@ enum Role {
 }
 
 enum OrderStatus {
+  PENDING
   PAYMENT_COMPLETE
   PREPARING
   SHIPPING

@@ -1,10 +1,78 @@
 "use client";
-import * as C from "./style";
+import Button from "@/components/common/buttons/page";
+import styles from "./GuestCheckout.module.scss";
 import BreadCrumb from "@/components/breadcrumb";
 import { Column, Table } from "@/components/Table/page";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import * as yup from "yup";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import DaumPostcodeEmbed from "react-daum-postcode";
+import toast from "react-hot-toast";
+import { loadTossPayments } from "@tosspayments/payment-sdk";
+import { nanoid } from "nanoid";
+
+declare global {
+  interface Window {
+    IMP: any;
+  }
+}
+
+export const guestOrderSchema = yup.object({
+  // 주문자 정보
+  name: yup.string().required("이름을 입력해주세요."),
+  email: yup
+    .string()
+    .email("올바른 이메일 형식이 아닙니다.")
+    .required("이메일을 입력해주세요."),
+  phone: yup
+    .string()
+    .matches(/^010-\d{4}-\d{4}$/, "010-0000-0000 형식으로 입력해주세요.")
+    .required("휴대전화 번호는 필수입니다."),
+
+  // 배송지
+  receiverName: yup.string().required("받는 분 이름을 입력해주세요."),
+  postcode: yup.string().required("우편번호를 입력해주세요."),
+  address: yup.string().required("기본 주소를 입력해주세요."),
+  detailAddress: yup.string().required("상세 주소를 입력해주세요."),
+  customRequest: yup
+    .string()
+    .max(50, "자수 문구는 50자 이내로 입력해주세요.")
+    .optional(),
+  customFiles: yup.mixed<File[]>().nullable().optional(),
+  message: yup.string().optional(),
+  cellphone: yup
+    .string()
+    .matches(/^010-\d{4}-\d{4}$/, "010-0000-0000 형식으로 입력해주세요.")
+    .required("받는 분 연락처는 필수입니다."),
+
+  // 결제
+  paymentMethod: yup
+    .string()
+    .oneOf(["card", "bank", "kakaoPay", "naverPay"])
+    .required(),
+  privacyCheck: yup.boolean().oneOf([true], "개인정보 수집에 동의해주세요."),
+  orderAgree: yup.boolean().oneOf([true], "구매 진행 동의가 필요합니다."),
+});
+
+export interface GuestOrderFormData {
+  name: string;
+  email: string;
+  phone: string;
+  receiverName: string;
+  postcode: string;
+  address: string;
+  detailAddress: string;
+  cellphone: string;
+  paymentMethod: "card" | "bank" | "kakaoPay" | "naverPay";
+  privacyCheck: boolean;
+  orderAgree: boolean;
+  customRequest?: string;
+  customFiles?: File[] | null;
+  message?: string;
+}
 
 export interface Order {
   id: number;
@@ -17,6 +85,7 @@ export interface Order {
   unitPrice: number;
   quantity: number;
   totalPrice?: number;
+  isCustomizable?: boolean;
 }
 
 interface CartItem {
@@ -42,6 +111,87 @@ const STEPS = [
 export default function GuestCheckoutPage() {
   const [cartItems, setCartItems] = useState<Order[]>([]);
   const searchParams = useSearchParams();
+  const [isOpen, setIsOpen] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    trigger,
+    watch,
+    clearErrors,
+    formState: { errors },
+  } = useForm<GuestOrderFormData>({
+    resolver: yupResolver(guestOrderSchema) as any,
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      receiverName: "",
+      postcode: "",
+      address: "",
+      detailAddress: "",
+      customRequest: "",
+      paymentMethod: "card",
+      privacyCheck: false,
+      orderAgree: false,
+    },
+  });
+  const router = useRouter();
+  const [isSameAsOrderer, setIsSameAsOrderer] = useState(false);
+
+  const handleSameAsOrderer = async (checked: boolean) => {
+    setIsSameAsOrderer(checked);
+
+    if (checked) {
+      const name = watch("name");
+      const phone = watch("phone");
+
+      setValue("receiverName", name);
+      setValue("cellphone", phone);
+
+      if (name && phone) {
+        await trigger(["receiverName", "cellphone"]);
+      } else {
+        clearErrors(["receiverName", "cellphone"]);
+      }
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+
+        setValue("customFiles", [file]);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleComplete = (data: any) => {
+    let fullAddress = data.address;
+    let extraAddress = "";
+
+    if (data.addressType === "R") {
+      if (data.bname !== "") extraAddress += data.bname;
+      if (data.buildingName !== "") {
+        extraAddress +=
+          extraAddress !== "" ? `, ${data.buildingName}` : data.buildingName;
+      }
+      fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
+    }
+
+    setValue("postcode", data.zonecode);
+    setValue("address", fullAddress);
+
+    trigger(["postcode", "address"]);
+
+    setIsOpen(false);
+  };
 
   useEffect(() => {
     const idsParam = searchParams.get("ids") || "";
@@ -81,23 +231,25 @@ export default function GuestCheckoutPage() {
       }
 
       setCartItems(
-        filteredItems.map((item) => {
-          const productId = item.product?.id || (item as any).id;
-          const productName = item.product?.name || (item as any).productName;
-          const unitPrice = item.product?.price || (item as any).unitPrice;
-          const productImage =
-            item.thumbnail || item.product?.img || "/img/default.png";
+        filteredItems.map((item: any) => {
+          // 1. productId: item.productId에 20이 들어있으므로 이를 우선 사용
+          const pId = item.productId || item.id;
+
+          // 2. unitPrice: item.price에 30000이 들어있음
+          const uPrice = item.price || item.unitPrice || 0;
 
           return {
-            id: productId,
+            id: pId,
             orderId: 0,
-            productId: productId,
-            productName: productName || "상품명 없음",
-            ProductImage: productImage,
-            optionText: "",
-            unitPrice: unitPrice || 0,
+            productId: Number(pId), // 확실하게 숫자로 변환
+            productName: item.productName || "상품명 없음",
+            ProductImage: item.thumbnail || "/img/default.png", // thumbnail 필드 사용
+            optionText: item.optionDisplay || "", // optionDisplay 필드 사용
+            unitPrice: Number(uPrice),
             quantity: item.quantity,
-            totalPrice: (unitPrice || 0) * item.quantity,
+            totalPrice: Number(uPrice) * item.quantity,
+            isCustomizable: !!item.isCustomizable,
+            productOptionId: item.productOptionId, // 나중에 재고 관리할 때 필요할 수 있으니 유지
           };
         }),
       );
@@ -113,34 +265,24 @@ export default function GuestCheckoutPage() {
 
   const isFreeDelivery = totalOrderPrice >= 50000;
 
+  const hasCustomItem = cartItems.some((item) => item.isCustomizable);
+
   const orderColumns: Column<Order>[] = [
     {
       key: "productName",
       label: "상품명",
+      align: "center",
       flex: 3,
+      hideLabel: true,
       render: (row) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <img
-            src={row.ProductImage}
-            alt={row.productName}
-            style={{
-              width: "90px",
-              height: "90px",
-              backgroundColor: "#f4f4f4",
-              margin: "0 25px 0 30px",
-            }}
-          />
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-            }}
-          >
-            <p style={{ fontWeight: "bold" }}>{row.productName}</p>
-            <p style={{ fontSize: "0.9rem", color: "#666" }}>
-              {row.optionText || "기본옵션"}
-            </p>
+        <div className={styles.productNameArea}>
+          <div className={styles.imageWrapper}>
+            <Image fill src={row.ProductImage} alt={row.productName} />
+          </div>
+
+          <div>
+            <p>{row.productName}</p>
+            <p>{row.optionText || "기본옵션"}</p>
           </div>
         </div>
       ),
@@ -149,40 +291,138 @@ export default function GuestCheckoutPage() {
       key: "quantity",
       label: "수량",
       flex: 1,
-      render: (row) => <p>{row.quantity}개</p>,
+      align: "center",
+      render: (row) => <p className={styles.tableRow}>{row.quantity}개</p>,
     },
     {
       key: "unitPrice",
       label: "상품금액",
       flex: 1,
-      render: (row) => <p>{row.unitPrice.toLocaleString()}원</p>,
+      align: "center",
+      render: (row) => (
+        <p className={styles.tableRow}>{row.unitPrice.toLocaleString()}원</p>
+      ),
     },
     {
       key: "totalPrice",
       label: "합계금액",
       flex: 1,
+      align: "center",
       render: (row) => (
-        <p style={{ fontWeight: "bold" }}>
+        <p className={styles.tableRow}>
           {(row.quantity * row.unitPrice).toLocaleString()}원
         </p>
       ),
     },
   ];
 
+  const onSubmit = async (data: GuestOrderFormData) => {
+    try {
+      // 1. 서버에 주문 데이터 생성 (기존 로직)
+      const createOrderRes = await fetch("/api/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...data,
+          items: cartItems,
+          total: totalOrderPrice + (isFreeDelivery ? 0 : 3000),
+        }),
+      });
+
+      if (!createOrderRes.ok) throw new Error("주문 생성 실패");
+      const { orderNumber } = await createOrderRes.json();
+
+      // 2. 토스페이먼츠 초기화
+      const clientKey = "test_ck_5OWRapdA8db6wDXjmM7bVo1zEqZK";
+      const tossPayments = await loadTossPayments(clientKey);
+
+      const paymentConfig = {
+        amount: totalOrderPrice + (isFreeDelivery ? 0 : 3000),
+        orderId: orderNumber,
+        orderName:
+          cartItems.length > 1
+            ? `${cartItems[0].productName} 외 ${cartItems.length - 1}건`
+            : cartItems[0].productName,
+        customerName: data.name,
+        customerEmail: data.email,
+        successUrl: `${window.location.origin}/order/success`,
+        failUrl: `${window.location.origin}/order/fail`,
+      };
+
+      // ⚡️ V1 SDK Overload 에러 해결을 위한 한글 메서드 방식
+      if (data.paymentMethod === "kakaoPay") {
+        // "카드" 대신 "카카오페이"를 직접 전달
+        await tossPayments.requestPayment("카카오페이" as any, paymentConfig);
+      } else if (data.paymentMethod === "naverPay") {
+        // "카드" 대신 "네이버페이"를 직접 전달
+        await tossPayments.requestPayment("네이버페이" as any, paymentConfig);
+      } else if (data.paymentMethod === "bank") {
+        await tossPayments.requestPayment("계좌이체", paymentConfig);
+      } else {
+        // 일반 신용카드
+        await tossPayments.requestPayment("카드", paymentConfig);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("결제 준비 중 오류가 발생했습니다.");
+    }
+  };
+
   return (
-    <C.Wrapper>
-      <form onSubmit={(e) => e.preventDefault()}>
-        <C.SectionHeader>
-          <h2>주문서 작성/결제 (비회원)</h2>
+    <div className={styles.inner}>
+      {isOpen && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            zIndex: 1000,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          onClick={() => setIsOpen(false)}
+        >
+          <div
+            style={{
+              width: "500px",
+              background: "#fff",
+              padding: "20px",
+              borderRadius: "8px",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <DaumPostcodeEmbed onComplete={handleComplete} />
+
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              style={{ marginTop: "10px" }}
+            >
+              닫기
+            </button>
+          </div>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <header className={styles.SectionHeader}>
+          <h1>주문서 작성/결제 (비회원)</h1>
+
           <BreadCrumb steps={STEPS} />
-        </C.SectionHeader>
+        </header>
 
         {/* 비회원 약관동의 */}
-        <C.PolicyBox>
+        <section className={styles.policyBox}>
           <div>
-            <h4>비회원 개인정보 수집·이용 동의</h4>
+            <h3>비회원 개인정보 수집·이용 동의</h3>
+
             <hr />
-            <C.TermsList>
+
+            <ul className={styles.termsList}>
               <li>
                 1. 개인정보 수집항목: 주문자/수령인 정보(이름, 휴대전화, 주소,
                 이메일)
@@ -193,217 +433,386 @@ export default function GuestCheckoutPage() {
               <li>
                 3. 보유 및 이용기간: 목적 달성 후 즉시 파기 (법령 기준 따름)
               </li>
-            </C.TermsList>
+            </ul>
           </div>
-          <C.ConsentWrapper>
-            <input type="checkbox" id="privacy-check" required />
+
+          <p className={styles.consentArea}>
+            <input
+              type="checkbox"
+              id="privacy-check"
+              {...register("privacyCheck")}
+            />
             <label htmlFor="privacy-check">
               <span>(필수)</span> 비회원 개인정보 수집 이용에 동의합니다.
             </label>
-          </C.ConsentWrapper>
-        </C.PolicyBox>
+          </p>
 
-        <C.ProductListWrapper>
-          <h4>주문상품</h4>
+          {errors.privacyCheck && (
+            <p className={styles.error}>{errors.privacyCheck.message}</p>
+          )}
+        </section>
+
+        <section className={styles.productListArea}>
+          <h2>주문상품</h2>
+
           <Table columns={orderColumns} data={cartItems} />
-        </C.ProductListWrapper>
+        </section>
 
-        <C.OrdererInfoWrapper>
-          <fieldset>
-            <legend>주문자 정보</legend>
-            <hr />
-            <C.InputRow>
-              <label htmlFor="name">이름</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                placeholder="이름을 입력하세요"
-                required
+        {/* 주문제작 상품 있을 때 */}
+        {hasCustomItem && (
+          <fieldset className={styles.customRequestArea}>
+            <legend>주문제작 요청사항</legend>
+
+            <div className={styles.infoBox}>
+              <p className={styles.infoTitle}>
+                주문하신 상품 중 <b>주문제작 상품</b>이 포함되어 있습니다.
+              </p>
+              <div className={styles.exampleBox}>
+                <p>
+                  <strong>작성 예시:</strong>
+                </p>
+                <ul>
+                  <li>
+                    검정띠 160호 - 이름 '홍길동' / 한문자수 / 오른쪽 끝 위치
+                  </li>
+                  <li>
+                    도복 상의 - 왼쪽 가슴 'XX태권도' 로고 인쇄 (파일 첨부)
+                  </li>
+                </ul>
+              </div>
+              <p className={styles.notice}>
+                ※ 시안 확인 없이 적어주신 내용대로 즉시 제작되므로 신중하게 작성
+                부탁드립니다.
+              </p>
+            </div>
+
+            <div className={styles.textAreaRow}>
+              <textarea
+                {...register("customRequest")}
+                placeholder="자수 문구, 로고 위치 등 상세 내용을 자유롭게 적어주세요. 상품이 여러 개인 경우 상품별로 구분해서 적어주시면 좋습니다."
+                rows={5}
               />
-            </C.InputRow>
-            <C.InputRow>
-              <label htmlFor="email">이메일 주소</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="example@email.com"
-                required
-              />
-            </C.InputRow>
-            <C.InputRow>
-              <label htmlFor="phone">휴대전화</label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                placeholder="010-0000-0000"
-                required
-              />
-            </C.InputRow>
+              {errors.customRequest && (
+                <p className={styles.error}>{errors.customRequest.message}</p>
+              )}
+            </div>
+
+            {/* 로고 파일 업로드 */}
+            <div className={styles.fileUploadRow}>
+              <label htmlFor="customFiles">로고/시안 파일 첨부 (선택)</label>
+              <div className={styles.fileInputWrapper}>
+                <input
+                  type="file"
+                  id="customFiles"
+                  multiple
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  style={{ display: "none" }}
+                />
+                <Button
+                  type="button"
+                  variant="black"
+                  onClick={() =>
+                    document.getElementById("customFiles")?.click()
+                  }
+                >
+                  파일 선택하기
+                </Button>
+
+                {imagePreview && (
+                  <div className={styles.previewList}>
+                    <div className={styles.previewItem}>
+                      <img
+                        src={imagePreview}
+                        alt="미리보기"
+                        className={styles.miniPreview}
+                      />
+                      <span className={styles.fileName}>
+                        이미지가 선택되었습니다.
+                      </span>
+                      <button
+                        type="button"
+                        className={styles.deleteFileBtn}
+                        onClick={() => {
+                          setImagePreview(null);
+                          setValue("customFiles", null);
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <p className={styles.fileGuide}>
+                * 로고 자수나 인쇄가 필요한 경우 고화질 이미지를 첨부해주세요.
+              </p>
+            </div>
           </fieldset>
-        </C.OrdererInfoWrapper>
+        )}
 
-        <C.ShippingWrapper>
-          <fieldset>
+        {/* 주문자정보 */}
+
+        <fieldset className={styles.ordererInfoArea}>
+          <legend>주문자 정보</legend>
+
+          <div className={styles.inputRow}>
+            <div>
+              <label htmlFor="name">이름</label>
+
+              <input {...register("name")} placeholder="이름을 입력하세요" />
+            </div>
+
+            {errors.name && (
+              <span className={styles.error}>{errors.name.message}</span>
+            )}
+          </div>
+
+          <div className={styles.inputRow}>
+            <div>
+              <label htmlFor="email">이메일 주소</label>
+
+              <input {...register("email")} placeholder="이메일을 입력하세요" />
+            </div>
+
+            {errors.email && (
+              <span className={styles.error}>{errors.email.message}</span>
+            )}
+          </div>
+
+          <div className={styles.inputRow}>
+            <div>
+              <label htmlFor="phone">휴대전화</label>
+
+              <input {...register("phone")} placeholder="예) 010-xxxx-xxxx" />
+            </div>
+
+            {errors.phone && (
+              <span className={styles.error}>{errors.phone.message}</span>
+            )}
+          </div>
+        </fieldset>
+
+        {/* 배송지정보 */}
+        <fieldset className={styles.shippingArea}>
+          <div className={styles.shippingHeader}>
             <legend>배송지 정보</legend>
-            <hr />
-            <C.InputRow2>
-              <label htmlFor="receiverName">받는 분</label>
-              <input
-                type="text"
-                id="receiverName"
-                name="receiverName"
-                placeholder="이름을 입력하세요"
-                required
-              />
-            </C.InputRow2>
 
-            <C.InputRow2>
-              <label>주소</label>
-              <div className="address-group">
+            <div className={styles.sameCheck}>
+              <input
+                type="checkbox"
+                id="same-as-orderer"
+                checked={isSameAsOrderer}
+                onChange={(e) => handleSameAsOrderer(e.target.checked)}
+              />
+              <label htmlFor="same-as-orderer">주문자 정보와 동일</label>
+            </div>
+          </div>
+
+          <div className={styles.inputRow}>
+            <div>
+              <label htmlFor="receiverName">받는 분</label>
+
+              <input
+                {...register("receiverName")}
+                placeholder="이름을 입력하세요"
+              />
+            </div>
+
+            {errors.receiverName && (
+              <p className={styles.error}>{errors.receiverName.message}</p>
+            )}
+          </div>
+
+          <div className={styles.addressArea}>
+            <div className={styles.addressHeader}>
+              <div>
+                <label>주소</label>
+              </div>
+
+              <div className={styles.addressGroup}>
+                <div>
+                  <div className={styles.postWrapper}>
+                    <input
+                      {...register("postcode")}
+                      placeholder="우편번호"
+                      readOnly
+                    />
+
+                    <Button
+                      type="button"
+                      variant="black"
+                      onClick={() => setIsOpen(true)}
+                    >
+                      우편번호 찾기
+                    </Button>
+                  </div>
+
+                  {errors.postcode && (
+                    <p className={styles.error}>{errors.postcode.message}</p>
+                  )}
+                </div>
+
                 <div>
                   <input
-                    type="text"
-                    id="postcode"
-                    name="postcode"
-                    placeholder="우편번호"
+                    {...register("address")}
+                    placeholder="기본 주소"
                     readOnly
-                    required
                   />
-                  <button type="button">우편번호 찾기</button>
+
+                  {errors.address && (
+                    <p className={styles.error}>{errors.address.message}</p>
+                  )}
                 </div>
-                <input
-                  type="text"
-                  id="address"
-                  name="address"
-                  placeholder="기본 주소"
-                  readOnly
-                  required
-                />
-                <input
-                  type="text"
-                  id="detailAddress"
-                  name="detailAddress"
-                  placeholder="상세 주소"
-                  required
-                />
+
+                <div>
+                  <input
+                    {...register("detailAddress")}
+                    placeholder="상세 주소"
+                  />
+
+                  {errors.detailAddress && (
+                    <p className={styles.error}>
+                      {errors.detailAddress.message}
+                    </p>
+                  )}
+                </div>
               </div>
-            </C.InputRow2>
+            </div>
+          </div>
 
-            <C.InputRow2>
+          <div className={styles.phoneArea}>
+            <div>
               <label htmlFor="cellphone">휴대전화</label>
-              <input
-                id="cellphone"
-                name="cellphone"
-                type="tel"
-                maxLength={13}
-                placeholder="010-0000-0000"
-                required
-              />
-            </C.InputRow2>
+              <input {...register("cellphone")} placeholder="010-0000-0000" />
+            </div>
 
-            <C.InputRow2>
-              <label htmlFor="message">배송메세지</label>
-              <select name="message" id="message">
-                <option value="">배송 요청사항을 선택해 주세요</option>
-                <option value="부재 시 문 앞에 놓아주세요">
-                  부재 시 문 앞에 놓아주세요
-                </option>
-                <option value="배송 전 미리 연락 바랍니다">
-                  배송 전 미리 연락 바랍니다
-                </option>
-                <option value="직접 입력">직접 입력</option>
-              </select>
-            </C.InputRow2>
+            {errors.cellphone && (
+              <p className={styles.error}>{errors.cellphone.message}</p>
+            )}
+          </div>
+
+          <div className={styles.deiliveryMessageArea}>
+            <label htmlFor="message">배송메세지</label>
+
+            <select name="message" id="message">
+              <option value="">배송 요청사항을 선택해 주세요</option>
+              <option value="부재 시 문 앞에 놓아주세요">
+                부재 시 문 앞에 놓아주세요
+              </option>
+              <option value="배송 전 미리 연락 바랍니다">
+                배송 전 미리 연락 바랍니다
+              </option>
+              <option value="직접 입력">직접 입력</option>
+            </select>
+          </div>
+        </fieldset>
+
+        {/* 결제 정보 */}
+        <section className={styles.payArea}>
+          <fieldset>
+            <legend>결제 정보</legend>
+
+            <dl>
+              <div className={styles.summaryRow}>
+                <dt>주문 상품</dt>
+                <dd>{totalOrderPrice.toLocaleString()}원</dd>
+              </div>
+
+              <div className={styles.summaryRow}>
+                <dt>배송비</dt>
+                <dd>{isFreeDelivery ? "0원" : "3,000원"}</dd>
+              </div>
+
+              <div className={styles.summaryRow}>
+                <dt>최종 결제 금액</dt>
+                <dd>
+                  {(
+                    totalOrderPrice + (isFreeDelivery ? 0 : 3000)
+                  ).toLocaleString()}
+                  원
+                </dd>
+              </div>
+            </dl>
           </fieldset>
-        </C.ShippingWrapper>
+        </section>
 
-        <C.PayWrapper>
-          <h3>결제 정보</h3>
-          <hr />
-          <dl>
-            <C.SummaryRow>
-              <dt>주문 상품</dt>
-              <dd>{totalOrderPrice.toLocaleString()}원</dd>
-            </C.SummaryRow>
-            <C.SummaryRow>
-              <dt>배송비</dt>
-              <dd>{isFreeDelivery ? "0원" : "3,000원"}</dd>
-            </C.SummaryRow>
-            <C.SummaryRow total>
-              <dt>최종 결제 금액</dt>
-              <dd>
-                {(
-                  totalOrderPrice + (isFreeDelivery ? 0 : 3000)
-                ).toLocaleString()}
-                원
-              </dd>
-            </C.SummaryRow>
-          </dl>
-        </C.PayWrapper>
-
-        <C.PaymentMethodWrapper>
+        <section className={styles.paymentMethodArea}>
           <fieldset>
             <legend>결제 수단 선택</legend>
-            <hr />
+
             <div>
-              <label>
+              <label htmlFor="card">
                 <input
+                  id="card"
                   type="radio"
-                  name="paymentMethod"
+                  {...register("paymentMethod")}
                   value="card"
-                  defaultChecked
-                />{" "}
+                />
                 신용카드
               </label>
-              <label>
-                <input type="radio" name="paymentMethod" value="bank" />{" "}
+
+              <label htmlFor="bank">
+                <input
+                  id="bank"
+                  type="radio"
+                  {...register("paymentMethod")}
+                  value="bank"
+                />
                 계좌이체
               </label>
+
               <label htmlFor="kakaoPay" className="payment-option">
                 <input
                   type="radio"
                   id="kakaoPay"
-                  name="paymentMethod"
+                  {...register("paymentMethod")}
                   value="kakaoPay"
                 />
                 <Image
                   src="/image/kakao_CI_logotype 1.png"
-                  width={95}
-                  height={22}
-                  alt="카카오페이"
+                  alt="kakaoPay"
+                  fill
                 />
               </label>
-              <label htmlFor="naverPay" className="payment-option">
+
+              {/* 네이버 페이...나중에 ㅠ_ㅠ */}
+              {/* <label htmlFor="naverPay" className="payment-option">
                 <input
                   type="radio"
                   id="naverPay"
-                  name="paymentMethod"
+                  {...register("paymentMethod")}
                   value="naverPay"
                 />
                 <Image
                   src="/image/NAVER NPAY LOGO_003 1.png"
                   width={92}
                   height={34}
-                  alt="네이버페이"
+                  alt="naverPay"
                 />
-              </label>
+              </label> */}
             </div>
           </fieldset>
-        </C.PaymentMethodWrapper>
+        </section>
 
-        <C.TermsWrapper>
+        <section className={styles.termsArea}>
           <div>
-            <input type="checkbox" id="order-agree" required />
+            <input
+              type="checkbox"
+              id="order-agree"
+              {...register("orderAgree")}
+            />
             <label htmlFor="order-agree">
               결제 정보를 확인하였으며, 구매 진행에 동의합니다.
             </label>
           </div>
-          <button type="submit">결제하기</button>
-        </C.TermsWrapper>
+
+          {errors.orderAgree && (
+            <p className={styles.error}>{errors.orderAgree.message}</p>
+          )}
+          <Button variant="primary">결제하기</Button>
+        </section>
       </form>
-    </C.Wrapper>
+    </div>
   );
 }

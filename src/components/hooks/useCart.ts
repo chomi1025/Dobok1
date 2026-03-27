@@ -25,7 +25,11 @@ export const addToCart = async (itemOrItems: any, user: any) => {
         );
 
         if (existingIndex > -1) {
-          localCart[existingIndex].quantity += item.quantity || 1;
+          localCart[existingIndex] = {
+            ...localCart[existingIndex],
+            ...item,
+            quantity: localCart[existingIndex].quantity + (item.quantity || 1),
+          };
         } else {
           localCart.push({ ...item, quantity: item.quantity || 1 });
         }

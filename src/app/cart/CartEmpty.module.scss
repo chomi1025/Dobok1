@@ -15,8 +15,8 @@
   text-align: center;
 
   .iconCircle {
-    width: rem(80);
-    height: rem(80);
+    max-width: rem(80);
+    max-height: rem(80);
     background-color: #f9f9f9;
     border-radius: 50%;
     display: flex;
