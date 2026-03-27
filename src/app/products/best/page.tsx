@@ -23,8 +23,7 @@ export default async function BestProductPage({
   const currentPage = Number(params.page) || 1;
   const pageSize = 12;
 
-  const [session, totalItems, products] = await Promise.all([
-    getServerSession(authOptions),
+  const [totalItems, products] = await Promise.all([
     prisma.product.count({
       where: { isBest: true },
     }),
@@ -34,16 +33,33 @@ export default async function BestProductPage({
       orderBy: { createdAt: "desc" },
       skip: (currentPage - 1) * pageSize,
       take: pageSize,
-      include: {
-        options: true,
-        category: { include: { parent: true } },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        thumbnail: true,
+        isNew: true,
+        isCustomizable: true,
+        options: {
+          select: {
+            id: true,
+            price: true,
+            size: true,
+            color: true,
+          },
+        },
+        category: {
+          select: {
+            name: true,
+            slug: true,
+          },
+        },
       },
     }),
   ]);
 
   return (
     <ProductPageComponent
-      session={session}
       title={title}
       products={products}
       totalItems={totalItems}

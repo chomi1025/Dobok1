@@ -1,10 +1,8 @@
 import styles from "./page.module.scss";
 import ProductList from "@/components/product/ProductList";
 import { ProductWithCategory } from "@/types/types";
-import { Session } from "next-auth";
 
 interface ProductPageProps {
-  session: Session | null;
   title: {
     name: string;
     contents: string;

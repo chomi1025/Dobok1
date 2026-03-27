@@ -1,6 +1,5 @@
 import { getMainCategories } from "@/lib/category";
 import styles from "./Header.module.scss";
-
 import HeaderDropdown from "./HeaderDropdown";
 import cart from "@/assets/Image/header/cil_cart.png";
 import myPage from "@/assets/Image/header/bi_person.png";
