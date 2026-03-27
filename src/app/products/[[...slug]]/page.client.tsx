@@ -22,7 +22,6 @@ type Props = {
 };
 
 export default function PageClient({
-
   categories,
   mainSlug,
   subSlug,

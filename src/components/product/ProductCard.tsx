@@ -3,7 +3,6 @@ import { ShoppingBasket } from "lucide-react";
 import styles from "./page.module.scss";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { Session } from "next-auth";
 import { addToCart } from "../hooks/useCart";
 import { useState } from "react";
 import QuickAddModal from "../cart/QuickAddModal";

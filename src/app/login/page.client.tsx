@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import toast from "react-hot-toast";
 import styles from "./page.module.scss";
 import Link from "next/link";
@@ -19,9 +19,8 @@ export default function LoginClientPage() {
 
     if (isSubmitting.current) return;
     isSubmitting.current = true;
-    setLoading(true);
 
-    const loadingToast = toast.loading("로그인 정보를 확인 중입니다...");
+    setLoading(true);
 
     try {
       const res = await signIn("credentials", {
@@ -31,19 +30,24 @@ export default function LoginClientPage() {
       });
 
       if (!res?.ok) {
-        toast.error("아이디나 비밀번호를 다시 확인해주세요", {
-          id: loadingToast,
-        });
+        toast.error("아이디나 비밀번호를 다시 확인해주세요");
         setLoading(false);
         isSubmitting.current = false;
         return;
       }
 
-      toast.dismiss(loadingToast);
+      const session = await getSession();
+      const userName = session?.user?.name || id;
 
-      window.location.href = "/?login=success";
+      toast.success(`${userName}님, 반가워요!`, {
+        duration: 2000,
+      });
+
+      router.refresh();
+
+      router.push("/");
     } catch (err) {
-      toast.error("로그인 중 오류가 발생했습니다.", { id: loadingToast });
+      toast("로그인 중 오류가 발생했습니다.");
       setLoading(false);
       isSubmitting.current = false;
     }
