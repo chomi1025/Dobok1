@@ -20,26 +20,13 @@ export default async function BestSectionComponent({
   session,
   categories,
 }: Props) {
-  const dbProducts = await prisma.product.findMany({
-    where: { isBest: true },
-    take: 40,
-    include: {
-      options: true,
-      category: {
-        include: {
-          parent: true,
-        },
-      },
-    },
-  });
-
   return (
     <>
       <ProductSectionComponent
         session={session}
         categories={categories}
         title={title}
-        products={dbProducts}
+        bestProducts={bestProducts}
       />
     </>
   );

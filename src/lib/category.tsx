@@ -14,6 +14,30 @@ export type Category = {
   children?: Category[];
 };
 
+export async function getMainCategories() {
+  try {
+    const categories = await prisma.category.findMany({
+      where: {
+        parentId: null,
+      },
+      include: {
+        children: {
+          orderBy: {
+            sortOrder: "asc",
+          },
+        },
+      },
+      orderBy: {
+        sortOrder: "asc",
+      },
+    });
+    return categories;
+  } catch (error) {
+    console.error("카테고리 불러오기 에러:", error);
+    return [];
+  }
+}
+
 export const getCategories = async (): Promise<{ grouped: Category[] }> => {
   const main: CategoryWithChildren[] = await prisma.category.findMany({
     where: { parentId: null },

@@ -8,50 +8,46 @@ import InstagramComponent from "@/components/main/Instagram/page";
 import ScrollAnimation from "./../components/common/ScrollAnimation";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/options";
+import { getMainCategories } from "@/lib/category"; // 🚩 아까 썼던 함수!
 
 export const metadata: Metadata = {
   title: "도복일번지",
   description: "스포츠용품,도복 전문 도복일번지 입니다!",
 };
 
+export const revalidate = 3600;
+
 export default async function HomePage() {
-  const [session, categories] = await Promise.all([
-    getServerSession(authOptions),
-    prisma.category.findMany({
-      where: {
-        parentId: null,
-      },
-      include: {
-        children: {
-          orderBy: {
-            sortOrder: "asc",
-          },
-        },
-      },
-      orderBy: {
-        sortOrder: "asc",
-      },
+  const [mainCategories, bestProducts, newProducts] = await Promise.all([
+    getMainCategories(),
+    prisma.product.findMany({
+      where: { isBest: true },
+      take: 8,
+      include: { options: true, category: { include: { parent: true } } },
+    }),
+    prisma.product.findMany({
+      where: { isNew: true },
+      take: 8,
+      include: { options: true, category: { include: { parent: true } } },
     }),
   ]);
 
   return (
     <main className={styles.main}>
-      {/* 캐러샐 슬라이드 */}
       <Carousel />
 
-      {/* 카테고리 아이콘 */}
       <ScrollAnimation>
-        <CategoryIconComponent />
+        <CategoryIconComponent mainCategory={mainCategories} />
       </ScrollAnimation>
 
-      {/* 구분선 */}
       <hr className={styles.line} />
 
       {/* 베스트상품 */}
       <ScrollAnimation>
-        <BestSectionComponent session={session} categories={categories} />
+        <BestSectionComponent
+          categories={mainCategories}
+          bestProducts={bestProducts}
+        />
       </ScrollAnimation>
 
       {/* 메인배너 */}
@@ -71,15 +67,16 @@ export default async function HomePage() {
         </div>
       </ScrollAnimation>
 
-      {/* 신제품 */}
+      {/* 신제품 - 이제 서버에서 받은 데이터를 바로 넘겨줌 */}
       <ScrollAnimation>
-        <NewSectionComponent session={session} categories={categories} />
+        <NewSectionComponent
+          categories={mainCategories}
+          newProducts={newProducts}
+        />
       </ScrollAnimation>
 
-      {/* 구분선 */}
       <hr className={styles.line} />
 
-      {/* 배너 2단 */}
       <ScrollAnimation>
         <section className={styles.banner2}>
           <div>
@@ -93,7 +90,6 @@ export default async function HomePage() {
 
       <hr className={styles.line} />
 
-      {/* 인스타그램 */}
       <ScrollAnimation>
         <InstagramComponent />
       </ScrollAnimation>
