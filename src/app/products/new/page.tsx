@@ -57,7 +57,6 @@ export default async function NewProductPage({
     }),
   ]);
 
-  console.log(products);
   return (
     <ProductPageComponent
       title={title}

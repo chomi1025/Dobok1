@@ -1,7 +1,6 @@
 import { prisma } from "./prisma";
 import { Prisma } from "@prisma/client";
-console.log("카테고리 파일 로드됨!");
-// 프리즈마에서 사용하는 타입 정의
+
 type CategoryWithChildren = Prisma.CategoryGetPayload<{
   include: { children: true };
 }>;

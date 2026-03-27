@@ -23,6 +23,7 @@ export default function ProductPageComponent({
         <h2>{title.name}</h2>
         <p>{title.contents}</p>
       </div>
+
       <hr />
 
       <div>

@@ -4,15 +4,13 @@ import Link from "next/link";
 import styles from "./page.module.scss";
 import CategoryTabs from "@/components/CategoryTabs/page";
 import { useRouter } from "next/navigation";
-import { CategoryWithChildren } from "./page";
 import ProductList from "@/components/product/ProductList";
 import PagenationComponent from "@/components/pagenation/page";
-import { Session } from "next-auth";
 import { ChevronRight } from "lucide-react";
+import { Category } from "@/lib/category";
 
 type Props = {
-  session: Session | null;
-  categories: CategoryWithChildren[];
+  categories: Category[];
   products: any[];
   mainSlug: string;
   subSlug: string;
@@ -31,7 +29,6 @@ export default function PageClient({
   currentPage,
 }: Props) {
   const router = useRouter();
-  console.log(categories);
 
   const currentMain = categories?.find((m) => m.slug === mainSlug);
 
@@ -58,11 +55,13 @@ export default function PageClient({
           <h1>{currentMain?.name}</h1>
 
           <nav>
-            <Link href="/">홈</Link>
+            <Link href="/" prefetch={false}>
+              홈
+            </Link>
 
             <ChevronRight size={14} className={styles.separator} />
 
-            <Link href={`/products/${currentMain?.slug}`}>
+            <Link href={`/products/${currentMain?.slug}`} prefetch={false}>
               {currentMain?.name}
             </Link>
 
@@ -89,6 +88,7 @@ export default function PageClient({
       {/* 상품목록 */}
       <article className={styles.contentSection}>
         <h2 className={styles["sr-only"]}>상품 목록</h2>
+
         <ProductList products={products} className={styles.CustomMinHeight} />
       </article>
 
