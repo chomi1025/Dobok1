@@ -6,7 +6,7 @@ import login from "@/assets/Image/header/mage_login.png";
 import logout from "@/assets/Image/header/mage_logout.png";
 import { Session } from "next-auth";
 import toast from "react-hot-toast";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 interface Props {
   session: Session | null;
@@ -14,30 +14,27 @@ interface Props {
 
 export default function AuthIcons({ session }: Props) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const isSubmitting = useRef(false);
 
   const onClickSignout = async () => {
-    if (isSubmitting.current) return;
-    isSubmitting.current = true;
-    setIsLoggingOut(true);
-
-    const logoutToast = toast.loading("로그아웃 중입니다...");
+    if (isLoggingOut) return;
 
     try {
-      await signOut({
+      setIsLoggingOut(true);
+
+      const data = await signOut({
         redirect: false,
         callbackUrl: "/",
       });
 
-      toast.dismiss(logoutToast);
+      toast.success(`로그아웃이 완료되었습니다`, { duration: 2000 });
 
-      window.location.href = "/?logout=success";
+      setTimeout(() => {
+        window.location.href = data.url || "/";
+      }, 1500);
     } catch (error) {
       console.error("로그아웃 에러:", error);
-      toast.error("로그아웃 처리 중 오류가 발생했습니다.", { id: logoutToast });
-
+      toast.error("로그아웃에 실패했습니다.");
       setIsLoggingOut(false);
-      isSubmitting.current = false;
     }
   };
 
@@ -46,7 +43,6 @@ export default function AuthIcons({ session }: Props) {
       <button
         type="button"
         onClick={onClickSignout}
-        disabled={isLoggingOut}
         style={{
           opacity: isLoggingOut ? 0.5 : 1,
           cursor: isLoggingOut ? "not-allowed" : "pointer",
