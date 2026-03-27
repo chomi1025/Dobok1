@@ -14,6 +14,7 @@
     .swiper-wrapper {
       overflow: visible !important;
     }
+
     .swiper-slide {
       width: 70%;
       opacity: 0.4;
@@ -25,6 +26,11 @@
       display: flex;
       justify-content: center;
       align-items: center;
+
+      @include mobile {
+        border-radius: 0 !important;
+      }
+
       &.swiper-slide-active {
         opacity: 1;
         transform: scale(1);
@@ -35,6 +41,10 @@
         opacity: 1;
         transform: scale(1);
         z-index: 10;
+
+        @include mobile {
+          border-radius: 0 !important;
+        }
       }
     }
 
@@ -70,6 +80,14 @@
   display: flex;
   align-items: flex-end;
   padding: 40px;
+
+  @media (min-width: 768px) {
+    height: 500px;
+  }
+
+  img {
+    object-fit: cover;
+  }
 }
 
 .overlay {
