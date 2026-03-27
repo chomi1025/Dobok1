@@ -11,7 +11,6 @@ import { ProductWithCategory } from "@/types/types";
 import { useSession } from "next-auth/react";
 
 interface ProductCardProps {
-  session?: Session | null;
   product: ProductWithCategory;
 }
 

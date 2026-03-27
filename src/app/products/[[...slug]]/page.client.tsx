@@ -8,7 +8,7 @@ import { CategoryWithChildren } from "./page";
 import ProductList from "@/components/product/ProductList";
 import PagenationComponent from "@/components/pagenation/page";
 import { Session } from "next-auth";
-import { ChevronRight, Home } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 type Props = {
   session: Session | null;
@@ -22,7 +22,7 @@ type Props = {
 };
 
 export default function PageClient({
-  session,
+
   categories,
   mainSlug,
   subSlug,
