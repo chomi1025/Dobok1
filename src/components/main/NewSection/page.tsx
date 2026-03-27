@@ -6,7 +6,7 @@ const title: Title = {
   name: "신제품",
   contents: "도복일번지에서 새롭게 출시한 제품을 만나보세요",
   button: "신제품 더보기",
-  href: "/new",
+  href: "/products/new",
 };
 
 interface Props {

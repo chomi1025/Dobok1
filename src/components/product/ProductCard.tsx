@@ -52,7 +52,11 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <li>
-      <Link href={`/product/${product.id}`} className={styles.linkWrapper}>
+      <Link
+        href={`/product/${product.id}`}
+        className={styles.linkWrapper}
+        prefetch={false}
+      >
         <figure className={styles.imageWrapper}>
           <img src={product.thumbnail || "/no-image.png"} alt={product.name} />
 

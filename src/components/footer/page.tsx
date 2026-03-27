@@ -20,7 +20,9 @@ export default function Footer() {
           <ul>
             {navigation.map((nav) => (
               <li key={nav.name}>
-                <Link href="/">{nav.name}</Link>
+                <Link href="/" prefetch={false}>
+                  {nav.name}
+                </Link>
               </li>
             ))}
           </ul>
@@ -47,7 +49,7 @@ export default function Footer() {
 
         <div className={styles.right_Wrapper}>
           <div>
-            <Link href="/">
+            <Link href="/" prefetch={false}>
               <Image src={kakao} alt="카카오톡 로고" width={24} height={24} />
             </Link>
 

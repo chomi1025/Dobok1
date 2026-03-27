@@ -45,6 +45,7 @@ export default function GnbClient({ children }: HeaderClientProps) {
             className={`${styles.navLink} ${idx === 0 && styles.isFirst}`}
             aria-haspopup="true"
             aria-expanded={openMenu}
+            prefetch={false}
           >
             {nav.name}
           </Link>
