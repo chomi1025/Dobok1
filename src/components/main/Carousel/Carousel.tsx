@@ -6,8 +6,6 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import styles from "./Carousel.module.scss";
-import { useEffect, useState } from "react";
-import Image from "next/image";
 
 export default function Carousel() {
   const originalBanners = [
@@ -31,37 +29,46 @@ export default function Carousel() {
     },
   ];
 
-  const [domLoaded, setDomLoaded] = useState(false);
+  const totalCount = originalBanners.length;
+
   const banners = [
     ...originalBanners,
-    ...originalBanners.map((b) => ({ ...b, id: b.id + 100 })),
+    ...originalBanners.map((b) => ({ ...b, id: b.id + totalCount })),
   ];
 
-  useEffect(() => {
-    setDomLoaded(true);
-  }, []);
-
-  if (!domLoaded) {
-    return <div className={styles.container} style={{ height: "500px" }} />;
-  }
   return (
     <div className={styles.container}>
       <Swiper
         modules={[Autoplay, Pagination, Navigation]}
         centeredSlides={true}
         loop={true}
-        loopAdditionalSlides={1}
+        initialSlide={0}
         slidesPerView={1.5}
         spaceBetween={20}
-        autoplay={{
-          delay: 4000,
-          disableOnInteraction: false,
+        autoplay={{ delay: 4000, disableOnInteraction: false }}
+        onSlideChange={(swiper) => {
+          const realIndex = swiper.realIndex;
+          const bullets = swiper.pagination.bullets;
+
+          if (bullets && bullets.length > 0) {
+            bullets.forEach((b) =>
+              b.classList.remove("swiper-pagination-bullet-active"),
+            );
+
+            const targetIndex = realIndex % totalCount;
+            if (bullets[targetIndex]) {
+              bullets[targetIndex].classList.add(
+                "swiper-pagination-bullet-active",
+              );
+            }
+          }
         }}
         pagination={{
           clickable: true,
-
           renderBullet: (index, className) => {
-            if (index < 3) return `<span class="${className}"></span>`;
+            if (index < 3) {
+              return `<span class="${className}"></span>`;
+            }
             return "";
           },
         }}
@@ -70,15 +77,10 @@ export default function Carousel() {
       >
         {banners.map((banner) => (
           <SwiperSlide key={banner.id}>
-            <div className={styles.slideItem}>
-              <Image
-                src={banner.img}
-                alt={banner.title}
-                fill
-                priority={banner.id === 1}
-                className={styles.bannerImg}
-                sizes="(max-width: 768px) 100vw, 80vw"
-              />
+            <div
+              className={styles.slideItem}
+              style={{ backgroundImage: `url(${banner.img})` }}
+            >
               <div className={styles.overlay} />
               <div className={styles.textGroup}>
                 <h2>{banner.title}</h2>
