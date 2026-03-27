@@ -1,41 +1,30 @@
-import { prisma } from "@/lib/prisma";
-import { Category as CustomCategory } from "../../../types/types";
-import { Session } from "next-auth";
+import { ProductWithCategory, Title } from "@/types/types";
 import ProductSectionComponent from "../ProductSection/page";
-import { Category } from "@/lib/category";
+import { CategoryBase } from "@/lib/category";
 
-interface Props {
-  categories: Category[];
-}
-
-const title = {
+const title: Title = {
   name: "신제품",
   contents: "도복일번지에서 새롭게 출시한 제품을 만나보세요",
   button: "신제품 더보기",
   href: "/new",
 };
 
-export default async function NewSectionComponent({ categories }: Props) {
-  const initialProducts = await prisma.product.findMany({
-    where: { isNew: true },
-    take: 8,
-    include: {
-      options: true,
-      category: {
-        include: {
-          parent: true,
-        },
-      },
-    },
-  });
+interface Props {
+  categories: CategoryBase[];
+  newProducts: ProductWithCategory[];
+}
 
+export default async function NewSectionComponent({
+  categories,
+  newProducts,
+}: Props) {
   return (
     <>
       <ProductSectionComponent
         type={"new"}
         categories={categories}
         title={title}
-        products={initialProducts}
+        products={newProducts}
       />
     </>
   );

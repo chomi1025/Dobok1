@@ -11,7 +11,7 @@ export type CategoryBase = {
   slug: string;
   parentId: number | null;
   sortOrder: number | null;
-  img?: string | null;
+  imageUrl?: string | null;
 };
 
 export type Category = {
@@ -31,8 +31,7 @@ export const getMainCategories = async (): Promise<CategoryBase[]> => {
       id: true,
       name: true,
       slug: true,
-      parentId: true,
-      sortOrder: true,
+      imageUrl: true,
     },
   });
 };

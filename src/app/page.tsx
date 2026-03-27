@@ -8,6 +8,7 @@ import InstagramComponent from "@/components/main/Instagram/page";
 import ScrollAnimation from "./../components/common/ScrollAnimation";
 import { Metadata } from "next";
 import { getMainCategories } from "@/lib/category";
+import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "도복일번지",
@@ -17,7 +18,19 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function HomePage() {
-  const MainCategories = await getMainCategories();
+  const [mainCategories, bestProducts, newProducts] = await Promise.all([
+    getMainCategories(),
+    prisma.product.findMany({
+      where: { isBest: true },
+      take: 8,
+      include: { options: true, category: { include: { parent: true } } },
+    }),
+    prisma.product.findMany({
+      where: { isNew: true },
+      take: 8,
+      include: { options: true, category: { include: { parent: true } } },
+    }),
+  ]);
 
   return (
     <main className={styles.main}>
@@ -26,7 +39,7 @@ export default async function HomePage() {
 
       {/* 카테고리 아이콘 */}
       <ScrollAnimation>
-        <CategoryIconComponent mainCategory={MainCategories} />
+        <CategoryIconComponent mainCategory={mainCategories} />
       </ScrollAnimation>
 
       {/* 구분선 */}
@@ -34,7 +47,10 @@ export default async function HomePage() {
 
       {/* 베스트상품 */}
       <ScrollAnimation>
-        <BestSectionComponent categories={MainCategories} />
+        <BestSectionComponent
+          categories={mainCategories}
+          bestProducts={bestProducts}
+        />
       </ScrollAnimation>
 
       {/* 메인배너 */}
@@ -56,7 +72,10 @@ export default async function HomePage() {
 
       {/* 신제품 */}
       <ScrollAnimation>
-        <NewSectionComponent categories={MainCategories} />
+        <NewSectionComponent
+          categories={mainCategories}
+          newProducts={newProducts}
+        />
       </ScrollAnimation>
 
       {/* 구분선 */}

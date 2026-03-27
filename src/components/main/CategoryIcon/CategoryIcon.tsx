@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/prisma";
 import styles from "./CategoryIcon.module.scss";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,6 +8,8 @@ interface Props {
 }
 
 export default async function CategoryIconComponent({ mainCategory }: Props) {
+  console.log(mainCategory);
+
   return (
     <section className={`${styles.inner} ${styles.icon}`}>
       <div className={styles.title}>
@@ -23,7 +24,7 @@ export default async function CategoryIconComponent({ mainCategory }: Props) {
                 <figure className={styles.circle}>
                   <div className={styles.imageContainer}>
                     <Image
-                      src={cat.img ?? "/images/no-image.png"}
+                      src={cat.imageUrl ?? "/images/no-image.png"}
                       alt={cat.name}
                       fill
                     />

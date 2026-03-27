@@ -1,5 +1,4 @@
-import { prisma } from "@/lib/prisma";
-import { Title } from "../../../types/types";
+import { ProductWithCategory, Title } from "../../../types/types";
 import ProductSectionComponent from "../ProductSection/page";
 import { CategoryBase } from "@/lib/category";
 
@@ -12,29 +11,20 @@ const title: Title = {
 
 interface Props {
   categories: CategoryBase[];
+  bestProducts: ProductWithCategory[];
 }
 
-export default async function BestSectionComponent({ categories }: Props) {
-  const initialProducts = await prisma.product.findMany({
-    where: { isBest: true },
-    take: 8,
-    include: {
-      options: true,
-      category: {
-        include: {
-          parent: true,
-        },
-      },
-    },
-  });
-
+export default async function BestSectionComponent({
+  categories,
+  bestProducts,
+}: Props) {
   return (
     <>
       <ProductSectionComponent
         type={"best"}
         categories={categories}
         title={title}
-        products={initialProducts}
+        products={bestProducts}
       />
     </>
   );
