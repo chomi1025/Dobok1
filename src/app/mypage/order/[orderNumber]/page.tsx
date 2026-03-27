@@ -51,10 +51,10 @@ export default async function OrderDetailPage({ params }: Props) {
 
   if (!order) notFound();
 
-  const userAddress = order.user.address as {
-    postcode: string;
-    address: string;
-    detailAddress: string;
+  const userAddress = (order.user?.address as Address) || {
+    postcode: "",
+    address: "",
+    detailAddress: "",
   };
 
   const formattedOrder: FormattedOrder = {
@@ -69,8 +69,8 @@ export default async function OrderDetailPage({ params }: Props) {
       totalPrice: item.totalPrice,
     })),
     shipping: {
-      name: order.user.name,
-      phone: order.user.phone || "",
+      name: order.user?.name || "비회원",
+      phone: order.user?.phone || "",
       address: userAddress,
     },
   };

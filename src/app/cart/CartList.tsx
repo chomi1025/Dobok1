@@ -29,6 +29,7 @@ interface UnifiedCartItem {
   option?: string;
   color?: string;
   size?: string;
+  isCustomizable: boolean;
 }
 
 interface Props {
@@ -176,22 +177,11 @@ export default function CartListComponent({ user, cart, setCart }: Props) {
       label: "상품명",
       flex: 3.5,
       render: (row) => (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-start",
-            alignItems: "flex-start",
-            gap: "25px",
-            width: "100%",
-          }}
-        >
-          <Image
-            src={row.thumbnail}
-            width={90}
-            height={90}
-            alt="상품 이미지"
-            style={{ backgroundColor: "#D9D9D9" }}
-          />
+        <div className={styles.productNameArea}>
+          <div>
+            <Image src={row.thumbnail} fill alt="상품 이미지" />
+          </div>
+
           <div
             style={{
               display: "flex",
@@ -263,29 +253,36 @@ export default function CartListComponent({ user, cart, setCart }: Props) {
   ];
 
   const tableData: UnifiedCartItem[] = cart.map((item) => {
+    const displayOption =
+      item.optionDisplay ||
+      item.productOption?.name ||
+      (item.color || item.size ? `${item.color} ${item.size}`.trim() : "");
+
+    const baseItem = {
+      productId: item.productId || item.product?.id,
+      productName: item.productName || item.product?.name || "상품 정보 없음",
+      thumbnail:
+        item.thumbnail || item.product?.thumbnail || "/image/default.png",
+      price: item.price || item.product?.price || 0,
+      quantity: item.quantity || 0,
+      option: displayOption,
+      isCustomizable:
+        item.isCustomizable || item.product?.isCustomizable || false,
+    };
+
     if (item.product) {
       return {
+        ...baseItem,
         id: item.id || item.productOptionId || item.productId,
-        productId: item.product.id,
-        productName: item.product.name,
-        thumbnail: item.product.thumbnail || "/image/default.png",
-        price: item.product.price || 0,
-        quantity: item.quantity || 0,
-        option: item.productOption?.name || "",
       };
     }
 
+    // 비회원
     return {
+      ...baseItem,
       id: item.productOptionId || item.productId,
-      productId: item.productId,
-      productName: item.productName || "상품 정보 없음",
-      thumbnail: item.thumbnail || "/image/default.png",
-      price: item.price || 0,
-      quantity: item.quantity || 0,
       color: item.color,
       size: item.size,
-      option:
-        item.color || item.size ? `${item.color} ${item.size}`.trim() : "",
     };
   });
 

@@ -3,6 +3,7 @@ import * as O from "./style";
 export interface Column<T> {
   key: keyof T | string;
   label: React.ReactNode;
+  hideLabel?: boolean;
   width?: string;
   flex?: number;
   align?: "left" | "center" | "right";
@@ -38,17 +39,7 @@ export const Table = <T extends { id?: number }>({
       <O.Body>
         {data.length === 0 ? (
           <O.Row>
-            <O.Info
-              style={{
-                flex: 1,
-                textAlign: "center",
-                color: "#999",
-                padding: "20px 0",
-              }}
-              align="center"
-            >
-              데이터가 없습니다.
-            </O.Info>
+            <O.Info align="center">데이터가 없습니다.</O.Info>
           </O.Row>
         ) : (
           data.map((row, idx) => (
@@ -58,6 +49,7 @@ export const Table = <T extends { id?: number }>({
                   key={String(col.key)}
                   align={col.align}
                   style={{ flex: col.flex }}
+                  data-label={col.hideLabel ? "" : String(col.label)}
                 >
                   {col.render
                     ? col.render(row, idx)

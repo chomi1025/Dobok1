@@ -1,8 +1,6 @@
-import { prisma } from "@/lib/prisma";
-
-import { Category, Title } from "../../../types/types";
-import { Session } from "next-auth";
+import { ProductWithCategory, Title } from "../../../types/types";
 import ProductSectionComponent from "../ProductSection/page";
+import { CategoryBase } from "@/lib/category";
 
 const title: Title = {
   name: "베스트 상품",
@@ -12,21 +10,21 @@ const title: Title = {
 };
 
 interface Props {
-  session: Session | null;
-  categories: Category[];
+  categories: CategoryBase[];
+  bestProducts: ProductWithCategory[];
 }
 
 export default async function BestSectionComponent({
-  session,
   categories,
+  bestProducts,
 }: Props) {
   return (
     <>
       <ProductSectionComponent
-        session={session}
+        type={"best"}
         categories={categories}
         title={title}
-        bestProducts={bestProducts}
+        products={bestProducts}
       />
     </>
   );

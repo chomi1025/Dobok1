@@ -16,12 +16,8 @@ interface ProductPageProps {
 }
 
 export default function ProductPageComponent({
-  session,
   title,
   products,
-  totalItems,
-  currentPage,
-  pageSize,
 }: ProductPageProps) {
   return (
     <section className={styles.inner}>
@@ -32,7 +28,7 @@ export default function ProductPageComponent({
       <hr />
 
       <div>
-        <ProductList session={session} products={products} />
+        <ProductList products={products} />
       </div>
     </section>
   );

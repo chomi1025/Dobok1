@@ -6,9 +6,9 @@ import NewSectionComponent from "@/components/main/NewSection/page";
 import Image from "next/image";
 import InstagramComponent from "@/components/main/Instagram/page";
 import ScrollAnimation from "./../components/common/ScrollAnimation";
-import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
 import { getMainCategories } from "@/lib/category"; // 🚩 아까 썼던 함수!
+import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "도복일번지",
@@ -20,11 +20,13 @@ export const revalidate = 3600;
 export default async function HomePage() {
   const [mainCategories, bestProducts, newProducts] = await Promise.all([
     getMainCategories(),
+
     prisma.product.findMany({
       where: { isBest: true },
       take: 8,
       include: { options: true, category: { include: { parent: true } } },
     }),
+
     prisma.product.findMany({
       where: { isNew: true },
       take: 8,
@@ -54,6 +56,7 @@ export default async function HomePage() {
       <ScrollAnimation>
         <div className={styles.banner}>
           <Image src={"/no.png"} alt={"이벤트 배너"} fill />
+
           <p
             style={{
               position: "relative",
@@ -67,7 +70,7 @@ export default async function HomePage() {
         </div>
       </ScrollAnimation>
 
-      {/* 신제품 - 이제 서버에서 받은 데이터를 바로 넘겨줌 */}
+      {/* 신제품  */}
       <ScrollAnimation>
         <NewSectionComponent
           categories={mainCategories}

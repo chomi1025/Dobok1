@@ -8,7 +8,7 @@ import { CategoryWithChildren } from "./page";
 import ProductList from "@/components/product/ProductList";
 import PagenationComponent from "@/components/pagenation/page";
 import { Session } from "next-auth";
-import { ChevronRight, Home } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 type Props = {
   session: Session | null;
@@ -22,7 +22,6 @@ type Props = {
 };
 
 export default function PageClient({
-  session,
   categories,
   mainSlug,
   subSlug,
@@ -90,11 +89,7 @@ export default function PageClient({
       {/* 상품목록 */}
       <article className={styles.contentSection}>
         <h2 className={styles["sr-only"]}>상품 목록</h2>
-        <ProductList
-          session={session}
-          products={products}
-          className={styles.CustomMinHeight}
-        />
+        <ProductList products={products} className={styles.CustomMinHeight} />
       </article>
 
       {/* 페이지네이션 */}

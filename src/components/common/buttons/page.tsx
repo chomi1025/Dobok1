@@ -13,21 +13,21 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 export default function Button({
   variant = "primary",
   href,
-  onClick,
   children,
   className,
+  ...rest
 }: ButtonProps) {
   const combinedClass = `${styles.btn} ${styles[variant]} ${className || ""}`;
 
   if (href) {
     return (
-      <Link href={href} className={combinedClass}>
+      <Link href={href} className={combinedClass} prefetch={false}>
         {children}
       </Link>
     );
   }
   return (
-    <button onClick={onClick} className={combinedClass}>
+    <button className={combinedClass} {...rest}>
       {children}
     </button>
   );

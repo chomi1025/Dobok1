@@ -55,7 +55,7 @@ export default function CartClientPage({ user, initialItems }: Props) {
   if (loading) return <div className={styles.inner}>로딩중...</div>;
 
   return (
-    <div className={styles.inner}>
+    <main className={styles.inner}>
       <header className={styles.sectionHeader}>
         <h1>장바구니</h1>
 
@@ -67,6 +67,6 @@ export default function CartClientPage({ user, initialItems }: Props) {
       ) : (
         <CartEmptyComponent />
       )}
-    </div>
+    </main>
   );
 }

@@ -2251,6 +2251,27 @@
     "@tiptap/extensions" "^3.20.1"
     "@tiptap/pm" "^3.20.1"
 
+"@tosspayments/payment-sdk@^1.9.2":
+  version "1.9.2"
+  resolved "https://registry.yarnpkg.com/@tosspayments/payment-sdk/-/payment-sdk-1.9.2.tgz#1c9de2dfaae5cf73fe983fce79fb8c86bba1d155"
+  integrity sha512-le0NatZUSH40ZS70l6UFAdapBAoCaibfK+gPI//sfIbGYBh6KWQ58HHif0M1kSkDEbiL6B0yrhkGG3HWd2jkig==
+  dependencies:
+    "@tosspayments/payment__types" "1.69.0"
+
+"@tosspayments/payment__types@1.69.0":
+  version "1.69.0"
+  resolved "https://registry.yarnpkg.com/@tosspayments/payment__types/-/payment__types-1.69.0.tgz#5b0fb993cc04a4844587bfc152970b7c17af8e50"
+  integrity sha512-EbU36vLEWfhRpX/g4V0DyRiUmTkNeeVDYjJamD9aJiLmRbLl9PVdXi5QOQTMYma2RGRgA8drHY4yDMsjvKFwCg==
+  dependencies:
+    "@tosspayments/sdk-constants" "^0.2.2"
+
+"@tosspayments/sdk-constants@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@tosspayments/sdk-constants/-/sdk-constants-0.2.2.tgz#91bd84fc1543eb2382b2a9b40792eed9f9146b1e"
+  integrity sha512-qTIcD9JnVtN65/yiW5sPAlvK5fpQtDluv4IEyslubncbQLQKE+ePSnGZU1fLNPxcchv6QTnwmgj9Ndm6EN/Ymg==
+  dependencies:
+    type-fest "^2.11.2"
+
 "@tsconfig/node10@^1.0.7":
   version "1.0.12"
   resolved "https://registry.yarnpkg.com/@tsconfig/node10/-/node10-1.0.12.tgz#be57ceac1e4692b41be9de6be8c32a106636dba4"
@@ -3558,6 +3579,11 @@ delegates@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/delegates/-/delegates-1.0.0.tgz#84c6e159b81904fdca59a0ef44cd870d31250f9a"
   integrity sha512-bd2L678uiWATM6m5Z1VzNCErI3jiGzt6HGY8OVICs40JQq/HALfbyNJmp0UDakEY4pMMaN0Ly5om/B1VI/+xfQ==
+
+dequal@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/dequal/-/dequal-2.0.3.tgz#2644214f1997d39ed0ee0ece72335490a7ac67be"
+  integrity sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==
 
 destr@^2.0.3:
   version "2.0.5"
@@ -5440,6 +5466,11 @@ nanoid@^3.3.11, nanoid@^3.3.4:
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.11.tgz#4f4f112cefbe303202f2199838128936266d185b"
   integrity sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==
 
+nanoid@^5.1.7:
+  version "5.1.7"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-5.1.7.tgz#a9f09a4ce73ba0b88830af36ee49666bad7827b6"
+  integrity sha512-ua3NDgISf6jdwezAheMOk4mbE1LXjm1DfMUDMuJf4AqxLFK3ccGpgWizwa5YV7Yz9EpXwEaWoRXSb/BnV0t5dQ==
+
 napi-postinstall@^0.3.0:
   version "0.3.4"
   resolved "https://registry.yarnpkg.com/napi-postinstall/-/napi-postinstall-0.3.4.tgz#7af256d6588b5f8e952b9190965d6b019653bbb9"
@@ -7273,6 +7304,14 @@ swiper@^12.1.2:
   resolved "https://registry.yarnpkg.com/swiper/-/swiper-12.1.2.tgz#39eaad0c088def66a7eb8f6bae1439384586ab90"
   integrity sha512-4gILrI3vXZqoZh71I1PALqukCFgk+gpOwe1tOvz5uE9kHtl2gTDzmYflYCwWvR4LOvCrJi6UEEU+gnuW5BtkgQ==
 
+swr@^2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/swr/-/swr-2.4.1.tgz#c9e48abff6bf4b04846342e2f1f6be108a078cf6"
+  integrity sha512-2CC6CiKQtEwaEeNiqWTAw9PGykW8SR5zZX8MZk6TeAvEAnVS7Visz8WzphqgtQ8v2xz/4Q5K+j+SeMaKXeeQIA==
+  dependencies:
+    dequal "^2.0.3"
+    use-sync-external-store "^1.6.0"
+
 synckit@^0.11.8:
   version "0.11.12"
   resolved "https://registry.yarnpkg.com/synckit/-/synckit-0.11.12.tgz#abe74124264fbc00a48011b0d98bdc1cffb64a7b"
@@ -7461,7 +7500,7 @@ type-fest@^0.21.3:
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.21.3.tgz#d260a24b0198436e133fa26a524a6d65fa3b2e37"
   integrity sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==
 
-type-fest@^2.19.0:
+type-fest@^2.11.2, type-fest@^2.19.0:
   version "2.19.0"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-2.19.0.tgz#88068015bb33036a598b952e55e9311a60fd3a9b"
   integrity sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA==
@@ -7546,7 +7585,7 @@ uri-js@^4.2.2:
   dependencies:
     punycode "^2.1.0"
 
-use-sync-external-store@^1.4.0:
+use-sync-external-store@^1.4.0, use-sync-external-store@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.6.0.tgz#b174bfa65cb2b526732d9f2ac0a408027876f32d"
   integrity sha512-Pp6GSwGP/NrPIrxVFAIkOQeyw8lFenOHijQWkUTrDvrF4ALqylP2C/KCkeS9dpUM3KvYRQhna5vt7IL95+ZQ9w==

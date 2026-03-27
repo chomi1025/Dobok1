@@ -1,38 +1,41 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./page.module.scss";
 import ProductList from "@/components/product/ProductList";
-import { Category, ProductWithCategory, Title } from "../../../types/types";
+import { ProductWithCategory, Title } from "../../../types/types";
 import CategoryTabs from "@/components/CategoryTabs/page";
-import { Session } from "next-auth";
 import Button from "@/components/common/buttons/page";
+import { CategoryBase } from "@/lib/category";
+import useSWR from "swr";
 
 interface Props {
-  session: Session | null;
   title: Title;
-  categories: Category[];
+  categories: CategoryBase[];
   products: ProductWithCategory[];
+  type: "best" | "new";
 }
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 export default function ProductSectionComponent({
-  session,
   title,
   categories,
-  products = [],
+  products: initialProducts,
+  type,
 }: Props) {
   const [activeTab, setActiveTab] = useState<number | string>("all");
+
+  const apiUrl = type === "best" ? "/api/products/best" : "/api/products/new";
+
+  const { data: displayProducts, isLoading } = useSWR(
+    activeTab === "all" ? null : `${apiUrl}?categoryId=${activeTab}`,
+    fetcher,
+    { fallbackData: initialProducts },
+  );
 
   const categoryList = Array.isArray(categories)
     ? categories
     : (categories as any).categories || [];
-
-  const filteredProducts = products
-    .filter((p) => {
-      if (activeTab === "all") return true;
-
-      return p.category?.parent?.id === activeTab;
-    })
-    .slice(0, 8);
 
   return (
     <section className={styles.inner}>
@@ -51,10 +54,11 @@ export default function ProductSectionComponent({
 
       {/* 상품리스트 */}
       <div key={activeTab} className={styles.productListWrapper}>
-        {filteredProducts.length > 0 ? (
+        {isLoading ? (
+          <div className={styles.loading}>불러오는 중...</div>
+        ) : displayProducts && displayProducts.length > 0 ? (
           <ProductList
-            session={session}
-            products={filteredProducts}
+            products={displayProducts}
             className={styles.customMinHeight}
           />
         ) : (

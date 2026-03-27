@@ -20,7 +20,8 @@ input,
 textarea,
 select,
 figure,
-button {
+button,
+dl {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -124,4 +125,13 @@ h2 {
 }
 h3 {
   color: #444;
+}
+
+.main {
+  margin: 0 auto;
+  padding: rem(100) rem(20) rem(200);
+
+  @include mobile {
+    padding: rem(150) rem(20) rem(150);
+  }
 }

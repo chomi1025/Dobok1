@@ -60,7 +60,7 @@ export default function AuthIcons({ session }: Props) {
   }
 
   return (
-    <Link href="/login">
+    <Link href="/login" prefetch={false}>
       <Image
         src={login}
         alt="도복일번지 로그인"

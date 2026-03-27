@@ -22,7 +22,6 @@ const Wrapper = styled.nav`
 `;
 
 const Step = styled.li<{ $isCurrent: boolean }>`
-  /* 글자 색상: 현재 페이지면 진하게(#333), 아니면 흐리게(#ccc) */
   color: ${({ $isCurrent }) => ($isCurrent ? "#333" : "#ccc")};
   font-weight: ${({ $isCurrent }) => ($isCurrent ? "700" : "400")};
   display: flex;
@@ -36,9 +35,6 @@ const Step = styled.li<{ $isCurrent: boolean }>`
     width: 24px;
     height: 24px;
     margin: 0 8px;
-
-    /* 화살표 opacity: 현재 이 단계가 '활성' 상태일 때만 진하게, 아니면 흐리게 */
-    /* (장바구니 페이지에선 장바구니 옆 화살표만 진함) */
     opacity: ${({ $isCurrent }) => ($isCurrent ? "1" : "0.3")};
   }
 `;

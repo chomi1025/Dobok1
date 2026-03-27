@@ -177,8 +177,6 @@ export default function SignupStep1() {
           다음 단계로
         </NextButton>
       </form>
-
-      <Script src="https://cdn.iamport.kr/v1/iamport.js" />
     </Inner>
   );
 }
