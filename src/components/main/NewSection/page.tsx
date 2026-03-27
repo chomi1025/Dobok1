@@ -16,11 +16,9 @@ const title = {
 };
 
 export default async function NewSectionComponent({ categories }: Props) {
-  const formattedCategories = categories as CustomCategory[];
-
-  const dbProducts = await prisma.product.findMany({
+  const initialProducts = await prisma.product.findMany({
     where: { isNew: true },
-    take: 40,
+    take: 8,
     include: {
       options: true,
       category: {
@@ -34,9 +32,10 @@ export default async function NewSectionComponent({ categories }: Props) {
   return (
     <>
       <ProductSectionComponent
-        categories={formattedCategories}
+        type={"new"}
+        categories={categories}
         title={title}
-        products={dbProducts}
+        products={initialProducts}
       />
     </>
   );

@@ -11,6 +11,7 @@ export type CategoryBase = {
   slug: string;
   parentId: number | null;
   sortOrder: number | null;
+  img?: string | null;
 };
 
 export type Category = {

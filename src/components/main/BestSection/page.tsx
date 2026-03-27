@@ -15,9 +15,9 @@ interface Props {
 }
 
 export default async function BestSectionComponent({ categories }: Props) {
-  const dbProducts = await prisma.product.findMany({
+  const initialProducts = await prisma.product.findMany({
     where: { isBest: true },
-    take: 40,
+    take: 8,
     include: {
       options: true,
       category: {
@@ -31,9 +31,10 @@ export default async function BestSectionComponent({ categories }: Props) {
   return (
     <>
       <ProductSectionComponent
+        type={"best"}
         categories={categories}
         title={title}
-        products={dbProducts}
+        products={initialProducts}
       />
     </>
   );

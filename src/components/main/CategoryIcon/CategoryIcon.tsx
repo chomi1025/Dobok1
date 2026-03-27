@@ -2,25 +2,13 @@ import { prisma } from "@/lib/prisma";
 import styles from "./CategoryIcon.module.scss";
 import Image from "next/image";
 import Link from "next/link";
+import { CategoryBase } from "@/lib/category";
 
-interface MainCategory {
-  id: number;
-  name: string;
-  slug: string;
-  imageUrl: string | null;
-  parentId?: number | null;
+interface Props {
+  mainCategory: CategoryBase[];
 }
 
-export default async function CategoryIconComponent() {
-  const mainCategory: MainCategory[] = await prisma.category.findMany({
-    where: {
-      parentId: null,
-    },
-    orderBy: {
-      id: "asc",
-    },
-  });
-
+export default async function CategoryIconComponent({ mainCategory }: Props) {
   return (
     <section className={`${styles.inner} ${styles.icon}`}>
       <div className={styles.title}>
@@ -35,7 +23,7 @@ export default async function CategoryIconComponent() {
                 <figure className={styles.circle}>
                   <div className={styles.imageContainer}>
                     <Image
-                      src={cat.imageUrl ?? "/images/no-image.png"}
+                      src={cat.img ?? "/images/no-image.png"}
                       alt={cat.name}
                       fill
                     />

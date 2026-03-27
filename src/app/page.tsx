@@ -26,7 +26,7 @@ export default async function HomePage() {
 
       {/* 카테고리 아이콘 */}
       <ScrollAnimation>
-        <CategoryIconComponent />
+        <CategoryIconComponent mainCategory={MainCategories} />
       </ScrollAnimation>
 
       {/* 구분선 */}
