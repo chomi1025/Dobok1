@@ -85,6 +85,7 @@ export default async function HomePage() {
           <div>
             <Image src={"/no.png"} alt={"이벤트 배너"} fill />
           </div>
+
           <div>
             <Image src={"/no.png"} alt={"이벤트 배너"} fill />
           </div>

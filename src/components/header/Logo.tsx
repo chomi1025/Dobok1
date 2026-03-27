@@ -13,7 +13,7 @@ export default function Logo() {
 
   return (
     <Tag className={styles.logoWrapper}>
-      <Link href="/">
+      <Link href="/" prefetch={false}>
         <Image
           src={logo}
           alt="도복일번지 로고"

@@ -18,7 +18,7 @@ export default async function CategoryIconComponent({ mainCategory }: Props) {
         <ul>
           {mainCategory.map((cat) => (
             <li key={cat.id}>
-              <Link href={`/products/${cat.slug}`}>
+              <Link href={`/products/${cat.slug}`} prefetch={false}>
                 <figure className={styles.circle}>
                   <div className={styles.imageContainer}>
                     <Image
