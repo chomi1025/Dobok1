@@ -1,8 +1,8 @@
-import { getFullCategories } from "@/lib/category";
+import { getFullCategories, getMainCategories } from "@/lib/category";
 import styles from "./Header.module.scss";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/options";
-import HeaderDropdown from "./HeaderDropdouwn";
+import HeaderDropdown from "./HeaderDropdown";
 import cart from "@/assets/Image/header/cil_cart.png";
 import myPage from "@/assets/Image/header/bi_person.png";
 import Link from "next/link";
@@ -10,12 +10,18 @@ import AuthIcons from "./AuthIcons.client";
 import Image from "next/image";
 import GnbClient from "./GnbClient";
 import Logo from "./Logo";
+import { Suspense } from "react";
+import login from "@/assets/Image/header/mage_login.png";
 
 export const revalidate = 3600;
 
-export default async function HeaderServer() {
-  const { grouped } = await getFullCategories();
+async function AuthSection() {
   const session = await getServerSession(authOptions);
+  return <AuthIcons session={session} />;
+}
+
+export default async function HeaderServer() {
+  const grouped = await getMainCategories();
 
   return (
     <header className={styles.headerArea}>
@@ -23,7 +29,7 @@ export default async function HeaderServer() {
         <Logo />
 
         <div className={styles.iconGroup}>
-          <Link href="/mypage/order">
+          <Link href="/mypage/order" prefetch={false}>
             <Image
               className={styles.iconImage}
               src={myPage}
@@ -33,9 +39,26 @@ export default async function HeaderServer() {
             />
           </Link>
 
-          <AuthIcons session={session} />
+          <Suspense
+            fallback={
+              <div
+                style={{
+                  width: "24px",
+                  height: "24px",
+                  opacity: 0.3,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Image src={login} alt="로딩중" width={24} height={24} />
+              </div>
+            }
+          >
+            <AuthSection />
+          </Suspense>
 
-          <Link href="/cart">
+          <Link href="/cart" prefetch={false}>
             <Image
               className={styles.iconImage}
               src={cart}

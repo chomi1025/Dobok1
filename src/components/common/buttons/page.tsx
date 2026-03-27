@@ -21,7 +21,7 @@ export default function Button({
 
   if (href) {
     return (
-      <Link href={href} className={combinedClass}>
+      <Link href={href} className={combinedClass} prefetch={false}>
         {children}
       </Link>
     );

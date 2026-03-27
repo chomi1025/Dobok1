@@ -1,19 +1,9 @@
-import { prisma } from "./prisma";
 import { Prisma } from "@prisma/client";
-console.log("카테고리 파일 로드됨!");
-// 프리즈마에서 사용하는 타입 정의
+import { prisma } from "./prisma";
+
 type CategoryWithChildren = Prisma.CategoryGetPayload<{
   include: { children: true };
 }>;
-
-export type CategoryBase = {
-  id: number;
-  name: string;
-  slug: string;
-  parentId: number | null;
-  sortOrder: number | null;
-  imageUrl?: string | null;
-};
 
 export type Category = {
   id: number;
@@ -24,24 +14,31 @@ export type Category = {
   children?: Category[];
 };
 
-// (1차 카테고리만)
-export const getMainCategories = async (): Promise<CategoryBase[]> => {
-  return await prisma.category.findMany({
-    where: { parentId: null },
-    orderBy: { sortOrder: "asc" },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      imageUrl: true,
-      parentId: true,
-      sortOrder: true,
-    },
-  });
-};
+export async function getMainCategories() {
+  try {
+    const categories = await prisma.category.findMany({
+      where: {
+        parentId: null,
+      },
+      include: {
+        children: {
+          orderBy: {
+            sortOrder: "asc",
+          },
+        },
+      },
+      orderBy: {
+        sortOrder: "asc",
+      },
+    });
+    return categories;
+  } catch (error) {
+    console.error("카테고리 불러오기 에러:", error);
+    return [];
+  }
+}
 
-//  (1차 + 2차)
-export const getFullCategories = async (): Promise<{ grouped: Category[] }> => {
+export const getCategories = async (): Promise<{ grouped: Category[] }> => {
   const main: CategoryWithChildren[] = await prisma.category.findMany({
     where: { parentId: null },
     orderBy: { sortOrder: "asc" },

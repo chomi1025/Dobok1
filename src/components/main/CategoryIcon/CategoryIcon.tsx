@@ -8,8 +8,6 @@ interface Props {
 }
 
 export default async function CategoryIconComponent({ mainCategory }: Props) {
-  console.log(mainCategory);
-
   return (
     <section className={`${styles.inner} ${styles.icon}`}>
       <div className={styles.title}>

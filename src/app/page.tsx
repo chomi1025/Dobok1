@@ -7,7 +7,7 @@ import Image from "next/image";
 import InstagramComponent from "@/components/main/Instagram/page";
 import ScrollAnimation from "./../components/common/ScrollAnimation";
 import { Metadata } from "next";
-import { getMainCategories } from "@/lib/category";
+import { getMainCategories } from "@/lib/category"; // 🚩 아까 썼던 함수!
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
@@ -20,11 +20,13 @@ export const revalidate = 3600;
 export default async function HomePage() {
   const [mainCategories, bestProducts, newProducts] = await Promise.all([
     getMainCategories(),
+
     prisma.product.findMany({
       where: { isBest: true },
       take: 8,
       include: { options: true, category: { include: { parent: true } } },
     }),
+
     prisma.product.findMany({
       where: { isNew: true },
       take: 8,
@@ -34,15 +36,12 @@ export default async function HomePage() {
 
   return (
     <main className={styles.main}>
-      {/* 캐러샐 슬라이드 */}
       <Carousel />
 
-      {/* 카테고리 아이콘 */}
       <ScrollAnimation>
         <CategoryIconComponent mainCategory={mainCategories} />
       </ScrollAnimation>
 
-      {/* 구분선 */}
       <hr className={styles.line} />
 
       {/* 베스트상품 */}
@@ -57,6 +56,7 @@ export default async function HomePage() {
       <ScrollAnimation>
         <div className={styles.banner}>
           <Image src={"/no.png"} alt={"이벤트 배너"} fill />
+
           <p
             style={{
               position: "relative",
@@ -70,7 +70,7 @@ export default async function HomePage() {
         </div>
       </ScrollAnimation>
 
-      {/* 신제품 */}
+      {/* 신제품  */}
       <ScrollAnimation>
         <NewSectionComponent
           categories={mainCategories}
@@ -78,10 +78,8 @@ export default async function HomePage() {
         />
       </ScrollAnimation>
 
-      {/* 구분선 */}
       <hr className={styles.line} />
 
-      {/* 배너 2단 */}
       <ScrollAnimation>
         <section className={styles.banner2}>
           <div>
@@ -95,7 +93,6 @@ export default async function HomePage() {
 
       <hr className={styles.line} />
 
-      {/* 인스타그램 */}
       <ScrollAnimation>
         <InstagramComponent />
       </ScrollAnimation>
