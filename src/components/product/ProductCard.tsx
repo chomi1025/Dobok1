@@ -8,6 +8,7 @@ import { useState } from "react";
 import QuickAddModal from "../cart/QuickAddModal";
 import { ProductWithCategory } from "@/types/types";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 
 interface ProductCardProps {
   product: ProductWithCategory;
@@ -58,7 +59,13 @@ export default function ProductCard({ product }: ProductCardProps) {
         prefetch={false}
       >
         <figure className={styles.imageWrapper}>
-          <img src={product.thumbnail || "/no-image.png"} alt={product.name} />
+          <Image
+            src={product.thumbnail || "/no-image.png"}
+            className={styles.thumbnail}
+            alt={product.name}
+            sizes="(max-width: 768px) 50vw, 25vw"
+            fill
+          />
 
           <div className={styles.cartIcon} onClick={handleAddToCart}>
             <ShoppingBasket size={20} color="#333" strokeWidth={1.5} />
