@@ -1,8 +1,9 @@
 @import "../../style/variables.module";
 
 .container {
+  min-height: rem(500);
   width: 100%;
-  padding: 60px 0;
+  padding: rem(60) 0;
   overflow: hidden;
 
   :global {
@@ -11,6 +12,16 @@
       width: 100%;
       height: 100%;
     }
+
+    .mySwiper {
+      &:not(:global(.swiper-initialized)) {
+        display: flex;
+        > div:not(:first-child) {
+          display: none;
+        }
+      }
+    }
+
     .swiper-wrapper {
       overflow: visible !important;
     }
@@ -73,7 +84,7 @@
 
 .slideItem {
   width: 100%;
-  height: 500px;
+  height: rem(500);
   background-size: cover;
   background-position: center;
   position: relative;

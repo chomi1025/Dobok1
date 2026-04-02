@@ -5,13 +5,14 @@ type CategoryWithChildren = Prisma.CategoryGetPayload<{
   include: { children: true };
 }>;
 
+export type childrenType = {};
 export type Category = {
   id: number;
   name: string;
   slug: string;
   parentId: number | null;
   sortOrder: number | null;
-  children?: Category[];
+  children?: childrenType;
 };
 
 export async function getMainCategories() {

@@ -8,9 +8,11 @@ import { Session } from "next-auth";
 import toast from "react-hot-toast";
 import { useState } from "react";
 
-export default function AuthIcons() {
-  const { data: session, status } = useSession();
+interface Props {
+  session: Session | null;
+}
 
+export default function AuthIcons({ session }: Props) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const onClickSignout = async () => {
@@ -39,14 +41,6 @@ export default function AuthIcons() {
       setIsLoggingOut(false);
     }
   };
-
-  if (status === "loading") {
-    return (
-      <div style={{ width: 24, height: 24, opacity: 0.3 }}>
-        <Image src={login} alt="확인 중" width={24} height={24} priority />
-      </div>
-    );
-  }
 
   // 로그인
   if (session) {

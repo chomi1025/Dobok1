@@ -3,22 +3,16 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
-interface CartReqItem {
-  productId: number | string;
-  productOptionId: number | string;
-  quantity: number | string;
-}
-
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user?.email) {
+    if (!session?.user?.username) {
       return NextResponse.json([], { status: 200 });
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { username: session.user.username },
     });
 
     if (!user) {
@@ -57,7 +51,7 @@ export async function GET() {
     const formattedItems = cartItems.map((item: any) => ({
       cartItemId: item.id,
       productId: item.productId,
-      productName: item?.product?.name || "상품명 없음",
+      productName: item?.product?.name,
       thumbnail: item?.product?.thumbnail,
       isCustomizable: item?.product?.isCustomizable || false,
       optionId: item.productOptionId,
@@ -68,7 +62,7 @@ export async function GET() {
       price: item.option?.price || 0,
       quantity: item.quantity,
     }));
-
+    console.log(formattedItems);
     return NextResponse.json(formattedItems, { status: 200 });
   } catch (error) {
     console.error("장바구니 조회 에러:", error);
@@ -81,22 +75,38 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  if (!session)
+  if (!session?.user?.username) {
     return NextResponse.json(
       { message: "로그인이 필요합니다." },
       { status: 401 },
     );
-
-  const userId = Number(session.user.id);
-  const { items } = await req.json();
+  }
 
   try {
+    const user = await prisma.user.findUnique({
+      where: { username: session.user.username },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { message: "유저를 찾을 수 없습니다." },
+        { status: 404 },
+      );
+    }
+
+    const userId = user.id;
+    const { items } = await req.json();
+
     for (const item of items) {
       const pId = Number(item.productId);
       const oId = Number(item.productOptionId);
       const qty = Number(item.quantity);
 
-      if (!oId) throw new Error("유효하지 않은 옵션 ID입니다.");
+      const option = await prisma.productOption.findUnique({
+        where: { id: oId },
+      });
+
+      if (!option) continue;
 
       await prisma.cartItem.upsert({
         where: {
@@ -116,8 +126,9 @@ export async function POST(req: Request) {
         },
       });
     }
-    return NextResponse.json({ message: "장바구니 담기 성공!" });
+    return NextResponse.json({ message: "장바구니 담기 성공" });
   } catch (error) {
+    console.error("POST 에러 상세 정보:", error);
     return NextResponse.json({ message: "서버 에러 발생" }, { status: 500 });
   }
 }

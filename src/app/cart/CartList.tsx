@@ -6,7 +6,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { customConfirm } from "@/lib/swal";
-import Swal from "sweetalert2";
 import Button from "@/components/common/buttons/page";
 
 interface Column<T> {
@@ -312,8 +311,7 @@ export default function CartListComponent({ user, cart, setCart }: Props) {
       }
 
       if (user) {
-        const ids = selectedItems.map((item) => item.id).join(",");
-        router.push(`/checkout?ids=${ids}`);
+        router.push(`/checkout`);
       } else {
         localStorage.setItem("checkoutItems", JSON.stringify(selectedItems));
         router.push("/checkout");

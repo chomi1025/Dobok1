@@ -4,22 +4,7 @@ import CartEmptyComponent from "./CartEmpty";
 import CartListComponent from "./CartList";
 import styles from "./page.module.scss";
 import BreadCrumb from "@/components/breadcrumb";
-import { Session } from "next-auth";
-
-interface CartItem {
-  id: number;
-  quantity: number;
-  product: {
-    id: number;
-    name: string;
-    price: number;
-  };
-}
-
-interface Props {
-  user: Session["user"] | null;
-  initialItems: CartItem[];
-}
+import { useSession } from "next-auth/react";
 
 const STEPS = [
   { label: "장바구니", step: 0, path: "/cart" },
@@ -27,32 +12,51 @@ const STEPS = [
   { label: "주문완료", step: 2, path: "/order/success" },
 ];
 
-export default function CartClientPage({ user, initialItems }: Props) {
-  const [cart, setCart] = useState<any[]>(initialItems || []);
+export default function CartClientPage() {
+  const { data: session } = useSession();
+  const [cart, setCart] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  console.log(session);
 
   useEffect(() => {
-    //   회원이면
-    if (user) {
-      setLoading(false);
-      return;
-    }
+    const loadCart = async () => {
+      setLoading(true);
 
-    // 비회원이면
-    try {
-      const guestCart = localStorage.getItem("cart");
+      try {
+        if (session?.user?.username) {
+          // 회원
+          const res = await fetch(`/api/cart`);
 
-      if (guestCart) {
-        setCart(JSON.parse(guestCart));
+          if (res.ok) {
+            const data = await res.json();
+            setCart(data || []);
+          }
+        } else {
+          // 비회원
+          const guestCart = localStorage.getItem("cart");
+          if (guestCart) setCart(JSON.parse(guestCart));
+        }
+      } catch (err) {
+        console.error("장바구니 로딩 실패", err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("비회원 장바구니 로딩 실패", err);
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
+    };
 
-  if (loading) return <div className={styles.inner}>로딩중...</div>;
+    loadCart();
+  }, [session]);
+
+  let cartContent;
+
+  if (loading) {
+    cartContent = <div className={styles.cartListLoading}>로딩중...</div>;
+  } else if (cart.length > 0) {
+    cartContent = (
+      <CartListComponent user={session?.user} cart={cart} setCart={setCart} />
+    );
+  } else {
+    cartContent = <CartEmptyComponent />;
+  }
 
   return (
     <main className={styles.inner}>
@@ -62,11 +66,7 @@ export default function CartClientPage({ user, initialItems }: Props) {
         <BreadCrumb steps={STEPS} />
       </header>
 
-      {cart.length > 0 ? (
-        <CartListComponent user={user} cart={cart} setCart={setCart} />
-      ) : (
-        <CartEmptyComponent />
-      )}
+      <div className={styles.cartListArea}>{cartContent}</div>
     </main>
   );
 }

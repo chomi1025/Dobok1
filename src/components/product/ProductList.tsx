@@ -12,7 +12,7 @@ export default function ProductList({ products, className }: ProductListProps) {
     <>
       <ul className={`${styles.productList} ${className || ""}`}>
         {products.map((prd) => (
-          <ProductCard product={prd} />
+          <ProductCard key={prd.id} product={prd} />
         ))}
       </ul>
     </>

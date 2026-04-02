@@ -12,7 +12,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import DaumPostcodeEmbed from "react-daum-postcode";
 import toast from "react-hot-toast";
 import { loadTossPayments } from "@tosspayments/payment-sdk";
-import { nanoid } from "nanoid";
 
 declare global {
   interface Window {
@@ -232,24 +231,22 @@ export default function GuestCheckoutPage() {
 
       setCartItems(
         filteredItems.map((item: any) => {
-          // 1. productId: item.productId에 20이 들어있으므로 이를 우선 사용
           const pId = item.productId || item.id;
 
-          // 2. unitPrice: item.price에 30000이 들어있음
           const uPrice = item.price || item.unitPrice || 0;
 
           return {
             id: pId,
             orderId: 0,
-            productId: Number(pId), // 확실하게 숫자로 변환
+            productId: Number(pId),
             productName: item.productName || "상품명 없음",
-            ProductImage: item.thumbnail || "/img/default.png", // thumbnail 필드 사용
-            optionText: item.optionDisplay || "", // optionDisplay 필드 사용
+            ProductImage: item.thumbnail || "/img/default.png",
+            optionText: item.optionDisplay || "",
             unitPrice: Number(uPrice),
             quantity: item.quantity,
             totalPrice: Number(uPrice) * item.quantity,
             isCustomizable: !!item.isCustomizable,
-            productOptionId: item.productOptionId, // 나중에 재고 관리할 때 필요할 수 있으니 유지
+            productOptionId: item.productOptionId,
           };
         }),
       );
@@ -318,7 +315,6 @@ export default function GuestCheckoutPage() {
 
   const onSubmit = async (data: GuestOrderFormData) => {
     try {
-      // 1. 서버에 주문 데이터 생성 (기존 로직)
       const createOrderRes = await fetch("/api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -332,7 +328,7 @@ export default function GuestCheckoutPage() {
       if (!createOrderRes.ok) throw new Error("주문 생성 실패");
       const { orderNumber } = await createOrderRes.json();
 
-      // 2. 토스페이먼츠 초기화
+      // 토스페이먼츠
       const clientKey = "test_ck_5OWRapdA8db6wDXjmM7bVo1zEqZK";
       const tossPayments = await loadTossPayments(clientKey);
 
@@ -349,17 +345,13 @@ export default function GuestCheckoutPage() {
         failUrl: `${window.location.origin}/order/fail`,
       };
 
-      // ⚡️ V1 SDK Overload 에러 해결을 위한 한글 메서드 방식
       if (data.paymentMethod === "kakaoPay") {
-        // "카드" 대신 "카카오페이"를 직접 전달
         await tossPayments.requestPayment("카카오페이" as any, paymentConfig);
       } else if (data.paymentMethod === "naverPay") {
-        // "카드" 대신 "네이버페이"를 직접 전달
         await tossPayments.requestPayment("네이버페이" as any, paymentConfig);
       } else if (data.paymentMethod === "bank") {
         await tossPayments.requestPayment("계좌이체", paymentConfig);
       } else {
-        // 일반 신용카드
         await tossPayments.requestPayment("카드", paymentConfig);
       }
     } catch (error) {
