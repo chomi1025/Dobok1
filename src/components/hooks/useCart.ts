@@ -2,6 +2,7 @@ export const addToCart = async (itemOrItems: any, user: any) => {
   const items = Array.isArray(itemOrItems) ? itemOrItems : [itemOrItems];
 
   try {
+    //회원이면
     if (user) {
       const res = await fetch("/api/cart", {
         method: "POST",
@@ -14,6 +15,7 @@ export const addToCart = async (itemOrItems: any, user: any) => {
           })),
         }),
       });
+
       return res.ok;
     } else {
       //  비회원

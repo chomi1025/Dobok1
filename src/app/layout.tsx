@@ -1,4 +1,4 @@
-import "@/styles/globals.css";
+import "@/styles/globals.scss";
 import { ReactNode } from "react";
 import HeaderServer from "@/components/header/Header.server";
 import AuthProvider from "@/components/providers/AuthProvider";
@@ -9,14 +9,22 @@ import MobileNavPage from "@/components/mobileNav/page";
 import { Toaster } from "react-hot-toast";
 
 import Script from "next/script";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/options";
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="ko" className={pretendard.className}>
       <body>
         <EmotionRegistry>
-          <AuthProvider>
-            <HeaderServer />
+          <AuthProvider session={session}>
+            <HeaderServer session={session} />
 
             <main className="main">{children}</main>
 

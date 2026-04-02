@@ -32,7 +32,7 @@ export default function PageClient({
 
   const currentMain = categories?.find((m) => m.slug === mainSlug);
 
-  const tabCategories = currentMain?.children || [];
+  const tabCategories = (currentMain?.children || []) as Category[];
 
   const currentSub = tabCategories?.find((s) => s.slug === subSlug);
   const activeTabId = currentSub ? currentSub.id : "all";

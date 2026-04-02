@@ -2,7 +2,7 @@ import PageClient from "./page.client";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
-import { getFullCategories } from "@/lib/category";
+import { getCategories } from "@/lib/category";
 
 export type CategoryWithChildren = Prisma.CategoryGetPayload<{
   include: { children: true };
@@ -70,8 +70,8 @@ export default async function Page({ params, searchParams }: PageProps) {
         category: { parent: { slug: mainSlug } },
       };
 
-  const [categoriesData, products, totalProducts] = await Promise.all([
-    getFullCategories(),
+  const [categories, products, totalProducts] = await Promise.all([
+    getCategories(),
     prisma.product.findMany({
       where: productWhere,
       include: {
@@ -87,7 +87,7 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   return (
     <PageClient
-      categories={categoriesData.grouped}
+      categories={categories.grouped}
       products={products as any}
       mainSlug={mainSlug}
       subSlug={subSlugFromUrl || "all"}

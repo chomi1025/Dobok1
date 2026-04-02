@@ -8,28 +8,28 @@ import "swiper/css/navigation";
 import styles from "./Carousel.module.scss";
 import Image from "next/image";
 
-export default function Carousel() {
-  const originalBanners = [
-    {
-      id: 1,
-      title: "PREMIUM DOBOK",
-      desc: "최고의 퍼포먼스를 위한 선택",
-      img: "https://images.unsplash.com/photo-1555597673-b21d5c935865?q=80&w=1000&auto=format",
-    },
-    {
-      id: 2,
-      title: "NEW ARRIVALS",
-      desc: "2026 S/S 신상 라인업 공개",
-      img: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format",
-    },
-    {
-      id: 3,
-      title: "SEASON OFF",
-      desc: "한정 수량 최대 40% 세일",
-      img: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1000&auto=format",
-    },
-  ];
+const originalBanners = [
+  {
+    id: 1,
+    title: "PREMIUM DOBOK",
+    desc: "최고의 퍼포먼스를 위한 선택",
+    img: "https://images.unsplash.com/photo-1555597673-b21d5c935865?q=80&w=1000&auto=format",
+  },
+  {
+    id: 2,
+    title: "NEW ARRIVALS",
+    desc: "2026 S/S 신상 라인업 공개",
+    img: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format",
+  },
+  {
+    id: 3,
+    title: "SEASON OFF",
+    desc: "한정 수량 최대 40% 세일",
+    img: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1000&auto=format",
+  },
+];
 
+export default function Carousel() {
   const totalCount = originalBanners.length;
 
   const banners = [
@@ -47,12 +47,10 @@ export default function Carousel() {
         slidesPerView={1.5}
         spaceBetween={20}
         breakpoints={{
-          // 320px 이상 (모바일)
           320: {
             slidesPerView: 1,
-            spaceBetween: 0, // 모바일은 꽉 채우니까 간격 0
+            spaceBetween: 0,
           },
-          // 768px 이상 (태블릿/PC)
           768: {
             slidesPerView: 1.5,
             spaceBetween: 20,

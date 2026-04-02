@@ -8,10 +8,15 @@ import AuthIcons from "./AuthIcons.client";
 import Image from "next/image";
 import GnbClient from "./GnbClient";
 import Logo from "./Logo";
+import { Session } from "next-auth";
+
+interface Props {
+  session: Session | null;
+}
 
 export const revalidate = 3600;
 
-export default async function HeaderServer() {
+export default async function HeaderServer({ session }: Props) {
   const grouped = await getMainCategories();
 
   return (
@@ -30,7 +35,7 @@ export default async function HeaderServer() {
             />
           </Link>
 
-          <AuthIcons />
+          <AuthIcons session={session} />
 
           <Link href="/cart" prefetch={false}>
             <Image

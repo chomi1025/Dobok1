@@ -89,14 +89,26 @@ export default function QuickAddModal({ product, user, onClose }: Props) {
       return toast.error("옵션을 먼저 선택해주세요.");
 
     try {
-      const promises = selectedItems.map((item) => addToCart(item, user));
-      const results = await Promise.all(promises);
+      if (user) {
+        // 회원
+        const res = await addToCart(selectedItems, user);
 
-      if (results.every((res) => res)) {
-        toast.success("담기 성공!");
-        onClose();
+        if (res) {
+          toast.success("담기 성공!");
+          onClose();
+        } else {
+          toast.error("장바구니 담기에 실패했습니다.");
+        }
       } else {
-        toast.error("일부 상품 담기에 실패했습니다.");
+        // 비회원
+        const promises = selectedItems.map((item) => addToCart(item, user));
+        const results = await Promise.all(promises);
+        if (results.every((res) => res)) {
+          toast.success("담기 성공!");
+          onClose();
+        } else {
+          toast.error("일부 상품 담기에 실패했습니다.");
+        }
       }
     } catch (err) {
       console.error(err);

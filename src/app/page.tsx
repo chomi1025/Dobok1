@@ -7,7 +7,7 @@ import Image from "next/image";
 import InstagramComponent from "@/components/main/Instagram/page";
 import ScrollAnimation from "./../components/common/ScrollAnimation";
 import { Metadata } from "next";
-import { getMainCategories } from "@/lib/category"; // 🚩 아까 썼던 함수!
+import { getMainCategories } from "@/lib/category";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
