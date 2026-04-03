@@ -38,7 +38,6 @@ export default function ProductCard({ product }: ProductCardProps) {
       productName: product.name,
       thumbnail: product.thumbnail,
       price: targetOption.price,
-      isCustomizable: product.isCustomizable,
       quantity: 1,
     };
 

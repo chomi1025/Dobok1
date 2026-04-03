@@ -2,13 +2,12 @@ import styles from "./page.module.scss";
 import CategoryIconComponent from "@/components/main/CategoryIcon/CategoryIcon";
 import Carousel from "../components/main/Carousel/Carousel";
 import BestSectionComponent from "@/components/main/BestSection/page";
-import NewSectionComponent from "@/components/main/NewSection/page";
 import Image from "next/image";
-import InstagramComponent from "@/components/main/Instagram/page";
 import ScrollAnimation from "./../components/common/ScrollAnimation";
 import { Metadata } from "next";
 import { getMainCategories } from "@/lib/category";
 import { prisma } from "@/lib/prisma";
+import dynamic from "next/dynamic";
 
 export const metadata: Metadata = {
   title: "도복일번지",
@@ -17,6 +16,15 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600;
 
+const InstagramComponent = dynamic(
+  () => import("@/components/main/Instagram/page"),
+  { ssr: false },
+);
+const NewSectionComponent = dynamic(
+  () => import("@/components/main/NewSection/page"),
+  { ssr: false },
+);
+
 export default async function HomePage() {
   const [mainCategories, bestProducts, newProducts] = await Promise.all([
     getMainCategories(),
@@ -24,18 +32,39 @@ export default async function HomePage() {
     prisma.product.findMany({
       where: { isBest: true },
       take: 8,
-      include: { options: true, category: { include: { parent: true } } },
+      select: {
+        id: true,
+        name: true,
+        thumbnail: true,
+        options: {
+          select: {
+            id: true,
+            price: true,
+          },
+        },
+      },
     }),
 
     prisma.product.findMany({
       where: { isNew: true },
       take: 8,
-      include: { options: true, category: { include: { parent: true } } },
+      select: {
+        id: true,
+        name: true,
+        thumbnail: true,
+        options: {
+          select: {
+            id: true,
+            price: true,
+          },
+        },
+      },
     }),
   ]);
+  console.log(bestProducts);
 
   return (
-    <main className={styles.main}>
+    <div className={styles.main}>
       <Carousel />
 
       <ScrollAnimation>
@@ -97,6 +126,6 @@ export default async function HomePage() {
       <ScrollAnimation>
         <InstagramComponent />
       </ScrollAnimation>
-    </main>
+    </div>
   );
 }

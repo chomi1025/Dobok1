@@ -1,82 +1,168 @@
 @import "../../style/variables.module";
 
 .container {
-  min-height: rem(500);
-  width: 100%;
+  position: relative;
   padding: rem(60) 0;
   overflow: hidden;
+  min-height: rem(500);
 
-  :global {
-    .swiper {
-      overflow: visible !important;
-      width: 100%;
-      height: 100%;
+  .navBtn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+    width: rem(50);
+    height: rem(50);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+    pointer-events: auto;
+
+    &::after {
+      font-family: serif !important;
+      font-size: rem(80);
     }
+  }
 
-    .mySwiper {
-      &:not(:global(.swiper-initialized)) {
-        display: flex;
-        > div:not(:first-child) {
-          display: none;
+  .prevBtn {
+    left: rem(20);
+    &::after {
+      content: "‹" !important;
+    }
+  }
+
+  .nextBtn {
+    right: rem(20);
+    &::after {
+      content: "›" !important;
+    }
+  }
+
+  &.notReady {
+    :global {
+      .swiper-wrapper {
+        display: flex !important;
+        justify-content: flex-start !important;
+        width: 100% !important;
+        gap: rem(20) !important;
+        transform: translateX(-54.4%) !important;
+      }
+
+      .navBtn {
+        display: flex !important;
+        opacity: 1 !important;
+      }
+
+      .swiper-slide {
+        flex: 0 0 70% !important;
+        position: relative;
+        transition: none !important;
+        border-radius: rem(12) !important;
+        overflow: hidden !important;
+
+        img {
+          object-fit: cover !important;
+        }
+        // 메인
+        &:nth-child(1) {
+          opacity: 1 !important;
+          transform: scale(1) !important;
+          z-index: 10;
+          order: 2;
+        }
+
+        &:nth-child(2) {
+          display: block !important;
+          order: 3;
+        }
+
+        &:nth-child(3) {
+          display: block !important;
+          order: 1;
+        }
+
+        &:nth-child(n + 4) {
+          display: none !important;
         }
       }
     }
+  }
 
-    .swiper-wrapper {
-      overflow: visible !important;
+  :global {
+    .swiper-button-next,
+    .swiper-button-prev {
+      display: none !important;
     }
 
     .swiper-slide {
-      width: 70%;
-      opacity: 0.4;
-      transform: scale(0.85);
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      border-radius: rem(24);
-      overflow: hidden;
-
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      @include mobile {
-        border-radius: 0 !important;
-      }
+      opacity: 0.4 !important;
+      transform: scale(0.85) !important;
+      transition: all 0.5s ease !important;
+      border-radius: rem(20) !important;
+      overflow: hidden !important;
 
       &.swiper-slide-active {
-        opacity: 1;
-        transform: scale(1);
+        opacity: 1 !important;
+        transform: scale(1) !important;
+      }
+    }
+
+    .mySwiper.swiper:not(.swiper-initialized) {
+      height: rem(500);
+      position: relative;
+      display: block;
+
+      .swiper-wrapper {
+        display: block !important;
+        width: 100% !important;
+        height: 100% !important;
       }
 
-      &[class*="swiper-slide-active"],
-      &[class*="swiper-slide-duplicate-active"] {
-        opacity: 1;
-        transform: scale(1);
-        z-index: 10;
+      .swiper-slide {
+        position: relative !important;
+        top: 0 !important;
+        left: 50% !important;
+        flex: 0 0 70% !important;
+        width: 70% !important;
+        min-width: 70% !important;
+        max-width: 70% !important;
+        height: 100% !important;
+        border-radius: rem(12) !important;
+        transform: translateX(-50%) scale(0.85) !important;
+        opacity: 0.4 !important;
+        transition: none !important;
+        overflow: hidden !important;
 
-        @include mobile {
-          border-radius: 0 !important;
+        img {
+          border-radius: inherit !important;
+          object-fit: cover !important;
         }
-      }
-    }
 
-    .swiper-pagination {
-      .swiper-pagination-bullet:nth-child(n + 4) {
-        display: none !important;
-      }
-    }
+        //메인
+        &:nth-child(1) {
+          transform: scale(1) !important;
+          opacity: 1 !important;
+          z-index: 10;
+        }
 
-    .swiper-pagination-bullet-active {
-      background: #000 !important;
-      width: rem(20);
-      border-radius: rem(10);
-    }
+        &:nth-child(2) {
+          transform: translateX(25%) scale(0.85) !important;
+          z-index: 5;
+          display: block !important;
+        }
 
-    .swiper-button-next,
-    .swiper-button-prev {
-      color: #fff;
-      text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-      &::after {
-        font-size: 24px;
+        &:nth-child(3) {
+          transform: translateX(-125%) scale(0.85) !important;
+          z-index: 5;
+          display: block !important;
+        }
+
+        &:nth-child(n + 4) {
+          display: none !important;
+        }
       }
     }
   }
@@ -85,17 +171,13 @@
 .slideItem {
   width: 100%;
   height: rem(500);
-  background-size: cover;
-  background-position: center;
   position: relative;
   display: flex;
   align-items: flex-end;
   padding: 40px;
-
-  @media (min-width: 768px) {
-    height: 500px;
-  }
-
+  position: relative;
+  border-radius: rem(20);
+  overflow: hidden;
   img {
     object-fit: cover;
   }
@@ -111,7 +193,6 @@
   position: relative;
   z-index: 10;
   color: white;
-
   h2 {
     font-size: rem(40);
     font-weight: 800;
