@@ -109,7 +109,7 @@
   - NextAuth 기반 세션 인증 처리
   - useSession을 활용한 CSR 상태 분기
   - 로그인 여부에 따른 UI 및 기능 처리
-  - 👉 [구현 상세 보기](링크)
+  - 👉 [구현 상세 보기](https://github.com/chomi1025/Dobok1/wiki/%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EA%B8%B0%EB%8A%A5)
 
 <table align="center" style="margin: auto; width: 100%;">
   <tr>
