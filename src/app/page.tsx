@@ -61,7 +61,6 @@ export default async function HomePage() {
       },
     }),
   ]);
-  console.log(bestProducts);
 
   return (
     <div className={styles.main}>
