@@ -7,24 +7,19 @@ import EmotionRegistry from "@/lib/emotion-registry";
 import Footer from "@/components/footer/page";
 import MobileNavPage from "@/components/mobileNav/page";
 import { Toaster } from "react-hot-toast";
-
 import Script from "next/script";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/options";
 
 export default async function RootLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
-
   return (
     <html lang="ko" className={pretendard.className}>
       <body>
         <EmotionRegistry>
-          <AuthProvider session={session}>
-            <HeaderServer session={session} />
+          <AuthProvider>
+            <HeaderServer />
 
             <main className="main">{children}</main>
 

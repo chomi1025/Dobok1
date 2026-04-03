@@ -4,15 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import login from "@/assets/Image/header/mage_login.png";
 import logout from "@/assets/Image/header/mage_logout.png";
-import { Session } from "next-auth";
+
 import toast from "react-hot-toast";
 import { useState } from "react";
 
-interface Props {
-  session: Session | null;
-}
-
-export default function AuthIcons({ session }: Props) {
+export default function AuthIcons() {
+  const { data: session, status } = useSession();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const onClickSignout = async () => {
@@ -41,6 +38,22 @@ export default function AuthIcons({ session }: Props) {
       setIsLoggingOut(false);
     }
   };
+
+  //로딩중
+  if (status === "loading") {
+    return (
+      <div style={{ cursor: "default", pointerEvents: "none" }}>
+        <Image
+          src={login}
+          alt="로딩 중"
+          width={24}
+          height={24}
+          style={{ opacity: 0.5 }}
+          priority
+        />
+      </div>
+    );
+  }
 
   // 로그인
   if (session) {

@@ -7,6 +7,7 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import styles from "./Carousel.module.scss";
 import Image from "next/image";
+import { useState } from "react";
 
 const originalBanners = [
   {
@@ -30,42 +31,38 @@ const originalBanners = [
 ];
 
 export default function Carousel() {
+  const [isReady, setIsReady] = useState(false);
   const totalCount = originalBanners.length;
-
   const banners = [
     ...originalBanners,
-    ...originalBanners.map((b) => ({ ...b, id: b.id + totalCount })),
+    ...originalBanners.map((b) => ({ ...b, id: `copy-${b.id}` })),
   ];
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${!isReady ? styles.notReady : ""}`}>
+      <div className={`${styles.navBtn} ${styles.prevBtn}`}></div>
+      <div className={`${styles.navBtn} ${styles.nextBtn}`}></div>
+
       <Swiper
+        onSwiper={() => setIsReady(true)}
         modules={[Autoplay, Pagination, Navigation]}
         centeredSlides={true}
         loop={true}
-        initialSlide={0}
+        initialSlide={1}
         slidesPerView={1.5}
         spaceBetween={20}
         breakpoints={{
-          320: {
-            slidesPerView: 1,
-            spaceBetween: 0,
-          },
-          768: {
-            slidesPerView: 1.5,
-            spaceBetween: 20,
-          },
+          320: { slidesPerView: 1, spaceBetween: 0 },
+          768: { slidesPerView: 1.5, spaceBetween: 20 },
         }}
         autoplay={{ delay: 4000, disableOnInteraction: false }}
         onSlideChange={(swiper) => {
           const realIndex = swiper.realIndex;
           const bullets = swiper.pagination.bullets;
-
           if (bullets && bullets.length > 0) {
             bullets.forEach((b) =>
               b.classList.remove("swiper-pagination-bullet-active"),
             );
-
             const targetIndex = realIndex % totalCount;
             if (bullets[targetIndex]) {
               bullets[targetIndex].classList.add(
@@ -77,34 +74,42 @@ export default function Carousel() {
         pagination={{
           clickable: true,
           renderBullet: (index, className) => {
-            if (index < 3) {
-              return `<span class="${className}"></span>`;
-            }
-            return "";
+            return index < 3 ? `<span class="${className}"></span>` : "";
           },
         }}
-        navigation={true}
+        navigation={{
+          nextEl: `.${styles.nextBtn}`,
+          prevEl: `.${styles.prevBtn}`,
+        }}
+        speed={isReady ? 500 : 0}
+        observer={true}
+        observeParents={true}
         className={styles.mySwiper}
       >
-        {banners.map((banner) => (
-          <SwiperSlide key={banner.id}>
-            <div className={styles.slideItem}>
-              <Image
-                src={banner.img}
-                alt={banner.title}
-                fill
-                priority={banner.id === 1 || banner.id === 4}
-                className={styles.bgImage}
-                sizes="(max-width: 768px) 100vw, 80vw"
-              />
-              <div className={styles.overlay} />
-              <div className={styles.textGroup}>
-                <h2>{banner.title}</h2>
-                <p>{banner.desc}</p>
+        {banners.map((banner, index) => {
+          const isPriority = true;
+
+          return (
+            <SwiperSlide key={`${banner.id}-${index}`}>
+              <div className={styles.slideItem}>
+                <Image
+                  src={banner.img}
+                  alt={banner.title}
+                  fill
+                  priority={isPriority}
+                  style={{ objectFit: "cover" }}
+                  className={styles.bgImage}
+                  sizes="(max-width: 768px) 100vw, 80vw"
+                />
+                <div className={styles.overlay} />
+                <div className={styles.textGroup}>
+                  <h2>{banner.title}</h2>
+                  <p>{banner.desc}</p>
+                </div>
               </div>
-            </div>
-          </SwiperSlide>
-        ))}
+            </SwiperSlide>
+          );
+        })}
       </Swiper>
     </div>
   );
