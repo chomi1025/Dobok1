@@ -1,16 +1,16 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "./page.module.scss";
 import ProductList from "@/components/product/ProductList";
-import { ProductWithCategory, Title } from "../../../types/types";
+import { Category, ProductWithCategory, Title } from "../../../types/types";
 import CategoryTabs from "@/components/CategoryTabs/page";
 import Button from "@/components/common/buttons/page";
-import { CategoryBase } from "@/lib/category";
+
 import useSWR from "swr";
 
 interface Props {
   title: Title;
-  categories: CategoryBase[];
+  categories: Category[];
   products: ProductWithCategory[];
   type: "best" | "new";
 }

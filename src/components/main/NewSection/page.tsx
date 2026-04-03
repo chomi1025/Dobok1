@@ -1,6 +1,5 @@
-import { ProductWithCategory, Title } from "@/types/types";
+import { Category, ProductWithCategory, Title } from "@/types/types";
 import ProductSectionComponent from "../ProductSection/page";
-import { CategoryBase } from "@/lib/category";
 
 const title: Title = {
   name: "신제품",
@@ -10,7 +9,7 @@ const title: Title = {
 };
 
 interface Props {
-  categories: CategoryBase[];
+  categories: Category[];
   newProducts: ProductWithCategory[];
 }
 

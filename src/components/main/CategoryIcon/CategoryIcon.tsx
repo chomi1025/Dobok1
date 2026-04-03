@@ -1,10 +1,10 @@
+import { Category } from "@/types/types";
 import styles from "./CategoryIcon.module.scss";
 import Image from "next/image";
 import Link from "next/link";
-import { CategoryBase } from "@/lib/category";
 
 interface Props {
-  mainCategory: CategoryBase[];
+  mainCategory: Category[];
 }
 
 export default async function CategoryIconComponent({ mainCategory }: Props) {
