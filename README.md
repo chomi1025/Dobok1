@@ -50,7 +50,7 @@
 #### 🛍️ 상품 리스트 및 상세 페이지
   - SSG 기반 상품/카테고리 사전 렌더링
   - CSR을 통한 동적 데이터 처리
-  - 👉 [구현 상세 보기](링크)
+  - 👉 [구현 상세 보기](https://github.com/chomi1025/Dobok1/wiki/%EC%83%81%ED%92%88%EB%A6%AC%EC%8A%A4%ED%8A%B8)
 <table align="center">
   <tr>
     <td align="center">
@@ -70,7 +70,7 @@
   - 상품 추가 / 수량 변경
   - 사용자 상태에 따른 장바구니 관리
   - 상품 목록에서 바로 담을 수 있는 퀵 애드 기능 구현
-  - 👉 [구현 상세 보기](링크)
+  - 👉 [구현 상세 보기](https://github.com/chomi1025/Dobok1/wiki/%EC%9E%A5%EB%B0%94%EA%B5%AC%EB%8B%88)
 
 <table align="center">
   <tr>
