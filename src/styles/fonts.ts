@@ -8,10 +8,6 @@ export const pretendard = localFont({
       weight: "400",
     },
     {
-      path: "../../public/fonts/Pretendard-Medium.subset.woff2",
-      weight: "500",
-    },
-    {
       path: "../../public/fonts/Pretendard-SemiBold.subset.woff2",
       weight: "600",
     },
@@ -22,5 +18,16 @@ export const pretendard = localFont({
     },
   ],
   variable: "--font-pretendard",
+  display: "swap",
+});
+
+export const paybooc = localFont({
+  src: [
+    { path: "../../public/fonts/paybooc-Light.woff2", weight: "400" },
+    { path: "../../public/fonts/paybooc-Medium.woff2", weight: "500" },
+    { path: "../../public/fonts/paybooc-Bold.woff2", weight: "600" },
+    { path: "../../public/fonts/paybooc-ExtraBold.woff2", weight: "700" },
+  ],
+  variable: "--font-paybooc",
   display: "swap",
 });
