@@ -9,7 +9,7 @@ export default async function CartPage() {
 
   let initialCart = [];
 
-  // 회원이면
+  // 회원이면 카트 서버에서 불러오기
   if (session) {
     initialCart = await prisma.cartItem.findMany({
       where: {

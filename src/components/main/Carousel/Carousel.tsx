@@ -5,11 +5,12 @@ import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+import "swiper/css/autoplay";
 import styles from "./Carousel.module.scss";
 import Image from "next/image";
 import { useState } from "react";
 
-const originalBanners = [
+const banners = [
   {
     id: 1,
     title: "PREMIUM DOBOK",
@@ -32,11 +33,6 @@ const originalBanners = [
 
 export default function Carousel() {
   const [isReady, setIsReady] = useState(false);
-  const totalCount = originalBanners.length;
-  const banners = [
-    ...originalBanners,
-    ...originalBanners.map((b) => ({ ...b, id: `copy-${b.id}` })),
-  ];
 
   return (
     <div className={`${styles.container} ${!isReady ? styles.notReady : ""}`}>
@@ -44,72 +40,48 @@ export default function Carousel() {
       <div className={`${styles.navBtn} ${styles.nextBtn}`}></div>
 
       <Swiper
-        onSwiper={() => setIsReady(true)}
         modules={[Autoplay, Pagination, Navigation]}
-        centeredSlides={true}
+        onSwiper={(swiper) => {
+          setIsReady(true);
+
+          setTimeout(() => {
+            swiper.update();
+          }, 100);
+        }}
         loop={true}
-        initialSlide={1}
-        slidesPerView={1.5}
-        spaceBetween={20}
-        breakpoints={{
-          320: { slidesPerView: 1, spaceBetween: 0 },
-          768: { slidesPerView: 1.5, spaceBetween: 20 },
-        }}
-        autoplay={{ delay: 4000, disableOnInteraction: false }}
-        onSlideChange={(swiper) => {
-          const realIndex = swiper.realIndex;
-          const bullets = swiper.pagination.bullets;
-          if (bullets && bullets.length > 0) {
-            bullets.forEach((b) =>
-              b.classList.remove("swiper-pagination-bullet-active"),
-            );
-            const targetIndex = realIndex % totalCount;
-            if (bullets[targetIndex]) {
-              bullets[targetIndex].classList.add(
-                "swiper-pagination-bullet-active",
-              );
-            }
-          }
-        }}
-        pagination={{
-          clickable: true,
-          renderBullet: (index, className) => {
-            return index < 3 ? `<span class="${className}"></span>` : "";
-          },
-        }}
-        navigation={{
-          nextEl: `.${styles.nextBtn}`,
-          prevEl: `.${styles.prevBtn}`,
-        }}
-        speed={isReady ? 500 : 0}
         observer={true}
         observeParents={true}
+        autoplay={{
+          delay: 4000,
+          disableOnInteraction: false,
+        }}
+        pagination={{ clickable: true }}
+        navigation={{
+          prevEl: "#btn-prev",
+          nextEl: "#btn-next",
+        }}
+        slidesPerView={1}
         className={styles.mySwiper}
       >
-        {banners.map((banner, index) => {
-          const isPriority = true;
-
-          return (
-            <SwiperSlide key={`${banner.id}-${index}`}>
-              <div className={styles.slideItem}>
-                <Image
-                  src={banner.img}
-                  alt={banner.title}
-                  fill
-                  priority={isPriority}
-                  style={{ objectFit: "cover" }}
-                  className={styles.bgImage}
-                  sizes="(max-width: 768px) 100vw, 80vw"
-                />
-                <div className={styles.overlay} />
-                <div className={styles.textGroup}>
-                  <h2>{banner.title}</h2>
-                  <p>{banner.desc}</p>
-                </div>
+        {banners.map((banner) => (
+          <SwiperSlide key={banner.id}>
+            <div className={styles.slideItem}>
+              <Image
+                src={banner.img}
+                alt={banner.title}
+                fill
+                priority
+                className={styles.bgImage}
+                sizes="100vw"
+              />
+              <div className={styles.overlay} />
+              <div className={styles.textGroup}>
+                <h2>{banner.title}</h2>
+                <p>{banner.desc}</p>
               </div>
-            </SwiperSlide>
-          );
-        })}
+            </div>
+          </SwiperSlide>
+        ))}
       </Swiper>
     </div>
   );

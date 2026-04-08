@@ -5,7 +5,7 @@ import BreadCrumb from "@/components/breadcrumb";
 import { Column, Table } from "@/components/Table/page";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -131,7 +131,6 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
   const requestedIds = idsParam.split(",").map(Number).filter(Boolean);
   const [isOpen, setIsOpen] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  console.log(memberCart);
   const {
     register,
     handleSubmit,
