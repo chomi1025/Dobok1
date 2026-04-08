@@ -71,7 +71,9 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         <div>
           <p>{product.name}</p>
-          <strong>{product?.options?.[0]?.price?.toLocaleString()} 원</strong>
+          <strong>
+            <span>{product?.options?.[0]?.price?.toLocaleString()}</span>원
+          </strong>
         </div>
       </Link>
 

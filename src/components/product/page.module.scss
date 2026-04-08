@@ -25,7 +25,6 @@
 
     div {
       margin-top: rem(15);
-      font-weight: 700;
 
       p {
         font-size: rem(16);
@@ -33,6 +32,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+
         @include mobile {
           font-size: rem(14);
         }
@@ -40,11 +40,18 @@
 
       strong {
         font-size: rem(18);
+        display: flex;
+        align-items: center;
+
         @include mobile {
           font-size: rem(15);
         }
+
         span {
           font-size: rem(22);
+          font-weight: 800;
+          margin-right: rem(5);
+
           @include mobile {
             font-size: rem(18);
           }
@@ -72,17 +79,14 @@
     right: 15px;
     bottom: 15px;
     z-index: 20;
-
     background-color: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(4px);
-
     padding: 8px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     border: 1px solid rgba(0, 0, 0, 0.05);
-
     cursor: pointer;
     transition: all 0.2s ease;
 
