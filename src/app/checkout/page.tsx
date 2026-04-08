@@ -25,6 +25,7 @@ type PrismaCartItem = {
 export default async function CheckoutPage() {
   const session = await getServerSession(authOptions);
 
+  // 회원이면
   if (session?.user?.id) {
     const [memberUser, memberCart] = await Promise.all([
       prisma.user.findUnique({
@@ -88,5 +89,7 @@ export default async function CheckoutPage() {
       />
     );
   }
+
+  // 비회원
   return <CheckoutClientPage user={null} isMember={false} />;
 }

@@ -34,10 +34,16 @@ interface UnifiedCartItem {
 interface Props {
   user: any;
   cart: any[];
+  isLoading: boolean;
   setCart: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
-export default function CartListComponent({ user, cart, setCart }: Props) {
+export default function CartListComponent({
+  user,
+  cart,
+  isLoading,
+  setCart,
+}: Props) {
   const [checkedItems, setCheckedItems] = useState<number[]>([]);
   const router = useRouter();
 
@@ -324,7 +330,7 @@ export default function CartListComponent({ user, cart, setCart }: Props) {
 
   return (
     <>
-      <Table columns={cartColumns} data={tableData} />
+      <Table columns={cartColumns} data={tableData} isLoading={isLoading} />
 
       <div className={styles.cartActions}>
         <Button variant="edit" onClick={removeSelected}>

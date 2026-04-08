@@ -113,14 +113,8 @@ export default function ProductInfo({
     }
 
     const cartData = addedOptions.map((opt) => ({
-      productId: product.id,
       productOptionId: opt.id,
       quantity: opt.quantity,
-      productName: product.name,
-      thumbnail: product.thumbnail,
-      color: opt.color,
-      size: opt.size,
-      price: opt.price,
     }));
 
     // 로그인 회원

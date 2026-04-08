@@ -14,11 +14,13 @@ interface tableProps<T> {
   columns: Column<T>[];
   data: T[];
   pricing?: boolean;
+  isLoading?: boolean;
 }
 
 export const Table = <T extends { id?: number }>({
   columns,
   data,
+  isLoading,
 }: tableProps<T>) => {
   return (
     <O.Section>
@@ -37,23 +39,38 @@ export const Table = <T extends { id?: number }>({
 
       {/* 데이터 */}
       <O.Body>
-        {data.length === 0 ? (
+        {isLoading ? (
+          [...Array(3)].map((_, idx) => (
+            <O.Row key={`skeleton-${idx}`}>
+              {columns.map((col) => (
+                <O.Info
+                  key={String(col.key)}
+                  style={{ flex: col.flex }}
+                  align={col.align}
+                >
+                  <div className="common-skeleton-bar" />
+                </O.Info>
+              ))}
+            </O.Row>
+          ))
+        ) : data.length === 0 ? (
           <O.Row>
-            <O.Info align="center">데이터가 없습니다.</O.Info>
+            <O.Info align="center" style={{ flex: 1 }} className="empty-text">
+              데이터가 없습니다.
+            </O.Info>
           </O.Row>
         ) : (
           data.map((row, idx) => (
-            <O.Row key={row.id}>
+            <O.Row key={row.id ?? idx}>
               {columns?.map((col) => (
                 <O.Info
                   key={String(col.key)}
                   align={col.align}
                   style={{ flex: col.flex }}
-                  data-label={col.hideLabel ? "" : String(col.label)}
                 >
                   {col.render
                     ? col.render(row, idx)
-                    : String(row[col.key as keyof T])}
+                    : String(row[col.key as keyof T] || "")}
                 </O.Info>
               ))}
             </O.Row>

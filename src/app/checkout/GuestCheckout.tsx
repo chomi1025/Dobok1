@@ -87,20 +87,6 @@ export interface Order {
   isCustomizable?: boolean;
 }
 
-interface CartItem {
-  product?: {
-    id: number;
-    name: string;
-    price: number;
-    img?: string;
-  };
-  id?: number;
-  productName?: string;
-  unitPrice?: number;
-  quantity: number;
-  thumbnail?: string;
-}
-
 const STEPS = [
   { label: "장바구니", step: 0, path: "/cart" },
   { label: "주문서작성/결제", step: 1, path: "/checkout" },
@@ -109,7 +95,6 @@ const STEPS = [
 
 export default function GuestCheckoutPage() {
   const [cartItems, setCartItems] = useState<Order[]>([]);
-  const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
@@ -137,7 +122,7 @@ export default function GuestCheckoutPage() {
       orderAgree: false,
     },
   });
-  const router = useRouter();
+
   const [isSameAsOrderer, setIsSameAsOrderer] = useState(false);
 
   const handleSameAsOrderer = async (checked: boolean) => {
@@ -193,67 +178,51 @@ export default function GuestCheckoutPage() {
   };
 
   useEffect(() => {
-    const idsParam = searchParams.get("ids") || "";
-    const requestedIds = idsParam
-      .split(",")
-      .map((id) => Number(id))
-      .filter(Boolean);
+    const fetchCartItems = async () => {
+      // 로컬스토리지 가져오고
+      const localCart = JSON.parse(localStorage.getItem("cart") || "[]");
+      if (localCart.length === 0) return;
 
-    const fetchCartItems = () => {
-      let actualCart: CartItem[] = [];
+      const optionIds = localCart
+        .map((item: any) => item.productOptionId)
+        .join(",");
 
-      const localCart = localStorage.getItem("cart");
+      try {
+        // api요청
+        const response = await fetch(`/api/products/options?ids=${optionIds}`);
 
-      if (localCart) {
-        actualCart = JSON.parse(localCart);
-      }
+        if (!response.ok)
+          throw new Error("상품 정보를 불러오는데 실패했습니다.");
 
-      const filteredItems = requestedIds.length
-        ? actualCart.filter((item) => {
-            const productId = item.product?.id || (item as any).id;
-            return productId && requestedIds.includes(productId);
-          })
-        : actualCart;
+        const dbOptions = await response.json();
 
-      if (requestedIds.length !== filteredItems.length) {
-        const safeIds = filteredItems
-          .map((item) => item.product?.id || item.id)
-
-          .filter(Boolean)
-          .join(",");
-
-        window.history.replaceState(
-          null,
-          "",
-          safeIds ? `/checkout?ids=${safeIds}` : `/checkout`,
-        );
-      }
-
-      setCartItems(
-        filteredItems.map((item: any) => {
-          const pId = item.productId || item.id;
-
-          const uPrice = item.price || item.unitPrice || 0;
+        const data = dbOptions.map((option: any) => {
+          const localItem = localCart.find(
+            (it: any) => it.productOptionId === option.id,
+          );
 
           return {
-            id: pId,
-            orderId: 0,
-            productId: Number(pId),
-            productName: item.productName || "상품명 없음",
-            ProductImage: item.thumbnail || "/img/default.png",
-            optionText: item.optionDisplay || "",
-            unitPrice: Number(uPrice),
-            quantity: item.quantity,
-            totalPrice: Number(uPrice) * item.quantity,
-            isCustomizable: !!item.isCustomizable,
-            productOptionId: item.productOptionId,
+            id: option.id,
+            productId: option.productId,
+            productName: option.product.name,
+            ProductImage: option.product.thumbnail || "/img/default.png",
+            optionText: `${option.size || ""} ${option.color || ""}`.trim(),
+            unitPrice: option.price,
+            quantity: localItem?.quantity || 1,
+            totalPrice: option.price * (localItem?.quantity || 1),
+            isCustomizable: option.product.isCustomizable,
           };
-        }),
-      );
+        });
+
+        setCartItems(data);
+      } catch (error) {
+        console.error(error);
+        toast.error("상품 정보를 가져오지 못했습니다.");
+      }
     };
 
     fetchCartItems();
-  }, [searchParams]);
+  }, []);
 
   const totalOrderPrice = cartItems.reduce(
     (acc, cur) => acc + cur.unitPrice * cur.quantity,

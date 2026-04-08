@@ -40,6 +40,8 @@ export default async function HomePage() {
           select: {
             id: true,
             price: true,
+            color: true,
+            size: true,
           },
         },
       },
@@ -56,6 +58,8 @@ export default async function HomePage() {
           select: {
             id: true,
             price: true,
+            color: true,
+            size: true,
           },
         },
       },
