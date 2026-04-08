@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { customConfirm } from "@/lib/swal";
 import Button from "@/components/common/buttons/page";
-import CartEmptyComponent from "./CartEmpty";
 
 interface Column<T> {
   key: keyof T | string;

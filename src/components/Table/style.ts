@@ -70,7 +70,7 @@ export const Row = styled.div`
   align-items: center;
   border-bottom: 1px solid #ddd;
   padding: ${rem(10)} 0;
-  min-height: ${rem(80)};
+  min-height: ${rem(50)};
 
   @media (max-width: 767px) {
     flex-direction: column;

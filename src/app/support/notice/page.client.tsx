@@ -13,7 +13,7 @@ interface NoticeRow {
 }
 
 interface Props {
-  role?: "ADMIN" | "USER" | string | null;
+  role?: "ADMIN" | "USER" | null;
   allNotices: NoticeRow[];
   total: number;
   pageSize: number;
@@ -73,7 +73,7 @@ export default function NoticeClientPage({
         total={total}
         pageSize={pageSize}
         currentPage={currentPage}
-        isRestricted={false}
+        isRestricted={true}
       >
         <Table columns={noticeColumns} data={allNotices} />
       </BoardLayout>

@@ -22,10 +22,6 @@ export default async function RootLayout({
 
             <main className="main">{children}</main>
 
-            <Script
-              src="https://cdn.iamport.kr/v1/iamport.js"
-              strategy="afterInteractive"
-            />
             <Toaster
               position="top-center"
               containerStyle={{
