@@ -46,10 +46,12 @@ export default function SignupStep1() {
     details: null,
   });
 
+  <Script src="https://cdn.iamport.kr/v1/iamport.js" strategy="lazyOnload" />;
+
   const handleCertification = () => {
     const { IMP } = window as any;
     IMP.init(process.env.NEXT_PUBLIC_IMP_CODE);
-    console.log("포트원 코드:", process.env.NEXT_PUBLIC_IMP_CODE);
+
     IMP.certification(
       {
         pg: "inicis_unified.MIIiasTest",

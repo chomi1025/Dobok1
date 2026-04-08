@@ -26,7 +26,9 @@ export default function SupportSidebar() {
             className={`${styles.list} ${segment === menu.slug && styles.active}`}
             key={menu.slug}
           >
-            <Link href={`/support/${menu.slug}`}>{menu.label}</Link>
+            <Link href={`/support/${menu.slug}`} prefetch={false}>
+              {menu.label}
+            </Link>
           </li>
         ))}
       </ul>

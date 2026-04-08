@@ -12,6 +12,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import DaumPostcodeEmbed from "react-daum-postcode";
 import toast from "react-hot-toast";
 import { loadTossPayments } from "@tosspayments/payment-sdk";
+import Script from "next/script";
 
 declare global {
   interface Window {
@@ -124,6 +125,8 @@ const STEPS = [
   { label: "주문서작성/결제", step: 1, path: "/checkout" },
   { label: "주문완료", step: 2, path: "/order/success" },
 ];
+
+<Script src="https://cdn.iamport.kr/v1/iamport.js" strategy="lazyOnload" />;
 
 export default function MemberCheckoutPage({ user, memberCart }: Props) {
   const searchParams = useSearchParams();

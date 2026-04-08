@@ -19,7 +19,7 @@ export default function CartEmptyComponent() {
           원하는 상품을 담아보세요.
         </p>
 
-        <Button variant="black" onClick={() => router.push("/products")}>
+        <Button variant="black" onClick={() => router.push("/products/best")}>
           쇼핑 계속하기
         </Button>
       </div>
