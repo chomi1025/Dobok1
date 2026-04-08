@@ -2,7 +2,6 @@ import "@/styles/globals.scss";
 import { ReactNode } from "react";
 import HeaderServer from "@/components/header/Header.server";
 import AuthProvider from "@/components/providers/AuthProvider";
-import { pretendard, paybooc } from "@/styles/fonts";
 import EmotionRegistry from "@/lib/emotion-registry";
 import Footer from "@/components/footer/page";
 import MobileNavPage from "@/components/mobileNav/page";
@@ -15,7 +14,7 @@ export default async function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html lang="ko" className={`${pretendard.variable} ${paybooc.variable} `}>
+    <html lang="ko">
       <body>
         <EmotionRegistry>
           <AuthProvider>

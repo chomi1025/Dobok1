@@ -1,4 +1,21 @@
 @import "../components/style/variables.module";
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+
+@font-face {
+  font-family: "PayboocFont";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-07@1.0/paybooc-Light.woff")
+    format("woff");
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "PayboocFont";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-07@1.0/paybooc-ExtraBold.woff")
+    format("woff");
+  font-weight: 800;
+  font-display: swap;
+}
 
 html,
 body,
@@ -42,7 +59,22 @@ body {
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.04em;
   scrollbar-gutter: stable;
-  font-family: var(--font-pretendard), sans-serif;
+  font-family:
+    "Pretendard Variable",
+    Pretendard,
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    Roboto,
+    "Helvetica Neue",
+    "Segoe UI",
+    "Apple SD Gothic Neo",
+    "Noto Sans KR",
+    "Malgun Gothic",
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    sans-serif;
 }
 
 input,
@@ -122,13 +154,16 @@ fieldset {
 /* 5. 타이포그래피 */
 h1 {
   color: #111;
-  font-family: var(--font-paybooc), sans-serif;
+  font-family: "PayboocFont", sans-serif !important;
   letter-spacing: -0.05em;
+  font-weight: 800;
 }
+
 h2 {
   color: #222;
-  font-family: var(--font-paybooc), sans-serif;
+  font-family: "PayboocFont", sans-serif !important;
   letter-spacing: -0.05em;
+  font-weight: 800;
 }
 h3 {
   color: #444;
