@@ -4,7 +4,7 @@ import CartEmptyComponent from "./CartEmpty";
 import CartListComponent from "./CartList";
 import styles from "./page.module.scss";
 import BreadCrumb from "@/components/breadcrumb";
-import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
 
 const STEPS = [
   { label: "장바구니", step: 0, path: "/cart" },
@@ -12,61 +12,104 @@ const STEPS = [
   { label: "주문완료", step: 2, path: "/order/success" },
 ];
 
-export default function CartClientPage() {
-  const { data: session } = useSession();
-  const [cart, setCart] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  console.log(session);
+interface CartItemType {
+  id: number;
+  productId: number;
+  productOptionId?: number;
+  productName: string;
+  thumbnail: string;
+  price: number;
+  quantity: number;
+  option?: string;
+  isCustomizable?: boolean;
+  product?: any;
+  productOption?: any;
+}
+
+interface Props {
+  session: Session | null;
+  initialCart: [];
+}
+
+export default function CartClientPage({ session, initialCart }: Props) {
+  const [cart, setCart] = useState<CartItemType[]>(initialCart);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const loadCart = async () => {
-      setLoading(true);
+    // 비회원일 때만 실행
+    if (session && initialCart.length > 0) {
+      setIsLoading(false);
+      return;
+    }
+
+    const fetchGuestCart = async () => {
+      setIsLoading(true);
+
+      const localData = JSON.parse(localStorage.getItem("cart") || "[]");
+
+      if (localData.length === 0) {
+        setCart([]);
+        setIsLoading(false);
+        return;
+      }
 
       try {
-        if (session?.user?.username) {
-          // 회원
-          const res = await fetch(`/api/cart`);
+        const optionIds = localData
+          .map((item: any) => item.productOptionId)
+          .join(",");
 
-          if (res.ok) {
-            const data = await res.json();
-            setCart(data || []);
-          }
-        } else {
-          // 비회원
-          const guestCart = localStorage.getItem("cart");
-          if (guestCart) setCart(JSON.parse(guestCart));
-        }
-      } catch (err) {
-        console.error("장바구니 로딩 실패", err);
+        const res = await fetch(`/api/products/options?ids=${optionIds}`);
+        if (!res.ok) throw new Error("장바구니 정보를 불러오지 못했습니다.");
+
+        const serverInfo = await res.json();
+
+        const fullCart = localData.map((localItem: any) => {
+          const info = serverInfo.find(
+            (s: any) => Number(s.id) === Number(localItem.productOptionId),
+          );
+
+          return info
+            ? {
+                ...localItem,
+                ...info,
+                productName: info.product?.name || localItem.productName,
+                thumbnail: info.product?.thumbnail || localItem.thumbnail,
+                id: info.id,
+              }
+            : localItem;
+        });
+
+        setCart(fullCart);
+      } catch (error) {
+        console.error("비회원 장바구니 로드 실패:", error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
-    loadCart();
-  }, [session]);
+    fetchGuestCart();
+  }, [session, initialCart]);
 
-  let cartContent;
-
-  if (loading) {
-    cartContent = <div className={styles.cartListLoading}>로딩중...</div>;
-  } else if (cart.length > 0) {
-    cartContent = (
-      <CartListComponent user={session?.user} cart={cart} setCart={setCart} />
-    );
-  } else {
-    cartContent = <CartEmptyComponent />;
-  }
+  const showEmpty = !isLoading && cart.length === 0;
 
   return (
-    <main className={styles.inner}>
+    <div className={styles.inner}>
       <header className={styles.sectionHeader}>
         <h1>장바구니</h1>
 
         <BreadCrumb steps={STEPS} />
       </header>
 
-      <div className={styles.cartListArea}>{cartContent}</div>
-    </main>
+      {showEmpty ? (
+        <CartEmptyComponent />
+      ) : (
+        <CartListComponent
+          isLoading={isLoading}
+          user={session}
+          cart={cart}
+          setCart={setCart}
+        />
+      )}
+    </div>
   );
 }

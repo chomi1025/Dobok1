@@ -6,7 +6,9 @@ const prisma = new PrismaClient();
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+
     const {
+      userId,
       name,
       email,
       phone,
@@ -15,17 +17,17 @@ export async function POST(req: Request) {
       address,
       detailAddress,
       cellphone,
-      paymentMethod,
       customRequest,
       total,
       items,
     } = body;
 
-    const orderNumber = `ORD-${new Date().getTime()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const orderNumber = `HS${new Date().toISOString().slice(2, 10).replace(/-/g, "")}-${Math.floor(1000 + Math.random() * 9000)}`;
 
     const newOrder = await prisma.$transaction(async (tx) => {
       return await tx.order.create({
         data: {
+          userId: userId || null,
           orderNumber,
           status: "PENDING",
           total,
@@ -38,16 +40,13 @@ export async function POST(req: Request) {
           address,
           detailAddress,
           customRequest,
-
           items: {
             create: items.map((item: any) => ({
               productId: Number(item.productId),
               productName: item.productName,
               quantity: Number(item.quantity),
               unitPrice: Number(item.unitPrice),
-              totalPrice: Number(item.unitPrice) * Number(item.quantity),
               optionText: item.optionText || "",
-              productImage: item.ProductImage || item.thumbnail || "",
               isCustom: item.isCustomizable || false,
             })),
           },

@@ -1,5 +1,26 @@
 import CartClientPage from "./page.client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/options";
+import { prisma } from "@/lib/prisma";
 
 export default async function CartPage() {
-  return <CartClientPage />;
+  // 세션체크
+  const session = await getServerSession(authOptions);
+
+  let initialCart = [];
+
+  // 회원이면
+  if (session) {
+    initialCart = await prisma.cartItem.findMany({
+      where: {
+        userId: Number(session.user.id),
+      },
+
+      include: {
+        product: true,
+      },
+    });
+  }
+
+  return <CartClientPage session={session} initialCart={initialCart} />;
 }

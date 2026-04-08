@@ -92,11 +92,15 @@ export default function LoginClientPage() {
 
           <ul>
             <li>
-              <Link href="/find/id">아이디 찾기</Link>
+              <Link href="/find/id" prefetch={false}>
+                아이디 찾기
+              </Link>
             </li>
 
             <li>
-              <Link href="/find/password">비밀번호 찾기</Link>
+              <Link href="/find/password" prefetch={false}>
+                비밀번호 찾기
+              </Link>
             </li>
           </ul>
 
@@ -108,7 +112,9 @@ export default function LoginClientPage() {
             {loading ? "로그인 중..." : "로그인"}
           </button>
 
-          <Link href="/signup/step1">회원가입</Link>
+          <Link href="/signup/step1" prefetch={false}>
+            회원가입
+          </Link>
         </div>
       </form>
     </div>

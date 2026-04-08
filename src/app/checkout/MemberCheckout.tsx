@@ -87,20 +87,6 @@ export interface Order {
   isCustomizable?: boolean;
 }
 
-interface CartItem {
-  product?: {
-    id: number;
-    name: string;
-    price: number;
-    img?: string;
-  };
-  id?: number;
-  productName?: string;
-  unitPrice?: number;
-  quantity: number;
-  thumbnail?: string;
-}
-
 interface MemberUser {
   id: number;
   name: string;
@@ -139,11 +125,7 @@ const STEPS = [
   { label: "주문완료", step: 2, path: "/order/success" },
 ];
 
-export default function MemberCheckoutPage({
-  user,
-  memberUser,
-  memberCart,
-}: Props) {
+export default function MemberCheckoutPage({ user, memberCart }: Props) {
   const searchParams = useSearchParams();
   const idsParam = searchParams.get("ids") || "";
   const requestedIds = idsParam.split(",").map(Number).filter(Boolean);

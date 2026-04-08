@@ -1,10 +1,17 @@
 import styled from "@emotion/styled";
+import { keyframes } from "@emotion/react";
 
 interface OrderInfoProps {
   flex?: number;
   align?: "left" | "center" | "right";
   hideLabel?: boolean;
 }
+
+export const skeletonGradient = keyframes`
+  0% { background-color: rgba(165, 165, 165, 0.1); }
+  50% { background-color: rgba(165, 165, 165, 0.3); }
+  100% { background-color: rgba(165, 165, 165, 0.1); }
+`;
 
 const rem = (px: number, base: number = 16): string => {
   return `${px / base}rem`;
@@ -49,13 +56,21 @@ export const Header = styled.div`
   }
 `;
 
-export const Body = styled.div``;
+export const Body = styled.div`
+  .common-skeleton-bar {
+    width: 80%;
+    height: ${rem(20)};
+    border-radius: ${rem(4)};
+    animation: ${skeletonGradient} 1.5s infinite ease-in-out;
+  }
+`;
 
 export const Row = styled.div`
   display: flex;
   align-items: center;
   border-bottom: 1px solid #ddd;
   padding: ${rem(10)} 0;
+  min-height: ${rem(80)};
 
   @media (max-width: 767px) {
     flex-direction: column;
@@ -71,12 +86,16 @@ export const Info = styled.div<OrderInfoProps>`
   display: flex;
   align-items: center;
   gap: ${rem(20)};
-
   justify-content: ${(props) => {
     if (props.align === "left") return "flex-start";
     if (props.align === "right") return "flex-end";
     return "center";
   }};
+
+  &.empty-text {
+    padding: ${rem(40)} 0;
+    color: #888;
+  }
 
   @media (max-width: 767px) {
     width: 100%;

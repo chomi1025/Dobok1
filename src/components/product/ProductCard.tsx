@@ -17,7 +17,6 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const { data: session } = useSession();
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -37,7 +36,6 @@ export default function ProductCard({ product }: ProductCardProps) {
       productOptionId: targetOption.id,
       productName: product.name,
       thumbnail: product.thumbnail,
-      price: targetOption.price,
       quantity: 1,
     };
 
