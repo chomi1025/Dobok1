@@ -25,7 +25,9 @@ export default function CommunitySidebar() {
             className={`${styles.list} ${segment === menu.slug && styles.active}`}
             key={menu.slug}
           >
-            <Link href={`/community/${menu.slug}`}>{menu.label}</Link>
+            <Link href={`/community/${menu.slug}`} prefetch={false}>
+              {menu.label}
+            </Link>
           </li>
         ))}
       </ul>

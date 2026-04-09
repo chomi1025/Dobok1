@@ -1,0 +1,28 @@
+@import "../../components/style/variables.module";
+
+.inner {
+  margin: 0 auto;
+  width: 100%;
+  min-height: 100vh;
+  max-width: rem(1140);
+  padding-top: rem(80);
+  display: flex;
+  justify-content: space-between;
+
+  > section {
+    width: rem(908);
+  }
+
+  > div {
+    flex: 1;
+    padding: rem(20) 0 rem(200);
+
+    > header {
+      margin-bottom: rem(30);
+
+      > h1 {
+        font-size: rem(30);
+      }
+    }
+  }
+}

@@ -1,0 +1,58 @@
+@import "../../../components/style/variables.module";
+
+.inner {
+  padding: rem(100) 0 rem(250);
+  width: 100%;
+  position: relative;
+
+  > header {
+    padding-bottom: rem(20);
+    border-bottom: 1px solid #333;
+    margin-bottom: rem(80) !important;
+  }
+
+  select {
+    color: #444;
+  }
+
+  input {
+    color: #444;
+    border-radius: 4px;
+  }
+
+  legend {
+    @include sr-only;
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .formInner {
+    max-width: rem(400);
+
+    > fieldset {
+      > div {
+        label {
+          display: block;
+          font-size: rem(14);
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  > button {
+    width: rem(400);
+    height: rem(60);
+    background-color: #444;
+    border-radius: rem(5);
+    font-size: rem(16);
+    font-weight: 500;
+    color: white;
+    margin-top: rem(25);
+  }
+}

@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
-import * as O from "./style";
 import { useRouter } from "next/navigation";
+import styles from "./page.module.scss";
 
 interface Address {
   postcode: string;
@@ -45,52 +45,56 @@ export default function OrderDetailClientPage({ order }: { order: Order }) {
   const grandTotal = totalPrice + deliveryFee;
 
   return (
-    <O.Wrapper>
-      <O.Title>주문 상세</O.Title>
+    <div className={styles.inner}>
+      <h1>주문 상세</h1>
 
       {/* 주문 정보 */}
-      <O.Card>
-        <O.CardTitle>주문 정보</O.CardTitle>
-        <O.InfoGrid>
-          <O.Label>주문번호</O.Label>
-          <O.Value>{order.orderNumber}</O.Value>
+      <section className={styles.card}>
+        <h2>주문 정보</h2>
 
-          <O.Label>주문일자</O.Label>
-          <O.Value>{order.date}</O.Value>
+        <div className={styles.infoGrid}>
+          <span className={styles.label}>주문번호</span>
+          <span className={styles.value}>{order.orderNumber}</span>
 
-          <O.Label>주문상태</O.Label>
-          <O.Value>{ORDER_STATUS_LABEL[order.status] || order.status}</O.Value>
-        </O.InfoGrid>
-      </O.Card>
+          <span className={styles.label}>주문일자</span>
+          <span className={styles.value}>{order.date}</span>
 
-      <O.Divider />
+          <span className={styles.label}>주문상태</span>
+          <span className={styles.value}>
+            {ORDER_STATUS_LABEL[order.status] || order.status}
+          </span>
+        </div>
+      </section>
+
+      <hr />
 
       {/* 배송 정보 */}
-      <O.Card>
-        <O.CardTitle>배송 정보</O.CardTitle>
-        <O.InfoGrid>
-          <O.Label>수령인</O.Label>
-          <O.Value>{order.shipping.name}</O.Value>
+      <section className={styles.card}>
+        <h2>배송 정보</h2>
 
-          <O.Label>연락처</O.Label>
-          <O.Value>{order.shipping.phone}</O.Value>
+        <div className={styles.infoGrid}>
+          <span className={styles.label}>수령인</span>
+          <span className={styles.value}>{order.shipping.name}</span>
 
-          <O.Label>배송지</O.Label>
-          <O.Address>
+          <span className={styles.label}>연락처</span>
+          <span className={styles.value}>{order.shipping.phone}</span>
+
+          <span className={styles.label}>배송지</span>
+          <p className={styles.address}>
             {order.shipping?.address
               ? `${order.shipping.address.postcode} ${order.shipping.address.address} (${order.shipping.address.detailAddress})`
               : "주소 없음"}
-          </O.Address>
-        </O.InfoGrid>
-      </O.Card>
+          </p>
+        </div>
+      </section>
 
-      <O.Divider />
+      <hr />
 
       {/* 상품 정보 */}
-      <O.Card>
-        <O.CardTitle>주문 상품</O.CardTitle>
+      <section className={styles.card}>
+        <h2>주문 상품</h2>
         {order.items.map((item) => (
-          <O.ProductCard key={item.id}>
+          <div className={styles.productCard} key={item.id}>
             <Image
               src="/sample.png"
               alt={item.productName}
@@ -102,57 +106,71 @@ export default function OrderDetailClientPage({ order }: { order: Order }) {
                 borderRadius: "5px",
               }}
             />
-            <O.ProductInfo>
-              <O.ProductName>{item.productName}</O.ProductName>
-              <O.ProductMeta>{item.quantity}개</O.ProductMeta>
-              <O.ProductPrice>
-                {item.totalPrice.toLocaleString()}원
-              </O.ProductPrice>
-            </O.ProductInfo>
-          </O.ProductCard>
-        ))}
-      </O.Card>
 
-      <O.Divider />
+            <div className={styles.productInfo}>
+              <p className={styles.productName}>{item.productName}</p>
+              <p className={styles.productMeta}>{item.quantity}개</p>
+              <p className={styles.productPrice}>
+                {item.totalPrice.toLocaleString()}원
+              </p>
+            </div>
+          </div>
+        ))}
+      </section>
+
+      <hr />
 
       {/* 결제 금액 */}
-      <O.Card>
-        <O.CardTitle>결제 금액</O.CardTitle>
-        <O.PriceRow>
+      <section className={styles.card}>
+        <h2>결제 금액</h2>
+        <div className={styles.priceRow}>
           <span>상품금액</span>
           <span>{totalPrice.toLocaleString()}원</span>
-        </O.PriceRow>
-        <O.PriceRow>
+        </div>
+
+        <div className={styles.priceRow}>
           <span>배송비</span>
           <span>{deliveryFee.toLocaleString()}원</span>
-        </O.PriceRow>
-        <O.PriceRow className="total">
+        </div>
+
+        <div className={`${styles.priceRow} ${styles.total}`}>
           <span>총 결제금액</span>
           <span>{grandTotal.toLocaleString()}원</span>
-        </O.PriceRow>
-      </O.Card>
+        </div>
+      </section>
 
       {/* 버튼 */}
-      <O.ButtonRow>
-        <O.Button>문의하기</O.Button>
+      <div className={styles.buttonRow}>
+        <button>문의하기</button>
 
-        {order.status === "PAYMENT_COMPLETE" && (
-          <O.Button primary>주문취소</O.Button>
-        )}
+        {order.status === "PAYMENT_COMPLETE" && <button>주문취소</button>}
 
-        {order.status === "SHIPPING" && <O.Button primary>배송조회</O.Button>}
+        {order.status === "SHIPPING" && <button>배송조회</button>}
 
         {order.status === "DELIVERED" && (
           <>
-            <O.PrimaryButton
-              onClick={() => router.push(`/mypage/review/${order.orderNumber}`)}
+            <button
+              className={styles.primaryButton}
+              onClick={() =>
+                router.push(
+                  `/mypage/review/new?orderNumber=${order.orderNumber}`,
+                )
+              }
             >
               리뷰작성
-            </O.PrimaryButton>
-            <O.Button>반품신청</O.Button>
+            </button>
+            <button
+              onClick={() =>
+                router.push(
+                  `/mypage/claim/new?orderNumber=${order.orderNumber}`,
+                )
+              }
+            >
+              반품신청
+            </button>
           </>
         )}
-      </O.ButtonRow>
-    </O.Wrapper>
+      </div>
+    </div>
   );
 }

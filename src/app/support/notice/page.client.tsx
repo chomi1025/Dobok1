@@ -44,7 +44,11 @@ export default function NoticeClientPage({
       flex: 2,
 
       render: (row: NoticeRow) => (
-        <Link href={`/support/notice/${row.id}`} className={styles.title}>
+        <Link
+          href={`/support/notice/${row.id}`}
+          prefetch={false}
+          className={styles.title}
+        >
           <span className={styles.fixedNotice}>
             {row.isFixed ? "[공지] " : ""}
           </span>

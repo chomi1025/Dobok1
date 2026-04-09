@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-import { Button } from "./../../claim/new/style";
 
 export const Wrapper = styled.div`
   flex: 1;

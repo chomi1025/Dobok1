@@ -30,6 +30,11 @@ export default function BirthdayInput<T extends FieldValues>({
           <S.Birthday className="field">
             <S.Error_Wrapper>
               <label>생년월일</label>
+
+              {isEdit && (
+                <p className="error">생년월일은 변경할 수 없습니다.</p>
+              )}
+
               {!isEdit && errors.birthDate && (
                 <p className="error">{String(errors.birthDate.message)}</p>
               )}

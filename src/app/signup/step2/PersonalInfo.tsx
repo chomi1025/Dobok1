@@ -22,6 +22,8 @@ type Props<T extends FieldValues> = {
 
 export default function PersonalInfo<T extends FieldValues>({
   control,
+  isEdit,
+  errors,
 }: Props<T>) {
   return (
     <S.PersonalInfo>
@@ -35,6 +37,8 @@ export default function PersonalInfo<T extends FieldValues>({
           <div className="field">
             <S.Error_Wrapper>
               <label htmlFor="name">이름</label>
+
+              {isEdit && <p className="error">이름은 변경할 수 없습니다.</p>}
             </S.Error_Wrapper>
 
             <input {...field} placeholder="이름" readOnly />
@@ -46,6 +50,8 @@ export default function PersonalInfo<T extends FieldValues>({
       <S.Phone className="field">
         <S.Error_Wrapper>
           <label htmlFor="phone">핸드폰 번호</label>
+
+          {isEdit && <p className="error">핸드폰 번호는 변경할 수 없습니다.</p>}
         </S.Error_Wrapper>
 
         <div>

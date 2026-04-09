@@ -1,14 +1,5 @@
 import OrderDetailClientPage from "./page.client";
-import { prisma } from "@/lib/prisma";
-import { notFound } from "next/navigation";
 import { Prisma } from "@prisma/client";
-
-type OrderWithDetails = Prisma.OrderGetPayload<{
-  include: {
-    items: true;
-    user: true;
-  };
-}>;
 
 interface Props {
   params: Promise<{ orderNumber: string }>;
@@ -38,42 +29,39 @@ interface FormattedOrder {
   };
 }
 
+// 테스트
+const mockOrderDetail: FormattedOrder = {
+  id: 1,
+  orderNumber: "ORD-20260316-001",
+  date: "2026-03-16",
+  status: "DELIVERED",
+  items: [
+    {
+      id: 101,
+      productName: "프리미엄 선수용 도복 - 화이트",
+      quantity: 1,
+      totalPrice: 125000,
+    },
+    {
+      id: 102,
+      productName: "고급 면 띠 - 블랙",
+      quantity: 1,
+      totalPrice: 25000,
+    },
+  ],
+  shipping: {
+    name: "초미",
+    phone: "010-1234-5678",
+    address: {
+      postcode: "02143",
+      address: "서울 중랑구 망우동",
+      detailAddress: "101동 202호",
+    },
+  },
+};
+
 export default async function OrderDetailPage({ params }: Props) {
-  const { orderNumber } = await params;
+  // 세션+프리즈마로 주문번호 불러오기
 
-  const order = (await prisma.order.findUnique({
-    where: { orderNumber },
-    include: {
-      items: true,
-      user: true,
-    },
-  })) as OrderWithDetails | null;
-
-  if (!order) notFound();
-
-  const userAddress = (order.user?.address as Address) || {
-    postcode: "",
-    address: "",
-    detailAddress: "",
-  };
-
-  const formattedOrder: FormattedOrder = {
-    id: order.id,
-    orderNumber: order.orderNumber,
-    date: order.createdAt.toISOString().slice(0, 10),
-    status: order.status,
-    items: order.items.map((item) => ({
-      id: item.id,
-      productName: item.productName,
-      quantity: item.quantity,
-      totalPrice: item.totalPrice,
-    })),
-    shipping: {
-      name: order.user?.name || "비회원",
-      phone: order.user?.phone || "",
-      address: userAddress,
-    },
-  };
-
-  return <OrderDetailClientPage order={formattedOrder} />;
+  return <OrderDetailClientPage order={mockOrderDetail} />;
 }
