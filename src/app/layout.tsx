@@ -6,7 +6,36 @@ import EmotionRegistry from "@/lib/emotion-registry";
 import Footer from "@/components/footer/page";
 import MobileNavPage from "@/components/mobileNav/page";
 import { Toaster } from "react-hot-toast";
-import Script from "next/script";
+import localFont from "next/font/local";
+
+const pretendard = localFont({
+  src: [
+    {
+      path: "../../public/fonts/Pretendard-Regular.subset.woff2",
+      weight: "400",
+      style: "normal",
+    },
+  ],
+  display: "swap",
+  variable: "--font-pretendard",
+});
+
+const paybooc = localFont({
+  src: [
+    {
+      path: "../../public/fonts/paybooc-Light.woff2",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/paybooc-ExtraBold.woff2",
+      weight: "800",
+      style: "normal",
+    },
+  ],
+  variable: "--font-paybooc",
+  display: "swap",
+});
 
 export default async function RootLayout({
   children,
@@ -14,8 +43,8 @@ export default async function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html lang="ko">
-      <body>
+    <html lang="ko" className={`${pretendard.variable} ${paybooc.variable}`}>
+      <body className={pretendard.className}>
         <EmotionRegistry>
           <AuthProvider>
             <HeaderServer />

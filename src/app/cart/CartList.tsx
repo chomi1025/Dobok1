@@ -184,7 +184,12 @@ export default function CartListComponent({
       render: (row) => (
         <div className={styles.productNameArea}>
           <div>
-            <Image src={row.thumbnail} fill alt="상품 이미지" />
+            <Image
+              src={row.thumbnail}
+              fill
+              alt="상품 이미지"
+              style={{ objectFit: "cover" }}
+            />
           </div>
 
           <div
