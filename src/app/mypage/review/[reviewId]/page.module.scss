@@ -1,0 +1,167 @@
+@import "../../../../components/style/variables.module";
+
+.inner {
+  margin: 0 auto;
+  width: 100%;
+  max-width: rem(1140);
+  padding-top: rem(80);
+  padding-bottom: rem(100);
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: rem(20);
+    border-bottom: rem(1) solid #333;
+    margin-bottom: rem(30);
+  }
+}
+
+.buttonTop {
+  display: flex;
+  justify-content: flex-end;
+  gap: rem(10);
+
+  button {
+    padding: rem(6) rem(12);
+    border: rem(1) solid #ddd;
+    background: #fff;
+    cursor: pointer;
+    font-size: rem(14);
+    &:hover {
+      background: #f9f9f9;
+    }
+  }
+}
+
+.line {
+  height: rem(1);
+  background-color: #333;
+  margin-bottom: rem(30);
+}
+
+.productCard {
+  display: flex;
+  gap: rem(20);
+  padding: rem(20);
+  border: rem(1) solid #eee;
+  margin-bottom: rem(30);
+
+  .productInfo {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .date {
+      position: absolute;
+      top: 0;
+      right: 0;
+      color: #999;
+      font-size: rem(13);
+    }
+
+    .infoTop {
+      margin-bottom: rem(10);
+      .name {
+        font-weight: 700;
+        font-size: rem(16);
+      }
+      .option {
+        color: #666;
+        font-size: rem(14);
+        margin-top: rem(4);
+      }
+    }
+
+    .starWrapper {
+      display: flex;
+      .star {
+        color: #ddd;
+        &.active {
+          color: #facc15;
+        }
+      }
+    }
+  }
+}
+
+.contents {
+  min-height: rem(200);
+  margin-bottom: rem(40);
+
+  .section {
+    line-height: 1.6;
+    img {
+      max-width: 100%;
+      margin-top: rem(10);
+    }
+  }
+}
+
+.buttonMiddle {
+  display: flex;
+  justify-content: center;
+  gap: rem(10);
+  margin-top: rem(20);
+  button {
+    padding: rem(10) rem(30);
+    border-radius: rem(4);
+    cursor: pointer;
+    &:first-child {
+      border: rem(1) solid #ddd;
+    } // 취소
+    &:last-child {
+      background: #4b5563;
+      color: #fff;
+      border: none;
+    } // 등록
+  }
+}
+
+.answer {
+  background: #f8f9fa;
+  padding: rem(30);
+  margin-top: rem(50);
+
+  h3 {
+    margin-bottom: rem(20);
+    font-size: rem(18);
+  }
+
+  .replyText {
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: rem(120);
+    padding: rem(15);
+    border: rem(1) solid #ddd;
+    resize: none;
+  }
+}
+
+.buttonWrapper {
+  display: flex;
+  justify-content: center;
+  gap: rem(10);
+  margin-top: rem(30);
+
+  .btnSubmit {
+    padding: rem(12) rem(40);
+    background: #333;
+    color: #fff;
+    border: none;
+    border-radius: rem(4);
+    cursor: pointer;
+  }
+  .btnBefore {
+    padding: rem(12) rem(40);
+    border: rem(1) solid #ddd;
+    background: #fff;
+    cursor: pointer;
+  }
+}

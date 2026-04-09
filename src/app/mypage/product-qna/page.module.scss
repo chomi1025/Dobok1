@@ -1,0 +1,11 @@
+@import "../../../components/style/variables.module";
+
+.inner {
+  header {
+    margin-bottom: rem(30);
+
+    h1 {
+      margin-bottom: rem(30);
+    }
+  }
+}

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { CITY_OPTIONS, DISTRICTS } from "@/constants/regions";
 import toast from "react-hot-toast";
 import { JOB_ROLE_MAP } from "@/constants/jobs";
+import Editor from "@/components/common/editor/page";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
@@ -248,12 +249,8 @@ export default function HiringLayout() {
                 높아집니다
               </span>
             </label>
-            <ReactQuill
-              theme="snow"
-              value={content}
-              onChange={setContent}
-              className={styles.editor}
-            />
+
+            <Editor value={content} onChange={setContent} />
           </div>
 
           <div className={styles.contactField}>

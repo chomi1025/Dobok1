@@ -64,7 +64,7 @@ export default function AccountInfo<T extends FieldValues>({
         toast.error("이미 사용 중인 아이디 입니다.");
         setValue?.("usernameChecked" as Path<T>, false as any);
       } else {
-        toast.success("✅ 사용 가능한 아이디 입니다!");
+        toast.success("사용 가능한 아이디 입니다!");
         setValue?.("usernameChecked" as Path<T>, true as any, {
           shouldValidate: true,
         });
@@ -101,7 +101,7 @@ export default function AccountInfo<T extends FieldValues>({
   }, [checkMessage]);
 
   return (
-    <S.AccountInfo>
+    <S.AccountInfo isEdit={isEdit}>
       <legend>계정 정보</legend>
 
       <div className="field">
@@ -166,7 +166,7 @@ export default function AccountInfo<T extends FieldValues>({
           id="username"
           {...register("username" as Path<T>)}
           placeholder={isEdit ? "" : "아이디"}
-          readOnly={!!isEdit}
+          readOnly={isEdit}
         />
       </div>
 

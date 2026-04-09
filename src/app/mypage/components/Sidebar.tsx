@@ -1,7 +1,7 @@
 "use client";
 import { usePathname } from "next/navigation";
-import * as S from "./style";
 import Link from "next/link";
+import styles from "./side.module.scss";
 
 const menuItems = [
   {
@@ -32,26 +32,31 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <S.Inner isEdit={false}>
+    <aside className={styles.inner}>
       <h2>마이페이지</h2>
 
       <nav>
         {menuItems.map((section) => (
           <ul key={section.title}>
-            <li className="title">{section.title}</li>
+            <li className={styles.title}>{section.title}</li>
 
             {section.items.map((menu) => {
               const isActive = pathname.startsWith(`/mypage/${menu.slug}`);
 
               return (
-                <li key={menu.slug} className={isActive ? "active" : ""}>
-                  <Link href={`/mypage/${menu.slug}`}>{menu.label}</Link>
+                <li
+                  key={menu.slug}
+                  className={`${styles.menuItem} ${isActive ? styles.active : ""}`}
+                >
+                  <Link href={`/mypage/${menu.slug}`} prefetch={false}>
+                    {menu.label}
+                  </Link>
                 </li>
               );
             })}
           </ul>
         ))}
       </nav>
-    </S.Inner>
+    </aside>
   );
 }

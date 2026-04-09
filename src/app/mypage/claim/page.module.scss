@@ -1,0 +1,41 @@
+@import "../../../components/style/variables.module";
+
+.inner {
+  padding-bottom: rem(300);
+
+  header {
+    margin-bottom: rem(30);
+
+    h1 {
+      font-size: rem(30);
+      margin-bottom: rem(20);
+    }
+  }
+
+  > nav {
+    margin-top: rem(30);
+  }
+}
+
+.claimInfo {
+  display: flex;
+  flex-direction: column;
+  gap: rem(4);
+
+  span {
+    font-size: rem(13);
+    color: #888;
+  }
+
+  a {
+    text-decoration: underline;
+    font-weight : 700;
+  }
+}
+
+.nameOption {
+  display: flex;
+  align-items: center;
+  gap: rem(20);
+  text-decoration: underline;
+}

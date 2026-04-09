@@ -1,8 +1,8 @@
 "use client";
-import * as O from "./style";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import styles from "./page.module.scss";
 
 interface OrderItem {
   id: number;
@@ -72,26 +72,27 @@ export default function ClaimNewClientPage({ order }: { order: Order }) {
   };
 
   return (
-    <O.Wrapper>
-      <O.Title>반품 신청</O.Title>
+    <div className={styles.inner}>
+      <h1>반품 신청</h1>
 
       {/* 주문 요약 */}
-      <O.Card>
-        <O.CardTitle>주문 정보</O.CardTitle>
-        <O.InfoGrid>
-          <O.Label>주문번호</O.Label>
-          <O.Value>{order?.orderNumber}</O.Value>
-        </O.InfoGrid>
-      </O.Card>
+      <section className={styles.card}>
+        <h2 className={styles.CardTitle}>주문 정보</h2>
 
-      <O.Divider />
+        <div className={styles.infoGrid}>
+          <span className={styles.label}>주문번호</span>
+          <span className={styles.value}>{order?.orderNumber}</span>
+        </div>
+      </section>
+
+      <hr />
 
       {/* 상품 선택 */}
-      <O.Card>
-        <O.CardTitle>반품 상품 선택</O.CardTitle>
+      <section className={styles.card}>
+        <h2 className={styles.CardTitle}>반품 상품 선택</h2>
 
         {order.items.map((item) => (
-          <O.ProductCard key={item.id}>
+          <div className={styles.productCard} key={item.id}>
             <input
               type="checkbox"
               checked={selectedItems.includes(item.id)}
@@ -105,21 +106,22 @@ export default function ClaimNewClientPage({ order }: { order: Order }) {
               height={70}
             />
 
-            <O.ProductInfo>
-              <O.ProductName>{item.productName}</O.ProductName>
-              <O.ProductMeta>{item.quantity}개</O.ProductMeta>
-              <O.ProductPrice>
+            <div className={styles.productInfo}>
+              <p className={styles.productName}>{item.productName}</p>
+              <p className={styles.productMeta}>{item.quantity}개</p>
+              <p className={styles.productPrice}>
                 {item.totalPrice.toLocaleString()}원
-              </O.ProductPrice>
-            </O.ProductInfo>
-          </O.ProductCard>
+              </p>
+            </div>
+          </div>
         ))}
-      </O.Card>
+      </section>
 
-      <O.Divider />
+      <hr />
 
-      <O.Card>
-        <O.CardTitle>신청 종류</O.CardTitle>
+      <section className={styles.card}>
+        <h2 className={styles.CardTitle}>신청 종류</h2>
+
         <select
           value={claimType}
           onChange={(e) =>
@@ -133,11 +135,13 @@ export default function ClaimNewClientPage({ order }: { order: Order }) {
             </option>
           ))}
         </select>
-      </O.Card>
+      </section>
+
+      <hr />
 
       {/* 반품 사유 */}
-      <O.Card>
-        <O.CardTitle>반품 사유</O.CardTitle>
+      <section className={styles.card}>
+        <h2 className={styles.CardTitle}>반품 사유</h2>
 
         <select
           value={reason}
@@ -162,13 +166,13 @@ export default function ClaimNewClientPage({ order }: { order: Order }) {
             minHeight: 120,
           }}
         />
-      </O.Card>
+      </section>
 
       {/* 버튼 */}
-      <O.ButtonRow>
-        <O.Button onClick={() => router.back()}>취소</O.Button>
-        <O.PrimaryButton onClick={handleClaim}>신청</O.PrimaryButton>
-      </O.ButtonRow>
-    </O.Wrapper>
+      <div className={styles.buttonRow}>
+        <button onClick={() => router.back()}>취소</button>
+        <button onClick={handleClaim}>신청</button>
+      </div>
+    </div>
   );
 }

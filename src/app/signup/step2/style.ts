@@ -2,7 +2,8 @@ import styled from "@emotion/styled";
 
 export const Inner = styled.section`
   padding: 100px 0 250px;
-  width: 650px;
+  width: 100%;
+  max-width: 650px;
   margin: 0 auto;
   position: relative;
 
@@ -37,6 +38,7 @@ export const Error_Wrapper = styled.div`
   align-items: center;
   margin-bottom: 10px;
   position: relative;
+
   p {
     margin-left: 10px;
     font-size: 13px;
@@ -86,7 +88,8 @@ export const Form = styled.form`
 `;
 
 export const Signup_Button = styled.button`
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
   height: 60px;
   background-color: #444;
   border-radius: 5px;
@@ -97,7 +100,8 @@ export const Signup_Button = styled.button`
 `;
 
 export const Form_Inner = styled.div`
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
 
   > fieldset {
     > div {
@@ -199,7 +203,7 @@ export const PersonalInfo = styled.fieldset`
   }
 `;
 
-export const AccountInfo = styled.fieldset`
+export const AccountInfo = styled.fieldset<{ isEdit: boolean }>`
   input {
     width: 100%;
     padding: 12px 20px;
@@ -207,6 +211,10 @@ export const AccountInfo = styled.fieldset`
 
   .field {
     margin-bottom: 30px;
+
+    #username {
+      background-color: ${(props) => props.isEdit && "#f9fafb"};
+    }
   }
 `;
 export const EmailInfo = styled.fieldset`

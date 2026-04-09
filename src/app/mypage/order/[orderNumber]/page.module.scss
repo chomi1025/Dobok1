@@ -1,0 +1,132 @@
+@import "../../../../components/style/variables.module";
+
+.inner {
+  margin: 0 auto;
+  flex: 1;
+  padding-bottom: rem(300);
+
+  > h1 {
+    font-size: rem(30);
+    font-weight: 700;
+    margin-bottom: rem(24);
+    padding-bottom: rem(20);
+    border-bottom: 1px solid #333;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: rem(32) 0;
+  }
+}
+
+.card {
+  border: 1px solid #ddd;
+  border-radius: rem(12);
+  padding: rem(24);
+  background: #fff;
+
+  h2 {
+    font-size: rem(18);
+    margin-bottom: rem(16);
+  }
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  row-gap: 12px;
+}
+
+.label {
+  color: #777;
+  font-size: rem(14);
+}
+
+.value {
+  font-size: rem(14);
+}
+
+.address {
+  font-size: rem(14);
+  line-height: 1.6;
+}
+
+.productCard {
+  display: flex;
+  gap: 16px;
+  padding: rem(16) 0;
+  border-bottom: 1px solid #ddd;
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+
+.productInfo {
+  flex: 1;
+}
+
+.productName {
+  font-size: rem(15);
+  margin-bottom: rem(6);
+}
+
+.productMeta {
+  font-size: rem(13);
+  color: #777;
+}
+
+.productPrice {
+  font-size: rem(14);
+  margin-top: rem(8);
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: rem(14);
+  margin-bottom: rem(8);
+}
+
+.total {
+  font-size: rem(16);
+  margin-top: rem(16);
+}
+
+.buttonRow {
+  display: flex;
+  gap: rem(12);
+  margin-top: rem(32);
+
+  button {
+    flex: 1;
+    height: rem(48);
+    border-radius: rem(8);
+    font-size: rem(15);
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #000;
+  }
+
+  > .primaryButton {
+    flex: 1;
+    height: rem(48);
+    border-radius: rem(8);
+    font-size: rem(15);
+    cursor: pointer;
+    border: none;
+    background: #000;
+    color: #fff;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: #333;
+    }
+
+    &:active {
+      background: #111;
+    }
+  }
+}

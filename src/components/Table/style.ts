@@ -82,6 +82,7 @@ export const Row = styled.div`
 
 export const Info = styled.div<OrderInfoProps>`
   flex: ${(props) => props.flex || 1};
+
   text-align: ${(props) => props.align || "center"};
   display: flex;
   align-items: center;

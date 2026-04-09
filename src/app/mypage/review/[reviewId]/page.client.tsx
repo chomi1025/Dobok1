@@ -1,10 +1,10 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import * as R from "./style";
-import ReviewEditor from "@/components/mypage/ReviewEditor";
+import styles from "./page.module.scss";
+import EditorComponent from "@/components/common/editor/page";
 
 type ReplyType = {
   id: number;
@@ -28,11 +28,14 @@ type ReviewType = {
   reply?: ReplyType;
 };
 
-export default function ReviewDetailClientPage() {
+export interface Props {
+  initialReviews: ReviewType;
+}
+export default function ReviewDetailClientPage({ initialReviews }: Props) {
   const params = useParams();
   const reviewId = params.reviewId;
 
-  const [review, setReview] = useState<ReviewType | null>(null);
+  const [review, setReview] = useState<ReviewType | null>(initialReviews);
   const [isEditingReview, setIsEditingReview] = useState(false);
   const [reviewContent, setReviewContent] = useState("");
   const [replyContent, setReplyContent] = useState("");
@@ -41,32 +44,6 @@ export default function ReviewDetailClientPage() {
   const loginUserRole = session?.user?.role?.toLowerCase();
 
   const [isEditingReply, setIsEditingReply] = useState(false);
-
-  useEffect(() => {
-    if (!reviewId) return;
-
-    const fetchReview = async () => {
-      try {
-        const res = await fetch(`/api/mypage/review/${reviewId}`);
-        if (!res.ok) throw new Error("리뷰 가져오기 실패");
-        const data = await res.json();
-        setReview(data);
-
-        const formatted = data.content
-          .split("\n")
-          .map((line: string) => (line ? `<p>${line}</p>` : "<p><br></p>"))
-          .join("");
-        setReviewContent(formatted);
-      } catch (err) {
-        console.error(err);
-        setReview(null);
-      }
-    };
-
-    fetchReview();
-  }, [reviewId]);
-
-  if (!review) return <R.Wrapper>로딩중...</R.Wrapper>;
 
   const handleUpdateReview = async () => {
     if (!reviewContent) return alert("내용을 입력해주세요");
@@ -139,142 +116,133 @@ export default function ReviewDetailClientPage() {
     }
   };
 
+  if (!review) {
+    return <div className={styles.inner}>로딩 중입니다... </div>;
+  }
+
   return (
-    <R.Wrapper>
-      <R.Title>리뷰 상세</R.Title>
-      <R.Button_top>
-        <button
-          onClick={() => {
-            setReviewContent(
-              review.content +
-                review.images.map((src) => `<img src="${src}" />`).join(""),
-            );
-            setIsEditingReview(true);
-          }}
-        >
-          수정
-        </button>
-        <button onClick={handleDeleteReview}>삭제</button>
-      </R.Button_top>
+    <div className={styles.inner}>
+      <header>
+        <h1 className={styles.title}>리뷰 상세</h1>
 
-      <R.Line />
+        <div className={styles.buttonTop}>
+          <button
+            onClick={() => {
+              setReviewContent(review.content);
+              setIsEditingReview(true);
+            }}
+          >
+            수정
+          </button>
+          <button onClick={handleDeleteReview}>삭제</button>
+        </div>
+      </header>
 
-      <R.ProductCard>
+      <div className={styles.productCard}>
         <Image
           src={review.orderItem.product.img}
-          alt={review.orderItem.product.name}
+          alt="상품"
           width={90}
           height={90}
         />
-        <R.ProductInfo>
-          <R.Date>{review.createdAt.slice(0, 10)}</R.Date>
-          <R.P_Info_Top>
-            <R.P_name>{review.orderItem.product.name}</R.P_name>
-            <R.P_option>{review.orderItem.option || "옵션 없음"}</R.P_option>
-          </R.P_Info_Top>
-          <R.Stars>
+        <div className={styles.productInfo}>
+          <span className={styles.date}>{review.createdAt.slice(0, 10)}</span>
+          <div className={styles.infoTop}>
+            <div className={styles.name}>{review.orderItem.product.name}</div>
+            <div className={styles.option}>
+              {review.orderItem.option || "옵션 없음"}
+            </div>
+          </div>
+          <div className={styles.starWrapper}>
             {[1, 2, 3, 4, 5].map((n) => (
-              <R.Star key={n} $active={review.rating >= n}>
+              <span
+                key={n}
+                className={`${styles.star} ${review.rating >= n ? styles.active : ""}`}
+              >
                 ★
-              </R.Star>
+              </span>
             ))}
-          </R.Stars>
-        </R.ProductInfo>
-      </R.ProductCard>
+          </div>
+        </div>
+      </div>
 
-      <R.Contents isEditingReview={isEditingReview}>
+      {/* 컨텐츠 영역 */}
+      <div
+        className={`${styles.contents} ${isEditingReview ? styles.isEditing : ""}`}
+      >
         {!isEditingReview ? (
-          <>
-            <R.Section dangerouslySetInnerHTML={{ __html: review.content }} />
-          </>
+          <div
+            className={styles.section}
+            dangerouslySetInnerHTML={{ __html: review.content }}
+          />
         ) : (
           <>
-            <ReviewEditor
-              //key={review.id}
+            <EditorComponent
               value={reviewContent}
               onChange={setReviewContent}
             />
           </>
         )}
-      </R.Contents>
+      </div>
 
+      {/* 중간 버튼 (수정 모드일 때만) */}
       {isEditingReview && (
-        <R.Button_middle>
-          <button
-            onClick={() => {
-              setIsEditingReview(false);
-              setReviewContent(review.content);
-            }}
-          >
-            취소
-          </button>
+        <div className={styles.buttonMiddle}>
+          <button onClick={() => setIsEditingReview(false)}>취소</button>
           <button onClick={handleUpdateReview}>등록</button>
-        </R.Button_middle>
+        </div>
       )}
 
-      <R.Answer>
+      {/* 답변 영역 */}
+      <div className={styles.answer}>
         <h3>답변</h3>
-
-        {/* 관리자 */}
         {loginUserRole === "ADMIN" ? (
           isEditingReply || !review.reply ? (
-            <R.Textarea_Admin
+            <textarea
               value={replyContent}
               onChange={(e) => setReplyContent(e.target.value)}
               placeholder="답변을 입력하세요"
             />
           ) : (
-            <R.ReplyText>{review.reply.content}</R.ReplyText>
+            <div className={styles.replyText}>{review.reply.content}</div>
           )
-        ) : /* 일반 유저 */
-        review.reply ? (
-          <R.ReplyText>{review.reply.content}</R.ReplyText>
+        ) : review.reply ? (
+          <div className={styles.replyText}>{review.reply.content}</div>
         ) : (
-          <R.Textarea_User
-            disabled
-            placeholder="아직 답변이 입력되지 않았습니다"
-          />
+          <div>아직 답변이 없습니다.</div>
         )}
-      </R.Answer>
+      </div>
 
-      <R.Button_Wrapper>
+      {/* 하단 버튼 영역 */}
+      <div className={styles.buttonWrapper}>
         {loginUserRole === "ADMIN" && (
           <>
-            {!review.reply && (
-              <R.Button_submit onClick={handleSubmitReply}>
-                등록하기
-              </R.Button_submit>
-            )}
-
-            {review.reply && !isEditingReply && (
-              <R.Button_submit
-                onClick={() => {
-                  setReplyContent(review.reply?.content || "");
-                  setIsEditingReply(true);
-                }}
-              >
-                수정하기
-              </R.Button_submit>
-            )}
-
-            {isEditingReply && (
+            {isEditingReply ? (
               <>
-                <R.Button_before
-                  onClick={() => {
-                    setIsEditingReply(false);
-                    setReplyContent(review.reply?.content || "");
-                  }}
+                <button
+                  className={styles.btnBefore}
+                  onClick={() => setIsEditingReply(false)}
                 >
                   취소하기
-                </R.Button_before>
-                <R.Button_submit onClick={handleSubmitReply}>
+                </button>
+                <button
+                  className={styles.btnSubmit}
+                  onClick={handleSubmitReply}
+                >
                   등록하기
-                </R.Button_submit>
+                </button>
               </>
+            ) : (
+              <button
+                className={styles.btnSubmit}
+                onClick={() => setIsEditingReply(true)}
+              >
+                {review.reply ? "수정하기" : "등록하기"}
+              </button>
             )}
           </>
         )}
-      </R.Button_Wrapper>
-    </R.Wrapper>
+      </div>
+    </div>
   );
 }

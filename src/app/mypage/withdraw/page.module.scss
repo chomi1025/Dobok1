@@ -1,0 +1,177 @@
+@import "../../../components/style/variables.module";
+
+.inner {
+  max-width: rem(800);
+  margin: 0 auto;
+  padding: rem(60) rem(20);
+
+  header {
+    text-align: center;
+    margin-bottom: rem(40);
+    h1 {
+      font-size: rem(32);
+      font-weight: 800;
+      color: #111;
+      margin-bottom: rem(10);
+    }
+    p {
+      font-size: rem(16);
+      color: #666;
+    }
+  }
+}
+
+.withDraw {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: rem(16);
+  padding: rem(40);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+
+  // 주의사항
+  .warningSection {
+    background: #fff9f9;
+    border-radius: rem(12);
+    padding: rem(25);
+    border: 1px solid #ffebeb;
+    margin-bottom: rem(40);
+
+    .warningTitle {
+      color: #e11d48;
+      font-weight: 700;
+      font-size: rem(16);
+      margin-bottom: rem(15);
+      display: flex;
+      align-items: center;
+      &::before {
+        content: "⚠️";
+        margin-right: rem(8);
+      }
+    }
+
+    .warningList {
+      font-size: rem(14);
+      color: #555;
+      line-height: 1.6;
+      li {
+        margin-bottom: rem(8);
+        strong {
+          color: #111;
+        }
+      }
+    }
+  }
+
+  // 라디오 버튼 그리드 디자인
+  .reasonFieldset {
+    border: none;
+    padding: 0;
+    margin-bottom: rem(40);
+    legend {
+      font-size: rem(18);
+      font-weight: 700;
+      margin-bottom: rem(20);
+      color: #333;
+    }
+
+    .radioGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(rem(140), 1fr));
+      gap: rem(10);
+    }
+
+    .radioLabel {
+      border: 1px solid #ddd;
+      border-radius: rem(8);
+      padding: rem(15);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      input {
+        display: none;
+      }
+      .text {
+        font-size: rem(14);
+        color: #666;
+      }
+
+      &:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+      }
+
+      &.active {
+        background: #1e293b;
+        border-color: #1e293b;
+        .text {
+          color: #fff;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  .otherInput {
+    width: 100%;
+    margin-top: rem(15);
+    padding: rem(15);
+    border: 1px solid #ddd;
+    border-radius: rem(8);
+    min-height: rem(100);
+    resize: none;
+    font-size: rem(14);
+  }
+
+  .confirmSection {
+    border-top: 1px solid #eee;
+    padding-top: rem(40);
+
+    .inputGroup {
+      margin-bottom: rem(25);
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: rem(10);
+      }
+      input {
+        width: 100%;
+        padding: rem(15);
+        border: 1px solid #ddd;
+        border-radius: rem(8);
+        &:focus {
+          outline: 2px solid #1e293b;
+        }
+      }
+    }
+
+    .agreeLabel {
+      display: flex;
+      align-items: center;
+      gap: rem(10);
+      margin-bottom: rem(30);
+      font-size: rem(14);
+      color: #444;
+      cursor: pointer;
+      input {
+        width: rem(18);
+        height: rem(18);
+        accent-color: #111;
+      }
+    }
+
+    .submitBtn {
+      width: 100%;
+      height: rem(56);
+      background: #111;
+      color: #fff;
+      border-radius: rem(8);
+      font-size: rem(16);
+      font-weight: 700;
+      transition: background 0.2s;
+      &:hover {
+        background: #333;
+      }
+    }
+  }
+}

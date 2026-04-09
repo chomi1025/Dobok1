@@ -1,9 +1,7 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import * as M from "../style";
-import * as P from "../../signup/step2/style";
-
+import styles from "./page.module.scss";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -176,12 +174,13 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
   };
 
   return (
-    <M.Contents>
-      <h2>회원 정보 수정</h2>
-      <span />
+    <div className={styles.inner}>
+      <header>
+        <h1>회원 정보 수정</h1>
+      </header>
 
-      <P.Form onSubmit={handleSubmit(onSubmit)}>
-        <P.Form_Inner>
+      <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+        <div className={styles.formInner}>
           {/* 비밀번호 변경 (선택) */}
           <AccountInfo
             register={register}
@@ -210,13 +209,11 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
           />
 
           <BirthdayInput control={control} errors={errors} isEdit={true} />
-        </P.Form_Inner>
+        </div>
 
         {/*  회원가입 버튼 */}
-        <P.Signup_Button style={{ marginTop: "50px" }} type="submit">
-          수정하기
-        </P.Signup_Button>
-      </P.Form>
-    </M.Contents>
+        <button type="submit">수정하기</button>
+      </form>
+    </div>
   );
 }
