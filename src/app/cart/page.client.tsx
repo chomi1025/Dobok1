@@ -2,15 +2,7 @@
 import { useEffect, useState } from "react";
 import CartEmptyComponent from "./CartEmpty";
 import CartListComponent from "./CartList";
-import styles from "./page.module.scss";
-import BreadCrumb from "@/components/breadcrumb";
-import { Session } from "next-auth";
-
-const STEPS = [
-  { label: "장바구니", step: 0, path: "/cart" },
-  { label: "주문서작성/결제", step: 1, path: "/checkout" },
-  { label: "주문완료", step: 2, path: "/order/success" },
-];
+import { useSession } from "next-auth/react";
 
 interface CartItemType {
   id: number;
@@ -26,22 +18,15 @@ interface CartItemType {
   productOption?: any;
 }
 
-interface Props {
-  session: Session | null;
-  initialCart: [];
-}
-
-export default function CartClientPage({ session, initialCart }: Props) {
-  const [cart, setCart] = useState<CartItemType[]>(initialCart);
+export default function CartClientPage() {
+  const { data: session, status } = useSession();
+  const [cart, setCart] = useState<CartItemType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // 비회원일 때만 실행
-    if (session && initialCart.length > 0) {
-      setIsLoading(false);
-      return;
-    }
+    if (status === "loading") return;
 
+    //비회원이면
     const fetchGuestCart = async () => {
       setIsLoading(true);
 
@@ -87,19 +72,31 @@ export default function CartClientPage({ session, initialCart }: Props) {
       }
     };
 
-    fetchGuestCart();
-  }, [session, initialCart]);
+    const loadCartData = async () => {
+      setIsLoading(true);
+
+      // 회원이면
+      if (session) {
+        try {
+          const res = await fetch("/api/cart");
+          const data = await res.json();
+          setCart(data);
+        } catch (error) {
+          console.error("회원 장바구니 로드 실패:", error);
+        }
+      } else {
+        fetchGuestCart();
+      }
+      setIsLoading(false);
+    };
+
+    loadCartData();
+  }, [session, status]);
 
   const showEmpty = !isLoading && cart.length === 0;
 
   return (
-    <div className={styles.inner}>
-      <header className={styles.sectionHeader}>
-        <h1>장바구니</h1>
-
-        <BreadCrumb steps={STEPS} />
-      </header>
-
+    <>
       {showEmpty ? (
         <CartEmptyComponent />
       ) : (
@@ -110,6 +107,6 @@ export default function CartClientPage({ session, initialCart }: Props) {
           setCart={setCart}
         />
       )}
-    </div>
+    </>
   );
 }
