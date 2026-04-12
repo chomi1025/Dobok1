@@ -11,12 +11,6 @@ export default async function MypageLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    redirect("/login");
-  }
-
   return (
     <div className={styles.inner}>
       <Sidebar />

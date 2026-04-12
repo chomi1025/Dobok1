@@ -75,21 +75,20 @@ export default function CartClientPage() {
     const loadCartData = async () => {
       setIsLoading(true);
 
-      // 회원이면
-      if (session) {
-        try {
+      try {
+        if (session) {
           const res = await fetch("/api/cart");
           const data = await res.json();
           setCart(data);
-        } catch (error) {
-          console.error("회원 장바구니 로드 실패:", error);
+        } else {
+          await fetchGuestCart();
         }
-      } else {
-        fetchGuestCart();
+      } catch (error) {
+        console.error("데이터 로드 중 에러:", error);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
-
     loadCartData();
   }, [session, status]);
 

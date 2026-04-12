@@ -5,6 +5,7 @@ import styles from "./page.module.scss";
 import BoardLayout from "@/components/common/boardLayout/page";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { useSession } from "next-auth/react";
 
 interface InquiryRow {
   id: number;
@@ -16,11 +17,9 @@ interface InquiryRow {
 
 interface Props {
   data: any[];
-  session: any;
   currentPage: number;
   total: number;
   pageSize: number;
-  role?: string | null;
 }
 
 const categoryName = {
@@ -38,12 +37,13 @@ const statusName = {
 
 export default function InquiryClientPage({
   data,
-  session,
   currentPage,
   total,
   pageSize,
-  role,
 }: Props) {
+  const { data: session, status } = useSession();
+  const isAdmin = status !== "loading" && session?.user?.role === "ADMIN";
+
   const router = useRouter();
   const isUserLoggedIn = session;
 
@@ -90,9 +90,7 @@ export default function InquiryClientPage({
       label: "제목",
       flex: 6,
       render: (row: any) => {
-        const isMine = Number(row.userId) === currentUserId;
-
-        const isLocked = row.isPrivate && !isMine;
+        const isLocked = row.isPrivate && row.title === "비밀글입니다.";
 
         return (
           <Link
@@ -148,7 +146,7 @@ export default function InquiryClientPage({
       <BoardLayout
         title="1:1 문의하기"
         tableTitle="1:1 문의하기 테이블"
-        role={role}
+        role={isAdmin ? "ADMIN" : "USER"}
         onWriteClick={handleWriteClick}
         total={total}
         pageSize={pageSize}

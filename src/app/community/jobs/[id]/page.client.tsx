@@ -6,9 +6,26 @@ import { useEffect, useState } from "react";
 import { CITY_OPTIONS } from "@/constants/regions";
 import Button from "@/components/common/buttons/page";
 import { EXPERIENCE_MAP, JOB_ROLE_MAP } from "@/constants/jobs";
+import { useSession } from "next-auth/react";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function JobsDetailClientPage({ post }: { post: any }) {
-  console.log(post);
+  const { data: session } = useSession();
+  const router = useRouter();
+  console.log(session);
+
+  const isAuthor = Number(session?.user?.id) === post?.authorId;
+
+  const isAdmin = session?.user?.role === "ADMIN";
+  console.log(isAuthor, isAdmin);
+  const handleDelete = async () => {
+    if (!confirm("정말 삭제하시겠습니까?")) return;
+
+    toast.success("삭제되었습니다.");
+    router.push("/community/jobs");
+  };
+
   //   입력값 정화
   const [sanitizedHtml, setSanitizedHtml] = useState("");
 
@@ -39,6 +56,37 @@ export default function JobsDetailClientPage({ post }: { post: any }) {
       <div className={styles.inner}>
         <header>
           <h1>구인·구직게시판</h1>
+
+          <div className={styles.btnWrapper}>
+            {isAuthor ? (
+              <>
+                <Button
+                  href={`/community/jobs/${post?.id}/edit`}
+                  variant="edit"
+                >
+                  수정
+                </Button>
+
+                <Button
+                  variant="delete"
+                  className={styles.deleteBtn}
+                  onClick={handleDelete}
+                >
+                  삭제
+                </Button>
+              </>
+            ) : (
+              isAdmin && (
+                <Button
+                  variant="delete"
+                  className={styles.deleteBtn}
+                  onClick={handleDelete}
+                >
+                  관리자 삭제
+                </Button>
+              )
+            )}
+          </div>
         </header>
 
         <article className={styles.postCard}>

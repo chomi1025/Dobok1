@@ -1,14 +1,33 @@
 import { prisma } from "@/lib/prisma";
 import FaqClientPage from "./page.client";
-import { authOptions } from "@/lib/auth/options";
-import { getServerSession } from "next-auth";
 
-export default async function FaqPage() {
-  const [session, faqs] = await Promise.all([
-    getServerSession(authOptions),
-    prisma.Faq.findMany(),
+interface Props {
+  searchParams: { [key: string]: string | string[] | undefined };
+}
+
+export const revalidate = 60;
+
+export default async function FaqPage({ searchParams }: Props) {
+  const currentPage = Number(searchParams.page) || 1;
+  const pageSize = 10;
+  const skip = (currentPage - 1) * pageSize;
+
+  const [totalCount, faqs] = await Promise.all([
+    prisma.faq.count(),
+
+    prisma.faq.findMany({
+      orderBy: { sortOrder: "desc" },
+      skip: skip,
+      take: pageSize,
+    }),
   ]);
-  const isAdmin = session?.user?.role === "ADMIN";
 
-  return <FaqClientPage faqs={faqs} isAdmin={isAdmin} />;
+  return (
+    <FaqClientPage
+      totalCount={totalCount}
+      pageSize={pageSize}
+      faqs={faqs}
+      currentPage={currentPage}
+    />
+  );
 }

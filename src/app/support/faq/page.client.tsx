@@ -7,6 +7,8 @@ import CategoryTabs from "@/components/CategoryTabs/page";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { customConfirm } from "@/lib/swal";
+import { useSession } from "next-auth/react";
+import PagenationComponent from "@/components/pagenation/page";
 
 interface FaqsType {
   id: number;
@@ -17,8 +19,10 @@ interface FaqsType {
 }
 
 interface Props {
+  totalCount: number;
+  currentPage: number;
+  pageSize: number;
   faqs: FaqsType[];
-  isAdmin: boolean;
 }
 
 const CATEGORIES = [
@@ -28,7 +32,15 @@ const CATEGORIES = [
   { name: "반품/환불", id: "return" },
 ];
 
-export default function FaqClientPage({ faqs, isAdmin }: Props) {
+export default function FaqClientPage({
+  faqs,
+  totalCount,
+  pageSize,
+  currentPage,
+}: Props) {
+  const { data: session, status } = useSession();
+  const isAdmin = status !== "loading" && session?.user?.role === "ADMIN";
+
   const [openId, setOpenId] = useState<number | null>(null);
   const toggle = (id: number) => {
     setOpenId(openId === id ? null : id);
@@ -143,6 +155,12 @@ export default function FaqClientPage({ faqs, isAdmin }: Props) {
           </ul>
         )}
       </article>
+
+      <PagenationComponent
+        total={totalCount}
+        pageSize={pageSize}
+        currentPage={currentPage}
+      />
     </>
   );
 }

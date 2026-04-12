@@ -1,20 +1,18 @@
-import { authOptions } from "@/lib/auth/options";
 import NoticeClientPage from "./page.client";
-import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 
 interface Props {
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
+export const revalidate = 60;
+
 export default async function NoticeServerPage({ searchParams }: Props) {
   const currentPage = Number(searchParams.page) || 1;
   const pageSize = 10;
   const skip = (currentPage - 1) * pageSize;
 
-  const [session, totalCount, fixedNotices, normalNotices] = await Promise.all([
-    getServerSession(authOptions),
-
+  const [totalCount, fixedNotices, normalNotices] = await Promise.all([
     prisma.notice.count({ where: { isFixed: false } }),
 
     prisma.notice.findMany({
@@ -31,11 +29,9 @@ export default async function NoticeServerPage({ searchParams }: Props) {
   ]);
 
   const allNotices = [...fixedNotices, ...normalNotices];
-  const role = session?.user?.role ?? "USER";
 
   return (
     <NoticeClientPage
-      role={role}
       allNotices={allNotices}
       total={totalCount}
       pageSize={pageSize}

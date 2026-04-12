@@ -3,6 +3,7 @@ import styles from "./page.module.scss";
 import { Table } from "@/components/Table/page";
 import Link from "next/link";
 import BoardLayout from "@/components/common/boardLayout/page";
+import { useSession } from "next-auth/react";
 
 interface NoticeRow {
   id: number;
@@ -21,12 +22,14 @@ interface Props {
 }
 
 export default function NoticeClientPage({
-  role,
   allNotices,
   total,
   pageSize,
   currentPage,
 }: Props) {
+  const { data: session } = useSession();
+  const role = session?.user?.role ?? "USER";
+
   const noticeColumns = [
     {
       key: "number",
