@@ -21,7 +21,7 @@ interface CartItemType {
 export default function CartClientPage() {
   const { data: session, status } = useSession();
   const [cart, setCart] = useState<CartItemType[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (status === "loading") return;
