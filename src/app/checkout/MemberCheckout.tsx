@@ -53,7 +53,7 @@ export const guestOrderSchema = yup.object({
     .string()
     .oneOf(["card", "bank", "kakaoPay", "naverPay"])
     .required(),
-  privacyCheck: yup.boolean().oneOf([true], "개인정보 수집에 동의해주세요."),
+
   orderAgree: yup.boolean().oneOf([true], "구매 진행 동의가 필요합니다."),
 });
 
@@ -67,7 +67,6 @@ export interface GuestOrderFormData {
   detailAddress: string;
   cellphone: string;
   paymentMethod: "card" | "bank" | "kakaoPay" | "naverPay";
-  privacyCheck: boolean;
   orderAgree: boolean;
   customRequest?: string;
   customFiles?: File[] | null;
@@ -154,7 +153,7 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
       detailAddress: user.address.detailAddress,
       customRequest: "",
       paymentMethod: "card",
-      privacyCheck: false,
+
       orderAgree: false,
     },
   });
@@ -296,6 +295,7 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...data,
+          userId: user.id,
           items: cartItems,
           total: totalOrderPrice + (isFreeDelivery ? 0 : 3000),
         }),
@@ -376,7 +376,11 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form
+        onSubmit={handleSubmit(onSubmit, (errors) =>
+          console.log("유효성 검사 실패:", errors),
+        )}
+      >
         <header className={styles.SectionHeader}>
           <h1>주문서 작성/결제</h1>
 
@@ -741,7 +745,9 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
           {errors.orderAgree && (
             <p className={styles.error}>{errors.orderAgree.message}</p>
           )}
-          <Button variant="primary">결제하기</Button>
+          <Button type={"submit"} variant="primary">
+            결제하기
+          </Button>
         </section>
       </form>
     </div>

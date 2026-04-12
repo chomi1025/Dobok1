@@ -8,6 +8,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   children: React.ReactNode;
   className?: string;
+  type?: "button" | "submit";
 }
 
 export default function Button({
@@ -16,6 +17,7 @@ export default function Button({
   onClick,
   children,
   className,
+  type = "button",
   ...rest
 }: ButtonProps) {
   const combinedClass = `${styles.btn} ${styles[variant]} ${className || ""}`;
@@ -33,7 +35,12 @@ export default function Button({
     );
   }
   return (
-    <button className={combinedClass} {...rest}>
+    <button
+      type={"submit"}
+      className={combinedClass}
+      onClick={onClick}
+      {...rest}
+    >
       {children}
     </button>
   );

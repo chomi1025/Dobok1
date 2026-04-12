@@ -305,7 +305,10 @@ export default function CartListComponent({
   const totalPayment = totalProductPrice + shippingFee;
 
   // 주문페이지로 이동 ㄱㄱ
-  const goToCheckout = (all: boolean) => {
+  const goToCheckout = (all: boolean, e?: React.MouseEvent) => {
+    console.log(123);
+    if (e) e.preventDefault();
+
     try {
       if (cart.length === 0) {
         return toast.error("장바구니에 담긴 상품이 없습니다.");
@@ -325,6 +328,7 @@ export default function CartListComponent({
         router.push(`/checkout`);
       } else {
         localStorage.setItem("checkoutItems", JSON.stringify(selectedItems));
+
         router.push("/checkout");
       }
     } catch (error) {
