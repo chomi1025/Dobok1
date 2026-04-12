@@ -4,6 +4,18 @@
   max-width: rem(900);
   margin: 0 auto;
 
+  > header {
+    position: relative;
+
+    .btnWrapper {
+      position: absolute;
+      display: flex;
+      right: 0;
+      bottom: rem(-20);
+      gap: rem(5);
+    }
+  }
+
   .topInfo {
     display: flex;
     gap: rem(8);
@@ -211,9 +223,13 @@
     }
 
     .btnWrapper {
+      padding: rem(40) 0;
       display: flex;
       justify-content: center;
-      padding: rem(40) 0;
+
+      > a {
+        font-size: rem(16);
+      }
     }
   }
 }

@@ -12,7 +12,7 @@
 
   nav {
     ul {
-      &:not(:nth-of-type(3)) {
+      &:not(:last-of-type) {
         margin-bottom: rem(30);
       }
 
@@ -40,5 +40,19 @@
         text-decoration: underline;
       }
     }
+  }
+
+  .unreadBadge {
+    margin-left: rem(3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: rem(18);
+    height: rem(18);
+    background-color: #ff4d4f;
+    color: #fff;
+    font-size: rem(10);
+    font-weight: 700;
+    border-radius: 50%;
   }
 }

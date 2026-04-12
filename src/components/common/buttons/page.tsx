@@ -13,6 +13,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 export default function Button({
   variant = "primary",
   href,
+  onClick,
   children,
   className,
   ...rest
@@ -21,7 +22,12 @@ export default function Button({
 
   if (href) {
     return (
-      <Link href={href} className={combinedClass} prefetch={false}>
+      <Link
+        href={href}
+        className={combinedClass}
+        prefetch={false}
+        onClick={onClick as any}
+      >
         {children}
       </Link>
     );

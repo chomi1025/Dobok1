@@ -36,8 +36,7 @@ export default async function JobsPage({ searchParams }: PageProps) {
     (searchParams.type?.toUpperCase() as "HIRING" | "SEEKING") || "HIRING";
   const pageSize = 10;
 
-  const [session, total, jobs] = await Promise.all([
-    getServerSession(authOptions),
+  const [total, jobs] = await Promise.all([
     prisma.post.count({
       where: { type: "JOB", jobType: currentType },
     }),
@@ -56,13 +55,11 @@ export default async function JobsPage({ searchParams }: PageProps) {
       },
     }),
   ]);
-  console.log(jobs);
-  const currentUser = session?.user;
+
   return (
     <JobsClientPage
       jobs={jobs}
       total={total}
-      user={currentUser}
       pageSize={pageSize}
       currentPage={currentPage}
       initialType={currentType}

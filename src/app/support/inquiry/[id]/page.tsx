@@ -24,7 +24,7 @@ export default async function InquiryPage({ params }: Props) {
   if (!inquiry) return notFound();
   const isAuthor = inquiry.userId === currentUserId;
 
-  if (!isAuthor && !isAdmin) {
+  if (inquiry.isPrivate && !isAuthor && !isAdmin) {
     return (
       <InquiryClientPage
         isLocked={true}
@@ -39,6 +39,7 @@ export default async function InquiryPage({ params }: Props) {
       inquiry={inquiry}
       currentUserId={currentUserId}
       isAdmin={isAdmin}
+      isLocked={false}
     />
   );
 }

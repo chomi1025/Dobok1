@@ -20,6 +20,14 @@ const menuItems = [
     ],
   },
   {
+    title: "커뮤니티 활동",
+    items: [
+      { slug: "my-posts", label: "내 게시글" },
+      { slug: "my-comments", label: "내 댓글" },
+      { slug: "messages", label: "채용 메세지", hasBadge: true },
+    ],
+  },
+  {
     title: "회원정보",
     items: [
       { slug: "profile-edit", label: "회원 정보 수정" },
@@ -30,6 +38,8 @@ const menuItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  // 쪽지 기능 나중에
+  const unreadCount = 5;
 
   return (
     <aside className={styles.inner}>
@@ -43,6 +53,8 @@ export default function Sidebar() {
             {section.items.map((menu) => {
               const isActive = pathname.startsWith(`/mypage/${menu.slug}`);
 
+              const showBadge = menu.slug === "messages" && unreadCount > 0;
+
               return (
                 <li
                   key={menu.slug}
@@ -50,6 +62,12 @@ export default function Sidebar() {
                 >
                   <Link href={`/mypage/${menu.slug}`} prefetch={false}>
                     {menu.label}
+
+                    {showBadge && (
+                      <span className={styles.unreadBadge}>
+                        {unreadCount > 99 ? "99+" : unreadCount}
+                      </span>
+                    )}
                   </Link>
                 </li>
               );

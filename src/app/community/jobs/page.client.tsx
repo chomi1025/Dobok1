@@ -9,6 +9,8 @@ import { useEffect, useState } from "react";
 import Button from "@/components/common/buttons/page";
 import { EXPERIENCE_MAP, JOB_ROLE_MAP } from "@/constants/jobs";
 import { CITY_OPTIONS } from "@/constants/regions";
+import toast from "react-hot-toast";
+import { useSession } from "next-auth/react";
 
 interface JobsRow {
   id: number;
@@ -22,7 +24,6 @@ interface JobsRow {
 }
 
 interface Props {
-  user: any;
   jobs: JobsRow[];
   total: number;
   pageSize: number;
@@ -36,13 +37,18 @@ const categories = [
 ];
 
 export default function JobsClientPage({
-  user,
   jobs,
   total,
   pageSize,
   currentPage,
   initialType,
 }: Props) {
+  const { data: session, status } = useSession();
+
+  const isMember =
+    session?.user &&
+    (session.user.role === "ADMIN" || session.user.role === "USER");
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(initialType);
@@ -138,6 +144,21 @@ export default function JobsClientPage({
     ];
   };
 
+  const handleWriteClick = (e: React.MouseEvent) => {
+    if (status === "loading") {
+      e.preventDefault();
+      return;
+    }
+
+    // 비로그인상태면
+    if (!session) {
+      e.preventDefault();
+      e.stopPropagation();
+      toast.error("로그인이 필요한 서비스입니다.");
+      return;
+    }
+  };
+
   return (
     <div className={styles.inner}>
       <section>
@@ -153,7 +174,10 @@ export default function JobsClientPage({
       />
 
       <section className={styles.tableWrapper}>
-        <Button href={`/community/jobs/new?type=${activeTab.toLowerCase()}`}>
+        <Button
+          onClick={handleWriteClick}
+          href={`/community/jobs/new?type=${activeTab.toLowerCase()}`}
+        >
           작성하기
         </Button>
 
