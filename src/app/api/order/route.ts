@@ -51,12 +51,10 @@ export async function POST(req: Request) {
 
     const deliveryFee = calculatedTotal >= 50000 ? 0 : 3000;
     const finalServerTotal = calculatedTotal + deliveryFee;
-    console.log("클라이언트가 보낸 총액:", total);
-    console.log("서버가 계산한 상품총액:", calculatedTotal);
-    console.log("서버가 계산한 최종총액(배송비포함):", finalServerTotal);
+
     if (finalServerTotal !== Number(total)) {
       return NextResponse.json(
-        { message: "결제 금액 위변조 감지!" },
+        { message: "결제 금액 위변조 감지" },
         { status: 400 },
       );
     }

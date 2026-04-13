@@ -305,7 +305,7 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
 
       if (!createOrderRes.ok) {
         const errorData = await createOrderRes.json();
-        console.error("서버 에러 메시지:", errorData.message); // 여기에 이유가 찍힐 거야
+
         throw new Error(errorData.message || "주문 생성 실패");
       }
 
@@ -719,8 +719,7 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
                 />
               </label>
 
-              {/* 네이버 페이...나중에 ㅠ_ㅠ */}
-              {/* <label htmlFor="naverPay" className="payment-option">
+              <label htmlFor="naverPay" className="payment-option">
                 <input
                   type="radio"
                   id="naverPay"
@@ -733,7 +732,7 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
                   height={34}
                   alt="naverPay"
                 />
-              </label> */}
+              </label>
             </div>
           </fieldset>
         </section>
