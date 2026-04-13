@@ -144,6 +144,6 @@ h3 {
   margin: 0 auto;
 
   @include mobile {
-    padding: rem(150) rem(20) rem(150);
+    padding: rem(0) rem(5) rem(0);
   }
 }

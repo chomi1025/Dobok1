@@ -147,7 +147,7 @@ model CartItem {
 model Order {
   id              Int         @id @default(autoincrement())
   userId          Int?
-  status          OrderStatus
+  status          OrderStatus @default(PENDING)
   orderNumber     String      @unique
   total           Int
   createdAt       DateTime    @default(now())

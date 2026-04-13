@@ -69,6 +69,7 @@ export default async function CheckoutPage() {
 
     const formattedCart = memberCart.map((item) => ({
       id: item.id,
+      optionId: item.option.id,
       quantity: item.quantity,
       productId: item.product.id,
       name: item.product.name,

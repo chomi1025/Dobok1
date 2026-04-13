@@ -104,6 +104,7 @@ interface FormattedCartItem {
   quantity: number;
   productId: number;
   name: string;
+  optionId?: number;
   thumbnail: string | null;
   description: string | null;
   isCustomizable: boolean;
@@ -219,8 +220,9 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
       : memberCart
   ).map((item) => ({
     id: item.id,
-    orderId: 0, // 기본값
+    orderId: 0,
     productId: item.productId,
+    optionId: item.optionId || item.id,
     productName: item.name,
     ProductImage: item.thumbnail || "/img/default.png",
     optionText: `${item.color} / ${item.size}`,
@@ -300,6 +302,12 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
           total: totalOrderPrice + (isFreeDelivery ? 0 : 3000),
         }),
       });
+
+      if (!createOrderRes.ok) {
+        const errorData = await createOrderRes.json();
+        console.error("서버 에러 메시지:", errorData.message); // 여기에 이유가 찍힐 거야
+        throw new Error(errorData.message || "주문 생성 실패");
+      }
 
       if (!createOrderRes.ok) throw new Error("주문 생성 실패");
       const { orderNumber } = await createOrderRes.json();

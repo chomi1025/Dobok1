@@ -75,6 +75,7 @@ export interface GuestOrderFormData {
 
 export interface Order {
   id: number;
+  optionId: number;
   orderId: number;
   productId: number;
   requestedAt?: string;
@@ -203,6 +204,7 @@ export default function GuestCheckoutPage() {
 
           return {
             id: option.id,
+            optionId: option.id,
             productId: option.productId,
             productName: option.product.name,
             ProductImage: option.product.thumbnail || "/img/default.png",
@@ -284,25 +286,52 @@ export default function GuestCheckoutPage() {
 
   const onSubmit = async (data: GuestOrderFormData) => {
     try {
+      // 1. 금액 계산을 한 곳에서 변수로 고정! (위변조 방지의 핵심)
+      const itemsPrice = cartItems.reduce(
+        (acc, cur) => acc + Number(cur.unitPrice) * Number(cur.quantity),
+        0,
+      );
+      const deliveryFee = itemsPrice >= 50000 ? 0 : 3000;
+      const finalTotal = itemsPrice + deliveryFee;
+
+      // 2. 서버로 보낼 데이터 정제 (File 객체 등 제외)
+      const { customFiles, privacyCheck, orderAgree, ...restData } = data;
+
+      const requestBody = {
+        ...restData,
+        items: cartItems.map((item) => ({
+          // 여기 item.id가 prisma의 productOption id와 일치하는지 꼭 확인!
+          optionId: Number(item.id || item.optionId),
+          productId: Number(item.productId),
+          quantity: Number(item.quantity),
+          unitPrice: Number(item.unitPrice),
+          productName: item.productName,
+          ProductImage: item.ProductImage,
+          optionText: item.optionText,
+          isCustomizable: item.isCustomizable || false,
+        })),
+        total: finalTotal,
+      };
       const createOrderRes = await fetch("/api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...data,
-          items: cartItems,
-          total: totalOrderPrice + (isFreeDelivery ? 0 : 3000),
-        }),
+        body: JSON.stringify(requestBody),
       });
 
-      if (!createOrderRes.ok) throw new Error("주문 생성 실패");
+      if (!createOrderRes.ok) {
+        const errorData = await createOrderRes.json();
+        console.error("서버 응답 에러:", errorData);
+        throw new Error(errorData.message || "주문 생성 실패");
+      }
+
       const { orderNumber } = await createOrderRes.json();
 
-      // 토스페이먼츠
+      // 토스페이먼츠 설정
       const clientKey = "test_ck_5OWRapdA8db6wDXjmM7bVo1zEqZK";
       const tossPayments = await loadTossPayments(clientKey);
 
       const paymentConfig = {
-        amount: totalOrderPrice + (isFreeDelivery ? 0 : 3000),
+        amount: finalTotal, // ★ 중요: 서버에 보낸 total과 정확히 일치해야 함!
         orderId: orderNumber,
         orderName:
           cartItems.length > 1
@@ -314,18 +343,21 @@ export default function GuestCheckoutPage() {
         failUrl: `${window.location.origin}/order/fail`,
       };
 
-      if (data.paymentMethod === "kakaoPay") {
-        await tossPayments.requestPayment("카카오페이" as any, paymentConfig);
-      } else if (data.paymentMethod === "naverPay") {
-        await tossPayments.requestPayment("네이버페이" as any, paymentConfig);
-      } else if (data.paymentMethod === "bank") {
-        await tossPayments.requestPayment("계좌이체", paymentConfig);
-      } else {
-        await tossPayments.requestPayment("카드", paymentConfig);
-      }
-    } catch (error) {
+      // 결제창 호출
+      const methodMap: Record<string, string> = {
+        kakaoPay: "카카오페이",
+        naverPay: "네이버페이",
+        bank: "계좌이체",
+        card: "카드",
+      };
+
+      await tossPayments.requestPayment(
+        (methodMap[data.paymentMethod] || "카드") as any,
+        paymentConfig,
+      );
+    } catch (error: any) {
       console.error(error);
-      toast.error("결제 준비 중 오류가 발생했습니다.");
+      toast.error(error.message || "결제 준비 중 오류가 발생했습니다.");
     }
   };
 
