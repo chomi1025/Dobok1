@@ -156,7 +156,7 @@
 #### 📦 주문 기능
   - 장바구니 → 주문 흐름 구현
   - 실제 구매 프로세스를 고려한 구조 설계
-  - 👉 [구현 상세 보기](링크)
+  - 👉 [구현 상세 보기](https://github.com/chomi1025/Dobok1/wiki/%EC%A3%BC%EB%AC%B8&%EA%B2%B0%EC%A0%9C%ED%8E%98%EC%9D%B4%EC%A7%80)
 
 
 <table align="center" style="margin: auto; width: 100%;">
@@ -180,7 +180,7 @@
   - 결제 API 연동 및 결제 처리
   - 결제 상태에 따른 주문 상태 관리
   - 결제 성공/실패에 따른 사용자 흐름 처리
-  - 👉 [구현 상세 보기](링크)
+  - 👉 [구현 상세 보기](https://github.com/chomi1025/Dobok1/wiki/%EC%A3%BC%EB%AC%B8&%EA%B2%B0%EC%A0%9C%ED%8E%98%EC%9D%B4%EC%A7%80)
 
 <table align="center" style="margin: auto; width: 100%;">
   <tr>
