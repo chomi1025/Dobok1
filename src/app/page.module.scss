@@ -2,6 +2,10 @@
 
 .main {
   padding-bottom: rem(250);
+
+  @include mobile {
+    padding-bottom: 0;
+  }
 }
 
 .line {

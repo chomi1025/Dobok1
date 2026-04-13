@@ -2,7 +2,8 @@
 import BreadCrumb from "@/components/breadcrumb";
 import styles from "./page.module.scss";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 
 const STEPS = [
   { label: "장바구니", step: 0, path: "/cart" },
@@ -13,18 +14,18 @@ const STEPS = [
 export default function OrderSuccessClientPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [userName, setUserName] = useState("");
 
   const paymentKey = searchParams.get("paymentKey");
   const orderId = searchParams.get("orderId");
   const amount = searchParams.get("amount");
   const [isLoading, setIsLoading] = useState(true);
+  const hasCalled = useRef(false);
 
   useEffect(() => {
-    let isConfirmed = false;
-
     const confirmPayment = async () => {
-      if (isConfirmed) return;
-      isConfirmed = true;
+      if (hasCalled.current) return;
+      hasCalled.current = true;
 
       try {
         const response = await fetch("/api/payment/toss", {
@@ -34,13 +35,27 @@ export default function OrderSuccessClientPage() {
         });
 
         if (response.ok) {
+          const data = await response.json();
+
+          setUserName(data.userName);
           setIsLoading(false);
         } else {
           const errorData = await response.json();
-          if (errorData.code === "ALREADY_PROCESSED_PAYMENT") {
+
+          const safeCodes = [
+            "ALREADY_PROCESSED_PAYMENT",
+            "ALREADY_PROCESSING_REQUEST",
+          ];
+
+          if (safeCodes.includes(errorData.code) || response.status === 409) {
+            console.log("이미 처리 중이거나 완료된 요청입니다.");
+
+            if (errorData.userName) setUserName(errorData.userName);
+
             setIsLoading(false);
             return;
           }
+
           router.push("/order/fail");
         }
       } catch (error) {
@@ -52,6 +67,16 @@ export default function OrderSuccessClientPage() {
       confirmPayment();
     }
   }, [paymentKey, orderId, amount, router]);
+
+  const handleCopy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast("주문번호가 복사되었습니다!");
+    } catch (err) {
+      console.error("복사 실패:", err);
+    }
+  };
+
   return (
     <div className={styles.Wrapper}>
       <h2>주문완료</h2>
@@ -71,8 +96,10 @@ export default function OrderSuccessClientPage() {
         <div className={styles.Texts}>
           <h3>주문이 정상적으로 접수되었습니다!</h3>
           <p>
-            초미님, 이용해주셔서 감사합니다. <br /> 배송이 시작되면 문자로
-            안내해 드릴게요!
+            {userName || "고객"}님, 이용해주셔서 감사합니다. <br />
+            <span style={{ color: "#ff4d4f", fontWeight: "bold" }}>
+              비회원 주문은 주문번호를 꼭 메모하거나 캡처해 주세요!
+            </span>
           </p>
         </div>
       </section>
@@ -82,7 +109,30 @@ export default function OrderSuccessClientPage() {
 
         <div className={styles.row}>
           <span>주문번호</span>
-          <strong>{orderId}</strong>
+
+          <div>
+            <strong>{orderId} </strong>
+            <button
+              className={styles.copyButton}
+              onClick={() => orderId && handleCopy(orderId)}
+              title="주문번호 복사"
+            >
+              {/* 복사 아이콘 SVG */}
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
         </div>
         <div className={styles.row}>
           <span>주문일자</span>
