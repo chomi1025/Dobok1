@@ -286,7 +286,6 @@ export default function GuestCheckoutPage() {
 
   const onSubmit = async (data: GuestOrderFormData) => {
     try {
-      // 1. 금액 계산을 한 곳에서 변수로 고정! (위변조 방지의 핵심)
       const itemsPrice = cartItems.reduce(
         (acc, cur) => acc + Number(cur.unitPrice) * Number(cur.quantity),
         0,
@@ -294,13 +293,11 @@ export default function GuestCheckoutPage() {
       const deliveryFee = itemsPrice >= 50000 ? 0 : 3000;
       const finalTotal = itemsPrice + deliveryFee;
 
-      // 2. 서버로 보낼 데이터 정제 (File 객체 등 제외)
       const { customFiles, privacyCheck, orderAgree, ...restData } = data;
 
       const requestBody = {
         ...restData,
         items: cartItems.map((item) => ({
-          // 여기 item.id가 prisma의 productOption id와 일치하는지 꼭 확인!
           optionId: Number(item.id || item.optionId),
           productId: Number(item.productId),
           quantity: Number(item.quantity),
@@ -331,7 +328,7 @@ export default function GuestCheckoutPage() {
       const tossPayments = await loadTossPayments(clientKey);
 
       const paymentConfig = {
-        amount: finalTotal, // ★ 중요: 서버에 보낸 total과 정확히 일치해야 함!
+        amount: finalTotal,
         orderId: orderNumber,
         orderName:
           cartItems.length > 1
@@ -343,7 +340,6 @@ export default function GuestCheckoutPage() {
         failUrl: `${window.location.origin}/order/fail`,
       };
 
-      // 결제창 호출
       const methodMap: Record<string, string> = {
         kakaoPay: "카카오페이",
         naverPay: "네이버페이",
@@ -770,7 +766,7 @@ export default function GuestCheckoutPage() {
               </label>
 
               {/* 네이버 페이...나중에 ㅠ_ㅠ */}
-              {/* <label htmlFor="naverPay" className="payment-option">
+              <label htmlFor="naverPay" className="payment-option">
                 <input
                   type="radio"
                   id="naverPay"
@@ -783,7 +779,7 @@ export default function GuestCheckoutPage() {
                   height={34}
                   alt="naverPay"
                 />
-              </label> */}
+              </label>
             </div>
           </fieldset>
         </section>

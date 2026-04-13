@@ -17,7 +17,7 @@ export default function AdminSidebar() {
   return (
     <nav className={styles.inner} aria-label="관리자 메뉴">
       <header>
-        <h1> 고객센터</h1>
+        <h1>관리자 페이지</h1>
       </header>
 
       <ul className={styles.navigation}>

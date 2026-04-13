@@ -7,6 +7,7 @@ import Footer from "@/components/footer/page";
 import MobileNavPage from "@/components/mobileNav/page";
 import { Toaster } from "react-hot-toast";
 import localFont from "next/font/local";
+import { Metadata } from "next";
 
 const pretendard = localFont({
   src: [
@@ -36,6 +37,16 @@ const paybooc = localFont({
   variable: "--font-paybooc",
   display: "swap",
 });
+
+export const metadata: Metadata = {
+  title: "도복일번지",
+  description: "최고의 무술 용품 쇼핑몰",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon-32x32.png",
+    apple: "/apple-touch-icon.png",
+  },
+};
 
 export default async function RootLayout({
   children,
