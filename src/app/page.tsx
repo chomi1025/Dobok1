@@ -87,18 +87,9 @@ export default async function HomePage() {
       {/* 메인배너 */}
       <ScrollAnimation>
         <div className={styles.banner}>
-          <Image src={"/no.png"} alt={"이벤트 배너"} fill />
+          {/* <Image src={"/no.png"} alt={"이벤트 배너"} fill /> */}
 
-          <p
-            style={{
-              position: "relative",
-              textAlign: "center",
-              fontSize: "28px",
-              zIndex: 1,
-            }}
-          >
-            이벤트배너 자리
-          </p>
+          <p>이벤트배너</p>
         </div>
       </ScrollAnimation>
 
