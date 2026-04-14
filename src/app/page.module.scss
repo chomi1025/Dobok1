@@ -25,6 +25,11 @@
   height: rem(250);
   aspect-ratio: 1920 / 350;
   margin: 200px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: rem(30);
+  font-weight: 700;
 
   img {
     width: 100%;
