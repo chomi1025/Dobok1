@@ -8,26 +8,22 @@ import MobileNavPage from "@/components/mobileNav/page";
 import { Toaster } from "react-hot-toast";
 import localFont from "next/font/local";
 import { Metadata } from "next";
+import TopBanner from "@/components/Topbanner/page";
 
-const pretendard = localFont({
+const AppleSDGothicNeo = localFont({
   src: [
     {
-      path: "../../public/fonts/Pretendard-Regular.subset.woff2",
+      path: "../../public/fonts/AppleSDGothicNeo-Regular.woff2",
       weight: "400",
       style: "normal",
     },
   ],
   display: "swap",
-  variable: "--font-pretendard",
+  variable: "--font-AppleSDGothicNeo",
 });
 
 const paybooc = localFont({
   src: [
-    {
-      path: "../../public/fonts/paybooc-Light.woff2",
-      weight: "300",
-      style: "normal",
-    },
     {
       path: "../../public/fonts/paybooc-ExtraBold.woff2",
       weight: "800",
@@ -54,10 +50,14 @@ export default async function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html lang="ko" className={`${pretendard.variable} ${paybooc.variable}`}>
-      <body className={pretendard.className}>
+    <html
+      lang="ko"
+      className={`${AppleSDGothicNeo.variable} ${paybooc.variable}`}
+    >
+      <body className={AppleSDGothicNeo.className}>
         <EmotionRegistry>
           <AuthProvider>
+            <TopBanner />
             <HeaderServer />
 
             <main className="main">{children}</main>

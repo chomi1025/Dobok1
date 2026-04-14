@@ -1,12 +1,9 @@
 "use client";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import Image from "next/image";
-import login from "@/assets/Image/header/mage_login.png";
-import logout from "@/assets/Image/header/mage_logout.png";
-
 import toast from "react-hot-toast";
 import { useState } from "react";
+import { LogIn, LogOut } from "lucide-react";
 
 export default function AuthIcons() {
   const { data: session, status } = useSession();
@@ -42,16 +39,20 @@ export default function AuthIcons() {
   //로딩중
   if (status === "loading") {
     return (
-      <div style={{ cursor: "default", pointerEvents: "none" }}>
-        <Image
-          src={login}
-          alt="로딩 중"
-          width={24}
-          height={24}
-          style={{ opacity: 0.5 }}
-          priority
-        />
-      </div>
+      <Link
+        href="/login"
+        style={{
+          opacity: isLoggingOut ? 0.5 : 1,
+          cursor: isLoggingOut ? "not-allowed" : "pointer",
+          border: "none",
+          background: "none",
+          padding: 0,
+        }}
+        prefetch={false}
+      >
+        <LogIn size={24} />
+        <p>로그인</p>
+      </Link>
     );
   }
 
@@ -70,13 +71,8 @@ export default function AuthIcons() {
           padding: 0,
         }}
       >
-        <Image
-          src={logout}
-          alt="도복일번지 로그아웃"
-          width={24}
-          height={24}
-          priority
-        />
+        <LogOut size={24} />
+        <p>로그아웃</p>
       </button>
     );
   }
@@ -84,13 +80,8 @@ export default function AuthIcons() {
   // 비로그인
   return (
     <Link href="/login" prefetch={false}>
-      <Image
-        src={login}
-        alt="도복일번지 로그인"
-        width={24}
-        height={24}
-        priority
-      />
+      <LogIn size={24} />
+      <p>로그인</p>
     </Link>
   );
 }
