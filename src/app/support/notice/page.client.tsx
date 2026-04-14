@@ -4,6 +4,7 @@ import { Table } from "@/components/Table/page";
 import Link from "next/link";
 import BoardLayout from "@/components/common/boardLayout/page";
 import { useSession } from "next-auth/react";
+import { Pin } from "lucide-react";
 
 interface NoticeRow {
   id: number;
@@ -30,15 +31,22 @@ export default function NoticeClientPage({
   const { data: session } = useSession();
   const role = session?.user?.role ?? "USER";
 
+  const fixedCount = allNotices.filter((n) => n.isFixed).length;
+
   const noticeColumns = [
     {
       key: "number",
       label: "번호",
       flex: 0.3,
       render: (row: NoticeRow, index: number) => {
-        const virtualNumber = total - (currentPage - 1) * pageSize - index;
-        if (row.isFixed) return <span className={styles.fixedBadge}>공지</span>;
-        return <span>{virtualNumber}</span>;
+        if (row.isFixed)
+          return <div className={styles.fixedPinWrapper}>📌</div>;
+
+        const normalIndex = index - fixedCount;
+        const virtualNumber =
+          total - (currentPage - 1) * pageSize - normalIndex;
+
+        return <span className={styles.normalNumber}>{virtualNumber}</span>;
       },
     },
     {
@@ -52,10 +60,11 @@ export default function NoticeClientPage({
           prefetch={false}
           className={styles.title}
         >
-          <span className={styles.fixedNotice}>
-            {row.isFixed ? "[공지] " : ""}
+          <span
+            className={`${styles.noticeBadge} ${!row.isFixed ? styles.empty : ""}`}
+          >
+            {row.isFixed ? "필독" : ""}
           </span>
-
           <span className={styles.titleText}>{row.title}</span>
         </Link>
       ),
@@ -82,7 +91,13 @@ export default function NoticeClientPage({
         currentPage={currentPage}
         isRestricted={true}
       >
-        <Table columns={noticeColumns} data={allNotices} />
+        <Table
+          columns={noticeColumns}
+          data={allNotices}
+          getRowProps={(row) => ({
+            className: row.isFixed ? styles.fixedRow : "",
+          })}
+        />
       </BoardLayout>
     </>
   );

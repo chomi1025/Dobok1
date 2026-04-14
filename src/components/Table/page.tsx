@@ -15,12 +15,14 @@ interface tableProps<T> {
   data: T[];
   pricing?: boolean;
   isLoading?: boolean;
+  getRowProps?: (row: T) => React.HTMLAttributes<HTMLDivElement>;
 }
 
 export const Table = <T extends { id?: number }>({
   columns,
   data,
   isLoading,
+  getRowProps,
 }: tableProps<T>) => {
   return (
     <O.Section>
@@ -61,7 +63,7 @@ export const Table = <T extends { id?: number }>({
           </O.Row>
         ) : (
           data.map((row, idx) => (
-            <O.Row key={row.id ?? idx}>
+            <O.Row key={row.id ?? idx} {...getRowProps?.(row)}>
               {columns?.map((col) => (
                 <O.Info
                   key={String(col.key)}

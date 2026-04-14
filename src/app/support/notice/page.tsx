@@ -16,20 +16,27 @@ export const revalidate = 60;
 export default async function NoticeServerPage({ searchParams }: Props) {
   const currentPage = Number(searchParams.page) || 1;
   const pageSize = 10;
-
-  const allRawData = await prisma.notice.findMany({
-    orderBy: { createdAt: "desc" },
-  });
-
-  const fixedNotices = allRawData.filter((n: NoticeRow) => n.isFixed);
-  const normalNotices = allRawData.filter((n: NoticeRow) => !n.isFixed);
-
-  const totalCount = normalNotices.length;
   const skip = (currentPage - 1) * pageSize;
-  const pagedNormalNotices = normalNotices.slice(skip, skip + pageSize);
+
+  const [fixedNotices, pagedNormalNotices, totalCount] = await Promise.all([
+    prisma.notice.findMany({
+      where: { isFixed: true },
+      orderBy: { createdAt: "desc" },
+    }),
+
+    prisma.notice.findMany({
+      where: { isFixed: false },
+      orderBy: { createdAt: "desc" },
+      skip: skip,
+      take: pageSize,
+    }),
+
+    prisma.notice.count({
+      where: { isFixed: false },
+    }),
+  ]);
 
   const allNotices = [...fixedNotices, ...pagedNormalNotices];
-
   return (
     <NoticeClientPage
       allNotices={allNotices}
