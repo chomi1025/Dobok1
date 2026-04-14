@@ -115,11 +115,21 @@ export default async function HomePage() {
       <ScrollAnimation>
         <section className={styles.banner2}>
           <div>
-            <Image src={"/no.png"} alt={"이벤트 배너"} fill />
+            이벤트 배너
+            {/* <Image
+              src="https://placehold.co/1920x400?text=Banner+Coming+Soon"
+              alt={"이벤트 배너"}
+              fill
+            /> */}
           </div>
 
           <div>
-            <Image src={"/no.png"} alt={"이벤트 배너"} fill />
+            이벤트 배너
+            {/* <Image
+              src="https://placehold.co/1920x400?text=Banner+Coming+Soon"
+              alt={"이벤트 배너"}
+              fill
+            /> */}
           </div>
         </section>
       </ScrollAnimation>
