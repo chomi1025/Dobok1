@@ -278,6 +278,7 @@ model Notice {
   content   String
   isFixed   Boolean  @default(false)
   createdAt DateTime @default(now())
+  @@index([isFixed, createdAt(sort: Desc)])
 }
 
 model Faq {
