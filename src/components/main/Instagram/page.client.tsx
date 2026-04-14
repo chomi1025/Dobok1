@@ -23,13 +23,12 @@ export default function InstagramClientComponent() {
         {instaPosts.map((post, idx) => (
           <SwiperSlide key={idx} className={styles.slide}>
             <div className={styles.imageBox}>
-              {/* 실제 이미지 경로로 수정 필요 */}
-              <Image
+              {/* <Image
                 src={`/images/insta-${idx + 1}.jpg`}
                 alt="인스타그램 포스트"
                 fill
                 sizes="(max-width: 768px) 50vw, 16vw"
-              />
+              /> */}
             </div>
           </SwiperSlide>
         ))}

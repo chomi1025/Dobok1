@@ -1,3 +1,5 @@
+@import "../../../components/style/variables.module";
+
 .titleText {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -17,4 +19,53 @@
   transition: color 0.2s ease;
   align-items: center;
   width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+
+  .noticeBadge {
+    width: 45px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    line-height: 1;
+    border-radius: 4px;
+    background-color: #fff1f0;
+    color: #ff4d4f;
+    border: 1px solid #ffa39e;
+    white-space: nowrap;
+
+    &.empty {
+      background-color: transparent;
+      border-color: transparent;
+    }
+  }
+}
+
+.fixedPinWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.normalNumber {
+  font-size: rem(14);
+}
+
+.fixedNotice {
+  color: #555;
+  margin-right: rem(6);
+}
+
+.fixedRow {
+  background-color: #fffdf0;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #fff9c4 !important;
+  }
 }
