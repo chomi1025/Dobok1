@@ -10,23 +10,6 @@ import localFont from "next/font/local";
 import { Metadata } from "next";
 import TopBanner from "@/components/Topbanner/page";
 
-const AppleSDGothicNeo = localFont({
-  src: [
-    {
-      path: "../../public/fonts/AppleSDGothicNeo-Regular.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/AppleSDGothicNeo-ExtraBold.woff2",
-      weight: "700",
-      style: "normal",
-    },
-  ],
-  display: "swap",
-  variable: "--font-AppleSDGothicNeo",
-});
-
 const paybooc = localFont({
   src: [
     {
@@ -55,11 +38,8 @@ export default async function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html
-      lang="ko"
-      className={`${AppleSDGothicNeo.variable} ${paybooc.variable}`}
-    >
-      <body className={AppleSDGothicNeo.className}>
+    <html lang="ko" className={` ${paybooc.variable}`}>
+      <body>
         <EmotionRegistry>
           <AuthProvider>
             <TopBanner />

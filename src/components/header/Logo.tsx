@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import logo from "@/assets/Image/header/headerlogo.png";
+import logo from "@/assets/Image/header/headerlogo.webp";
 import styles from "./Header.module.scss";
 
 export default function Logo() {
