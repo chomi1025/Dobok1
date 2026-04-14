@@ -89,8 +89,6 @@ export default function SeekingLayout() {
       applyMethod: applyMethods.join(","),
     };
 
-    console.log("구직 등록 데이터:", payload);
-
     try {
       const response = await fetch("/api/seeking", {
         method: "POST",

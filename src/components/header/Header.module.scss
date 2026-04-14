@@ -79,7 +79,6 @@
     p {
       font-size: rem(14);
       margin-top: rem(4);
-      font-weight: 500;
       white-space: nowrap;
     }
   }
@@ -143,7 +142,6 @@
   text-decoration: none;
   padding: 4px 0;
   transition: color 0.2s ease;
-  font-weight: 500;
   cursor: pointer;
 
   &.isFirst {
@@ -152,8 +150,6 @@
 
   &:hover {
     color: #222;
-    font-weight: 600;
-
     &.isFirst {
       color: $main-red;
     }

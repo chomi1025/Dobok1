@@ -53,7 +53,6 @@ export const Error_Wrapper = styled.div`
     padding: 5px 7px;
     font-size: 12px;
     border-radius: 3px;
-    font-weight: 300;
   }
 `;
 
@@ -94,7 +93,6 @@ export const Signup_Button = styled.button`
   background-color: #444;
   border-radius: 5px;
   font-size: 16px;
-  font-weight: 500;
   color: white;
   margin-top: 25px;
 `;
@@ -108,7 +106,6 @@ export const Form_Inner = styled.div`
       label {
         display: block;
         font-size: 14px;
-        font-weight: 500;
       }
     }
   }
@@ -172,7 +169,6 @@ export const address = styled.fieldset`
       background-color: #444;
       border-radius: 4px;
       color: white;
-      font-weight: 500;
       font-size: 12px;
       margin-left: 5px;
     }

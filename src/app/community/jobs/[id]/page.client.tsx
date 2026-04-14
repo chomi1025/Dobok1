@@ -13,12 +13,11 @@ import { useRouter } from "next/navigation";
 export default function JobsDetailClientPage({ post }: { post: any }) {
   const { data: session } = useSession();
   const router = useRouter();
-  console.log(session);
 
   const isAuthor = Number(session?.user?.id) === post?.authorId;
 
   const isAdmin = session?.user?.role === "ADMIN";
-  console.log(isAuthor, isAdmin);
+
   const handleDelete = async () => {
     if (!confirm("정말 삭제하시겠습니까?")) return;
 

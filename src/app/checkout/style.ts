@@ -139,7 +139,6 @@ export const InputRow = styled.div`
     width: 120px;
     font-size: 15px;
     color: #222;
-    font-weight: 500;
   }
 
   input {
@@ -331,7 +330,6 @@ export const PaymentMethodWrapper = styled.section`
     > p {
       color: #888;
       font-size: 14px;
-      font-weight: 300;
       margin-top: 20px;
     }
   }

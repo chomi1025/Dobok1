@@ -122,7 +122,6 @@
     margin-right: rem(10);
     &::before {
       content: "A. ";
-      font-weight: 800;
     }
   }
 }
@@ -211,8 +210,6 @@
       padding: rem(10) rem(20);
       border-radius: 6px;
       cursor: pointer;
-      font-weight: 600;
-
       &:hover {
         background: #e9ecef;
       }
@@ -224,7 +221,6 @@
       border: none;
       padding: rem(10) rem(25);
       border-radius: 6px;
-      font-weight: 600;
       cursor: pointer;
       &:hover {
         background: #2563eb;
@@ -328,7 +324,6 @@
 
   h2 {
     font-size: rem(24);
-    font-weight: 800;
     color: #111;
     margin-bottom: rem(15);
     letter-spacing: -0.5px;
@@ -345,6 +340,5 @@
   .backBtn {
     padding: rem(12) rem(30);
     font-size: rem(14);
-    font-weight: 600;
   }
 }

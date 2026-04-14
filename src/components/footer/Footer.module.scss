@@ -1,7 +1,6 @@
 @import "../style/_variables.module.scss";
 
 .footer {
-  font-weight: 500;
   background-color: $main-red;
   color: white;
   padding: rem(40) 0;
@@ -87,7 +86,6 @@
       content: "|";
       margin-left: rem(16);
       opacity: 0.3;
-      font-weight: 300;
     }
   }
 
@@ -188,7 +186,6 @@
       border: none;
       color: white;
       font-size: rem(15);
-      font-weight: 600;
       cursor: pointer;
 
       .arrow {

@@ -66,7 +66,7 @@ export const P_Info_Top = styled.div`
 export const P_Info_Bottom = styled.div``;
 
 export const P_name = styled.div`
-  font-weight: 600;
+  ;
 `;
 
 export const P_option = styled.div`

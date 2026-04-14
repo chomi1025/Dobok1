@@ -17,6 +17,11 @@ const AppleSDGothicNeo = localFont({
       weight: "400",
       style: "normal",
     },
+    {
+      path: "../../public/fonts/AppleSDGothicNeo-ExtraBold.woff2",
+      weight: "700",
+      style: "normal",
+    },
   ],
   display: "swap",
   variable: "--font-AppleSDGothicNeo",

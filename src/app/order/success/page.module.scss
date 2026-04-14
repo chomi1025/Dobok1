@@ -46,7 +46,6 @@
   .Texts {
     h3 {
       font-size: rem(22);
-      font-weight: 600;
       margin-bottom: rem(12);
       color: #222;
     }
@@ -68,7 +67,6 @@
 
   h4 {
     font-size: rem(18);
-    font-weight: 600;
     margin-bottom: rem(20);
     padding-bottom: rem(12);
     border-bottom: 1px solid #eee;
@@ -94,8 +92,6 @@
 
     strong {
       color: #333;
-      font-weight: 500;
-
       &.price {
         color: #e91e63;
         font-weight: 700;
@@ -115,7 +111,6 @@
     height: rem(54);
     border-radius: rem(8);
     font-size: rem(16);
-    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
 

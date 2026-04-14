@@ -55,12 +55,10 @@ export const Check_Wrapper = styled.div`
       }
 
       > p {
-        font-weight: 500;
         color: #666;
 
         span {
           color: #c1272d;
-          font-weight: 600;
         }
       }
 

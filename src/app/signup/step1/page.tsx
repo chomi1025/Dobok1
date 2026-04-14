@@ -237,12 +237,10 @@ const CertArea = styled.div`
     background: #000;
     color: #fff;
     border-radius: 6px;
-    font-weight: 600;
   }
 `;
 
 const CertStatus = styled.p<{ isCerted: boolean }>`
-  font-weight: 600;
   color: ${(props) => (props.isCerted ? "#333" : "#333")};
 `;
 
@@ -358,7 +356,6 @@ const ModalFooter = styled.div`
     background: #000;
     color: #fff;
     border-radius: 8px;
-    font-weight: 600;
     cursor: pointer;
   }
 `;

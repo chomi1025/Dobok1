@@ -146,7 +146,6 @@
 
     .option_name {
       font-size: rem(14);
-      font-weight: 500;
       color: #333;
       padding-right: rem(20);
     }
@@ -196,7 +195,6 @@
       width: rem(40);
       text-align: center;
       font-size: rem(14);
-      font-weight: 600;
       border-left: rem(1) solid #ddd;
       border-right: rem(1) solid #ddd;
     }
@@ -218,7 +216,6 @@
 
   .total_label {
     font-size: rem(15);
-    font-weight: 600;
     color: #222;
   }
 
@@ -230,12 +227,10 @@
 
     strong {
       font-size: rem(28);
-      font-weight: 800;
     }
 
     span {
       font-size: rem(16);
-      font-weight: 600;
     }
   }
 }
