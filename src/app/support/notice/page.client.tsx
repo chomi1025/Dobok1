@@ -1,10 +1,11 @@
 "use client";
 import styles from "./page.module.scss";
-import { Table } from "@/components/Table/page";
+import { Column, Table } from "@/components/Table/page";
 import Link from "next/link";
 import BoardLayout from "@/components/common/boardLayout/page";
 import { useSession } from "next-auth/react";
 import { Pin } from "lucide-react";
+import { useMemo } from "react";
 
 interface NoticeRow {
   id: number;
@@ -33,52 +34,51 @@ export default function NoticeClientPage({
 
   const fixedCount = allNotices.filter((n) => n.isFixed).length;
 
-  const noticeColumns = [
-    {
-      key: "number",
-      label: "번호",
-      flex: 0.3,
-      render: (row: NoticeRow, index: number) => {
-        if (row.isFixed)
-          return <div className={styles.fixedPinWrapper}>📌</div>;
-
-        const normalIndex = index - fixedCount;
-        const virtualNumber =
-          total - (currentPage - 1) * pageSize - normalIndex;
-
-        return <span className={styles.normalNumber}>{virtualNumber}</span>;
+  const noticeColumns: Column<NoticeRow>[] = useMemo(
+    () => [
+      {
+        key: "number",
+        label: "번호",
+        flex: 0.3,
+        render: (row, index) => {
+          if (row.isFixed)
+            return <div className={styles.fixedPinWrapper}>📌</div>;
+          const normalIndex = index - fixedCount;
+          const virtualNumber =
+            total - (currentPage - 1) * pageSize - normalIndex;
+          return <span className={styles.normalNumber}>{virtualNumber}</span>;
+        },
       },
-    },
-    {
-      key: "title",
-      label: "제목",
-      flex: 2,
-
-      render: (row: NoticeRow) => (
-        <Link
-          href={`/support/notice/${row.id}`}
-          prefetch={false}
-          className={styles.title}
-        >
-          <span
-            className={`${styles.noticeBadge} ${!row.isFixed ? styles.empty : ""}`}
+      {
+        key: "title",
+        label: "제목",
+        flex: 2,
+        render: (row) => (
+          <Link
+            href={`/support/notice/${row.id}`}
+            prefetch={false}
+            className={styles.title}
           >
-            {row.isFixed ? "필독" : ""}
-          </span>
-          <span className={styles.titleText}>{row.title}</span>
-        </Link>
-      ),
-    },
-    {
-      key: "date",
-      label: "날짜",
-      flex: 0.6,
-      render: (row: NoticeRow) => (
-        <span>{new Date(row.createdAt).toLocaleDateString()}</span>
-      ),
-    },
-  ];
-
+            <span
+              className={`${styles.noticeBadge} ${!row.isFixed ? styles.empty : ""}`}
+            >
+              {row.isFixed ? "필독" : ""}
+            </span>
+            <span className={styles.titleText}>{row.title}</span>
+          </Link>
+        ),
+      },
+      {
+        key: "date",
+        label: "날짜",
+        flex: 0.6,
+        render: (row) => (
+          <span>{new Date(row.createdAt).toLocaleDateString()}</span>
+        ),
+      },
+    ],
+    [total, currentPage, pageSize, fixedCount],
+  ); // 의존성 배열
   return (
     <>
       <BoardLayout

@@ -1,3 +1,4 @@
+import React from "react";
 import * as O from "./style";
 
 export interface Column<T> {
@@ -10,7 +11,7 @@ export interface Column<T> {
   render?: (row: T, idx: number) => React.ReactNode;
 }
 
-interface tableProps<T> {
+interface TableProps<T> {
   columns: Column<T>[];
   data: T[];
   pricing?: boolean;
@@ -18,15 +19,14 @@ interface tableProps<T> {
   getRowProps?: (row: T) => React.HTMLAttributes<HTMLDivElement>;
 }
 
-export const Table = <T extends { id?: number }>({
+const TableInner = <T extends { id?: number }>({
   columns,
   data,
   isLoading,
   getRowProps,
-}: tableProps<T>) => {
+}: TableProps<T>) => {
   return (
     <O.Section>
-      {/* 헤더 */}
       <O.Header>
         {columns?.map((col) => (
           <O.Info
@@ -39,7 +39,6 @@ export const Table = <T extends { id?: number }>({
         ))}
       </O.Header>
 
-      {/* 데이터 */}
       <O.Body>
         {isLoading ? (
           [...Array(3)].map((_, idx) => (
@@ -82,3 +81,7 @@ export const Table = <T extends { id?: number }>({
     </O.Section>
   );
 };
+
+export const Table = React.memo(TableInner) as <T extends { id?: number }>(
+  props: TableProps<T>,
+) => React.ReactElement;

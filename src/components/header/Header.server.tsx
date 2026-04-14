@@ -1,11 +1,8 @@
 import { getMainCategories } from "@/lib/category";
 import styles from "./Header.module.scss";
 import HeaderDropdown from "./HeaderDropdown";
-import cart from "@/assets/Image/header/cil_cart.png";
-import myPage from "@/assets/Image/header/bi_person.png";
 import Link from "next/link";
 import AuthIcons from "./AuthIcons.client";
-import Image from "next/image";
 import GnbClient from "./GnbClient";
 import Logo from "./Logo";
 import { User, ShoppingCart } from "lucide-react";

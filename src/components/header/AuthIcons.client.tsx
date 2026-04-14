@@ -2,10 +2,11 @@
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { useState } from "react";
+import React, { useState } from "react";
 import { LogIn, LogOut } from "lucide-react";
+import styles from "./Header.module.scss";
 
-export default function AuthIcons() {
+const AuthIcons = () => {
   const { data: session, status } = useSession();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -36,40 +37,24 @@ export default function AuthIcons() {
     }
   };
 
-  //로딩중
+  // 로딩 중
   if (status === "loading") {
     return (
-      <Link
-        href="/login"
-        style={{
-          opacity: isLoggingOut ? 0.5 : 1,
-          cursor: isLoggingOut ? "not-allowed" : "pointer",
-          border: "none",
-          background: "none",
-          padding: 0,
-        }}
-        prefetch={false}
-      >
+      <div className={`${styles.authIconWrapper} ${styles.loading}`}>
         <LogIn size={24} />
         <p>로그인</p>
-      </Link>
+      </div>
     );
   }
 
-  // 로그인
+  // 로그인 된 상태
   if (session) {
     return (
       <button
         type="button"
         onClick={onClickSignout}
         disabled={isLoggingOut}
-        style={{
-          opacity: isLoggingOut ? 0.5 : 1,
-          cursor: isLoggingOut ? "not-allowed" : "pointer",
-          border: "none",
-          background: "none",
-          padding: 0,
-        }}
+        className={isLoggingOut ? styles.loading : ""}
       >
         <LogOut size={24} />
         <p>로그아웃</p>
@@ -77,11 +62,13 @@ export default function AuthIcons() {
     );
   }
 
-  // 비로그인
+  // 비로그인 상태
   return (
     <Link href="/login" prefetch={false}>
       <LogIn size={24} />
       <p>로그인</p>
     </Link>
   );
-}
+};
+
+export default React.memo(AuthIcons);
