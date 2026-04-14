@@ -96,9 +96,7 @@ export const Label = styled.div`
   color: #888;
 `;
 
-export const Value = styled.div`
-  font-weight: 500;
-`;
+export const Value = styled.div``;
 
 export const DeliveryBox = styled.div`
   display: flex;

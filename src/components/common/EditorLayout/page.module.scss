@@ -13,7 +13,6 @@ $border-color: #ddd;
 
     h1 {
       font-size: 2rem;
-      font-weight: 800;
       color: $primary-black;
       margin-bottom: rem(20);
     }
@@ -47,7 +46,6 @@ $border-color: #ddd;
 
     button {
       padding: rem(12) rem(20);
-      font-weight: 600;
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s ease;

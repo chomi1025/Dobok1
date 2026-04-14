@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import logo from "@/assets/Image/header/logo@2x.png";
+import logo from "@/assets/Image/header/headerlogo.png";
 import styles from "./Header.module.scss";
 
 export default function Logo() {
@@ -17,8 +17,8 @@ export default function Logo() {
         <Image
           src={logo}
           alt="도복일번지 로고"
-          width={281}
-          height={114}
+          width={200}
+          style={{ height: "auto" }}
           priority
           className={styles.logoImage}
         />

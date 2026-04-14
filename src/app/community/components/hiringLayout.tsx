@@ -92,7 +92,6 @@ export default function HiringLayout() {
       applyMethod: applyMethods.join(","),
     };
 
-    console.log(payload);
     try {
       const response = await fetch("/api/hiring", {
         method: "POST",

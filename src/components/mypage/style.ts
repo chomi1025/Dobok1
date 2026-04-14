@@ -46,7 +46,6 @@ export const PeriodTabs = styled.div`
 
     > span {
       color: #999;
-      font-weight: 500;
     }
 
     > button {
@@ -55,7 +54,6 @@ export const PeriodTabs = styled.div`
       background-color: #000;
       color: #fff;
       border-radius: 6px;
-      font-weight: 600;
       font-size: 14px;
       transition: opacity 0.2s;
 

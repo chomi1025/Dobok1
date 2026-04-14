@@ -55,7 +55,6 @@ export const SmallSection = styled.div<{ variant: string }>`
   label {
     display: block;
     margin-bottom: 15px;
-    font-weight: 600;
   }
 
   h4 {
@@ -236,7 +235,6 @@ export const SingleWrapper = styled.section`
 
     > div {
       label {
-        font-weight: 600;
         display: block;
         margin-bottom: 15px;
       }
@@ -251,9 +249,9 @@ export const SingleWrapper = styled.section`
 export const PriceWrapper = styled.div`
   display: flex;
   gap: 20px;
+
   > div {
     label {
-      font-weight: 600;
       display: block;
       margin-bottom: 15px;
     }

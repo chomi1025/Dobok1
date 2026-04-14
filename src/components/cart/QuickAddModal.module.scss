@@ -33,7 +33,6 @@
 
     h2 {
       font-size: 16px;
-      font-weight: 600;
       color: #111;
     }
     .closeBtn {
@@ -59,7 +58,6 @@
   .name {
     font-size: 15px;
     color: #333;
-    font-weight: 500;
     margin-bottom: 4px;
   }
   .price {
@@ -74,7 +72,6 @@
   h3 {
     font-size: 14px;
     color: #888;
-    font-weight: 500;
     margin-bottom: 12px;
   }
 }
@@ -143,7 +140,6 @@
       }
       span {
         font-size: 13px;
-        font-weight: 600;
         width: 24px;
         text-align: center;
       }
@@ -180,7 +176,6 @@
     strong {
       font-size: 20px;
       color: #e53e3e;
-      font-weight: 800;
     }
   }
 }
@@ -198,7 +193,6 @@
     color: #fff;
     border-radius: 8px;
     font-size: 15px;
-    font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s;
     &:hover {

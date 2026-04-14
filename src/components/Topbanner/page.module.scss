@@ -1,0 +1,94 @@
+@import "../style/_variables.module.scss";
+
+.bannerContainer {
+  width: 100%;
+  background-color: #1a1a1a;
+  color: white;
+  position: relative;
+  z-index: 1100;
+
+  @include mobile {
+    display: none;
+  }
+}
+
+.inner {
+  max-width: rem(1200);
+  margin: 0 auto;
+  padding: rem(10) rem(20);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: rem(40);
+
+  @include mobile {
+    flex-direction: column;
+    padding: rem(8) rem(15);
+    gap: rem(5);
+  }
+}
+
+.textContent {
+  display: flex;
+  align-items: center;
+  gap: rem(8);
+  font-size: rem(14);
+  letter-spacing: -0.5px;
+
+  .emoji {
+    font-size: rem(16);
+  }
+
+  .highlight {
+    color: $main-red;
+    margin-right: rem(8);
+    font-weight: 700;
+  }
+
+  span {
+  }
+
+  @include mobile {
+    font-size: rem(12);
+    text-align: center;
+    word-break: keep-all;
+  }
+}
+
+.actionGroup {
+  display: flex;
+  align-items: center;
+  gap: rem(15);
+
+  .dayClose {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: rem(11);
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+
+  .closeButton {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    opacity: 0.7;
+
+    &:hover {
+      opacity: 1;
+    }
+    .closeIcon {
+      font-size: rem(14);
+    }
+  }
+}

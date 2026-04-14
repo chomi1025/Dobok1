@@ -8,6 +8,7 @@ import AuthIcons from "./AuthIcons.client";
 import Image from "next/image";
 import GnbClient from "./GnbClient";
 import Logo from "./Logo";
+import { User, ShoppingCart } from "lucide-react";
 
 export const revalidate = 3600;
 
@@ -21,27 +22,15 @@ export default async function HeaderServer() {
 
         <div className={styles.iconGroup}>
           <Link href="/mypage/order" prefetch={false}>
-            <Image
-              className={styles.iconImage}
-              src={myPage}
-              alt="마이페이지"
-              width={24}
-              height={24}
-              priority
-            />
+            <User className={styles.icon} size={24} />
+            <p>마이페이지</p>
           </Link>
 
           <AuthIcons />
 
           <Link href="/cart" prefetch={false}>
-            <Image
-              className={styles.iconImage}
-              src={cart}
-              alt="장바구니"
-              width={24}
-              height={24}
-              priority
-            />
+            <ShoppingCart className={styles.icon} size={24} />
+            <p>장바구니</p>
           </Link>
         </div>
       </div>
