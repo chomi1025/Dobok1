@@ -1,4 +1,13 @@
 @import "../components/style/variables.module";
+@import "pretendard/dist/web/static/pretendard.css";
+
+:root {
+  --font-pretendard:
+    "Pretendard Variable", Pretendard, -apple-system, sans-serif;
+  --font-weight-regular: 380;
+
+  --font-weight-bold: 600;
+}
 
 html,
 body,
@@ -37,15 +46,13 @@ html {
 body {
   background-color: #fff;
   color: #333;
-  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   letter-spacing: -0.04em;
   scrollbar-gutter: stable;
-  font-family:
-    var(--font-pretendard),
-    -apple-system,
-    sans-serif;
+  font-family: var(--font-pretendard);
+  font-weight: var(--font-weight-regular);
 }
 
 input,
