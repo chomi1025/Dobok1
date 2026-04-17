@@ -30,62 +30,53 @@ export default function NoticeClientPage({
 }: Props) {
   const { data: session } = useSession();
   const role = session?.user?.role ?? "USER";
-  const [isMounted, setIsMounted] = useState(false);
   const fixedCount = allNotices.filter((n) => n.isFixed).length;
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  const noticeColumns: Column<NoticeRow>[] = useMemo(
-    () => [
-      {
-        key: "number",
-        label: "번호",
-        flex: 0.3,
-        render: (row, index) => {
-          if (row.isFixed)
-            return <div className={styles.fixedPinWrapper}>📌</div>;
-          const normalIndex = index - fixedCount;
-          const virtualNumber =
-            total - (currentPage - 1) * pageSize - normalIndex;
-          return <span className={styles.normalNumber}>{virtualNumber}</span>;
-        },
+  const noticeColumns: Column<NoticeRow>[] = [
+    {
+      key: "number",
+      label: "번호",
+      flex: 0.3,
+      render: (row, index) => {
+        if (row.isFixed)
+          return <div className={styles.fixedPinWrapper}>📌</div>;
+        const normalIndex = index - fixedCount;
+        const virtualNumber =
+          total - (currentPage - 1) * pageSize - normalIndex;
+        return <span className={styles.normalNumber}>{virtualNumber}</span>;
       },
-      {
-        key: "title",
-        label: "제목",
-        flex: 2,
-        render: (row) => (
-          <Link
-            href={`/support/notice/${row.id}`}
-            prefetch={false}
-            className={styles.title}
+    },
+    {
+      key: "title",
+      label: "제목",
+      flex: 2,
+      render: (row) => (
+        <Link
+          href={`/support/notice/${row.id}`}
+          prefetch={false}
+          className={styles.title}
+        >
+          <span
+            className={`${styles.noticeBadge} ${!row.isFixed ? styles.empty : ""}`}
           >
-            <span
-              className={`${styles.noticeBadge} ${!row.isFixed ? styles.empty : ""}`}
-            >
-              {row.isFixed ? "필독" : ""}
-            </span>
-            <span className={styles.titleText}>{row.title}</span>
-          </Link>
-        ),
-      },
-      {
-        key: "date",
-        label: "날짜",
-        flex: 0.6,
-        render: (row) => (
-          <span>
-            {isMounted
-              ? new Date(row.createdAt).toLocaleDateString()
-              : "0000.00.00"}
+            {row.isFixed ? "필독" : ""}
           </span>
-        ),
+          <span className={styles.titleText}>{row.title}</span>
+        </Link>
+      ),
+    },
+    {
+      key: "date",
+      label: "날짜",
+      flex: 0.6,
+      render: (row) => {
+        const d = new Date(row.createdAt);
+
+        const dateString = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+        return <span>{dateString}</span>;
       },
-    ],
-    [total, currentPage, pageSize, fixedCount],
-  ); // 의존성 배열
+    },
+  ];
   return (
     <>
       <BoardLayout
