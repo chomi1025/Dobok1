@@ -37,6 +37,7 @@ export default async function NoticeServerPage({ searchParams }: Props) {
   ]);
 
   const allNotices = [...fixedNotices, ...pagedNormalNotices];
+
   return (
     <NoticeClientPage
       allNotices={allNotices}

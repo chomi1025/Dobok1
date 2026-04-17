@@ -19,7 +19,7 @@ interface TableProps<T> {
   getRowProps?: (row: T) => React.HTMLAttributes<HTMLDivElement>;
 }
 
-const TableInner = <T extends { id?: number }>({
+export const Table = <T extends { id?: number }>({
   columns,
   data,
   isLoading,
@@ -81,7 +81,3 @@ const TableInner = <T extends { id?: number }>({
     </O.Section>
   );
 };
-
-export const Table = React.memo(TableInner) as <T extends { id?: number }>(
-  props: TableProps<T>,
-) => React.ReactElement;
