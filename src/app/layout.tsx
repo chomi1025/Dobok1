@@ -10,6 +10,13 @@ import localFont from "next/font/local";
 import { Metadata } from "next";
 import TopBanner from "@/components/Topbanner/page";
 
+const pretendard = localFont({
+  src: "../../public/fonts/PretendardVariable.woff2",
+  weight: "100 900",
+  display: "swap",
+  variable: "--font-pretendard",
+});
+
 const paybooc = localFont({
   src: [
     {
@@ -38,7 +45,7 @@ export default async function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html lang="ko" className={` ${paybooc.variable}`}>
+    <html lang="ko" className={`${pretendard.variable} ${paybooc.variable}`}>
       <body>
         <EmotionRegistry>
           <AuthProvider>
