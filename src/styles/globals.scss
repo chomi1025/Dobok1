@@ -1,12 +1,9 @@
 @import "../components/style/variables.module";
-@import "pretendard/dist/web/static/pretendard.css";
 
 :root {
-  --font-pretendard:
-    "Pretendard Variable", Pretendard, -apple-system, sans-serif;
+  font-family: var(--font-pretendard);
   --font-weight-regular: 380;
-
-  --font-weight-bold: 600;
+  --font-weight-bold: 700;
 }
 
 html,
@@ -49,7 +46,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
   scrollbar-gutter: stable;
   font-family: var(--font-pretendard);
   font-weight: var(--font-weight-regular);
