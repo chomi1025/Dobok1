@@ -22,7 +22,6 @@ export default function TermsModal({ open, onClose, type }: Props) {
         </S.Header>
 
         <S.Content>
-          {/* 👉 나중에 약관 텍스트 여기다 넣어 */}
           {type === "service" ? <ServiceTerms /> : <PrivacyTerms />}
         </S.Content>
 

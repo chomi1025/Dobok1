@@ -2,6 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
         protocol: "https",
@@ -15,7 +16,6 @@ const nextConfig = {
         port: "",
         pathname: "/storage/v1/object/public/**",
       },
-
       {
         protocol: "https",
         hostname: "images.unsplash.com",

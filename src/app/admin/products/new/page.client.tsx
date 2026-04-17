@@ -155,7 +155,7 @@ export default function AdminProductNewClient() {
 
   const methods = useForm<ProductFormValues>({
     resolver: yupResolver(schema),
-    mode: "onSubmit",
+    mode: "onBlur",
     defaultValues: {
       name: "",
       optionsType: "single",
