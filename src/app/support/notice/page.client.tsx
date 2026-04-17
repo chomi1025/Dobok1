@@ -4,8 +4,7 @@ import { Column, Table } from "@/components/Table/page";
 import Link from "next/link";
 import BoardLayout from "@/components/common/boardLayout/page";
 import { useSession } from "next-auth/react";
-import { Pin } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface NoticeRow {
   id: number;
@@ -31,8 +30,12 @@ export default function NoticeClientPage({
 }: Props) {
   const { data: session } = useSession();
   const role = session?.user?.role ?? "USER";
-
+  const [isMounted, setIsMounted] = useState(false);
   const fixedCount = allNotices.filter((n) => n.isFixed).length;
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const noticeColumns: Column<NoticeRow>[] = useMemo(
     () => [
@@ -73,7 +76,11 @@ export default function NoticeClientPage({
         label: "날짜",
         flex: 0.6,
         render: (row) => (
-          <span>{new Date(row.createdAt).toLocaleDateString()}</span>
+          <span>
+            {isMounted
+              ? new Date(row.createdAt).toLocaleDateString()
+              : "0000.00.00"}
+          </span>
         ),
       },
     ],
