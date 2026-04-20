@@ -1,4 +1,4 @@
-import { Category, ProductWithCategory, Title } from "../../../types/types";
+import { Title } from "../../../types/types";
 import ProductSectionComponent from "../ProductSection/page";
 
 const title: Title = {
@@ -8,23 +8,10 @@ const title: Title = {
   href: "products/best",
 };
 
-interface Props {
-  categories: Category[];
-  bestProducts: ProductWithCategory[];
-}
-
-export default async function BestSectionComponent({
-  categories,
-  bestProducts,
-}: Props) {
+export default async function BestSectionComponent() {
   return (
     <>
-      <ProductSectionComponent
-        type={"best"}
-        categories={categories}
-        title={title}
-        products={bestProducts}
-      />
+      <ProductSectionComponent type={"best"} title={title} />
     </>
   );
 }
