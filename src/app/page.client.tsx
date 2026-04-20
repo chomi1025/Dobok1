@@ -7,6 +7,11 @@ import ScrollAnimation from "./../components/common/ScrollAnimation";
 import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import ProductSectionComponent from "@/components/main/ProductSection/page";
+import {
+  fetchBestProducts,
+  fetchMainCategories,
+  fetchNewProducts,
+} from "@/lib/api";
 
 const InstagramComponent = dynamic(
   () => import("@/components/main/Instagram/page"),
@@ -19,25 +24,21 @@ const NewSectionComponent = dynamic(
 );
 
 export default function HomeClientPage() {
-  const { data: mainCategories, isLoading: isCatLoading } = useQuery({
+  const { data: mainCategories } = useQuery({
     queryKey: ["mainCategories"],
-    queryFn: async () => {
-      const res = await fetch("/api/categories");
-      if (!res.ok) throw new Error("Network response was not ok");
-      return res.json();
-    },
+    queryFn: fetchMainCategories,
     staleTime: 1000 * 60 * 5,
   });
 
   const { data: bestProducts } = useQuery({
     queryKey: ["bestProducts"],
-    queryFn: async () => (await fetch("/api/products/best")).json(),
+    queryFn: fetchBestProducts,
     staleTime: 1000 * 60 * 5,
   });
 
   const { data: newProducts } = useQuery({
     queryKey: ["newProducts"],
-    queryFn: async () => (await fetch("/api/products/new")).json(),
+    queryFn: fetchNewProducts,
     staleTime: 1000 * 60 * 5,
   });
 

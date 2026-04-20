@@ -45,7 +45,9 @@ export default function Sidebar({ unreadCount }: Props) {
 
   return (
     <aside className={styles.inner}>
-      <h2>마이페이지</h2>
+      <header>
+        <h2>마이페이지</h2>
+      </header>
 
       <nav>
         {menuItems.map((section) => (

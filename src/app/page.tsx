@@ -9,6 +9,11 @@ import {
 } from "@tanstack/react-query";
 import HomeClientPage from "./page.client";
 import { makeQueryClient } from "@/lib/query.client";
+import {
+  fetchBestProducts,
+  fetchMainCategories,
+  fetchNewProducts,
+} from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "도복일번지",
@@ -23,25 +28,15 @@ export default async function HomePage() {
   await Promise.all([
     queryClient.prefetchQuery({
       queryKey: ["mainCategories"],
-      queryFn: getMainCategories,
+      queryFn: fetchMainCategories,
     }),
     queryClient.prefetchQuery({
       queryKey: ["bestProducts"],
-      queryFn: () =>
-        prisma.product.findMany({
-          where: { isBest: true },
-          take: 8,
-          include: { options: true },
-        }),
+      queryFn: fetchBestProducts,
     }),
     queryClient.prefetchQuery({
       queryKey: ["newProducts"],
-      queryFn: () =>
-        prisma.product.findMany({
-          where: { isNew: true },
-          take: 8,
-          include: { options: true },
-        }),
+      queryFn: fetchNewProducts,
     }),
   ]);
 
