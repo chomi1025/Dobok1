@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { addToCart } from "./../hooks/useCart";
 import { ProductWithCategory } from "@/types/types";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   product: ProductWithCategory;
@@ -15,6 +16,7 @@ interface Props {
 
 export default function QuickAddModal({ product, user, onClose }: Props) {
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -85,35 +87,22 @@ export default function QuickAddModal({ product, user, onClose }: Props) {
     if (selectedItems.length === 0)
       return toast.error("옵션을 먼저 선택해주세요.");
 
-    const sanitizedItems = selectedItems.map((item) => {
-      return {
-        productId: Number(item.productId),
-        productOptionId: Number(item.productOptionId),
-        quantity: Number(item.quantity || 1),
-      };
-    });
+    const sanitizedItems = selectedItems.map((item) => ({
+      productId: Number(item.productId),
+      productOptionId: Number(item.productOptionId),
+      quantity: Number(item.quantity || 1),
+    }));
 
     try {
-      if (user) {
-        // 회원
-        const res = await addToCart(sanitizedItems, user);
+      const success = await addToCart(sanitizedItems, user);
 
-        if (res) {
-          toast.success("상품이 장바구니에 담겼습니다.");
-          onClose();
-        } else {
-          toast.error("장바구니 담기에 실패했습니다.");
-        }
+      if (success) {
+        queryClient.invalidateQueries({ queryKey: ["cart"] });
+
+        toast.success("상품이 장바구니에 담겼습니다.");
+        onClose();
       } else {
-        // 비회원
-        const promises = sanitizedItems.map((item) => addToCart(item, user));
-        const results = await Promise.all(promises);
-        if (results.every((res) => res)) {
-          toast.success("상품이 장바구니에 담겼습니다.");
-          onClose();
-        } else {
-          toast.error("일부 상품 담기에 실패했습니다.");
-        }
+        toast.error("장바구니 담기에 실패했습니다.");
       }
     } catch (err) {
       console.error(err);

@@ -5,15 +5,9 @@ type CategoryWithChildren = Prisma.CategoryGetPayload<{
   include: { children: true };
 }>;
 
-export type childrenType = {};
-export type Category = {
-  id: number;
-  name: string;
-  slug: string;
-  parentId: number | null;
-  sortOrder: number | null;
-  children?: childrenType;
-};
+export type Category = Prisma.CategoryGetPayload<{
+  include: { children: true };
+}>;
 
 export async function getMainCategories() {
   try {
@@ -32,7 +26,8 @@ export async function getMainCategories() {
         sortOrder: "asc",
       },
     });
-    return categories;
+
+    return JSON.parse(JSON.stringify(categories));
   } catch (error) {
     console.error("카테고리 불러오기 에러:", error);
     return [];
@@ -50,21 +45,6 @@ export const getCategories = async (): Promise<{ grouped: Category[] }> => {
     },
   });
 
-  const grouped: Category[] = main.map((cat) => ({
-    id: cat.id,
-    name: cat.name,
-    slug: cat.slug,
-    parentId: cat.parentId,
-    sortOrder: cat.sortOrder,
-    children: cat.children.map((child: any) => ({
-      id: child.id,
-      name: child.name,
-      slug: child.slug,
-      parentId: child.parentId,
-      sortOrder: child.sortOrder,
-      children: [],
-    })),
-  }));
-
+  const grouped: Category[] = main;
   return { grouped };
 };

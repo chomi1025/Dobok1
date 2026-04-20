@@ -3,6 +3,11 @@ import Link from "next/link";
 import NoticeDetailClientPage from "./page.client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/options";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 
 interface NoticeDetailProps {
   params: {
@@ -10,10 +15,24 @@ interface NoticeDetailProps {
   };
 }
 export default async function NoticeDetailPage({ params }: NoticeDetailProps) {
-  const session = await getServerSession(authOptions);
-  const isAdmin = session?.user?.role === "ADMIN";
   const noticeId = Number(params.id);
-  const notice = await prisma.notice.findUnique({ where: { id: noticeId } });
+
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: ["notice", noticeId],
+    queryFn: async () => {
+      const notice = await prisma.notice.findUnique({
+        where: { id: noticeId },
+      });
+      if (!notice) return null;
+      return notice;
+    },
+  });
+
+  const state = dehydrate(queryClient);
+  const notice = state.queries.find((q) => q.queryKey[0] === "notice")?.state
+    .data;
 
   if (!notice) {
     return (
@@ -27,5 +46,9 @@ export default async function NoticeDetailPage({ params }: NoticeDetailProps) {
     );
   }
 
-  return <NoticeDetailClientPage notice={notice} isAdmin={isAdmin} />;
+  return (
+    <HydrationBoundary state={state}>
+      <NoticeDetailClientPage noticeId={noticeId} />
+    </HydrationBoundary>
+  );
 }

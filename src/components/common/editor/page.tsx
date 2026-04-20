@@ -38,7 +38,16 @@ export default function EditorComponent({ value, onChange }: Props) {
           border-top-left-radius: 8px;
           border-top-right-radius: 8px;
           background-color: #f9f9f9;
+
         }
+
+        .review-editor-container .ql-editor h1,
+.review-editor-container .ql-editor h2 {
+  font-family: "Pretendard Variable", Pretendard, sans-serif !important;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 0.5rem;
+}
 
         .review-editor-container .ql-container.ql-snow {
           border-bottom-left-radius: 8px;
@@ -56,6 +65,13 @@ export default function EditorComponent({ value, onChange }: Props) {
         .review-editor-container .ql-editor {
           padding: 15px;
           line-height: 1.6;
+          font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+        }
+
+        .review-editor-container .ql-editor p {
+  margin: 0;
+  padding: 0;
+}
         }
       `}</style>
 

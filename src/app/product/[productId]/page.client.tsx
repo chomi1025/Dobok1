@@ -1,41 +1,37 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
 import { SHOPPING_POLICY } from "@/constants/policy";
 import ProductInfo from "./ProductInfo";
 import DetailSection from "./DetailSection";
 import ReviewSection from "./ReviewSection";
 import { ProductWithCategory } from "@/types/types";
-import { Session } from "next-auth";
 
 interface Prop {
-  product: ProductWithCategory;
-  session: Session | null;
+  productId: string;
 }
 
-interface Review {
-  id: number;
-  userId: string;
-  userName: string;
-  rating: number;
-  content: string;
-  images: string[];
-  createdAt: string;
-  option: string;
-}
-
-export const mockReviews: Review[] = [];
-
-export default function ProductDetailClientPage({ product, session }: Prop) {
+export default function ProductDetailClientPage({ productId }: Prop) {
+  const { data: session } = useSession();
   const [addedOptions, setAddedOptions] = useState<any[]>([]);
-  console.log(product);
 
-  // 상품정보 고시
-  const policy = SHOPPING_POLICY.map((policy) => {
-    if (policy.title === "상품 정보 고시") {
+  const { data: product } = useQuery<ProductWithCategory>({
+    queryKey: ["product", productId],
+
+    queryFn: () =>
+      fetch(`/api/products/${productId}`).then((res) => res.json()),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  if (!product) return null;
+
+  const policy = SHOPPING_POLICY.map((p) => {
+    if (p.title === "상품 정보 고시") {
       return {
-        ...policy,
-        items: policy.items.map((item) => {
+        ...p,
+        items: p.items.map((item) => {
           switch (item.label) {
             case "제품명":
               return { ...item, content: [product.name] };
@@ -63,10 +59,7 @@ export default function ProductDetailClientPage({ product, session }: Prop) {
                   sizes.length > 0 ? [sizes.join(", ")] : ["상세페이지 참조"],
               };
             case "제조국":
-              return {
-                ...item,
-                content: [product.origin || "한국"],
-              };
+              return { ...item, content: [product.origin || "한국"] };
             case "세탁방법 및 주의사항":
               return {
                 ...item,
@@ -80,27 +73,19 @@ export default function ProductDetailClientPage({ product, session }: Prop) {
         }),
       };
     }
-
-    return policy;
+    return p;
   });
 
   return (
     <>
-      {/* 상품 썸네일,이름,가격,옵션선택 등 */}
       <ProductInfo
         session={session}
         product={product}
         setAddedOptions={setAddedOptions}
         addedOptions={addedOptions}
       />
-
-      {/* 탭부터 상품상세부분 */}
       <DetailSection product={product} />
-
-      {/* 리뷰 부분 */}
-      <ReviewSection mockReviews={mockReviews} />
-
-      {/* 상품정보 고시 */}
+      <ReviewSection mockReviews={[]} />
       {/* <GuideSection data={policy} /> */}
     </>
   );

@@ -1,11 +1,40 @@
 import { Prisma } from "@prisma/client";
-
+import { Inquiry } from "@prisma/client";
 export type Category = Prisma.CategoryGetPayload<{
   include: {
     parent: true;
     children: true;
   };
 }>;
+
+export type ProductWithDetails = Prisma.ProductGetPayload<{
+  include: {
+    category: {
+      include: { parent: true };
+    };
+    options: true;
+  };
+}>;
+
+export type CategoryWithChildren = Prisma.CategoryGetPayload<{
+  include: { children: true };
+}>;
+
+export interface CategoryApiResponse {
+  products: ProductWithDetails[];
+  total: number;
+}
+
+export interface InquiryWithUser extends Inquiry {
+  user: {
+    name: string;
+  };
+}
+
+export interface InquiryResponse {
+  inquiries: InquiryWithUser[];
+  totalCount: number;
+}
 
 export type ProductOption = Prisma.ProductOptionGetPayload<{}>;
 

@@ -10,9 +10,9 @@ interface Props {
 export default async function CategoryIconComponent({ mainCategory }: Props) {
   return (
     <section className={`${styles.inner} ${styles.icon}`}>
-      <div className={styles.title}>
+      <header className={styles.title}>
         <h2>카테고리</h2>
-      </div>
+      </header>
 
       <nav>
         <ul>

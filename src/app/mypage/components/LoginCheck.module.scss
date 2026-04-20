@@ -1,0 +1,155 @@
+$primary-color: #003366;
+$bg-light: #f9f9f9;
+$border-light: #ececec;
+$text-main: #222;
+$text-sub: #777;
+
+.guestWrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  padding: 60px 20px;
+  background-color: #fff;
+
+  .content {
+    width: 100%;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    padding: 60px 40px;
+    border: 1px solid $border-light;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  }
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 48px;
+
+  .mainIcon {
+    margin-bottom: 16px;
+    opacity: 0.8;
+  }
+
+  h2 {
+    font-family: var(--font-pretendard);
+    font-size: 26px;
+    font-weight: 700;
+    color: $text-main;
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-size: 16px;
+    color: $text-sub;
+    line-height: 1.6;
+  }
+}
+
+.benefits {
+  width: 100%;
+  border-top: 1px solid $border-light;
+  border-bottom: 1px solid $border-light;
+  padding: 40px 0;
+  margin-bottom: 48px;
+
+  h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: $text-main;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  .benefitList {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+
+    li {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+
+      .icon {
+        color: $primary-color;
+      }
+
+      .benefitText {
+        strong {
+          display: block;
+          font-size: 15px;
+          margin-bottom: 4px;
+          color: $text-main;
+        }
+        span {
+          font-size: 13px;
+          color: #999;
+          word-break: keep-all;
+        }
+      }
+    }
+  }
+}
+
+.actions {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  margin: 0 auto;
+
+  .loginBtn,
+  .registerBtn {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 54px;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s;
+  }
+
+  .loginBtn {
+    background-color: $primary-color;
+    color: #fff;
+    &:hover {
+      background-color: #003366;
+    }
+  }
+
+  .registerBtn {
+    background-color: #fff;
+    color: $text-main;
+    border: 1px solid #ddd;
+    &:hover {
+      background-color: #f9f9f9;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .benefits .benefitList {
+    flex-direction: column;
+    align-items: flex-start;
+    li {
+      flex-direction: row;
+      text-align: left;
+    }
+  }
+  .actions {
+    flex-direction: column;
+  }
+}

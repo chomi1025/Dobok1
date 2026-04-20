@@ -3,17 +3,39 @@
 $primary-black: #222;
 $border-color: #eee;
 
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: rem(10) rem(5);
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    width: rem(18);
+    height: rem(18);
+    cursor: pointer;
+    accent-color: #222;
+  }
+
+  label {
+    font-size: rem(15);
+    color: #444;
+    cursor: pointer;
+    font-weight: 500;
+    user-select: none;
+  }
+}
+
 .formGroup {
   display: flex;
   flex-direction: column;
   gap: 10px;
   width: 100%;
   box-sizing: border-box;
+  margin-bottom: rem(20);
 
   label {
-    font-size: rem(14);
-    color: #333;
-    padding-left: 2px;
+    @include sr-only;
   }
 
   input[type="text"],

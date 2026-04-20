@@ -13,12 +13,11 @@ const menuItems = [
 
 export default function SupportSidebar() {
   const segment = useSelectedLayoutSegment();
-  console.log(segment);
 
   return (
     <nav className={styles.inner} aria-label="고객센터 메뉴">
       <header>
-        <h1> 고객센터</h1>
+        <h2> 고객센터</h2>
       </header>
 
       <ul className={styles.navigation}>

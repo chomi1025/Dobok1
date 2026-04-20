@@ -26,6 +26,32 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
+model Message {
+  id          Int      @id @default(autoincrement())
+  content     String   @db.Text
+
+  senderId    Int
+  receiverId  Int
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+
+  postId      Int?
+  post        Post?    @relation(fields: [postId], references: [id], onDelete: SetNull)
+
+  companyName String?
+  jobRole     String?
+
+  isRead      Boolean  @default(false)
+  readAt      DateTime?
+
+  deletedBySender   Boolean @default(false)
+  deletedByReceiver Boolean @default(false)
+
+  createdAt   DateTime @default(now())
+
+  @@index([receiverId, isRead])
+}
+
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -68,6 +94,8 @@ model User {
   isDeleted         Boolean           @default(false)
   status            UserStatus        @default(ACTIVE)
   comments          Comment[]
+  sentMessages      Message[]         @relation("SentMessages")
+  receivedMessages  Message[]         @relation("ReceivedMessages")
 }
 
 model Verification {
@@ -152,11 +180,9 @@ model Order {
   total           Int
   createdAt       DateTime    @default(now())
 
-
   customRequest   String?     @db.Text
   customFileUrl   String?
 
-// --- 비회원 및 주문 정보 조회를 위한 필드  ---
   buyerName       String
   buyerPhone      String
   buyerEmail      String
@@ -166,7 +192,6 @@ model Order {
   postcode        String
   address         String
   detailAddress   String
-  // ------------------------------------------
 
   user            User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
   items           OrderItem[]
@@ -369,6 +394,7 @@ model Post {
   district      String?
   applyMethod   String?
 
+  messages      Message[]
 
   eventDate     DateTime?
   eventVenue    String?

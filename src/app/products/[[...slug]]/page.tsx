@@ -1,99 +1,55 @@
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 import PageClient from "./page.client";
-import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { Metadata } from "next";
 import { getCategories } from "@/lib/category";
 
-export type CategoryWithChildren = Prisma.CategoryGetPayload<{
-  include: { children: true };
-}>;
-
-export type ProductWithCategory = Prisma.ProductGetPayload<{
-  include: {
-    category: {
-      include: { parent: true };
-    };
-  };
-}>;
-
-interface PageProps {
-  params: { slug?: string[] };
-  searchParams: { page?: string };
-}
-
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
-  const slug = params.slug || [];
-  const mainSlug = slug[0];
-  const subSlug = slug[1];
-
-  const currentCategory = await prisma.category.findUnique({
-    where: { slug: subSlug || mainSlug },
-    include: { parent: true },
-  });
-
-  const title = currentCategory
-    ? `${currentCategory.name} | 도복1번지`
-    : "상품 카테고리 - 도복1번지";
-
-  const description = currentCategory
-    ? `${currentCategory.name} 카테고리의 최고급 용품들을 도복1번지에서 만나보세요.`
-    : "도복1번지의 다양한 무술 용품 카테고리입니다.";
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-    },
-  };
-}
-
-export default async function Page({ params, searchParams }: PageProps) {
+export default async function CategoryPage({ params, searchParams }: any) {
   const slug = params.slug || [];
   const mainSlug = slug[0] || "";
-  const subSlugFromUrl = slug[1];
+  const subSlug = slug[1] || "all";
 
-  // 페이지네이션
   const resolvedSearchParams = await searchParams;
   const currentPage = Number(resolvedSearchParams.page) || 1;
   const pageSize = 12;
-  const skip = (currentPage - 1) * pageSize;
 
-  const productWhere: Prisma.ProductWhereInput = subSlugFromUrl
-    ? {
-        category: { slug: subSlugFromUrl },
-      }
-    : {
-        category: { parent: { slug: mainSlug } },
-      };
+  const queryClient = new QueryClient();
+  const categories = await getCategories();
 
-  const [categories, products, totalProducts] = await Promise.all([
-    getCategories(),
-    prisma.product.findMany({
-      where: productWhere,
-      include: {
-        category: { include: { parent: true } },
-        options: true,
-      },
-      orderBy: { createdAt: "desc" },
-      skip: skip,
-      take: pageSize,
-    }),
-    prisma.product.count({ where: productWhere }),
-  ]);
+  await queryClient.prefetchQuery({
+    queryKey: ["products", "category", mainSlug, subSlug, currentPage],
+    queryFn: async () => {
+      const productWhere =
+        subSlug !== "all"
+          ? { category: { slug: subSlug } }
+          : { category: { parent: { slug: mainSlug } } };
+
+      const [products, total] = await Promise.all([
+        prisma.product.findMany({
+          where: productWhere,
+          include: { category: { include: { parent: true } }, options: true },
+          orderBy: { createdAt: "desc" },
+          skip: (currentPage - 1) * pageSize,
+          take: pageSize,
+        }),
+        prisma.product.count({ where: productWhere }),
+      ]);
+      return { products, total };
+    },
+  });
 
   return (
-    <PageClient
-      categories={categories.grouped}
-      products={products as any}
-      mainSlug={mainSlug}
-      subSlug={subSlugFromUrl || "all"}
-      total={totalProducts}
-      pageSize={pageSize}
-      currentPage={currentPage}
-    />
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <PageClient
+        categories={categories.grouped}
+        mainSlug={mainSlug}
+        subSlug={subSlug}
+        currentPage={currentPage}
+        pageSize={pageSize}
+      />
+    </HydrationBoundary>
   );
 }

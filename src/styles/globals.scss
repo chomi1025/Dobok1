@@ -6,6 +6,9 @@
   --font-weight-bold: 700;
 }
 
+* {
+  box-sizing: border-box;
+}
 html,
 body,
 div,
@@ -38,9 +41,20 @@ dl {
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  scrollbar-gutter: stable !important;
+}
+
+.main,
+header,
+nav {
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+
   background-color: #fff;
   color: #333;
   -webkit-font-smoothing: antialiased;
@@ -50,6 +64,7 @@ body {
   scrollbar-gutter: stable;
   font-family: var(--font-pretendard);
   font-weight: var(--font-weight-regular);
+  overflow-x: hidden;
 }
 
 input,
@@ -129,13 +144,13 @@ fieldset {
 /* 5. 타이포그래피 */
 h1 {
   color: #111;
-  font-family: var(--font-paybooc), sans-serif !important;
+  font-family: var(--font-paybooc), sans-serif;
   letter-spacing: -0.05em;
 }
 
 h2 {
   color: #222;
-  font-family: var(--font-paybooc), sans-serif !important;
+  font-family: var(--font-paybooc), sans-serif;
   letter-spacing: -0.05em;
 }
 h3 {
@@ -143,9 +158,13 @@ h3 {
 }
 
 .main {
-  margin: 0 auto;
-
   @include mobile {
     padding: rem(0) rem(5) rem(0);
   }
+}
+
+body.swal2-shown {
+  padding-right: 0 !important;
+
+  scrollbar-gutter: stable !important;
 }

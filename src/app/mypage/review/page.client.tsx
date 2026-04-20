@@ -1,146 +1,155 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Column, Table } from "@/components/Table/page";
 import styles from "./page.module.scss";
 import PeriodTabsComponent from "@/components/mypage/PeriodTabs";
 import PagenationComponent from "@/components/pagenation/page";
-import { Review } from "./page";
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { useSearchParams } from "next/navigation";
+import Image from "next/image";
+import { UnifiedTable } from "@/components/common/DataTable";
 
 type PeriodType = "1MONTH" | "3MONTH" | "6MONTH" | "12MONTH" | "CUSTOM";
 
-const reviewColumns: Column<Review>[] = [
+export interface Review {
+  id: number;
+  productName: string;
+  img: string;
+  deliveredAt: string;
+  reviewStatus: "리뷰작성가능" | "리뷰작성완료";
+  reviewId?: number;
+}
+
+const MOCK_REVIEWS: Review[] = [
   {
-    key: "productName",
-    label: "상품명/옵션",
-    flex: 4,
-    render: (row) => (
-      <div
-        style={{
-            flex:1,
-          display: "flex",
-          alignItems: "center",
-          gap: 25,
-          paddingLeft: 30,
-        }}
-      >
-        <img src={row.img} width={90} height={90} />
-        <span>{row.productName}</span>
-      </div>
-    ),
-  },
-  { key: "deliveredAt", label: "배송완료", flex: 1 },
-  {
-    key: "reviewStatus",
-    label: "상태",
-    flex: 1,
-    render: (row) => <span>{row.reviewStatus}</span>,
+    id: 101,
+    productName: "프리미엄 선수용 도복 - 화이트",
+    img: "https://jbxwbgcgrqogbbwlzzdb.supabase.co/storage/v1/object/public/thumbnails/1773901449806-e05c163a-1571-4a6c-a331-ffbf713e6cf6.png",
+    deliveredAt: "2026-04-01",
+    reviewStatus: "리뷰작성완료",
+    reviewId: 501,
   },
   {
-    key: "action",
-    label: "작업",
-    flex: 1,
-    render: (row) =>
-      row.reviewStatus === "리뷰작성완료" ? (
-        <Link
-          href={`/mypage/review/${row.reviewId}`}
-          style={{
-            color: "#555",
-            padding: 10,
-            border: "1px solid #ddd",
-            borderRadius: 5,
-            textDecoration: "none",
-          }}
-        >
-          작성완료
-        </Link>
-      ) : (
-        <Link
-          href={`/mypage/review/new?id=${row.id}`}
-          style={{
-            backgroundColor: "#333",
-            textDecoration: "none",
-            color: "white",
-            padding: 10,
-            border: "1px solid #ddd",
-            borderRadius: 5,
-          }}
-        >
-          작성하기
-        </Link>
-      ),
+    id: 102,
+    productName: "컴팩트 훈련용 도복 - 블루",
+    img: "https://jbxwbgcgrqogbbwlzzdb.supabase.co/storage/v1/object/public/thumbnails/1773901449806-e05c163a-1571-4a6c-a331-ffbf713e6cf6.png",
+    deliveredAt: "2026-04-03",
+    reviewStatus: "리뷰작성가능",
+  },
+  {
+    id: 103,
+    productName: "아디다스 품새도복 유단자용",
+    img: "https://jbxwbgcgrqogbbwlzzdb.supabase.co/storage/v1/object/public/thumbnails/1773901449806-e05c163a-1571-4a6c-a331-ffbf713e6cf6.png",
+    deliveredAt: "2026-03-25",
+    reviewStatus: "리뷰작성완료",
+    reviewId: 502,
   },
 ];
 
-interface Props {
-  initialReviews: Review[];
-}
+const columnHelper = createColumnHelper<Review>();
 
-export default function ReviewClientPage({ initialReviews }: Props) {
-  const [reviews, setReviews] = useState<Review[]>(initialReviews || []);
-  const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 10;
+export default function ReviewClientPage() {
+  const [reviews, setReviews] = useState<Review[]>(MOCK_REVIEWS || []);
   const [period, setPeriod] = useState<PeriodType>("1MONTH");
-  const [customRange, setCustomRange] = useState<{
-    start: Date;
-    end: Date;
-  } | null>(null);
+  const searchParams = useSearchParams();
 
-  const pageCount = Math.ceil(reviews.length / itemsPerPage);
-  const currentItems = reviews.slice(
-    currentPage * itemsPerPage,
-    (currentPage + 1) * itemsPerPage,
+  // 페이지네이션 설정
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const itemsPerPage = 10;
+
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return reviews.slice(start, start + itemsPerPage);
+  }, [reviews, currentPage]);
+
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor("productName", {
+        header: "상품명/옵션",
+        size: 508,
+        cell: (info) => (
+          <div className={styles.titleColumn}>
+            <div className={styles.title}>
+              <div className={styles.productThumb}>
+                <Image
+                  src={info.row.original.img}
+                  width={90}
+                  height={90}
+                  alt="상품"
+                />
+              </div>
+              <span className={styles.titleText}>{info.getValue()}</span>
+            </div>
+          </div>
+        ),
+      }),
+      columnHelper.accessor("deliveredAt", {
+        header: "배송완료일",
+        size: 150,
+        cell: (info) => (
+          <span className={styles.normalNumber}>{info.getValue()}</span>
+        ),
+      }),
+      columnHelper.accessor("reviewStatus", {
+        header: "상태/관리",
+        size: 250,
+        cell: (info) => {
+          const isDone = info.getValue() === "리뷰작성완료";
+          return (
+            <div className={styles.actionCell}>
+              <span className={isDone ? styles.statusDone : styles.statusWait}>
+                {info.getValue()}
+              </span>
+              <Link
+                href={
+                  isDone
+                    ? `/mypage/review/${info.row.original.reviewId}`
+                    : `/mypage/review/new?id=${info.row.original.id}`
+                }
+                className={isDone ? styles.btnEdit : styles.btnWrite}
+                prefetch={false}
+              >
+                {isDone ? "리뷰보기" : "리뷰작성"}
+              </Link>
+            </div>
+          );
+        },
+      }),
+    ],
+    [],
   );
 
-  useEffect(() => {
-    /*
-    const fetchReviews = async () => {
-      try {
-        const res = await fetch("/api/mypage/review", {
-          credentials: "include",
-        });
-        if (!res.ok) throw new Error("리뷰 목록 가져오기 실패");
-        const data: Review[] = await res.json();
-        setReviews(data);
-      } catch (err) {
-        console.error(err);
-        setReviews([]);
-      }
-    };
-
-    fetchReviews();
-    */
-  }, []);
+  const table = useReactTable({
+    data: paginatedData,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   return (
     <div className={styles.inner}>
-      <header>
+      <header className={styles.pageHeader}>
         <h1>상품 후기</h1>
-
-        {/* 날짜 선택 탭 */}
         <PeriodTabsComponent
           period={period}
-          onPeriodChange={(p) => {
-            setPeriod(p);
-            setCustomRange(null);
-          }}
-          onCustomSubmit={(start, end) => {
-            setPeriod("CUSTOM");
-            setCustomRange({ start, end });
-          }}
+          onPeriodChange={(p) => setPeriod(p)}
+          onCustomSubmit={() => setPeriod("CUSTOM")}
         />
       </header>
 
-      {/* 테이블 목록 */}
-      <Table columns={reviewColumns} data={currentItems} />
+      <UnifiedTable table={table} className={styles.reviewTable} />
 
-      {/* 페이지네이션 */}
-      <PagenationComponent
-        total={reviews.length}
-        pageSize={itemsPerPage}
-        currentPage={currentPage + 1}
-      />
+      <div className={styles.paginationSection}>
+        <PagenationComponent
+          total={reviews.length}
+          pageSize={itemsPerPage}
+          currentPage={currentPage}
+        />
+      </div>
     </div>
   );
 }

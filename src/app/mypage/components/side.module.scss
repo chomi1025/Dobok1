@@ -3,7 +3,10 @@
 .inner {
   width: 100%;
   max-width: rem(212);
+  min-width: rem(175);
   margin-right: rem(20);
+  position: sticky;
+  top: rem(100);
 
   h2 {
     font-size: rem(36);

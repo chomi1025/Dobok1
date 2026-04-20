@@ -8,43 +8,54 @@ import ProductList from "@/components/product/ProductList";
 import PagenationComponent from "@/components/pagenation/page";
 import { ChevronRight } from "lucide-react";
 import { Category } from "@/lib/category";
+import { useQuery } from "@tanstack/react-query";
+import {
+  ProductWithDetails,
+  CategoryWithChildren,
+  CategoryApiResponse,
+} from "@/types/types";
 
 type Props = {
-  categories: Category[];
-  products: any[];
+  categories: CategoryWithChildren[];
   mainSlug: string;
   subSlug: string;
-  total: number;
-  pageSize: number;
   currentPage: number;
+  pageSize: number;
 };
 
 export default function PageClient({
   categories,
   mainSlug,
   subSlug,
-  products,
-  total,
-  pageSize,
   currentPage,
+  pageSize,
 }: Props) {
   const router = useRouter();
 
-  const currentMain = categories?.find((m) => m.slug === mainSlug);
+  const { data } = useQuery<CategoryApiResponse>({
+    queryKey: ["products", "category", mainSlug, subSlug, currentPage],
+    queryFn: async () => {
+      const res = await fetch(
+        `/api/products/category?mainSlug=${mainSlug}&subSlug=${subSlug}&page=${currentPage}`,
+      );
+      return res.json();
+    },
+  });
 
-  const tabCategories = (currentMain?.children || []) as Category[];
+  const products = data?.products || [];
+  const total = data?.total || 0;
 
-  const currentSub = tabCategories?.find((s) => s.slug === subSlug);
+  const currentMain = categories?.find((m: any) => m.slug === mainSlug);
+  const tabCategories = currentMain?.children || [];
+  const currentSub = tabCategories?.find((s: any) => s.slug === subSlug);
   const activeTabId = currentSub ? currentSub.id : "all";
 
   const handleTabChange = (id: number | string) => {
     if (id === "all") {
       router.push(`/products/${mainSlug}`);
     } else {
-      const targetSub = tabCategories.find((cat) => cat.id === id);
-      if (targetSub) {
-        router.push(`/products/${mainSlug}/${targetSub.slug}`);
-      }
+      const targetSub = tabCategories.find((cat: any) => cat.id === id);
+      if (targetSub) router.push(`/products/${mainSlug}/${targetSub.slug}`);
     }
   };
 
@@ -53,46 +64,28 @@ export default function PageClient({
       <header>
         <div className={styles.title}>
           <h1>{currentMain?.name}</h1>
-
           <nav>
-            <Link href="/" prefetch={false}>
-              홈
-            </Link>
-
+            <Link href="/">홈</Link>
             <ChevronRight size={14} className={styles.separator} />
-
-            <Link href={`/products/${currentMain?.slug}`} prefetch={false}>
-              {currentMain?.name}
-            </Link>
-
+            <Link href={`/products/${mainSlug}`}>{currentMain?.name}</Link>
             {currentSub && (
               <>
                 <ChevronRight size={14} className={styles.separator} />
-
                 <span>{currentSub.name}</span>
               </>
             )}
           </nav>
         </div>
-
-        {/* 탭메뉴 */}
-
         <CategoryTabs
-          categories={tabCategories as any}
+          categories={tabCategories}
           activeTab={activeTabId}
           onTabChange={handleTabChange}
           className={styles.customMargin}
         />
       </header>
-
-      {/* 상품목록 */}
       <article className={styles.contentSection}>
-        <h2 className={styles["sr-only"]}>상품 목록</h2>
-
         <ProductList products={products} className={styles.CustomMinHeight} />
       </article>
-
-      {/* 페이지네이션 */}
       <div className={styles.pagenationWrapper}>
         <PagenationComponent
           total={total}

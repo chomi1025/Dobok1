@@ -57,3 +57,37 @@ export async function PATCH(
     return NextResponse.json({ message: "수정 중 에러 발생" }, { status: 500 });
   }
 }
+
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const id = params?.id;
+
+    if (!id) {
+      return NextResponse.json(
+        { message: "ID가 누락되었습니다." },
+        { status: 400 },
+      );
+    }
+
+    const noticeId = Number(id);
+
+    const notice = await prisma.notice.findUnique({
+      where: { id: noticeId },
+    });
+
+    if (!notice) {
+      return NextResponse.json(
+        { message: "공지를 찾을 수 없음" },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json(notice);
+  } catch (error) {
+    console.error("서버 에러 상세:", error);
+    return NextResponse.json({ message: "서버 에러" }, { status: 500 });
+  }
+}

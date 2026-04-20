@@ -7,6 +7,7 @@ import Button from "@/components/common/buttons/page";
 import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
 import { customConfirm } from "@/lib/swal";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface SelectedOption extends ProductOption {
   quantity: number;
@@ -106,71 +107,77 @@ export default function ProductInfo({
   }, [product.options, addedOptions.length, setAddedOptions]);
 
   // 장바구니 함수
-  const handleAddToCart = async () => {
+  const queryClient = useQueryClient();
+
+  const { mutate: addToCartMutate, isPending } = useMutation({
+    mutationFn: async (
+      cartData: { productOptionId: number; quantity: number }[],
+    ) => {
+      // 로그인
+      if (session) {
+        const res = await fetch("/api/cart", {
+          method: "POST",
+          body: JSON.stringify({ items: cartData }),
+          headers: { "Content-Type": "application/json" },
+        });
+        if (!res.ok) throw new Error("장바구니 담기 실패");
+        return { type: "member" };
+      }
+
+      // 비회원일 때
+      const existingCart = JSON.parse(localStorage.getItem("cart") || "[]");
+      const updatedCart = [...existingCart];
+
+      cartData.forEach((newItem) => {
+        const foundIndex = updatedCart.findIndex(
+          (item: any) => item.productOptionId === newItem.productOptionId,
+        );
+        if (foundIndex > -1) {
+          updatedCart[foundIndex].quantity += newItem.quantity;
+        } else {
+          updatedCart.push(newItem);
+        }
+      });
+
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+      return { type: "guest" };
+    },
+    onSuccess: async (data) => {
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+
+      const result = await customConfirm({
+        title: "장바구니 담기 완료!",
+        text: "장바구니로 이동하시겠습니까?",
+        confirmText: "이동하기",
+        cancelText: "계속 쇼핑",
+        isDanger: false,
+      });
+
+      if (result.isConfirmed) {
+        router.push("/cart");
+      }
+    },
+    onError: (error) => {
+      toast.error("장바구니 담기에 실패했습니다.");
+      console.error(error);
+    },
+  });
+
+  const handleAddToCart = () => {
     if (addedOptions.length === 0) {
       toast("옵션을 선택해주세요!");
       return;
     }
 
     const cartData = addedOptions.map((opt) => ({
+      productId: product.id,
       productOptionId: opt.id,
       quantity: opt.quantity,
     }));
 
-    // 로그인 회원
-    if (session) {
-      try {
-        const res = await fetch("/api/cart", {
-          method: "POST",
-          body: JSON.stringify({ items: cartData }),
-          headers: { "Content-Type": "application/json" },
-        });
-
-        if (res.ok) {
-          if (confirm("장바구니(회원)에 담겼습니다. 이동하시겠습니까?")) {
-            router.push("/cart");
-          }
-        } else {
-          alert("서버 에러가 발생했습니다.");
-        }
-      } catch (err) {
-        console.error(err);
-      }
-      return;
-    }
-
-    // 비회원
-    const existingCart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const updatedCart = [...existingCart];
-
-    cartData.forEach((newItem) => {
-      const foundIndex = updatedCart.findIndex(
-        (item) => item.productOptionId === newItem.productOptionId,
-      );
-
-      if (foundIndex > -1) {
-        updatedCart[foundIndex].quantity += newItem.quantity;
-      } else {
-        updatedCart.push(newItem);
-      }
-    });
-
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-
-    const result = await customConfirm({
-      title: "장바구니 담기 완료!",
-      text: "장바구니로 이동하시겠습니까?",
-      confirmText: "이동하기",
-      cancelText: "계속 쇼핑",
-      isDanger: false,
-    });
-
-    if (result.isConfirmed) {
-      router.push("/cart");
-    }
+    addToCartMutate(cartData);
   };
 
-  // 구매하기
   return (
     <>
       <section className={styles.productInfoArea}>
@@ -186,7 +193,7 @@ export default function ProductInfo({
           </div>
 
           <div className={styles.infoWrapper}>
-            <h2>{product.name}</h2>
+            <h1>{product.name}</h1>
             <hr />
 
             <div className={styles.price}>
@@ -304,10 +311,13 @@ export default function ProductInfo({
             </div>
 
             <div className={styles.buttonArea}>
-              <Button variant="edit" onClick={handleAddToCart}>
-                장바구니
+              <Button
+                variant="edit"
+                onClick={handleAddToCart}
+                disabled={isPending}
+              >
+                {isPending ? "담는 중..." : "장바구니"}
               </Button>
-
               <Button variant="black">구매하기</Button>
             </div>
           </div>
