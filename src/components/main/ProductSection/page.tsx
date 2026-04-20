@@ -3,7 +3,7 @@
 import { useState } from "react";
 import styles from "./page.module.scss";
 import ProductList from "@/components/product/ProductList";
-import { Category, ProductWithCategory, Title } from "../../../types/types";
+import { Category, Title } from "../../../types/types";
 import CategoryTabs from "@/components/CategoryTabs/page";
 import Button from "@/components/common/buttons/page";
 import { useQuery } from "@tanstack/react-query";
@@ -11,8 +11,6 @@ import { fetchMainCategories, fetchProductPreview } from "@/lib/api";
 
 interface Props {
   title: Title;
-  categories: Category[];
-  products: ProductWithCategory[];
   type: "best" | "new";
 }
 
