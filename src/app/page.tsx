@@ -1,29 +1,19 @@
 import { Metadata } from "next";
-import { getMainCategories } from "@/lib/category";
-import { prisma } from "@/lib/prisma";
 
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from "@tanstack/react-query";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import HomeClientPage from "./page.client";
-import { makeQueryClient } from "@/lib/query.client";
-import {
-  fetchBestProducts,
-  fetchMainCategories,
-  fetchNewProducts,
-} from "@/lib/api";
+import { getQueryClient } from "@/lib/query.client";
+import { fetchMainCategories, fetchProductPreview } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "도복일번지",
   description: "스포츠용품,도복 전문 도복일번지 입니다!",
 };
 
-export const revalidate = 3600;
+//export const revalidate = 3600;
 
 export default async function HomePage() {
-  const queryClient = makeQueryClient();
+  const queryClient = getQueryClient();
 
   await Promise.all([
     queryClient.prefetchQuery({
@@ -31,12 +21,12 @@ export default async function HomePage() {
       queryFn: fetchMainCategories,
     }),
     queryClient.prefetchQuery({
-      queryKey: ["bestProducts"],
-      queryFn: fetchBestProducts,
+      queryKey: ["products", "best", "all"],
+      queryFn: () => fetchProductPreview("best"),
     }),
     queryClient.prefetchQuery({
-      queryKey: ["newProducts"],
-      queryFn: fetchNewProducts,
+      queryKey: ["products", "new", "all"],
+      queryFn: () => fetchProductPreview("new"),
     }),
   ]);
 

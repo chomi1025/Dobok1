@@ -1,3 +1,4 @@
+"use client";
 import { Category, ProductWithCategory, Title } from "@/types/types";
 import ProductSectionComponent from "../ProductSection/page";
 
@@ -8,23 +9,10 @@ const title: Title = {
   href: "/products/new",
 };
 
-interface Props {
-  categories: Category[];
-  newProducts: ProductWithCategory[];
-}
-
-export default async function NewSectionComponent({
-  categories,
-  newProducts,
-}: Props) {
+export default async function NewSectionComponent() {
   return (
     <>
-      <ProductSectionComponent
-        type={"new"}
-        categories={categories}
-        title={title}
-        products={newProducts}
-      />
+      <ProductSectionComponent type={"new"} title={title} />
     </>
   );
 }

@@ -1,13 +1,13 @@
 "use client";
+
 import { useState } from "react";
 import styles from "./page.module.scss";
 import ProductList from "@/components/product/ProductList";
 import { Category, ProductWithCategory, Title } from "../../../types/types";
 import CategoryTabs from "@/components/CategoryTabs/page";
 import Button from "@/components/common/buttons/page";
-
-import useSWR from "swr";
 import { useQuery } from "@tanstack/react-query";
+import { fetchMainCategories, fetchProductPreview } from "@/lib/api";
 
 interface Props {
   title: Title;
@@ -16,33 +16,24 @@ interface Props {
   type: "best" | "new";
 }
 
-export default function ProductSectionComponent({
-  title,
-  categories,
-  products: initialProducts,
-  type,
-}: Props) {
+export default function ProductSectionComponent({ title, type }: Props) {
   const [activeTab, setActiveTab] = useState<number | string>("all");
 
-  const { data: displayProducts, isLoading } = useQuery({
-    queryKey: ["products", type, activeTab],
-    queryFn: async () => {
-      const params = new URLSearchParams({
-        type,
-        categoryId: String(activeTab),
-      });
-      const res = await fetch(`/api/products/preview?${params}`);
-      if (!res.ok) throw new Error("fetch 실패");
-      return res.json();
-    },
-
-    placeholderData: activeTab === "all" ? initialProducts : undefined,
-    staleTime: 0,
+  const { data: mainCategories = [] } = useQuery<Category[]>({
+    queryKey: ["mainCategories"],
+    queryFn: fetchMainCategories,
+    staleTime: 1000 * 60 * 5,
   });
 
-  const categoryList = Array.isArray(categories)
-    ? categories
-    : (categories as any).categories || [];
+  const { data: products, isLoading } = useQuery({
+    queryKey: ["products", type, activeTab],
+    queryFn: () => fetchProductPreview(type, String(activeTab)),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const categoryList = Array.isArray(mainCategories)
+    ? mainCategories
+    : (mainCategories as any).categories || [];
 
   return (
     <section className={styles.inner}>
@@ -63,11 +54,8 @@ export default function ProductSectionComponent({
       <div key={activeTab} className={styles.productListWrapper}>
         {isLoading ? (
           <div className={styles.loading}>불러오는 중...</div>
-        ) : displayProducts && displayProducts.length > 0 ? (
-          <ProductList
-            products={displayProducts}
-            className={styles.customMinHeight}
-          />
+        ) : products && products.length > 0 ? (
+          <ProductList products={products} className={styles.customMinHeight} />
         ) : (
           <div className={styles.noItem}>새로운 상품을 준비 중입니다.</div>
         )}

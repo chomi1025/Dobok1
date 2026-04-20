@@ -63,7 +63,7 @@ export default function CartListComponent({
   const [checkedItems, setCheckedItems] = useState<number[]>([]);
   const router = useRouter();
   const queryClient = useQueryClient();
-  console.log(cart);
+
   const tableData: UnifiedCartItem[] = useMemo(() => {
     return cart.map((item, index) => {
       const displayOption =
@@ -71,7 +71,6 @@ export default function CartListComponent({
         item.productOption?.name ||
         (item.color || item.size ? `${item.color} ${item.size}`.trim() : "");
 
-      // 고유 ID 결정 로직
       const uniqueId =
         item.id ||
         item.cartItemId ||

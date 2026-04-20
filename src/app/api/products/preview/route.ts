@@ -10,6 +10,8 @@ export async function GET(req: Request) {
   const type = searchParams.get("type");
   const categoryId = searchParams.get("categoryId");
 
+  console.log(`2. 파라미터 확인 - type: ${type}, categoryId: ${categoryId}`);
+
   let categoryIds: number[] = [];
 
   if (categoryId && categoryId !== "all") {
@@ -29,6 +31,7 @@ export async function GET(req: Request) {
     }
   }
 
+  console.log("3. Prisma 쿼리 직전");
   const products = await prisma.product.findMany({
     where: {
       ...(type === "best" ? { isBest: true } : { isNew: true }),
@@ -39,6 +42,7 @@ export async function GET(req: Request) {
     take: 8,
     include: { options: true },
   });
+  console.log("4. Prisma 쿼리 완료", products.length);
 
   return Response.json(products);
 }

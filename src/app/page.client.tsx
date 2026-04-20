@@ -6,12 +6,7 @@ import BestSectionComponent from "@/components/main/BestSection/page";
 import ScrollAnimation from "./../components/common/ScrollAnimation";
 import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
-import ProductSectionComponent from "@/components/main/ProductSection/page";
-import {
-  fetchBestProducts,
-  fetchMainCategories,
-  fetchNewProducts,
-} from "@/lib/api";
+import { fetchProductPreview, fetchMainCategories } from "@/lib/api";
 
 const InstagramComponent = dynamic(
   () => import("@/components/main/Instagram/page"),
@@ -24,41 +19,19 @@ const NewSectionComponent = dynamic(
 );
 
 export default function HomeClientPage() {
-  const { data: mainCategories } = useQuery({
-    queryKey: ["mainCategories"],
-    queryFn: fetchMainCategories,
-    staleTime: 1000 * 60 * 5,
-  });
-
-  const { data: bestProducts } = useQuery({
-    queryKey: ["bestProducts"],
-    queryFn: fetchBestProducts,
-    staleTime: 1000 * 60 * 5,
-  });
-
-  const { data: newProducts } = useQuery({
-    queryKey: ["newProducts"],
-    queryFn: fetchNewProducts,
-    staleTime: 1000 * 60 * 5,
-  });
-
-  const categories = mainCategories || [];
-  const best = bestProducts || [];
-  const newItems = newProducts || [];
-
   return (
     <div className={styles.main}>
       <Carousel />
 
       <ScrollAnimation>
-        <CategoryIconComponent mainCategory={categories} />
+        <CategoryIconComponent />
       </ScrollAnimation>
 
       <hr className={styles.line} />
 
       {/* 베스트상품 */}
       <ScrollAnimation>
-        <BestSectionComponent categories={categories} bestProducts={best} />
+        <BestSectionComponent />
       </ScrollAnimation>
 
       {/* 메인배너 */}
@@ -72,7 +45,7 @@ export default function HomeClientPage() {
 
       {/* 신제품  */}
       <ScrollAnimation>
-        <NewSectionComponent categories={categories} newProducts={newItems} />
+        <NewSectionComponent />
       </ScrollAnimation>
 
       <hr className={styles.line} />
