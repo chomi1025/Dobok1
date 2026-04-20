@@ -4,19 +4,43 @@ import DetailLayout from "@/components/common/DetailLayout/page";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { customConfirm } from "@/lib/swal";
+import { useSession } from "next-auth/react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface Props {
-  isAdmin: boolean;
-  notice: {
-    id: number;
-    title: string;
-    createdAt: Date;
-    content: string;
-  };
+  noticeId: number;
 }
 
-export default function NoticeDetailClientPage({ isAdmin, notice }: Props) {
+export default function NoticeDetailClientPage({ noticeId }: Props) {
   const router = useRouter();
+  const { data: session, status } = useSession();
+  const isAdmin = session?.user?.role === "ADMIN";
+  const queryClient = useQueryClient();
+  const { data: notice } = useQuery({
+    queryKey: ["notice", noticeId],
+    queryFn: async () => {
+      const res = await fetch(`/api/notice/${noticeId}`);
+      return res.json();
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch(`/api/notice/${noticeId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("삭제 실패");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notices"] });
+      toast.success("공지사항이 삭제되었습니다.");
+      router.push("/support/notice");
+    },
+    onError: () => {
+      toast.error("오류가 발생했습니다.");
+    },
+  });
 
   const handleDeleteNotice = async () => {
     const result = await customConfirm({
@@ -26,21 +50,7 @@ export default function NoticeDetailClientPage({ isAdmin, notice }: Props) {
     });
 
     if (result.isConfirmed) {
-      try {
-        const response = await fetch(`/api/notice/${notice.id}`, {
-          method: "DELETE",
-        });
-
-        if (response.ok) {
-          router.refresh();
-          router.push("/support/notice");
-          toast.success("답변이 삭제되었습니다.");
-        } else {
-          toast.error("오류가 발생했습니다.");
-        }
-      } catch (error) {
-        toast.error("네트워크 에러");
-      }
+      deleteMutation.mutate();
     }
   };
 
@@ -55,7 +65,10 @@ export default function NoticeDetailClientPage({ isAdmin, notice }: Props) {
       isAuthor={isAdmin}
       onDelete={handleDeleteNotice}
     >
-      <div className={styles.textContent}>{notice.content}</div>
+      <div
+        className={styles.textContent}
+        dangerouslySetInnerHTML={{ __html: notice.content }}
+      />
     </DetailLayout>
   );
 }

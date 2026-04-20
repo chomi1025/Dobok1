@@ -1,23 +1,36 @@
-import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const categoryId = searchParams.get("categoryId");
+  const page = Number(searchParams.get("page")) || 1;
+  const pageSize = 12;
 
-  const products = await prisma.product.findMany({
-    where: {
-      isNew: true,
-      ...(categoryId !== "all" && {
-        category: { parentId: Number(categoryId) },
+  try {
+    const [totalItems, products] = await Promise.all([
+      prisma.product.count({ where: { isNew: true } }),
+      prisma.product.findMany({
+        where: { isNew: true },
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          thumbnail: true,
+          isNew: true,
+          isCustomizable: true,
+          options: {
+            select: { id: true, price: true, size: true, color: true },
+          },
+          category: { select: { name: true, slug: true } },
+        },
       }),
-    },
-    take: 8,
-    include: {
-      options: true,
-      category: { include: { parent: true } },
-    },
-  });
+    ]);
 
-  return NextResponse.json(products);
+    return NextResponse.json({ products, totalItems });
+  } catch (error) {
+    return NextResponse.json({ message: "신제품 로드 실패" }, { status: 500 });
+  }
 }

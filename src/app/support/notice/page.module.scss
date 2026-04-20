@@ -1,11 +1,23 @@
 @import "../../../components/style/variables.module";
 
-.titleText {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
-  min-width: 0;
+.inner {
+  min-height: 100vh;
+  padding-bottom: rem(100);
+
+  > nav {
+    margin: rem(30) 0;
+  }
+}
+
+.titleWrapper {
+  position: relative;
+  margin-bottom: rem(30);
+
+  a {
+    right: 0;
+    bottom: rem(-20);
+    position: absolute;
+  }
 }
 
 .fixedNotice {
@@ -20,9 +32,10 @@
   align-items: center;
   width: 100%;
   display: flex;
-  align-items: center;
+  justify-content: flex-start;
   gap: 8px;
   text-decoration: none;
+  position: relative;
 
   .noticeBadge {
     width: 45px;
@@ -42,6 +55,18 @@
       background-color: transparent;
       border-color: transparent;
     }
+  }
+
+  .titleText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    text-align: left;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 }
 
@@ -67,5 +92,31 @@
 
   &:hover {
     background-color: #fff9c4 !important;
+  }
+}
+
+.noticeTable {
+  width: rem(908);
+  table-layout: fixed;
+  border-collapse: collapse;
+
+  th,
+  td {
+    text-align: center;
+    vertical-align: middle;
+    padding: rem(18) rem(10);
+    border-bottom: 1px solid #eee;
+    font-size: rem(15);
+  }
+
+  th {
+    background-color: #f9f9f9;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .titleColumn {
+    text-align: left !important;
+    padding-left: rem(20);
   }
 }

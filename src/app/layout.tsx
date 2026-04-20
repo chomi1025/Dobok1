@@ -9,6 +9,7 @@ import { Toaster } from "react-hot-toast";
 import localFont from "next/font/local";
 import { Metadata } from "next";
 import TopBanner from "@/components/Topbanner/page";
+import Providers from "./providers";
 
 const pretendard = localFont({
   src: "../../public/fonts/PretendardVariable.woff2",
@@ -46,49 +47,57 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="ko" className={`${pretendard.variable} ${paybooc.variable}`}>
-      <body>
-        <EmotionRegistry>
-          <AuthProvider>
-            <TopBanner />
-            <HeaderServer />
+      <body className={`${pretendard.variable} ${paybooc.variable}`}>
+        <Providers>
+          <EmotionRegistry>
+            <AuthProvider>
+              <TopBanner />
+              <HeaderServer />
 
-            <main className="main">{children}</main>
+              <main className="main">{children}</main>
 
-            <Toaster
-              position="top-center"
-              containerStyle={{
-                zIndex: 99999,
-              }}
-              toastOptions={{
-                style: {
-                  minWidth: "280px",
-                  padding: "16px 24px",
-                  background: "#1a1a1a",
-                  color: "#fff",
-                  fontWeight: "600",
-                  borderRadius: "8px",
-                  border: "1px solid rgba(255, 255, 255, 0.15)",
-                  boxShadow:
-                    "0 12px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.2)",
-                },
-                success: {
-                  iconTheme: {
-                    primary: "#fff",
-                    secondary: "#1a1a1a",
+              <Toaster
+                position="top-center"
+                containerStyle={{
+                  position: "fixed",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  zIndex: 99999,
+                  pointerEvents: "none",
+                }}
+                toastOptions={{
+                  style: {
+                    minWidth: "280px",
+                    padding: "16px 24px",
+                    background: "#1a1a1a",
+                    color: "#fff",
+                    fontWeight: "600",
+                    borderRadius: "8px",
+                    border: "1px solid rgba(255, 255, 255, 0.15)",
+                    boxShadow:
+                      "0 12px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.2)",
                   },
-                },
-                error: {
-                  iconTheme: {
-                    primary: "#ff4b4b",
-                    secondary: "#fff",
+                  success: {
+                    iconTheme: {
+                      primary: "#fff",
+                      secondary: "#1a1a1a",
+                    },
                   },
-                },
-              }}
-            />
-            <Footer />
-            <MobileNavPage />
-          </AuthProvider>
-        </EmotionRegistry>
+                  error: {
+                    iconTheme: {
+                      primary: "#ff4b4b",
+                      secondary: "#fff",
+                    },
+                  },
+                }}
+              />
+              <Footer />
+              <MobileNavPage />
+            </AuthProvider>
+          </EmotionRegistry>
+        </Providers>
       </body>
     </html>
   );

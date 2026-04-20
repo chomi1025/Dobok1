@@ -5,7 +5,7 @@ import styles from "./page.module.scss";
 
 interface EditorLayoutProps {
   pageTitle: string;
-  onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void> | void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   children: React.ReactNode;
   isSubmitting?: boolean;
 }
@@ -16,26 +16,12 @@ export default function EditorLayout({
   children,
   isSubmitting = false,
 }: EditorLayoutProps) {
-  const [isPending, setIsPending] = useState(false);
-  const isLocked = useRef(false);
-
   const handleSafeSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (isLocked.current) return;
+    if (isSubmitting) return;
 
-    try {
-      isLocked.current = true;
-      setIsPending(true);
-
-      await onSubmit(e);
-    } catch (error) {
-      isLocked.current = false;
-      setIsPending(false);
-    } finally {
-      isLocked.current = false;
-      setIsPending(false);
-    }
+    onSubmit(e);
   };
 
   return (

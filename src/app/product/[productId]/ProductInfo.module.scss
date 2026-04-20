@@ -32,10 +32,12 @@
 
 .infoWrapper {
   flex: 1;
-  h2 {
+
+  h1 {
     color: #222;
     font-weight: 700;
     font-size: rem(24);
+    font-family: var(--font-pretendard) !important;
   }
 
   hr {

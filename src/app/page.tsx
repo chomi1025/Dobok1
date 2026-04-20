@@ -1,13 +1,14 @@
-import styles from "./page.module.scss";
-import CategoryIconComponent from "@/components/main/CategoryIcon/CategoryIcon";
-import Carousel from "../components/main/Carousel/Carousel";
-import BestSectionComponent from "@/components/main/BestSection/page";
-import Image from "next/image";
-import ScrollAnimation from "./../components/common/ScrollAnimation";
 import { Metadata } from "next";
 import { getMainCategories } from "@/lib/category";
 import { prisma } from "@/lib/prisma";
-import dynamic from "next/dynamic";
+
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+import HomeClientPage from "./page.client";
+import { makeQueryClient } from "@/lib/query.client";
 
 export const metadata: Metadata = {
   title: "도복일번지",
@@ -16,120 +17,37 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600;
 
-const InstagramComponent = dynamic(
-  () => import("@/components/main/Instagram/page"),
-  { ssr: false },
-);
-const NewSectionComponent = dynamic(
-  () => import("@/components/main/NewSection/page"),
-  { ssr: false },
-);
-
 export default async function HomePage() {
-  const [mainCategories, bestProducts, newProducts] = await Promise.all([
-    getMainCategories(),
+  const queryClient = makeQueryClient();
 
-    prisma.product.findMany({
-      where: { isBest: true },
-      take: 8,
-      select: {
-        id: true,
-        name: true,
-        thumbnail: true,
-        options: {
-          select: {
-            id: true,
-            price: true,
-            color: true,
-            size: true,
-          },
-        },
-      },
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: ["mainCategories"],
+      queryFn: getMainCategories,
     }),
-
-    prisma.product.findMany({
-      where: { isNew: true },
-      take: 8,
-      select: {
-        id: true,
-        name: true,
-        thumbnail: true,
-        options: {
-          select: {
-            id: true,
-            price: true,
-            color: true,
-            size: true,
-          },
-        },
-      },
+    queryClient.prefetchQuery({
+      queryKey: ["bestProducts"],
+      queryFn: () =>
+        prisma.product.findMany({
+          where: { isBest: true },
+          take: 8,
+          include: { options: true },
+        }),
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ["newProducts"],
+      queryFn: () =>
+        prisma.product.findMany({
+          where: { isNew: true },
+          take: 8,
+          include: { options: true },
+        }),
     }),
   ]);
 
   return (
-    <div className={styles.main}>
-      <Carousel />
-
-      <ScrollAnimation>
-        <CategoryIconComponent mainCategory={mainCategories} />
-      </ScrollAnimation>
-
-      <hr className={styles.line} />
-
-      {/* 베스트상품 */}
-      <ScrollAnimation>
-        <BestSectionComponent
-          categories={mainCategories}
-          bestProducts={bestProducts}
-        />
-      </ScrollAnimation>
-
-      {/* 메인배너 */}
-      <ScrollAnimation>
-        <div className={styles.banner}>
-          {/* <Image src={"/no.png"} alt={"이벤트 배너"} fill /> */}
-
-          <p>이벤트배너</p>
-        </div>
-      </ScrollAnimation>
-
-      {/* 신제품  */}
-      <ScrollAnimation>
-        <NewSectionComponent
-          categories={mainCategories}
-          newProducts={newProducts}
-        />
-      </ScrollAnimation>
-
-      <hr className={styles.line} />
-
-      <ScrollAnimation>
-        <section className={styles.banner2}>
-          <div>
-            이벤트 배너
-            {/* <Image
-              src="https://placehold.co/1920x400?text=Banner+Coming+Soon"
-              alt={"이벤트 배너"}
-              fill
-            /> */}
-          </div>
-
-          <div>
-            이벤트 배너
-            {/* <Image
-              src="https://placehold.co/1920x400?text=Banner+Coming+Soon"
-              alt={"이벤트 배너"}
-              fill
-            /> */}
-          </div>
-        </section>
-      </ScrollAnimation>
-
-      <hr className={styles.line} />
-
-      <ScrollAnimation>
-        <InstagramComponent />
-      </ScrollAnimation>
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <HomeClientPage />
+    </HydrationBoundary>
   );
 }

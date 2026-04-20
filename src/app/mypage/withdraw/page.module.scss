@@ -27,7 +27,6 @@
   padding: rem(40);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 
-  // 주의사항
   .warningSection {
     background: #fff9f9;
     border-radius: rem(12);
@@ -61,7 +60,6 @@
     }
   }
 
-  // 라디오 버튼 그리드 디자인
   .reasonFieldset {
     border: none;
     padding: 0;
@@ -127,18 +125,16 @@
 
     .inputGroup {
       margin-bottom: rem(25);
+
       label {
         display: block;
         margin-bottom: rem(10);
       }
+
       input {
         width: 100%;
         padding: rem(15);
-        border: 1px solid #ddd;
         border-radius: rem(8);
-        &:focus {
-          outline: 2px solid #1e293b;
-        }
       }
     }
 

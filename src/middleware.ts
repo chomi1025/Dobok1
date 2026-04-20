@@ -28,7 +28,6 @@ export async function middleware(req: NextRequest) {
 export const config = {
   matcher: [
     "/admin/:path*", //어드민 전체
-    "/mypage/:path*", //마이페이지 전체
 
     "/support/notice/new",
     "/support/notice/edit/:id",

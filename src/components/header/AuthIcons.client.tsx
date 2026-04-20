@@ -5,10 +5,13 @@ import toast from "react-hot-toast";
 import React, { useState } from "react";
 import { LogIn, LogOut } from "lucide-react";
 import styles from "./Header.module.scss";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AuthIcons = () => {
   const { data: session, status } = useSession();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const onClickSignout = async () => {
     if (isLoggingOut) return;
@@ -18,6 +21,8 @@ const AuthIcons = () => {
         redirect: false,
         callbackUrl: "/",
       });
+
+      queryClient.clear();
 
       toast.success("로그아웃이 완료되었습니다!\n메인화면으로 이동합니다.", {
         duration: 2000,
@@ -71,4 +76,4 @@ const AuthIcons = () => {
   );
 };
 
-export default React.memo(AuthIcons);
+export default AuthIcons;

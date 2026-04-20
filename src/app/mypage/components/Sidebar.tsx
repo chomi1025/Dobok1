@@ -36,10 +36,12 @@ const menuItems = [
   },
 ];
 
-export default function Sidebar() {
+interface Props {
+  unreadCount: number;
+}
+
+export default function Sidebar({ unreadCount }: Props) {
   const pathname = usePathname();
-  // 쪽지 기능 나중에
-  const unreadCount = 5;
 
   return (
     <aside className={styles.inner}>

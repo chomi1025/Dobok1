@@ -2,11 +2,20 @@
 import { Table } from "@/components/Table/page";
 import styles from "./CartList.module.scss";
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { customConfirm } from "@/lib/swal";
 import Button from "@/components/common/buttons/page";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { X } from "lucide-react";
+import { UnifiedTable } from "@/components/common/DataTable";
 
 interface Column<T> {
   key: keyof T | string;
@@ -25,6 +34,7 @@ interface UnifiedCartItem {
   thumbnail: string;
   price: number;
   quantity: number;
+  optionName?: string;
   option?: string;
   color?: string;
   size?: string;
@@ -35,318 +45,322 @@ interface Props {
   user: any;
   cart: any[];
   isLoading: boolean;
-  setCart: React.Dispatch<React.SetStateAction<any[]>>;
+  refetch: () => void;
 }
+
+const STEPS = [
+  { label: "장바구니", step: 0, path: "/cart" },
+  { label: "주문서작성/결제", step: 1, path: "/checkout" },
+  { label: "주문완료", step: 2, path: "/order/success" },
+];
 
 export default function CartListComponent({
   user,
   cart,
   isLoading,
-  setCart,
+  refetch,
 }: Props) {
   const [checkedItems, setCheckedItems] = useState<number[]>([]);
   const router = useRouter();
+  const queryClient = useQueryClient();
+  console.log(cart);
+  const tableData: UnifiedCartItem[] = useMemo(() => {
+    return cart.map((item, index) => {
+      const displayOption =
+        item.optionDisplay ||
+        item.productOption?.name ||
+        (item.color || item.size ? `${item.color} ${item.size}`.trim() : "");
 
-  const toggleCheck = (productId: number) => {
+      // 고유 ID 결정 로직
+      const uniqueId =
+        item.id ||
+        item.cartItemId ||
+        item.productOptionId ||
+        item.productId ||
+        index;
+
+      return {
+        id: uniqueId,
+        productId: item.productId || item.product?.id,
+        productOptionId: item.productOptionId,
+        productName: item.productName || item.product?.name || "상품 정보 없음",
+        thumbnail:
+          item.thumbnail || item.product?.thumbnail || "/image/default.png",
+        price: item.price || item.product?.price || 0,
+        quantity: item.quantity || 0,
+        optionName: item.optionName || displayOption || "옵션 없음", // 이 부분 확인
+        option: displayOption,
+        isCustomizable:
+          item.isCustomizable || item.product?.isCustomizable || false,
+      };
+    });
+  }, [cart]);
+
+  const toggleCheck = (id: number) => {
     setCheckedItems((prev) =>
-      prev.includes(productId)
-        ? prev.filter((id) => id !== productId)
-        : [...prev, productId],
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
   };
 
-  // 개별삭제
+  const toggleAll = () => {
+    if (checkedItems.length === tableData.length) {
+      setCheckedItems([]);
+    } else {
+      setCheckedItems(tableData.map((item) => item.id));
+    }
+  };
+
+  const afterDelete = () => {
+    if (user) {
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    } else {
+      refetch();
+    }
+  };
+
   const removeItem = async (id: number) => {
-    console.log("삭제 버튼 클릭됨! ID:", id);
-    console.log("전달받은 user 객체 상태:", user);
-
-    if (!id) return;
-
     const result = await customConfirm({
       title: "상품을 삭제하시겠습니까?",
       confirmText: "삭제",
       isDanger: true,
     });
+    if (!result.isConfirmed) return;
 
-    if (result.isConfirmed) {
-      try {
-        if (user) {
-          const res = await fetch(`/api/cart?ids=${id}`, { method: "DELETE" });
-
-          if (!res.ok) throw new Error("삭제 실패");
-          setCart((prev) => prev.filter((item) => item.id !== id));
-        } else {
-          const updatedCart = cart.filter(
-            (item) => (item.productOptionId || item.productId) !== id,
-          );
-          setCart(updatedCart);
-          localStorage.setItem("cart", JSON.stringify(updatedCart));
-        }
-        toast.success("상품이 삭제되었습니다.");
-      } catch (error) {
-        console.log(error);
-        toast.error("삭제에 실패했습니다.");
+    try {
+      if (user) {
+        const res = await fetch(`/api/cart?ids=${id}`, { method: "DELETE" });
+        if (!res.ok) throw new Error();
+      } else {
+        const updatedCart = cart.filter(
+          (item) => (item.id || item.productOptionId || item.productId) !== id,
+        );
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
       }
+      afterDelete();
+      toast.success("상품이 삭제되었습니다.");
+    } catch (error) {
+      toast.error("삭제 실패");
     }
   };
 
-  // 전체삭제
-  const removeall = async () => {
+  const removeSelected = async () => {
+    if (checkedItems.length === 0)
+      return toast.error("삭제할 상품을 선택해주세요.");
     const result = await customConfirm({
-      title: "장바구니를 비우시겠습니까?",
-      text: "장바구니의 모든 상품이 삭제됩니다.",
+      title: "선택 삭제",
+      text: `총 ${checkedItems.length}개를 삭제하시겠습니까?`,
       confirmText: "삭제",
       isDanger: true,
     });
+    if (!result.isConfirmed) return;
 
-    if (result.isConfirmed) {
-      try {
-        if (user) {
-          const res = await fetch("/api/cart?type=all", { method: "DELETE" });
-          if (!res.ok) throw new Error("전체 삭제 실패");
-        }
-
-        setCart([]);
-        localStorage.removeItem("cart");
-
-        toast.success("장바구니가 비워졌습니다.");
-      } catch (error) {
-        console.error("전체 삭제 중 에러:", error);
+    try {
+      if (user) {
+        const res = await fetch(`/api/cart?ids=${checkedItems.join(",")}`, {
+          method: "DELETE",
+        });
+        if (!res.ok) throw new Error();
+      } else {
+        const updatedCart = cart.filter(
+          (item) =>
+            !checkedItems.includes(
+              item.id || item.productOptionId || item.productId,
+            ),
+        );
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
       }
+      afterDelete();
+      setCheckedItems([]);
+      toast.success("삭제 완료");
+    } catch (error) {
+      toast.error("삭제 실패");
     }
   };
 
-  // 선택삭제
-  const removeSelected = async () => {
-    if (checkedItems.length === 0) {
-      return toast.error("삭제할 상품을 선택해주세요.");
-    }
-
+  const removeAll = async () => {
     const result = await customConfirm({
-      title: "선택한 상품을 삭제하시겠습니까?",
-      text: `총 ${checkedItems.length}개의 상품이 삭제됩니다.`,
-      confirmText: "선택 삭제",
+      title: "장바구니를 비우시겠습니까?",
+      confirmText: "전체 삭제",
       isDanger: true,
     });
 
-    if (result.isConfirmed) {
-      try {
-        if (user) {
-          const idsString = checkedItems.join(",");
+    if (!result.isConfirmed) return;
 
-          const res = await fetch(`/api/cart?ids=${idsString}`, {
-            method: "DELETE",
-          });
-
-          if (!res.ok) throw new Error("선택 삭제 실패");
-
-          setCart((prev) =>
-            prev.filter((item) => !checkedItems.includes(item.id)),
-          );
-        } else {
-          const updatedCart = cart.filter(
-            (item) =>
-              !checkedItems.includes(item.productOptionId || item.productId),
-          );
-          setCart(updatedCart);
-          localStorage.setItem("cart", JSON.stringify(updatedCart));
-        }
-
-        setCheckedItems([]);
-        toast.success("선택한 상품이 모두 삭제되었습니다.");
-      } catch (error) {
-        console.error("선택 삭제 실패:", error);
-        toast.error("삭제 중 오류가 발생했습니다.");
+    try {
+      if (user) {
+        const res = await fetch("/api/cart?type=all", { method: "DELETE" });
+        if (!res.ok) throw new Error();
+      } else {
+        localStorage.removeItem("cart");
       }
+
+      afterDelete();
+      setCheckedItems([]);
+      toast.success("장바구니가 비워졌습니다.");
+    } catch (error) {
+      toast.error("전체 삭제 실패");
     }
   };
 
-  const cartColumns: Column<UnifiedCartItem>[] = [
-    {
-      key: "check",
-      label: "선택",
-      flex: 0.4,
-      render: (row) => (
-        <div style={{ display: "flex", justifyContent: "center" }}>
+  const columnHelper = createColumnHelper<UnifiedCartItem>();
+
+  const columns = useMemo(
+    () => [
+      columnHelper.display({
+        id: "select",
+        size: 40,
+        header: () => (
           <input
             type="checkbox"
-            style={{ width: "20px", height: "20px" }}
-            checked={checkedItems.includes(row.id)}
-            onChange={() => toggleCheck(row.id)}
+            checked={
+              tableData.length > 0 && checkedItems.length === tableData.length
+            }
+            onChange={toggleAll}
           />
-        </div>
-      ),
-    },
-    {
-      key: "productName",
-      label: "상품명",
-      flex: 3.5,
-      render: (row) => (
-        <div className={styles.productNameArea}>
-          <div>
-            <Image
-              src={row.thumbnail}
-              fill
-              alt="상품 이미지"
-              style={{ objectFit: "cover" }}
-            />
-          </div>
-
+        ),
+        cell: ({ row }) => (
+          <input
+            type="checkbox"
+            checked={checkedItems.includes(row.original.id)}
+            onChange={() => toggleCheck(row.original.id)}
+          />
+        ),
+      }),
+      columnHelper.accessor("productName", {
+        header: "상품명",
+        size: 440,
+        cell: ({ row }) => (
           <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              textAlign: "left",
-            }}
+            className={styles.productNameArea}
+            style={{ display: "flex", alignItems: "center", gap: "12px" }}
           >
-            <span style={{ fontWeight: 700 }}>{row.productName}</span>
-            {row.option && (
-              <span style={{ marginTop: 8, color: "#888", fontSize: 15 }}>
-                {row.option}
-              </span>
-            )}
+            <div
+              className={styles.thumb}
+              style={{
+                position: "relative",
+                width: "90px",
+                height: "90px",
+                flexShrink: 0,
+              }}
+            >
+              <Image
+                src={row.original.thumbnail}
+                fill
+                alt="thumb"
+                style={{ objectFit: "cover", borderRadius: "4px" }}
+              />
+            </div>
+            <div
+              className={styles.infoText}
+              style={{ textAlign: "left", overflow: "hidden" }}
+            >
+              <p style={{ fontWeight: 700, margin: "0 0 4px 0" }}>
+                {row.original.productName}
+              </p>
+
+              {row.original.optionName &&
+                row.original.optionName !== "옵션 없음" && (
+                  <span style={{ color: "#888", fontSize: "13px" }}>
+                    [옵션] {row.original.optionName}
+                  </span>
+                )}
+            </div>
           </div>
-        </div>
-      ),
-    },
-    {
-      key: "quantity",
-      label: "수량",
-      flex: 1.5,
-      render: (row) => (
-        <span style={{ display: "flex" }}>{row.quantity}개</span>
-      ),
-    },
-    {
-      key: "price",
-      label: "상품금액",
-      flex: 1.2,
-      render: (row) => (
-        <span style={{ display: "flex", justifyContent: "center" }}>
-          {row.price.toLocaleString()}원
-        </span>
-      ),
-    },
-    {
-      key: "close",
-      label: "삭제",
-      flex: 0.5,
-      render: (row) => (
-        <button
-          type="button"
-          onClick={() => {
-            removeItem(row.id);
-          }}
-          style={{
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            padding: "8px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          title="상품 삭제"
-        >
-          <Image
-            alt={"장바구니 상품 개별삭제"}
-            src={"/image/meteor-icons_xmark.png"}
-            width={10}
-            height={10}
-            style={{
-              objectFit: "cover",
-            }}
-          />
-        </button>
-      ),
-    },
-  ];
+        ),
+      }),
+      columnHelper.accessor("quantity", {
+        header: "수량",
+        size: 80,
+        cell: (info) => <span>{info.getValue()}개</span>,
+      }),
+      columnHelper.accessor("price", {
+        header: "상품금액",
+        size: 150,
+        cell: (info) => (
+          <span style={{ fontWeight: 600 }}>
+            {info.getValue().toLocaleString()}원
+          </span>
+        ),
+      }),
+      columnHelper.display({
+        id: "delete",
+        header: "삭제",
+        size: 60,
+        cell: ({ row }) => (
+          <button
+            onClick={() => removeItem(row.original.id)}
+            className={styles.deleteBtn}
+          >
+            <X size={18} color="#999" />
+          </button>
+        ),
+      }),
+    ],
+    [checkedItems, tableData],
+  );
 
-  const tableData: UnifiedCartItem[] = cart.map((item) => {
-    const displayOption =
-      item.optionDisplay ||
-      item.productOption?.name ||
-      (item.color || item.size ? `${item.color} ${item.size}`.trim() : "");
-
-    const baseItem = {
-      productId: item.productId || item.product?.id,
-      productName: item.productName || item.product?.name || "상품 정보 없음",
-      thumbnail:
-        item.thumbnail || item.product?.thumbnail || "/image/default.png",
-      price: item.price || item.product?.price || 0,
-      quantity: item.quantity || 0,
-      option: displayOption,
-      isCustomizable:
-        item.isCustomizable || item.product?.isCustomizable || false,
-    };
-
-    if (item.product) {
-      return {
-        ...baseItem,
-        id: item.id || item.productOptionId || item.productId,
-      };
-    }
-
-    // 비회원
-    return {
-      ...baseItem,
-      id: item.productOptionId || item.productId,
-      color: item.color,
-      size: item.size,
-    };
+  const table = useReactTable({
+    data: tableData,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
   });
 
-  const totalProductPrice = tableData.reduce((acc, item) => {
-    return acc + item.price * item.quantity;
-  }, 0);
-
-  const shippingFee = totalProductPrice >= 50000 ? 0 : 3000;
-
+  const selectedItemsData = tableData.filter((item) =>
+    checkedItems.includes(item.id),
+  );
+  const totalProductPrice = selectedItemsData.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0,
+  );
+  const shippingFee =
+    totalProductPrice >= 50000 || totalProductPrice === 0 ? 0 : 3000;
   const totalPayment = totalProductPrice + shippingFee;
 
-  // 주문페이지로 이동 ㄱㄱ
-  const goToCheckout = (all: boolean, e?: React.MouseEvent) => {
-    console.log(123);
-    if (e) e.preventDefault();
+  // 주문 이동
+  const goToCheckout = (all: boolean) => {
+    const itemsToOrder = all ? tableData : selectedItemsData;
+    if (itemsToOrder.length === 0)
+      return toast.error("주문할 상품을 선택해주세요.");
 
-    try {
-      if (cart.length === 0) {
-        return toast.error("장바구니에 담긴 상품이 없습니다.");
-      }
-
-      const selectedItems = all
-        ? cart
-        : cart.filter((item) => checkedItems.includes(item.id));
-
-      if (!selectedItems || selectedItems.length === 0) {
-        return toast.error(
-          all ? "장바구니가 비어있습니다." : "주문할 상품을 선택해주세요.",
-        );
-      }
-
-      if (user) {
-        router.push(`/checkout`);
-      } else {
-        localStorage.setItem("checkoutItems", JSON.stringify(selectedItems));
-
-        router.push("/checkout");
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("주문 페이지 이동 중 오류가 발생했습니다.");
+    if (!user) {
+      localStorage.setItem("checkoutItems", JSON.stringify(itemsToOrder));
     }
+    router.push("/checkout");
   };
 
   return (
     <>
-      <Table columns={cartColumns} data={tableData} isLoading={isLoading} />
+      <div className={styles.container}>
+        {isLoading ? (
+          <table className={styles.cartTable}>
+            <thead>
+              <tr>
+                <th style={{ width: "40px" }}>
+                  <input type="checkbox" disabled />
+                </th>
+                <th style={{ width: "440px" }}>상품명</th>
+                <th style={{ width: "80px" }}>수량</th>
+                <th style={{ width: "150px" }}>상품금액</th>
+                <th style={{ width: "60px" }}>삭제</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...Array(3)].map((_, i) => (
+                <SkeletonRow key={i} />
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <UnifiedTable table={table} className={styles.cartTable} />
+        )}
+      </div>
 
       <div className={styles.cartActions}>
         <Button variant="edit" onClick={removeSelected}>
           선택 삭제
         </Button>
 
-        <Button variant="delete" onClick={removeall}>
+        <Button variant="delete" onClick={removeAll}>
           장바구니 비우기
         </Button>
       </div>
@@ -377,3 +391,31 @@ export default function CartListComponent({
     </>
   );
 }
+
+//스켈레톤
+const SkeletonRow = () => (
+  <tr className={styles.skeletonRow}>
+    <td>
+      <div className={styles.delCircle} style={{ width: "20px" }} />
+    </td>
+
+    <td>
+      <div className={styles.productNameArea}>
+        <div className={styles.thumb} />
+        <div className={styles.infoText}>
+          <div className={styles.nameLine} />
+          <div className={styles.optLine} />
+        </div>
+      </div>
+    </td>
+    <td>
+      <div className={styles.qtyLine} />
+    </td>
+    <td>
+      <div className={styles.priceLine} />
+    </td>
+    <td>
+      <div className={styles.delCircle} />
+    </td>
+  </tr>
+);

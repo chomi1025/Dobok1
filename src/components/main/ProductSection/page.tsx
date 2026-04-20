@@ -7,6 +7,7 @@ import CategoryTabs from "@/components/CategoryTabs/page";
 import Button from "@/components/common/buttons/page";
 
 import useSWR from "swr";
+import { useQuery } from "@tanstack/react-query";
 
 interface Props {
   title: Title;
@@ -14,8 +15,6 @@ interface Props {
   products: ProductWithCategory[];
   type: "best" | "new";
 }
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function ProductSectionComponent({
   title,
@@ -25,13 +24,21 @@ export default function ProductSectionComponent({
 }: Props) {
   const [activeTab, setActiveTab] = useState<number | string>("all");
 
-  const apiUrl = type === "best" ? "/api/products/best" : "/api/products/new";
+  const { data: displayProducts, isLoading } = useQuery({
+    queryKey: ["products", type, activeTab],
+    queryFn: async () => {
+      const params = new URLSearchParams({
+        type,
+        categoryId: String(activeTab),
+      });
+      const res = await fetch(`/api/products/preview?${params}`);
+      if (!res.ok) throw new Error("fetch 실패");
+      return res.json();
+    },
 
-  const { data: displayProducts, isLoading } = useSWR(
-    activeTab === "all" ? null : `${apiUrl}?categoryId=${activeTab}`,
-    fetcher,
-    { fallbackData: initialProducts },
-  );
+    placeholderData: activeTab === "all" ? initialProducts : undefined,
+    staleTime: 0,
+  });
 
   const categoryList = Array.isArray(categories)
     ? categories
@@ -39,10 +46,10 @@ export default function ProductSectionComponent({
 
   return (
     <section className={styles.inner}>
-      <div className={styles.title}>
+      <header className={styles.title}>
         <h2>{title.name}</h2>
         <p>{title.contents}</p>
-      </div>
+      </header>
 
       {/* 탭 */}
       <CategoryTabs

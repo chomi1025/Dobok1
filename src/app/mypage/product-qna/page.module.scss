@@ -1,11 +1,116 @@
 @import "../../../components/style/variables.module";
 
 .inner {
-  header {
-    margin-bottom: rem(30);
+  width: rem(908);
+  margin: 0 auto;
+  padding: rem(60) 0 rem(100);
+}
 
-    h1 {
-      margin-bottom: rem(30);
+.pageHeader {
+  margin-bottom: rem(30);
+  h1 {
+    font-size: rem(24);
+    font-weight: 700;
+    margin-bottom: rem(20);
+  }
+}
+
+.qnaTable {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+
+  th {
+    background-color: #f9f9f9;
+    padding: rem(16) rem(10);
+    border-bottom: 1px solid #ddd;
+    font-size: rem(14);
+  }
+
+  td {
+    padding: rem(20) rem(10);
+    border-bottom: 1px solid #eee;
+    text-align: center;
+    vertical-align: middle;
+  }
+}
+
+.titleColumn {
+  text-align: left !important;
+  padding-left: rem(20);
+}
+
+.qnaProductBox {
+  display: flex;
+  align-items: center;
+  gap: rem(20);
+
+  .productThumb {
+    flex-shrink: 0;
+    border: 1px solid #eee;
+    border-radius: rem(4);
+    overflow: hidden;
+  }
+
+  .qnaTextContent {
+    display: flex;
+    flex-direction: column;
+    gap: rem(6);
+    overflow: hidden;
+
+    .prodName {
+      font-size: rem(13);
+      color: #888;
+      font-weight: 400;
+    }
+
+    .qnaTitle {
+      font-size: rem(15);
+      color: #333;
+      font-weight: 500;
+      text-decoration: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
+}
+
+.statusWait,
+.statusDone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: rem(70);
+  height: rem(28);
+  padding: 0 rem(10);
+  border-radius: rem(14);
+  font-size: rem(13);
+  font-weight: 500;
+}
+
+.statusWait {
+  background-color: #f5f5f5;
+  color: #888;
+  border: 1px solid #eee;
+}
+
+.statusDone {
+  background-color: #333;
+  color: #fff;
+}
+
+.dateText {
+  color: #999;
+  font-size: rem(14);
+}
+
+.paginationSection {
+  margin-top: rem(40);
+  display: flex;
+  justify-content: center;
 }

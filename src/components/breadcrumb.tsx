@@ -26,17 +26,6 @@ const Step = styled.li<{ $isCurrent: boolean }>`
   font-weight: ${({ $isCurrent }) => ($isCurrent ? "700" : "400")};
   display: flex;
   align-items: center;
-
-  &:not(:last-child)::after {
-    content: "";
-    display: block;
-    background: url("/image/Double arrow.png") no-repeat center;
-    background-size: contain;
-    width: 24px;
-    height: 24px;
-    margin: 0 8px;
-    opacity: ${({ $isCurrent }) => ($isCurrent ? "1" : "0.3")};
-  }
 `;
 
 export default function BreadCrumb({ steps }: BreadCrumbProps) {
@@ -51,6 +40,19 @@ export default function BreadCrumb({ steps }: BreadCrumbProps) {
         {steps.map((step) => (
           <Step key={step.path} $isCurrent={step.step === currentStep}>
             {step.label}
+
+            {step.step !== steps.length - 1 && (
+              <img
+                src="/image/Double arrow.png"
+                alt="arrow"
+                style={{
+                  width: "24px",
+                  height: "24px",
+                  margin: "0 8px",
+                  opacity: step.step === currentStep ? 1 : 0.3,
+                }}
+              />
+            )}
           </Step>
         ))}
       </ul>

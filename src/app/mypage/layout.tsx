@@ -1,8 +1,5 @@
-import { redirect } from "next/navigation";
-import Sidebar from "./components/Sidebar";
-import styles from "./page.module.scss";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/options";
+import MypageClientLayout from "./layout.client";
 
 export const dynamic = "force-dynamic";
 
@@ -11,11 +8,7 @@ export default async function MypageLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className={styles.inner}>
-      <Sidebar />
+  const session = await getServerSession();
 
-      {children}
-    </div>
-  );
+  return <MypageClientLayout session={session}>{children}</MypageClientLayout>;
 }

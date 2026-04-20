@@ -1,12 +1,88 @@
 @import "../../../components/style/variables.module";
 
 .inner {
-  header {
-    margin-bottom: rem(30);
+  min-height: 100vh;
+  padding: rem(60) 0 rem(100);
+  width: rem(908);
+  margin: 0 auto;
 
-    h1 {
-      font-size: rem(30);
-      margin-bottom: rem(20);
+  > nav {
+    margin: rem(30) 0;
+  }
+}
+
+.orderTable {
+  width: rem(908);
+  table-layout: fixed;
+  border-collapse: collapse;
+
+  th,
+  td {
+    text-align: center;
+    vertical-align: middle;
+    padding: rem(18) rem(10);
+    border-bottom: 1px solid #eee;
+    font-size: rem(15);
+  }
+
+  th {
+    background-color: #f9f9f9;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .titleColumn {
+    text-align: left !important;
+    padding-left: rem(20);
+  }
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: rem(15);
+  text-decoration: none;
+
+  .productThumb {
+    flex-shrink: 0;
+    border: 1px solid #eee;
+    border-radius: rem(4);
+    overflow: hidden;
+  }
+
+  .titleText {
+    color: #333;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
     }
   }
+}
+
+.orderNumberWrapper {
+  .normalNumber {
+    font-weight: 500;
+    color: #333;
+  }
+  .subNumber {
+    font-size: rem(12);
+    color: #999;
+    margin-top: rem(4);
+  }
+}
+
+.statusBadge {
+  font-weight: 600;
+  font-size: rem(14);
+}
+
+.paginationSection {
+  margin-top: rem(40);
+  display: flex;
+  justify-content: center;
 }

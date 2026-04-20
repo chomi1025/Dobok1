@@ -1,24 +1,23 @@
 "use client";
-import { Table } from "@/components/Table/page";
+
 import Link from "next/link";
 import styles from "./page.module.scss";
-import BoardLayout from "@/components/common/boardLayout/page";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
-
-interface InquiryRow {
-  id: number;
-  createdAt: string | Date;
-  category?: string;
-  title: string;
-  status: "대기중" | "답변완료";
-}
+import { useQuery } from "@tanstack/react-query";
+import { InquiryResponse, InquiryWithUser } from "@/types/types";
+import { UnifiedTable } from "@/components/common/DataTable";
+import { useMemo } from "react";
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import Button from "@/components/common/buttons/page";
 
 interface Props {
-  data: any[];
   currentPage: number;
-  total: number;
   pageSize: number;
 }
 
@@ -35,18 +34,21 @@ const statusName = {
   COMPLETED: "답변완료",
 };
 
-export default function InquiryClientPage({
-  data,
-  currentPage,
-  total,
-  pageSize,
-}: Props) {
+const columnHelper = createColumnHelper<InquiryWithUser>();
+
+export default function InquiryClientPage({ currentPage, pageSize }: Props) {
   const { data: session, status } = useSession();
   const isAdmin = status !== "loading" && session?.user?.role === "ADMIN";
+  const { data } = useQuery<InquiryResponse>({
+    queryKey: ["inquiries", currentPage],
+    queryFn: async () => {
+      const result = await fetch(`/api/support/inquiry?page=${currentPage}`);
+      if (!result.ok) throw new Error("데이터를 불러오지 못했습니다.");
+      return result.json();
+    },
+  });
 
   const router = useRouter();
-  const isUserLoggedIn = session;
-
   const currentUserId = session?.user?.id ? Number(session.user.id) : null;
 
   const maskName = (name: string) => {
@@ -56,104 +58,101 @@ export default function InquiryClientPage({
     return name[0] + "*".repeat(name.length - 2) + name.slice(-1);
   };
 
-  const inquiryColumns = [
-    {
-      key: "number",
-      label: "번호",
-      flex: 1,
-      render: (_: any, index: number) => {
-        const virtualNumber = total - (currentPage - 1) * pageSize - index;
-        return <span>{virtualNumber}</span>;
-      },
-    },
-    {
-      key: "date",
-      label: "작성일",
-      flex: 2,
-      render: (row: InquiryRow) => {
-        const d = new Date(row.createdAt);
-        const dateString = d.toISOString().split("T")[0];
-        return <span>{dateString}</span>;
-      },
-    },
-    {
-      key: "category",
-      label: "카테고리",
-      flex: 2,
-      render: (row: InquiryRow) => {
-        const category = row.category as keyof typeof categoryName;
-        return <span>{categoryName[category]}</span>;
-      },
-    },
-    {
-      key: "title",
-      label: "제목",
-      flex: 6,
-      render: (row: any) => {
-        const isLocked = row.isPrivate && row.title === "비밀글입니다.";
+  const inquiryData = useMemo(() => data?.inquiries || [], [data]);
+  const total = data?.totalCount || 0;
 
-        return (
-          <Link
-            href={`/support/inquiry/${row.id}`}
-            className={`${styles.titleLink} ${isLocked ? styles.locked : ""}`}
-          >
-            {row.isPrivate && <span className={styles.lockIcon}>🔒</span>}
-            <span className={styles.text}>
-              {isLocked ? "비밀글입니다." : row.title}
+  const columns = useMemo(
+    () => [
+      columnHelper.display({
+        id: "number",
+        header: "번호",
+        size: 60,
+        cell: (info) => total - (currentPage - 1) * pageSize - info.row.index,
+      }),
+      columnHelper.accessor("createdAt", {
+        header: "작성일",
+        size: 120,
+        cell: (info) => new Date(info.getValue()).toISOString().split("T")[0],
+      }),
+      columnHelper.accessor("category", {
+        header: "카테고리",
+        size: 120,
+        cell: (info) =>
+          categoryName[info.getValue() as keyof typeof categoryName],
+      }),
+      columnHelper.accessor("title", {
+        header: "제목",
+        size: 388,
+        cell: (info) => {
+          const row = info.row.original;
+          const isLocked = row.isPrivate && row.title === "비밀글입니다.";
+          return (
+            <Link
+              href={`/support/inquiry/${row.id}`}
+              className={`${styles.titleLink} ${isLocked ? styles.locked : ""}`}
+              prefetch={false}
+            >
+              {row.isPrivate && <span className={styles.lockIcon}>🔒</span>}
+              <span className={styles.text}>
+                {isLocked ? "비밀글입니다." : row.title}
+              </span>
+            </Link>
+          );
+        },
+      }),
+      columnHelper.accessor("user.name", {
+        header: "작성자",
+        size: 120,
+        cell: (info) => {
+          const row = info.row.original;
+          const isMine = Number(row.userId) === currentUserId;
+          const name = info.getValue() || "";
+          return (
+            <span className={isMine ? styles.myId : styles.otherId}>
+              {isMine ? name : maskName(name)}
             </span>
-          </Link>
-        );
-      },
-    },
-    {
-      key: "author",
-      label: "작성자",
-      flex: 2,
-      render: (row: any) => {
-        const isMine = Number(row.userId) === currentUserId;
-        return (
-          <span className={isMine ? styles.myId : styles.otherId}>
-            {isMine ? row.user?.name : maskName(row.user?.name)}
-          </span>
-        );
-      },
-    },
-    {
-      key: "status",
-      label: "상태",
-      flex: 2,
-      render: (row: InquiryRow) => {
-        const status = row.status as keyof typeof statusName;
-        return <span>{statusName[status]}</span>;
-      },
-    },
-  ];
+          );
+        },
+      }),
+      columnHelper.accessor("status", {
+        header: "상태",
+        size: 100,
+        cell: (info) => statusName[info.getValue() as keyof typeof statusName],
+      }),
+    ],
+    [total, currentPage, pageSize, currentUserId],
+  );
+  const table = useReactTable({
+    data: inquiryData,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   const handleWriteClick = () => {
-    if (!isUserLoggedIn) {
-      toast.error("로그인이 필요한 서비스입니다.", {
-        duration: 2000,
-      });
-
+    if (!session) {
+      toast.error("로그인이 필요한 서비스입니다.", { duration: 2000 });
       return;
     }
-
     router.push("/support/inquiry/new");
   };
 
   return (
     <>
-      <BoardLayout
-        title="1:1 문의하기"
-        tableTitle="1:1 문의하기 테이블"
-        role={isAdmin ? "ADMIN" : "USER"}
-        onWriteClick={handleWriteClick}
-        total={total}
-        pageSize={pageSize}
-        currentPage={currentPage}
-      >
-        <Table columns={inquiryColumns} data={data} />
-      </BoardLayout>
+      <header className={styles.titleWrapper}>
+        <h1>1:1 문의하기</h1>
+
+        <Button onClick={handleWriteClick} variant="primary">
+          작성하기
+        </Button>
+      </header>
+
+      <UnifiedTable
+        table={table}
+        className={styles.noticeTable}
+        getRowProps={(row) => ({
+          className: row.original.isFixed ? styles.fixedRow : "",
+        })}
+      />
     </>
   );
 }

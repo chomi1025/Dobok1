@@ -1,9 +1,19 @@
 "use client";
+
 import Link from "next/link";
-import { Column, Table } from "@/components/Table/page";
 import styles from "./page.module.scss";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import StatusTab from "@/components/mypage/StatusTabs";
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { useSearchParams } from "next/navigation";
+import Image from "next/image";
+import { UnifiedTable } from "@/components/common/DataTable";
+import PagenationComponent from "@/components/pagenation/page";
+import Button from "@/components/common/buttons/page";
 
 export type InquiryType =
   | "배송문의"
@@ -27,114 +37,110 @@ interface Props {
   inquiries: Inquiry[];
 }
 
+const columnHelper = createColumnHelper<Inquiry>();
+
 export default function InquiryClientPage({ inquiries }: Props) {
   const [statusFilter, setStatusFilter] = useState<
     "전체" | "답변대기" | "답변완료"
   >("전체");
-  const [currentPage, setCurrentPage] = useState(0);
+  const searchParams = useSearchParams();
+
+  const currentPage = Number(searchParams.get("page")) || 1;
   const itemsPerPage = 10;
 
-  const pageCount = Math.ceil(inquiries.length / itemsPerPage);
+  // 필터링
+  const filteredData = useMemo(() => {
+    if (statusFilter === "전체") return inquiries;
+    return inquiries.filter((item) => item.inquiryStatus === statusFilter);
+  }, [inquiries, statusFilter]);
 
-  const currentItems = inquiries.slice(
-    currentPage * itemsPerPage,
-    (currentPage + 1) * itemsPerPage,
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredData.slice(start, start + itemsPerPage);
+  }, [filteredData, currentPage]);
+
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor("inquiryType", {
+        header: "문의유형",
+        size: 140,
+        cell: (info) => (
+          <span className={styles.typeBadge}>{info.getValue()}</span>
+        ),
+      }),
+      columnHelper.accessor("inquiryTitle", {
+        header: "제목",
+        size: 478,
+        cell: (info) => (
+          <div className={styles.titleColumn}>
+            <div className={styles.inquiryTextContent}>
+              <Link
+                href={`/mypage/inquiry/${info.row.original.id}`}
+                className={styles.inquiryLink}
+                prefetch={false}
+              >
+                {info.getValue()}
+              </Link>
+            </div>
+          </div>
+        ),
+      }),
+      columnHelper.accessor("inquiryAt", {
+        header: "작성일",
+        size: 150,
+        cell: (info) => (
+          <span className={styles.dateText}>{info.getValue()}</span>
+        ),
+      }),
+      columnHelper.accessor("inquiryStatus", {
+        header: "상태",
+        size: 180,
+        cell: (info) => {
+          const isDone = info.getValue() === "답변완료";
+          return (
+            <span className={isDone ? styles.c : styles.statusWait}>
+              {info.getValue()}
+            </span>
+          );
+        },
+      }),
+    ],
+    [],
   );
 
-  const handlePageClick = (selectedItem: { selected: number }) => {
-    setCurrentPage(selectedItem.selected);
-  };
-
-  const InquiryColumns: Column<Inquiry>[] = [
-    {
-      key: "inquiryType",
-      label: "문의유형",
-      flex: 1.5,
-      render: (row) => (
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "25px",
-            fontSize: "14px",
-            color: "#555",
-          }}
-        >
-          <p>{row.inquiryType}</p>
-        </div>
-      ),
-    },
-    {
-      key: "inquiryTitle",
-      label: "제목",
-      flex: 4,
-      render: (row) => (
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            gap: "20px",
-            alignItems: "center",
-            paddingLeft: "20px",
-          }}
-        >
-          <img src={row.img} width={90} height={90} />
-
-          <Link
-            style={{
-              color: "#555",
-              fontSize: "14px",
-              textDecoration: "none",
-            }}
-            href={""}
-            prefetch={false}
-          >
-            {row.inquiryTitle}
-          </Link>
-        </div>
-      ),
-    },
-
-    {
-      key: "inquiryAt",
-      label: "작성일",
-      flex: 1.3,
-      render: (row) => (
-        <span style={{ flex: 1, fontSize: "14px", color: "#555" }}>
-          {row.inquiryAt}
-        </span>
-      ),
-    },
-
-    {
-      key: "inquiryStatus",
-      label: "상태",
-      flex: 1.3,
-      render: (row) => (
-        <span style={{ flex: 1, fontSize: "14px", color: "#555" }}>
-          {row.inquiryStatus}
-        </span>
-      ),
-    },
-  ];
+  const table = useReactTable({
+    data: paginatedData,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   return (
     <div className={styles.inner}>
-      <header>
-        <h1>1:1문의</h1>
+      <header className={styles.pageHeader}>
+        <div className={styles.titleRow}>
+          <h1>1:1 문의</h1>
 
-        {/* 상태 선택 탭 */}
+          <Button variant="black" href="/mypage/inquiry/write">
+            문의하기
+          </Button>
+        </div>
+
         <StatusTab
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
-          setCurrentPage={setCurrentPage}
+          setCurrentPage={() => {}}
         />
       </header>
 
-      {/* 테이블 목록 */}
-      <Table columns={InquiryColumns} data={currentItems} />
+      <UnifiedTable table={table} className={styles.inquiryTable} />
+
+      <div className={styles.paginationSection}>
+        <PagenationComponent
+          total={filteredData.length}
+          pageSize={itemsPerPage}
+          currentPage={currentPage}
+        />
+      </div>
     </div>
   );
 }

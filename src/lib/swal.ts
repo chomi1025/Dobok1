@@ -1,4 +1,5 @@
 import Swal from "sweetalert2";
+
 import styles from "./miniSwal.module.scss";
 
 export const customConfirm = async ({
@@ -23,6 +24,8 @@ export const customConfirm = async ({
     cancelButtonColor: "transparent",
     confirmButtonText: confirmText,
     cancelButtonText: cancelText,
+    scrollbarPadding: false,
+    heightAuto: false,
     reverseButtons: true,
     customClass: {
       popup: styles.miniSwalPopup,
