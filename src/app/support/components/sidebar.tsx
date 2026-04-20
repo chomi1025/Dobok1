@@ -15,23 +15,25 @@ export default function SupportSidebar() {
   const segment = useSelectedLayoutSegment();
 
   return (
-    <nav className={styles.inner} aria-label="고객센터 메뉴">
+    <aside className={styles.inner} aria-label="고객센터 메뉴">
       <header>
         <h2> 고객센터</h2>
       </header>
 
-      <ul className={styles.navigation}>
-        {menuItems.map((menu) => (
-          <li
-            className={`${styles.list} ${segment === menu.slug && styles.active}`}
-            key={menu.slug}
-          >
-            <Link href={`/support/${menu.slug}`} prefetch={false}>
-              {menu.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </nav>
+      <nav>
+        <ul className={styles.navigation}>
+          {menuItems.map((menu) => (
+            <li
+              className={`${styles.list} ${segment === menu.slug && styles.active}`}
+              key={menu.slug}
+            >
+              <Link href={`/support/${menu.slug}`} prefetch={false}>
+                {menu.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </aside>
   );
 }
