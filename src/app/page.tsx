@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: "스포츠용품,도복 전문 도복일번지 입니다!",
 };
 
-//export const revalidate = 3600;
+export const revalidate = 3600;
 
 export default async function HomePage() {
   const queryClient = getQueryClient();
@@ -19,14 +19,17 @@ export default async function HomePage() {
     queryClient.prefetchQuery({
       queryKey: ["mainCategories"],
       queryFn: fetchMainCategories,
+      staleTime: 1000 * 60 * 5,
     }),
     queryClient.prefetchQuery({
       queryKey: ["products", "best", "all"],
       queryFn: () => fetchProductPreview("best"),
+      staleTime: 1000 * 60 * 5,
     }),
     queryClient.prefetchQuery({
       queryKey: ["products", "new", "all"],
       queryFn: () => fetchProductPreview("new"),
+      staleTime: 1000 * 60 * 5,
     }),
   ]);
 
