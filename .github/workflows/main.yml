@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: "20"
           cache: "yarn"
-      - run: yarn install --frozen-lockfile 
+      - run: yarn install --frozen-lockfile
       - run: yarn test --passWithNoTests
 
   build-and-deploy:
@@ -53,3 +53,22 @@ jobs:
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      - name: Cache Warmup (Smart Wake up)
+        run: |
+          DOMAIN="https://dobok1.vercel.app"
+
+          PAGES=(
+            "/"
+            "/products/new"
+            "/products/best"
+            "/events"
+            "/community/jobs"
+          )
+
+          for PAGE in "${PAGES[@]}"; do
+            URL="${DOMAIN}${PAGE}"
+            CODE=$(curl -s -o /dev/null -L -w "%{http_code}" "$URL")
+            echo "🚀 $PAGE 데우기 완료! (상태 코드: $CODE)"
+          done
+
+          echo "도복일번지 주요 경로 데우기 완료  🐎💨"
