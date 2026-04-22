@@ -12,6 +12,8 @@ export const metadata = {
   description: "도복일번지에서 가장 사랑받는 베스트 상품들을 만나보세요.",
 };
 
+export const revalidate = 60;
+
 export default async function BestProductPage({
   searchParams,
 }: {

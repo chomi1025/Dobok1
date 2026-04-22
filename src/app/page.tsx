@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: "스포츠용품,도복 전문 도복일번지 입니다!",
 };
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 export default async function HomePage() {
   const queryClient = getQueryClient();

@@ -13,6 +13,8 @@ export const metadata: Metadata = {
   description: "도복일번지에 갓 들어온 따끈따끈한 신상 도복들을 만나보세요!",
 };
 
+export const revalidate = 60;
+
 export default async function NewProductPage({
   searchParams,
 }: {
