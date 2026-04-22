@@ -3,18 +3,24 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    //웹 세션체크
     const session = await getServerSession(authOptions);
+
+    //앱 세션체크
+    const { searchParams } = new URL(req.url);
+    const appUsername = searchParams.get("username");
+
+    const targetUsername = session?.user?.username || appUsername;
 
     if (!session?.user?.username) {
       return NextResponse.json([], { status: 200 });
     }
 
     const user = await prisma.user.findUnique({
-      where: { username: session.user.username },
+      where: { username: targetUsername },
     });
-
     if (!user) {
       return NextResponse.json(
         { error: "유저를 찾을 수 없습니다." },

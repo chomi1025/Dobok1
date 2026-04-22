@@ -12,7 +12,7 @@ export default function NewProductClientPage({ currentPage, pageSize }: Props) {
   const { data } = useQuery({
     queryKey: ["products", "new", currentPage],
     queryFn: async () => {
-      const res = await fetch(`/api/products/new-list?page=${currentPage}`);
+      const res = await fetch(`/api/products/new`);
       if (!res.ok) throw new Error("신제품 로드 실패");
       return res.json();
     },
