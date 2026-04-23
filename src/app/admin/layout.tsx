@@ -20,7 +20,7 @@ export default async function AdminLayout({
     <div className={styles.inner}>
       <AdminSidebar />
 
-      {children}
+      <div className={styles.content}>{children}</div>
     </div>
   );
 }

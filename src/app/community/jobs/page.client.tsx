@@ -28,10 +28,11 @@ interface Props {
   total: number;
   pageSize: number;
   currentPage: number;
-  initialType: "HIRING" | "SEEKING";
+  initialType: "HIRING" | "SEEKING" | "ALL";
 }
 
 const categories = [
+  { id: "ALL", name: "전체" },
   { id: "HIRING", name: "구인" },
   { id: "SEEKING", name: "구직" },
 ];
@@ -75,17 +76,37 @@ export default function JobsClientPage({
 
   const getColumns = () => {
     const commonStart = [
+      ...(activeTab === "ALL"
+        ? [
+            {
+              key: "type",
+              label: "구분",
+              flex: 0.4,
+              render: (row: any) => (
+                <span
+                  className={
+                    row.type === "HIRING"
+                      ? styles.hiringBadge
+                      : styles.seekingBadge
+                  }
+                >
+                  {row.type === "HIRING" ? "구인" : "구직"}
+                </span>
+              ),
+            },
+          ]
+        : []),
       {
         key: "jobRole",
         label: "직무",
         flex: 0.6,
-        render: (row: JobsRow) => <span>{JOB_ROLE_MAP[row.jobRole]}</span>,
+        render: (row: any) => <span>{JOB_ROLE_MAP[row.jobRole]}</span>,
       },
       {
         key: "title",
         label: "제목",
         flex: 2,
-        render: (row: JobsRow) => (
+        render: (row: any) => (
           <Link href={`/community/jobs/${row.id}`} className={styles.title}>
             <span className={styles.titleText}>{row.title}</span>
           </Link>
@@ -93,12 +114,43 @@ export default function JobsClientPage({
       },
     ];
 
+    // 2. 중간 유동 컬럼 (작성자/회사명/경력)
+    let middleColumn;
+    if (activeTab === "HIRING") {
+      middleColumn = {
+        key: "companyName",
+        label: "회사명",
+        flex: 0.8,
+        render: (row: any) => <span>{row.companyName}</span>,
+      };
+    } else if (activeTab === "SEEKING") {
+      middleColumn = {
+        key: "experience",
+        label: "경력",
+        flex: 0.6,
+        render: (row: any) => <span>{EXPERIENCE_MAP[row.experience]}</span>,
+      };
+    } else {
+      // '전체' 탭일 때: 작성자(회사명 혹은 닉네임)로 통일
+      middleColumn = {
+        key: "author",
+        label: "작성자",
+        flex: 0.8,
+        render: (row: any) => (
+          <span>
+            {row.type === "HIRING" ? row.companyName : row.authorName || "개인"}
+          </span>
+        ),
+      };
+    }
+
+    // 3. 공통 끝 (지역, 등록일)
     const commonEnd = [
       {
         key: "location",
         label: "지역",
         flex: 0.6,
-        render: (row: JobsRow) => {
+        render: (row: any) => {
           const cityLabel =
             CITY_OPTIONS.find((opt) => opt.value === row.city)?.label ||
             row.city;
@@ -113,37 +165,14 @@ export default function JobsClientPage({
         key: "date",
         label: "등록일",
         flex: 0.6,
-        render: (row: JobsRow) => (
+        render: (row: any) => (
           <span>{new Date(row.createdAt).toLocaleDateString()}</span>
         ),
       },
     ];
 
-    if (activeTab === "HIRING") {
-      return [
-        ...commonStart,
-        {
-          key: "companyName",
-          label: "회사명",
-          flex: 0.8,
-          render: (row: JobsRow) => <span>{row.companyName}</span>,
-        },
-        ...commonEnd,
-      ];
-    }
-
-    return [
-      ...commonStart,
-      {
-        key: "experience",
-        label: "경력",
-        flex: 0.6,
-        render: (row: JobsRow) => <span>{EXPERIENCE_MAP[row.experience]}</span>,
-      },
-      ...commonEnd,
-    ];
+    return [...commonStart, middleColumn, ...commonEnd];
   };
-
   const handleWriteClick = (e: React.MouseEvent) => {
     if (status === "loading") {
       e.preventDefault();
@@ -161,10 +190,10 @@ export default function JobsClientPage({
 
   return (
     <div className={styles.inner}>
-      <section>
+      <header>
         <h1>구인·구직게시판</h1>
         <p>채용 정보와 지원 정보를 한눈에 확인하세요</p>
-      </section>
+      </header>
 
       <CategoryTabs
         categories={categories}

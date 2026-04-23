@@ -192,9 +192,11 @@ model Order {
   postcode        String
   address         String
   detailAddress   String
-
   user            User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
   items           OrderItem[]
+  carrier        String?  // 택배사
+  trackingNumber String?  // 송장번호
+  histories   OrderHistory[]
 }
 
 model OrderItem {
@@ -213,6 +215,15 @@ model OrderItem {
   order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   reviews      Review?
+}
+
+model OrderHistory {
+  id        Int      @id @default(autoincrement())
+  orderId   String   // 주문의 orderNumber와 연결
+  content   String   // 어떤 변경이 있었는지 내용
+  adminName String   @default("관리자")
+  createdAt DateTime @default(now())
+  order     Order    @relation(fields: [orderId], references: [orderNumber])
 }
 
 model Claim {
@@ -375,32 +386,36 @@ enum ExperienceLevel {
 }
 
 model Post {
-  id            Int          @id @default(autoincrement())
-  type          PostType
-  jobType       JobType?
+  id            Int             @id @default(autoincrement())
+  type          PostType        // JOB, FREE, EVENT, RESOURCE
+  jobType       JobType?        // HIRING(구인), SEEKING(구직)
   title         String
-  content       String       @db.Text
+  content       String          @db.Text
   authorId      Int
-  author        User         @relation(fields: [authorId], references: [id])
-  viewCount     Int          @default(0)
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  author        User            @relation(fields: [authorId], references: [id])
+  viewCount     Int             @default(0)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
   comments      Comment[]
 
-  jobRole       String?
-  companyName   String?
-  experience    ExperienceLevel? @default(IRRELEVANT)
-  city          String?
-  district      String?
-  applyMethod   String?
+  // --- 구인/구직 관련 ---
+  jobRole       String?         // 직무 (공통)
+  companyName   String?         // 구인일 때 회사명
+  // authorName은 필요 없어! User 모델과 relation이 있으니 나중에 include해서 쓰면 돼.
+
+  experience    ExperienceLevel? @default(IRRELEVANT) // 경력 (구직/구인 공통 사용 가능)
+  city          String?         // 지역 (시/도)
+  district      String?         // 상세 지역 (구/군)
+  applyMethod   String?         // 지원 방법 (구인 시 필요)
+  // ----------------------------------------------
 
   messages      Message[]
-
   eventDate     DateTime?
   eventVenue    String?
-
   attachments   Attachment[]
+
   @@index([type])
+  @@index([jobType])
   @@index([city])
   @@index([jobRole])
 }

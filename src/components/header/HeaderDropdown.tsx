@@ -1,5 +1,8 @@
+"use client";
 import Link from "next/link";
 import styles from "./Header.module.scss";
+import { useQuery } from "@tanstack/react-query";
+import { getMainCategories } from "@/lib/category";
 
 interface Category {
   id: number;
@@ -10,11 +13,12 @@ interface Category {
   children?: Category[];
 }
 
-interface HeaderDropdownProps {
-  categories: Category[];
-}
+export default function HeaderDropdown() {
+  const { data: categories = [] } = useQuery<Category[]>({
+    queryKey: ["categories"],
+    queryFn: () => fetch("/api/categories").then((res) => res.json()),
+  });
 
-export default function HeaderDropdown({ categories }: HeaderDropdownProps) {
   return (
     <>
       {categories.map((cat) => (

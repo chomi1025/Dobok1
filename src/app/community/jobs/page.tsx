@@ -1,8 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import JobsClientPage from "./page.client";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/options";
 import { Metadata } from "next";
+
+interface PageProps {
+  searchParams: { page?: string; type?: string };
+}
 
 interface PageProps {
   searchParams: { page?: string; type?: string };
@@ -11,37 +13,41 @@ interface PageProps {
 export async function generateMetadata({
   searchParams,
 }: PageProps): Promise<Metadata> {
-  const isSeeking = searchParams.type?.toUpperCase() === "SEEKING";
+  const type = searchParams.type?.toUpperCase();
+
+  let title = "구인·구직 게시판 | 도복일번지";
+  if (type === "HIRING") title = "구인 게시판 | 도복일번지";
+  if (type === "SEEKING") title = "구직 게시판 | 도복일번지";
 
   return {
-    title: isSeeking ? "구직 게시판 | 도복일번지" : "구인 게시판 | 도복일번지",
-    description: isSeeking
-      ? "도복일번지에서 실력 있는 선생님들의 이력서를 확인하세요. 우리 도장에 꼭 맞는 인재를 찾을 수 있습니다."
-      : "도복일번지 커뮤니티에서 최신 구인 정보를 확인하세요. 사장님과 구직자를 잇는 가장 빠른 방법!",
-    openGraph: {
-      title: isSeeking
-        ? "실력 있는 사범님들 여기 다 모였다! | 도복일번지"
-        : "우리 도장 사범님 구하기 | 도복일번지",
-      description: isSeeking
-        ? "준비된 사범님들의 프로필을 확인하고 바로 컨택해 보세요."
-        : "도복일번지에서 엄선된 구인 정보를 확인하세요.",
-      type: "website",
-    },
+    title,
+    description: "도복일번지 커뮤니티에서 최신 구인·구직 정보를 확인하세요.",
   };
 }
 
 export default async function JobsPage({ searchParams }: PageProps) {
   const currentPage = Number(searchParams.page) || 1;
-  const currentType =
-    (searchParams.type?.toUpperCase() as "HIRING" | "SEEKING") || "HIRING";
   const pageSize = 10;
+
+  const rawType = searchParams.type?.toUpperCase();
+
+  const currentType =
+    rawType === "HIRING" || rawType === "SEEKING" ? rawType : "ALL";
+
+  const whereClause: any = {
+    type: "JOB",
+  };
+
+  if (currentType === "HIRING" || currentType === "SEEKING") {
+    whereClause.jobType = currentType;
+  }
 
   const [total, jobs] = await Promise.all([
     prisma.post.count({
-      where: { type: "JOB", jobType: currentType },
+      where: whereClause,
     }),
     prisma.post.findMany({
-      where: { type: "JOB", jobType: currentType },
+      where: whereClause,
       orderBy: { createdAt: "desc" },
       skip: (currentPage - 1) * pageSize,
       take: pageSize,
@@ -58,11 +64,11 @@ export default async function JobsPage({ searchParams }: PageProps) {
 
   return (
     <JobsClientPage
-      jobs={jobs}
+      jobs={jobs as any}
       total={total}
       pageSize={pageSize}
       currentPage={currentPage}
-      initialType={currentType}
+      initialType={currentType as any}
     />
   );
 }

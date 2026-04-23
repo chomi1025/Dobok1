@@ -1,169 +1,343 @@
 "use client";
-import { useState } from "react";
-import * as O from "./style";
-import { Table } from "@/components/Table/page";
+import { useMemo, useState } from "react";
 import Link from "next/link";
+import styles from "./page.module.scss";
+import { Order, OrderItem } from "@prisma/client";
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { UnifiedTable } from "@/components/common/DataTable";
+import PagenationComponent from "@/components/pagenation/page";
+import Button from "@/components/common/buttons/page";
+
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import toast from "react-hot-toast";
 
 type Period = "today" | "7days" | "30days" | "customDate";
 
-interface OrderRow {
-  id: number;
-  orderNumber: string;
-  orderDate: string;
-  customerName: string;
-  productName: string;
-  quantity: number;
-  totalPrice: number;
-  orderStatus: string;
-  deliveryStatus: string;
+type OrderWithItems = Order & {
+  items: OrderItem[];
   manage?: string;
+};
+
+interface Props {
+  orders: OrderWithItems[];
+  total: number;
+  pageSize: number;
+  currentPage: number;
 }
 
-interface Column<T> {
-  key: keyof T | string;
-  label: string;
-  flex?: number;
-  render?: (row: T) => React.ReactNode;
-}
+const ORDER_STATUS_MAP: Record<string, string> = {
+  PENDING: "결제 대기",
+  PAYMENT_COMPLETE: "결제 완료",
+  PREPARING: "상품 준비중",
+  SHIPPING: "배송 중",
+  DELIVERED: "배송 완료",
+  CANCELLED: "주문 취소",
+};
 
-const data: OrderRow[] = [
-  {
-    id: 1,
-    orderNumber: "123132",
-    orderDate: "2026-02-24",
-    customerName: "김순자",
-    productName: "아디다스도복 외 2건",
-    quantity: 100,
-    totalPrice: 131231,
-    orderStatus: "주문완료",
-    deliveryStatus: "배송전",
-  },
-];
+const columnHelper = createColumnHelper<OrderWithItems>();
 
-const OrderColumns: Column<OrderRow>[] = [
-  {
-    key: "orderNumber",
-    label: "주문번호",
-    flex: 1.6,
-    render: (row) => (
-      <Link href={`/admin/orders/${row.orderNumber}`}>
-        <span style={{ textDecoration: "underline", fontWeight: 600 }}>
-          #{row.orderNumber}
-        </span>
-      </Link>
-    ),
-  },
-  {
-    key: "orderDate",
-    label: "주문일",
-    flex: 1.2,
-    render: (row) => <span>{row.orderDate}</span>,
-  },
-  {
-    key: "customerName",
-    label: "고객명",
-    flex: 1,
-    render: (row) => <span>{row.customerName}</span>,
-  },
-  {
-    key: "productName",
-    label: "상품명",
-    flex: 2.4,
-    render: (row) => (
-      <span
-        style={{
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}
-      >
-        {row.productName}
-      </span>
-    ),
-  },
-  {
-    key: "orderStatus",
-    label: "상태",
-    flex: 1,
-    render: (row) => <span style={{ fontWeight: 500 }}>{row.orderStatus}</span>,
-  },
-  {
-    key: "manage",
-    label: "관리",
-    flex: 0.8,
-    render: (row) => (
-      <Link href={`/admin/orders/${row.orderNumber}`}>상세보기</Link>
-    ),
-  },
-];
+export default function OrdersClientPage({
+  orders,
+  total,
+  pageSize,
+  currentPage,
+}: Props) {
+  const searchParams = useSearchParams();
 
-export default function OrdersClientPage() {
-  const [period, setPeriod] = useState("today");
+  const [period, setPeriod] = useState<Period>(
+    (searchParams.get("period") as Period) || "30days",
+  );
 
-  const onClickPeriod = (period: Period) => {
-    setPeriod(period);
-  };
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor("orderNumber", {
+        header: "주문번호",
+        size: 140,
+        cell: (info) => {
+          const orderNumber = info.getValue();
+
+          return (
+            <div className={styles.orderNumberWrapper}>
+              <div className={styles.normalNumber}>{orderNumber}</div>
+
+              <Link
+                href={`/admin/orders/${orderNumber}`}
+                className={styles.subNumber}
+              >
+                상세보기
+              </Link>
+            </div>
+          );
+        },
+      }),
+      columnHelper.accessor("createdAt", {
+        header: "주문일",
+        size: 110,
+        cell: (info) => new Date(info.getValue()).toLocaleDateString(),
+      }),
+      columnHelper.accessor("buyerName", {
+        header: "고객명",
+        size: 100,
+      }),
+      columnHelper.display({
+        id: "productName",
+        header: "상품명",
+        size: 358,
+        cell: ({ row }) => {
+          const items = row.original.items;
+          const firstItem = items[0]?.productName || "상품 없음";
+          const totalQuantity = items.reduce(
+            (sum, item) => sum + (item.quantity || 0),
+            0,
+          );
+
+          const displayName =
+            items.length > 1
+              ? `${firstItem} 외 ${items.length - 1}건`
+              : firstItem;
+
+          return (
+            <Link
+              href={`/admin/orders/${row.original.orderNumber}`}
+              className={styles.title}
+            >
+              <div className={styles.productInfo}>
+                <span className={styles.titleText}>{displayName}</span>
+
+                <span className={styles.quantityBadge}>
+                  총 {totalQuantity}개
+                </span>
+              </div>
+            </Link>
+          );
+        },
+      }),
+      columnHelper.accessor("status", {
+        header: "상태",
+        size: 100,
+        cell: (info) => {
+          const status = info.getValue();
+          const getStatusColor = (s: string) => {
+            if (s === "CANCELLED") return "#ff4d4f";
+            if (s === "PAYMENT_COMPLETE") return "#1890ff";
+            if (s === "DELIVERED") return "#52c41a";
+            return "#333";
+          };
+          return (
+            <span
+              className={styles.statusBadge}
+              style={{ color: getStatusColor(status) }}
+            >
+              {ORDER_STATUS_MAP[status] || status}
+            </span>
+          );
+        },
+      }),
+    ],
+    [],
+  );
+
+  const table = useReactTable({
+    data: orders,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   return (
-    <O.Inner>
-      <h2>주문 관리</h2>
+    <div className={styles.Inner} style={{ width: "908px" }}>
+      <header>
+        <h1>주문 관리</h1>
+      </header>
 
-      <O.OrderFilter aria-label="주문관리-검색필터">
-        <O.FilterPeriod>
-          <h4>기간</h4>
+      {/* 필터 영역 */}
+      <OrderFilter period={period} setPeriod={setPeriod} />
+
+      {/* 테이블 */}
+      <UnifiedTable table={table} className={styles.orderTable} />
+
+      {/* 페이지네이션 */}
+      <PagenationComponent
+        total={total}
+        pageSize={pageSize}
+        currentPage={currentPage}
+      />
+    </div>
+  );
+}
+
+const PERIOD_OPTIONS = [
+  { label: "30일", value: "30days" },
+  { label: "7일", value: "7days" },
+  { label: "오늘", value: "today" },
+  { label: "날짜선택", value: "customDate" },
+] as const;
+
+const formatDate = (date: Date) => {
+  return date
+    .toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+    .replace(/\. /g, ".")
+    .replace(/\.$/, "");
+};
+
+const getPeriodRange = (period: Period) => {
+  const end = new Date();
+  const start = new Date();
+
+  switch (period) {
+    case "today":
+      break;
+    case "7days":
+      start.setDate(end.getDate() - 7);
+      break;
+    case "30days":
+      start.setDate(end.getDate() - 30);
+      break;
+    case "customDate":
+      return "직접 선택";
+    default:
+      return "기간 설정";
+  }
+
+  return `${formatDate(start)} ~ ${formatDate(end)}`;
+};
+
+interface FilterProps {
+  period: Period;
+  setPeriod: (p: Period) => void;
+}
+
+function OrderFilter({ period, setPeriod }: FilterProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // 내부 입력 상태들
+  const [startDate, setStartDate] = useState(
+    searchParams.get("startDate") || "",
+  );
+  const [endDate, setEndDate] = useState(searchParams.get("endDate") || "");
+  const [orderStatus, setOrderStatus] = useState(
+    searchParams.get("status") || "ALL",
+  );
+  const [searchKeyword, setSearchKeyword] = useState(
+    searchParams.get("search") || "",
+  );
+
+  const dateRangeText = useMemo(() => getPeriodRange(period), [period]);
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    params.set("period", period);
+
+    if (period === "customDate") {
+      if (!startDate || !endDate) {
+        toast.error("시작일과 종료일을 모두 선택해주세요.");
+        return;
+      }
+      params.set("startDate", startDate);
+      params.set("endDate", endDate);
+    }
+
+    if (searchKeyword) params.set("search", searchKeyword);
+    if (orderStatus !== "ALL") params.set("status", orderStatus);
+    params.set("page", "1");
+
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const handleReset = () => {
+    setPeriod("30days");
+    setStartDate("");
+    setEndDate("");
+    setOrderStatus("ALL");
+    setSearchKeyword("");
+    router.push(pathname);
+  };
+  return (
+    <section className={styles.OrderFilter} aria-label="주문관리-검색필터">
+      <div className={styles.FilterPeriod}>
+        <div className={styles.PeriodHeader}>
+          <span>기간</span>
+          <em className={styles.CurrentRange}>{dateRangeText}</em>
+        </div>
+
+        <div className={styles.PeriodWrapper}>
           <ul role="listbox">
-            <O.List role="option" active={period == "today"}>
-              <button type="button" onClick={() => onClickPeriod("today")}>
-                오늘
-              </button>
-            </O.List>
-            <O.List role="option" active={period == "7days"}>
-              <button type="button" onClick={() => onClickPeriod("7days")}>
-                7일
-              </button>
-            </O.List>
-            <O.List role="option" active={period == "30days"}>
-              <button type="button" onClick={() => onClickPeriod("30days")}>
-                30일
-              </button>
-            </O.List>
-            <O.List role="option" active={period == "customDate"}>
-              <button type="button" onClick={() => onClickPeriod("customDate")}>
-                <span></span>
-                날짜선택
-              </button>
-            </O.List>
+            {PERIOD_OPTIONS.map((option) => (
+              <li
+                key={option.value}
+                className={`${styles.List} ${period === option.value ? styles.active : ""}`}
+                role="option"
+              >
+                <button type="button" onClick={() => setPeriod(option.value)}>
+                  {option.label}
+                </button>
+              </li>
+            ))}
           </ul>
-        </O.FilterPeriod>
 
-        <O.FilterGroup>
-          <O.FilterOrderStatus>
-            <h4>주문상태</h4>
-            <select name="" id="">
-              <option value="">전체 ▼</option>
-            </select>
-          </O.FilterOrderStatus>
+          <div
+            className={`${styles.CustomDateInput} ${period === "customDate" ? styles.show : ""}`}
+          >
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              disabled={period !== "customDate"}
+            />
+            <span className={styles.Separator}>~</span>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              disabled={period !== "customDate"}
+            />
+          </div>
+        </div>
+      </div>
 
-          <O.FilterDeliveryStatus>
-            <h4>배송상태</h4>
-            <select name="" id="">
-              <option value="">전체 ▼</option>
-            </select>
-          </O.FilterDeliveryStatus>
+      <div className={styles.FilterGroup}>
+        <div className={styles.FilterOrderStatus}>
+          <span>주문상태</span>
+          <select
+            value={orderStatus}
+            onChange={(e) => setOrderStatus(e.target.value)}
+          >
+            <option value="ALL">전체</option>
+            {Object.entries(ORDER_STATUS_MAP).map(([key, value]) => (
+              <option key={key} value={key}>
+                {value}
+              </option>
+            ))}
+          </select>
+        </div>
 
-          <O.SearchInput>
-            <h4>검색</h4>
-            <input type="text" placeholder="주문번호 / 고객명 / 상품명 검색" />
-          </O.SearchInput>
+        <div className={styles.SearchInput}>
+          <span>검색</span>
+          <input
+            type="text"
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+            placeholder="주문번호 / 고객명 / 상품명 검색"
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          />
+        </div>
 
-          <O.FilterActions>
-            <button>검색 </button>
-            <button>초기화</button>
-          </O.FilterActions>
-        </O.FilterGroup>
-      </O.OrderFilter>
-
-      <Table columns={OrderColumns} data={data} />
-    </O.Inner>
+        <div className={styles.FilterActions}>
+          <Button onClick={handleSearch}>검색</Button>
+          <Button variant="edit" onClick={handleReset}>
+            초기화
+          </Button>
+        </div>
+      </div>
+    </section>
   );
 }

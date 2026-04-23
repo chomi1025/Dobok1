@@ -1,56 +1,40 @@
 "use client";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import React, { useState } from "react";
 import { LogIn, LogOut } from "lucide-react";
 import styles from "./Header.module.scss";
 import { useQueryClient } from "@tanstack/react-query";
+import { Session } from "next-auth";
 
-const AuthIcons = () => {
-  const { data: session, status } = useSession();
+interface Props {
+  session: Session | null;
+}
+
+export default function AuthIcons({ session }: Props) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const queryClient = useQueryClient();
 
   const onClickSignout = async () => {
     if (isLoggingOut) return;
+
     try {
       setIsLoggingOut(true);
-      const data = await signOut({
-        redirect: false,
+      queryClient.clear();
+
+      await signOut({
         callbackUrl: "/",
       });
 
-      queryClient.clear();
-
-      toast.success("로그아웃이 완료되었습니다!\n메인화면으로 이동합니다.", {
-        duration: 2000,
-        style: {
-          whiteSpace: "pre-line",
-          textAlign: "center",
-        },
-      });
-
-      setTimeout(() => {
-        window.location.href = data?.url || "/";
-      }, 1500);
+      toast.success("로그아웃 완료!");
     } catch (error) {
       console.error("로그아웃 에러:", error);
       toast.error("로그아웃에 실패했습니다.");
       setIsLoggingOut(false);
     }
   };
-
-  // 로딩 중
-  if (status === "loading") {
-    return (
-      <div className={`${styles.authIconWrapper} ${styles.loading}`}>
-        <LogIn size={24} />
-        <p>로그인</p>
-      </div>
-    );
-  }
 
   // 로그인 된 상태
   if (session) {
@@ -74,6 +58,4 @@ const AuthIcons = () => {
       <p>로그인</p>
     </Link>
   );
-};
-
-export default AuthIcons;
+}
