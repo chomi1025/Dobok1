@@ -199,7 +199,6 @@ export default function AdminProductClientPage({
       flex: 2.5,
       label: "상품명",
       render: (row) => {
-        console.log("주소확인:", row.thumbnail);
         return (
           <div
             style={{

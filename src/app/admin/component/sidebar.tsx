@@ -15,21 +15,25 @@ export default function AdminSidebar() {
   const segment = useSelectedLayoutSegment();
 
   return (
-    <nav className={styles.inner} aria-label="관리자 메뉴">
+    <aside className={styles.inner} aria-label="관리자 메뉴">
       <header>
-        <h1>관리자 페이지</h1>
+        <h2>관리자 페이지</h2>
       </header>
 
-      <ul className={styles.navigation}>
-        {menuItems.map((menu) => (
-          <li
-            className={`${styles.list} ${segment === menu.slug && styles.active}`}
-            key={menu.slug}
-          >
-            <Link href={`/admin/${menu.slug}`}>{menu.label}</Link>
-          </li>
-        ))}
-      </ul>
-    </nav>
+      <nav>
+        <ul className={styles.navigation}>
+          {menuItems.map((menu) => (
+            <li
+              className={`${styles.list} ${segment === menu.slug && styles.active}`}
+              key={menu.slug}
+            >
+              <Link href={`/admin/${menu.slug}`} prefetch={false}>
+                {menu.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </aside>
   );
 }

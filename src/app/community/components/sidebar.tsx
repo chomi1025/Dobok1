@@ -14,7 +14,7 @@ export default function CommunitySidebar() {
   const segment = useSelectedLayoutSegment();
 
   return (
-    <nav className={styles.inner} aria-label="커뮤니티 메뉴">
+    <aside className={styles.inner} aria-label="커뮤니티 메뉴">
       <header>
         <h1>커뮤니티</h1>
       </header>
@@ -31,6 +31,6 @@ export default function CommunitySidebar() {
           </li>
         ))}
       </ul>
-    </nav>
+    </aside>
   );
 }

@@ -1,18 +1,77 @@
 import { authOptions } from "@/lib/auth/options";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+import { OrderStatus, Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-interface VerifiedItem {
-  productId: number;
-  productName: string;
-  quantity: number;
-  unitPrice: number;
-  totalPrice: number;
-  optionText: string;
-  isCustom: boolean;
-}
 
-const prisma = new PrismaClient();
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+
+  const period = searchParams.get("period");
+  const status = searchParams.get("status") as OrderStatus | "ALL" | null;
+  const search = searchParams.get("search");
+  const startDate = searchParams.get("startDate");
+  const endDate = searchParams.get("endDate");
+
+  const page = Number(searchParams.get("page")) || 1;
+  const pageSize = Number(searchParams.get("pageSize")) || 10;
+
+  let where: Prisma.OrderWhereInput = {};
+
+  if (period) {
+    const now = new Date();
+    const start = new Date();
+
+    if (period === "today") {
+      start.setHours(0, 0, 0, 0);
+      where.createdAt = { gte: start, lte: now };
+    } else if (period === "7days") {
+      start.setDate(now.getDate() - 7);
+      where.createdAt = { gte: start, lte: now };
+    } else if (period === "30days") {
+      start.setDate(now.getDate() - 30);
+      where.createdAt = { gte: start, lte: now };
+    } else if (period === "customDate" && startDate && endDate) {
+      where.createdAt = {
+        gte: new Date(`${startDate}T00:00:00`),
+        lte: new Date(`${endDate}T23:59:59`),
+      };
+    }
+  }
+
+  if (status && status !== "ALL") {
+    where.status = status;
+  }
+
+  if (search) {
+    where.OR = [
+      { orderNumber: { contains: search, mode: "insensitive" } },
+      { buyerName: { contains: search, mode: "insensitive" } },
+      {
+        items: {
+          some: { productName: { contains: search, mode: "insensitive" } },
+        },
+      },
+    ];
+  }
+
+  try {
+    const [orders, total] = await Promise.all([
+      prisma.order.findMany({
+        where,
+        include: { items: true },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.order.count({ where }),
+    ]);
+
+    return NextResponse.json({ orders, total });
+  } catch (error) {
+    return NextResponse.json({ error: "데이터 추출 실패" }, { status: 500 });
+  }
+}
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);

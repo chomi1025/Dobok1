@@ -5,22 +5,18 @@ import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   try {
-    //웹 세션체크
     const session = await getServerSession(authOptions);
-
-    //앱 세션체크
-    const { searchParams } = new URL(req.url);
-    const appUsername = searchParams.get("username");
-
-    const targetUsername = session?.user?.username || appUsername;
 
     if (!session?.user?.username) {
       return NextResponse.json([], { status: 200 });
     }
 
+    const targetUsername = session.user.username;
+
     const user = await prisma.user.findUnique({
       where: { username: targetUsername },
     });
+
     if (!user) {
       return NextResponse.json(
         { error: "유저를 찾을 수 없습니다." },
@@ -61,14 +57,13 @@ export async function GET(req: Request) {
       thumbnail: item?.product?.thumbnail,
       isCustomizable: item?.product?.isCustomizable || false,
       optionId: item.productOptionId,
-
       optionName: item.option
         ? `${item.option.color || ""} ${item.option.size || ""}`.trim()
         : "옵션 없음",
       price: item.option?.price || 0,
       quantity: item.quantity,
     }));
-    console.log(formattedItems);
+
     return NextResponse.json(formattedItems, { status: 200 });
   } catch (error) {
     console.error("장바구니 조회 에러:", error);

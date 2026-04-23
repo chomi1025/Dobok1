@@ -285,7 +285,7 @@ export default function OrdersClientPage() {
   );
 
   const table = useReactTable({
-    data: paginatedData, //나중에 수정
+    data: paginatedData,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
