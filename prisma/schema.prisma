@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
@@ -27,27 +27,21 @@ model Account {
 }
 
 model Message {
-  id          Int      @id @default(autoincrement())
-  content     String   @db.Text
-
-  senderId    Int
-  receiverId  Int
-  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
-  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
-
-  postId      Int?
-  post        Post?    @relation(fields: [postId], references: [id], onDelete: SetNull)
-
-  companyName String?
-  jobRole     String?
-
-  isRead      Boolean  @default(false)
-  readAt      DateTime?
-
-  deletedBySender   Boolean @default(false)
-  deletedByReceiver Boolean @default(false)
-
-  createdAt   DateTime @default(now())
+  id                Int       @id @default(autoincrement())
+  content           String
+  senderId          Int
+  receiverId        Int
+  postId            Int?
+  companyName       String?
+  jobRole           String?
+  isRead            Boolean   @default(false)
+  readAt            DateTime?
+  deletedBySender   Boolean   @default(false)
+  deletedByReceiver Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  post              Post?     @relation(fields: [postId], references: [id])
+  receiver          User      @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  sender            User      @relation("SentMessages", fields: [senderId], references: [id])
 
   @@index([receiverId, isRead])
 }
@@ -60,18 +54,10 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-enum UserStatus {
-  ACTIVE
-  WITHDRAWN
-  BANNED
-}
-
 model User {
   id                Int               @id @default(autoincrement())
   email             String            @unique
   password          String
-  lastLoginAt       DateTime?
-  updatedAt         DateTime          @updatedAt @default(now())
   createdAt         DateTime          @default(now())
   birthDate         DateTime
   name              String
@@ -80,22 +66,24 @@ model User {
   role              String            @default("USER")
   address           Json?
   ci                String?           @unique
+  deletedAt         DateTime?
+  isDeleted         Boolean           @default(false)
+  status            UserStatus        @default(ACTIVE)
+  lastLoginAt       DateTime?
+  updatedAt         DateTime          @default(now()) @updatedAt
   accounts          Account[]
+  comments          Comment[]
   inquiries         Inquiry[]
   inquiryReplies    InquiryReply[]
+  receivedMessages  Message[]         @relation("ReceivedMessages")
+  sentMessages      Message[]         @relation("SentMessages")
   orders            Order[]
+  posts             Post[]
   productQnas       ProductQna[]
   productQnaReplies ProductQnaReply[]
   reviews           Review[]
   reviewReplies     ReviewReply[]
   sessions          Session[]
-  posts             Post[]
-  deletedAt         DateTime?
-  isDeleted         Boolean           @default(false)
-  status            UserStatus        @default(ACTIVE)
-  comments          Comment[]
-  sentMessages      Message[]         @relation("SentMessages")
-  receivedMessages  Message[]         @relation("ReceivedMessages")
 }
 
 model Verification {
@@ -126,24 +114,24 @@ model Category {
 }
 
 model Product {
-  id          Int             @id @default(autoincrement())
-  name        String
-  categoryId  Int
-  createdAt   DateTime        @default(now())
-  description String?
-  images      String[]
-  material    String          @default("")
-  origin      String          @default("")
-  thumbnail   String?
-  isBest      Boolean         @default(false)
-  isNew       Boolean         @default(false)
-  announcement Json?
-  isCustomizable Boolean        @default(false)
-  cartItems   CartItem[]
-  orderItems  OrderItem[]
-  category    Category        @relation(fields: [categoryId], references: [id])
-  options     ProductOption[]
-  productQnas ProductQna[]
+  id             Int             @id @default(autoincrement())
+  name           String
+  categoryId     Int
+  createdAt      DateTime        @default(now())
+  description    String?
+  images         String[]
+  material       String          @default("")
+  origin         String          @default("")
+  thumbnail      String?
+  isBest         Boolean         @default(false)
+  isNew          Boolean         @default(false)
+  announcement   Json?
+  isCustomizable Boolean         @default(false)
+  cartItems      CartItem[]
+  orderItems     OrderItem[]
+  category       Category        @relation(fields: [categoryId], references: [id])
+  options        ProductOption[]
+  productQnas    ProductQna[]
 }
 
 model ProductOption {
@@ -168,35 +156,32 @@ model CartItem {
   productOptionId Int
   product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
   option          ProductOption @relation(fields: [productOptionId], references: [id])
+
   @@unique([userId, productOptionId])
 }
 
-
 model Order {
-  id              Int         @id @default(autoincrement())
-  userId          Int?
-  status          OrderStatus @default(PENDING)
-  orderNumber     String      @unique
-  total           Int
-  createdAt       DateTime    @default(now())
-
-  customRequest   String?     @db.Text
-  customFileUrl   String?
-
-  buyerName       String
-  buyerPhone      String
-  buyerEmail      String
-
-  receiverName    String
-  receiverPhone   String
-  postcode        String
-  address         String
-  detailAddress   String
-  user            User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items           OrderItem[]
-  carrier        String?  // 택배사
-  trackingNumber String?  // 송장번호
-  histories   OrderHistory[]
+  id             Int            @id @default(autoincrement())
+  userId         Int?
+  status         OrderStatus    @default(PENDING)
+  orderNumber    String         @unique
+  total          Int
+  createdAt      DateTime       @default(now())
+  customFileUrl  String?
+  customRequest  String?
+  address        String
+  buyerEmail     String
+  buyerName      String
+  buyerPhone     String
+  detailAddress  String
+  postcode       String
+  receiverName   String
+  receiverPhone  String
+  carrier        String?
+  trackingNumber String?
+  user           User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  histories      OrderHistory[]
+  items          OrderItem[]
 }
 
 model OrderItem {
@@ -219,8 +204,8 @@ model OrderItem {
 
 model OrderHistory {
   id        Int      @id @default(autoincrement())
-  orderId   String   // 주문의 orderNumber와 연결
-  content   String   // 어떤 변경이 있었는지 내용
+  orderId   String
+  content   String
   adminName String   @default("관리자")
   createdAt DateTime @default(now())
   order     Order    @relation(fields: [orderId], references: [orderNumber])
@@ -264,15 +249,15 @@ model ReviewReply {
 
 model Inquiry {
   id        Int             @id @default(autoincrement())
+  content   String
+  createdAt DateTime        @default(now())
   userId    Int
+  title     String?
   category  InquiryCategory @default(OTHER)
   status    InquiryStatus   @default(WAITING)
   isPrivate Boolean         @default(true)
-  title     String?
-  content   String
-  createdAt DateTime        @default(now())
   user      User            @relation(fields: [userId], references: [id])
-  replies   InquiryReply[]
+  replies   InquiryReply?
 }
 
 model InquiryReply {
@@ -314,6 +299,7 @@ model Notice {
   content   String
   isFixed   Boolean  @default(false)
   createdAt DateTime @default(now())
+
   @@index([isFixed, createdAt(sort: Desc)])
 }
 
@@ -325,18 +311,74 @@ model Faq {
   sortOrder Int    @default(0)
 }
 
+model Post {
+  id          Int              @id @default(autoincrement())
+  type        PostType
+  title       String
+  content     String
+  authorId    Int
+  viewCount   Int              @default(0)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  jobRole     String?
+  companyName String?
+  eventDate   DateTime?
+  eventVenue  String?
+  applyMethod String?
+  jobType     JobType?
+  experience  ExperienceLevel? @default(IRRELEVANT)
+  city        String?
+  district    String?
+  attachments Attachment[]
+  comments    Comment[]
+  messages    Message[]
+  author      User             @relation(fields: [authorId], references: [id])
+
+  @@index([type])
+  @@index([jobType])
+  @@index([city])
+  @@index([jobRole])
+}
+
+model Attachment {
+  id        Int      @id @default(autoincrement())
+  fileUrl   String
+  fileName  String
+  fileSize  Int
+  fileType  String
+  postId    Int
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  postId    Int
+  authorId  Int
+  author    User     @relation(fields: [authorId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+enum UserStatus {
+  ACTIVE
+  WITHDRAWN
+  BANNED
+}
+
 enum Role {
   USER
   ADMIN
 }
 
 enum OrderStatus {
-  PENDING
   PAYMENT_COMPLETE
   PREPARING
   SHIPPING
   DELIVERED
   CANCELLED
+  PENDING
 }
 
 enum ClaimType {
@@ -384,64 +426,3 @@ enum ExperienceLevel {
   SENIOR
   IRRELEVANT
 }
-
-model Post {
-  id            Int             @id @default(autoincrement())
-  type          PostType        // JOB, FREE, EVENT, RESOURCE
-  jobType       JobType?        // HIRING(구인), SEEKING(구직)
-  title         String
-  content       String          @db.Text
-  authorId      Int
-  author        User            @relation(fields: [authorId], references: [id])
-  viewCount     Int             @default(0)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  comments      Comment[]
-
-  // --- 구인/구직 관련 ---
-  jobRole       String?         // 직무 (공통)
-  companyName   String?         // 구인일 때 회사명
-  // authorName은 필요 없어! User 모델과 relation이 있으니 나중에 include해서 쓰면 돼.
-
-  experience    ExperienceLevel? @default(IRRELEVANT) // 경력 (구직/구인 공통 사용 가능)
-  city          String?         // 지역 (시/도)
-  district      String?         // 상세 지역 (구/군)
-  applyMethod   String?         // 지원 방법 (구인 시 필요)
-  // ----------------------------------------------
-
-  messages      Message[]
-  eventDate     DateTime?
-  eventVenue    String?
-  attachments   Attachment[]
-
-  @@index([type])
-  @@index([jobType])
-  @@index([city])
-  @@index([jobRole])
-}
-
-model Attachment {
-  id        Int      @id @default(autoincrement())
-  fileUrl   String
-  fileName  String
-  fileSize  Int
-  fileType  String
-
-  postId    Int
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-}
-
-model Comment {
-  id        Int      @id @default(autoincrement())
-  content   String
-  createdAt DateTime @default(now())
-
-  postId    Int
-  authorId  Int
-
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  author    User     @relation(fields: [authorId], references: [id])
-}
-
