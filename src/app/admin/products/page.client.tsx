@@ -1,14 +1,19 @@
 "use client";
-import { useEffect, useState } from "react";
-import * as A from "./style";
+import { useEffect, useMemo, useState } from "react";
+import styles from "./page.module.scss";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import * as yup from "yup";
-import { Column, Table } from "@/components/Table/page";
 import Image from "next/image";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Controller, useForm, useWatch } from "react-hook-form";
 import PagenationComponent from "@/components/pagenation/page";
-import styled from "@emotion/styled";
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { UnifiedTable } from "@/components/common/DataTable";
+import Button from "@/components/common/buttons/page";
+import toast from "react-hot-toast";
+import { customConfirm } from "@/lib/swal";
+import { PackagePlus } from "lucide-react";
 
 const STATUS_LABEL = {
   ALL: "전체",
@@ -33,13 +38,6 @@ interface CategoryWithChildren extends Category {
   children: Category[];
 }
 
-interface AdminProductFilterForm {
-  status: "ALL" | "ONSALE" | "SOLDOUT" | "HIDDEN";
-  mainCategory?: string;
-  subCategory?: string;
-  keyword: string;
-}
-
 interface ProductType {
   id: number;
   name: string;
@@ -62,71 +60,7 @@ interface Props {
   categories: CategoryWithChildren[];
 }
 
-const schema: yup.ObjectSchema<AdminProductFilterForm> = yup
-  .object({
-    status: yup
-      .mixed<AdminProductFilterForm["status"]>()
-      .oneOf(["ALL", "ONSALE", "SOLDOUT", "HIDDEN"])
-      .required(),
-    mainCategory: yup.string(),
-    subCategory: yup.string(),
-    keyword: yup.string().required(),
-  })
-  .required();
-
-export const StatusWrapper = styled.div`
-  position: relative;
-  display: inline-block;
-  cursor: help;
-
-  &::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 125%;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 6px 10px;
-    background-color: rgba(0, 0, 0, 0.85);
-    color: #fff;
-    font-size: 12px;
-    white-space: nowrap;
-    border-radius: 4px;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.2s ease;
-    z-index: 10;
-  }
-
-  &::before {
-    content: "";
-    position: absolute;
-    bottom: 110%;
-    left: 50%;
-    transform: translateX(-50%);
-    border-width: 5px;
-    border-style: solid;
-    border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
-
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.2s ease;
-    z-index: 10;
-  }
-
-  &:hover::after,
-  &:hover::before {
-    opacity: 1;
-    visibility: visible;
-  }
-`;
-
-export const StatusCircle = styled.span<{ color: string }>`
-  display: block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: ${(props) => props.color};
-`;
+const columnHelper = createColumnHelper<ProductType>();
 
 export default function AdminProductClientPage({
   products,
@@ -138,310 +72,325 @@ export default function AdminProductClientPage({
   const route = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { control, handleSubmit, register, setValue, reset } =
-    useForm<AdminProductFilterForm>({
-      defaultValues: {
-        status: "ALL",
-        mainCategory: "",
-        subCategory: "",
-        keyword: "",
-      },
-      resolver: yupResolver(schema),
+
+  const [filters, setFilters] = useState({
+    status: "ALL",
+    mainId: "",
+    subId: "",
+    q: "",
+  });
+
+  const handleDelete = async (id: number, name: string) => {
+    const result = await customConfirm({
+      title: "상품 삭제",
+      text: `상품을 정말 삭제하시겠습니까?\n신중하게 결정해주세요.`,
+      confirmText: "삭제",
+      cancelText: "취소",
+      isDanger: true,
     });
+
+    if (!result.isConfirmed) return;
+
+    const loadingToast = toast.loading("상품을 삭제하고 있어요...");
+
+    try {
+      const response = await fetch(`/api/admin/products/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        toast.success("상품이 삭제되었습니다.", { id: loadingToast });
+
+        route.refresh();
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "삭제에 실패했습니다.");
+      }
+    } catch (error: any) {
+      toast.error(error.message, { id: loadingToast });
+    }
+  };
 
   useEffect(() => {
-    reset({
-      status: (searchParams.get("status") as any) || "ALL",
-      mainCategory: searchParams.get("mainId") || "",
-      subCategory: searchParams.get("subId") || "",
-      keyword: searchParams.get("q") || "",
+    setFilters({
+      status: searchParams.get("status") || "ALL",
+      mainId: searchParams.get("mainId") || "",
+      subId: searchParams.get("subId") || "",
+      q: searchParams.get("q") || "",
     });
-  }, [searchParams, reset]);
+  }, [searchParams]);
 
-  const selectedMainId = useWatch<AdminProductFilterForm>({
-    control,
-    name: "mainCategory",
-  });
-  const selectedStatus = useWatch<AdminProductFilterForm>({
-    control,
-    name: "status",
-  });
-
-  const [productStatus, setProductStatus] = useState("ALL");
-  const [keyword, setKeyword] = useState("");
-
-  const onSubmit = (values: AdminProductFilterForm) => {
-    const params = new URLSearchParams();
-
-    if (values.status !== "ALL") params.set("status", values.status);
-    if (values.mainCategory) params.set("mainId", values.mainCategory);
-    if (values.subCategory) params.set("subId", values.subCategory);
-    if (values.keyword) params.set("q", values.keyword);
-
-    params.set("page", "1");
-
-    route.push(`${pathname}?${params.toString()}`);
-  };
-
-  const onReset = () => {
-    reset({
-      status: "ALL",
-      mainCategory: "",
-      subCategory: "",
-      keyword: "",
-    });
-    route.push(pathname);
-  };
-
-  const ProductColumns: Column<ProductType>[] = [
-    {
-      key: "name",
-      flex: 2.5,
-      label: "상품명",
-      render: (row) => {
-        return (
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor("name", {
+        header: "상품명",
+        size: 350,
+        cell: (info) => (
           <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              flex: 1,
-              alignItems: "center",
-              padding: "0 20px",
-            }}
+            className={styles.title}
+            style={{ cursor: "pointer" }}
+            onClick={() =>
+              route.push(`/admin/products/${info.row.original.id}`)
+            }
           >
             <Image
-              width={70}
-              height={70}
-              src={row.thumbnail || "/no-image.png"}
-              style={{ backgroundColor: "black" }}
-              alt="일단 임시"
+              width={60}
+              height={60}
+              src={info.row.original.thumbnail || "/no-image.png"}
+              alt="상품 이미지"
               unoptimized
             />
-
-            <p style={{ flex: 1, textAlign: "left" }}>{row.name}</p>
+            <span className={styles.titleText}>{info.getValue()}</span>
           </div>
-        );
-      },
-    },
+        ),
+      }),
+      columnHelper.accessor("category", {
+        header: "카테고리",
+        size: 200,
+        cell: (info) => {
+          const category = info.getValue();
+          if (!category)
+            return <span className={styles.categoryText}>분류 없음</span>;
 
-    {
-      key: "category",
-      flex: 1.5,
-      label: "카테고리",
-      render: (row) => {
-        return (
-          <span>
-            {row.category?.parent?.name || "대분류"} &gt;{" "}
-            {row.category?.name || "소분류"}
-          </span>
-        );
-      },
-    },
+          const categoryName = category.parent
+            ? `${category.parent.name} > ${category.name}`
+            : category.name;
 
-    {
-      key: "price",
-      flex: 1,
-      label: "판매가",
-      render: (row) => {
-        return <div>{row?.options?.[0]?.price?.toLocaleString()}원</div>;
-      },
-    },
-
-    {
-      key: "stock",
-      flex: 0.8,
-      label: "재고",
-      render: (row) => {
-        return <div>{row?.options?.[0]?.stock?.toLocaleString()}</div>;
-      },
-    },
-    {
-      key: "status",
-      flex: 0.8,
-      label: "상태",
-      render: (row) => {
-        const uniqueStatusKeys = Array.from(
-          new Set(row.options?.map((opt: any) => opt.status)),
-        ) as Array<keyof typeof STATUS_MAP>;
-
-        const displayStatuses = uniqueStatusKeys.slice(0, 3);
-
-        return (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              justifyContent: "center",
-            }}
-          >
-            {displayStatuses.map((statusKey) => {
-              const config = STATUS_MAP[statusKey];
-              if (!config) return null;
-
-              return (
-                <StatusWrapper key={statusKey} data-tooltip={config.label}>
-                  <StatusCircle color={config.color} />
-                </StatusWrapper>
-              );
-            })}
+          return <span className={styles.categoryText}>{categoryName}</span>;
+        },
+      }),
+      columnHelper.display({
+        id: "price",
+        header: "판매가",
+        size: 100,
+        cell: (info) => (
+          <div className={styles.priceText}>
+            {info.row.original.options?.[0]?.price?.toLocaleString()}원
           </div>
-        );
-      },
-    },
-    {
-      key: "actions",
-      flex: 1,
-      label: "관리",
-      render: () => {
-        return (
-          <div style={{ display: "flex", gap: "3px" }}>
+        ),
+      }),
+      columnHelper.display({
+        id: "stock",
+        header: "재고",
+        size: 80,
+        cell: (info) => {
+          const totalStock = info.row.original.options?.reduce((acc, opt) => {
+            return acc + (Number(opt.stock) || 0);
+          }, 0);
+
+          return (
+            <div className={styles.stockText}>
+              {totalStock?.toLocaleString() ?? 0}
+            </div>
+          );
+        },
+      }),
+      columnHelper.accessor("options", {
+        header: "상태",
+        size: 80,
+        cell: (info) => {
+          const uniqueStatuses = Array.from(
+            new Set(info.getValue()?.map((opt: any) => opt.status)),
+          ) as Array<keyof typeof STATUS_MAP>;
+
+          return (
+            <div className={styles.statusContainer}>
+              {uniqueStatuses.slice(0, 3).map((statusKey) => {
+                const config = STATUS_MAP[statusKey];
+                if (!config) return null;
+                return (
+                  <div
+                    key={statusKey}
+                    className={styles.statusWrapper}
+                    data-tooltip={config.label}
+                  >
+                    <span
+                      className={styles.statusCircle}
+                      style={{ backgroundColor: config.color }}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          );
+        },
+      }),
+      columnHelper.display({
+        id: "actions",
+        header: "관리",
+        size: 148,
+        cell: (info) => (
+          <div className={styles.actionButtons}>
             <button
               type="button"
-              style={{
-                fontSize: "14px",
-                border: "1px solid #D1D5DB",
-                padding: "7px 10px",
-                borderRadius: "3px",
-              }}
+              onClick={() =>
+                route.push(`/admin/products/${info.row.original.id}`)
+              }
+              className={styles.editBtn}
             >
               수정
             </button>
             <button
               type="button"
-              style={{
-                fontSize: "14px",
-                border: "1px solid #D1D5DB",
-                padding: "7px 10px",
-                borderRadius: "3px",
-                color: "#C1272D",
-              }}
+              className={styles.deleteBtn}
+              onClick={() =>
+                handleDelete(info.row.original.id, info.row.original.name)
+              }
             >
               삭제
             </button>
           </div>
-        );
-      },
-    },
-  ];
+        ),
+      }),
+    ],
+    [],
+  );
+
+  const table = useReactTable({
+    data: products,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
+    const { name, value } = e.target;
+
+    setFilters((prev) => {
+      const nextFilters = { ...prev, [name]: value };
+
+      if (name === "mainId") {
+        nextFilters.subId = "";
+      }
+
+      return nextFilters;
+    });
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+
+    if (filters.status !== "ALL") params.set("status", filters.status);
+    if (filters.mainId) params.set("mainId", filters.mainId);
+    if (filters.subId) params.set("subId", filters.subId);
+    if (filters.q) params.set("q", filters.q);
+
+    params.set("page", "1");
+
+    route.push(`${pathname}?${params.toString()}`);
+  };
+  const handleReset = () => {
+    setFilters({ status: "ALL", mainId: "", subId: "", q: "" });
+    route.push(pathname);
+  };
 
   return (
-    <A.Inner>
-      <form
-        onSubmit={handleSubmit(onSubmit, (errors) =>
-          console.log("검색 에러!!:", errors),
-        )}
-      >
-        <A.TitleWrapper>
+    <div className={styles.inner}>
+      <form onSubmit={handleSearch}>
+        <div className={styles.titleWrapper}>
           <h2>상품 관리</h2>
+          <Button variant="black" href={`/admin/products/new`}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <PackagePlus size={18} />
+              <span>상품 추가</span>
+            </div>
+          </Button>
+        </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              route.push("/admin/products/new");
-            }}
-          >
-            상품추가
-          </button>
-        </A.TitleWrapper>
-
-        <A.ProductFilter aria-label="상품관리-검색필터">
-          <A.FilterStatus>
+        <section className={styles.productFilter}>
+          {/* 상태 필터 */}
+          <div className={styles.filterStatus}>
             <h4>상태</h4>
-            <ul role="listbox">
+            <ul>
               {Object.entries(STATUS_LABEL).map(([key, value]) => (
-                <A.List role="option" active={selectedStatus == key}>
+                <li key={key} className={styles.list}>
                   <button
                     type="button"
+                    className={filters.status === key ? styles.active : ""}
                     onClick={() =>
-                      setValue(
-                        "status",
-                        key as AdminProductFilterForm["status"],
-                      )
+                      setFilters((prev) => ({ ...prev, status: key }))
                     }
                   >
                     {value}
                   </button>
-                </A.List>
+                </li>
               ))}
             </ul>
-          </A.FilterStatus>
+          </div>
 
-          <A.FilterGroup>
-            <A.FilteCategoryStatus>
+          <div className={styles.filterGroup}>
+            {/* 카테고리 필터 */}
+            <div className={styles.filterCategoryStatus}>
               <h4>카테고리</h4>
+              <div className={styles.selectBox}>
+                <select
+                  name="mainId"
+                  value={filters.mainId}
+                  onChange={handleChange}
+                >
+                  <option value="">대분류 전체</option>
+                  {categories?.map((main) => (
+                    <option key={main.id} value={main.id}>
+                      {main.name}
+                    </option>
+                  ))}
+                </select>
 
-              <Controller
-                name="mainCategory"
-                control={control}
-                render={({ field }) => (
-                  <div>
-                    <select {...field}>
-                      <option value="">전체</option>
-                      {categories?.map((main) => (
-                        <option key={main.id} value={main.id}>
-                          {main.name}
+                {filters.mainId && (
+                  <select
+                    name="subId"
+                    value={filters.subId}
+                    onChange={handleChange}
+                    style={{ marginLeft: "10px" }}
+                  >
+                    <option value="">소분류 전체</option>
+                    {categories
+                      .find((c) => String(c.id) === filters.mainId)
+                      ?.children.map((sub) => (
+                        <option key={sub.id} value={sub.id}>
+                          {sub.name}
                         </option>
                       ))}
-                    </select>
-                    <span>▼</span>
-                  </div>
+                  </select>
                 )}
-              ></Controller>
+              </div>
+            </div>
 
-              <Controller
-                name="subCategory"
-                control={control}
-                render={({ field }) => {
-                  const currentMainCategory = categories.find(
-                    (main) => String(main.id) === String(selectedMainId),
-                  );
-
-                  return (
-                    <div>
-                      <select {...field}>
-                        <option value="">전체</option>
-                        {currentMainCategory?.children.map((sub) => (
-                          <option key={sub.id} value={sub.id}>
-                            {sub.name}
-                          </option>
-                        ))}
-                      </select>
-                      <span>▼</span>
-                    </div>
-                  );
-                }}
-              ></Controller>
-            </A.FilteCategoryStatus>
-
-            <A.SearchInput>
+            {/* 검색어 필터 */}
+            <div className={styles.searchInput}>
               <h4>검색</h4>
               <input
                 type="text"
+                name="q"
+                value={filters.q}
+                onChange={handleChange}
                 placeholder="상품명 검색"
-                {...register("keyword")}
-                autoComplete="off"
               />
-            </A.SearchInput>
+            </div>
 
-            <A.FilterActions>
-              <button type="submit">검색</button>
-              <button type="button" onClick={onReset}>
+            <div className={styles.filterActions}>
+              <Button className={styles.submitBtn}>검색</Button>
+              <Button
+                variant="edit"
+                className={styles.resetBtn}
+                onClick={handleReset}
+              >
                 초기화
-              </button>
-            </A.FilterActions>
-          </A.FilterGroup>
-        </A.ProductFilter>
+              </Button>
+            </div>
+          </div>
+        </section>
 
-        <Table columns={ProductColumns} data={products} />
+        <UnifiedTable table={table} className={styles.productTable} />
 
-        {/* 페이지네이션 컴포넌트 */}
         <PagenationComponent
           total={totalCount}
           pageSize={pageSize}
           currentPage={currentPage}
         />
       </form>
-    </A.Inner>
+    </div>
   );
 }

@@ -1,0 +1,240 @@
+.container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #333;
+
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #111;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+  }
+
+  .content {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 40px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+
+    h4 {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #333;
+      border-left: 4px solid #000;
+      padding-left: 10px;
+    }
+
+    .imageSection {
+      .mainImage {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        position: relative;
+        border: 1px solid #eee;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #fafafa;
+
+        img {
+          object-fit: cover;
+        }
+      }
+    }
+
+    .infoSection {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      .inputGroup {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        label {
+          font-weight: 600;
+          font-size: 14px;
+          color: #555;
+        }
+
+        input,
+        select,
+        textarea {
+          padding: 12px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          font-size: 15px;
+          outline: none;
+          transition: border-color 0.2s;
+
+          &:focus {
+            border-color: #000;
+          }
+        }
+
+        textarea {
+          resize: none;
+        }
+      }
+    }
+  }
+
+  .optionSection {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+    h4 {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #333;
+      border-left: 4px solid #000;
+      padding-left: 10px;
+    }
+
+    .optionTable {
+      width: 100%;
+      border-collapse: collapse;
+
+      th,
+      td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+      }
+
+      th {
+        background-color: #fcfcfc;
+        font-weight: 600;
+        color: #666;
+        font-size: 14px;
+      }
+
+      td {
+        font-size: 15px;
+        color: #333;
+
+        select {
+          width: 100px;
+          padding: 8px 12px;
+        }
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+    }
+  }
+}
+
+.imageGallery {
+  margin-top: 30px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  .imageList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  .imageItem {
+    width: 140px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .imgWrapper {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+
+      img {
+        object-fit: cover;
+      }
+
+      .representBadge {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        background: #000;
+        color: #fff;
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 2px;
+      }
+    }
+
+    .imageActions {
+      display: flex;
+      justify-content: space-between;
+      gap: 4px;
+
+      button {
+        flex: 1;
+        padding: 4px;
+        font-size: 12px;
+        background: #f4f4f4;
+        border: 1px solid #ddd;
+        cursor: pointer;
+
+        &:hover {
+          background: #eee;
+        }
+        &.deleteImgBtn {
+          color: #e74c3c;
+          &:hover {
+            background: #fee;
+          }
+        }
+      }
+    }
+  }
+
+  .addImagePlaceholder {
+    width: 140px;
+    height: 140px;
+    border: 2px dashed #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #999;
+    font-size: 14px;
+    &:hover {
+      background: #fafafa;
+      border-color: #999;
+    }
+  }
+}
+
+@media (max-width: 900px) {
+  .container .content {
+    grid-template-columns: 1fr;
+  }
+}

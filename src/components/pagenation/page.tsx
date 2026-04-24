@@ -37,10 +37,15 @@ export default function SimplePagination({
 
   return (
     <nav className={styles.inner}>
-      <button onClick={() => movePage(1)} disabled={currentPage === 1}>
+      <button
+        type="button"
+        onClick={() => movePage(1)}
+        disabled={currentPage === 1}
+      >
         {"<<"}
       </button>
       <button
+        type="button"
         onClick={() => movePage(currentPage - 1)}
         disabled={currentPage === 1 || total === 0}
       >
@@ -49,13 +54,14 @@ export default function SimplePagination({
 
       <div className={styles.pages}>
         {total === 0 ? (
-          <button className={styles.active} disabled>
+          <button type="button" className={styles.active} disabled>
             1
           </button>
         ) : (
           pages.map((page) => (
             <button
               key={page}
+              type="button"
               onClick={() => movePage(page)}
               className={currentPage === page ? styles.active : ""}
             >
@@ -66,6 +72,7 @@ export default function SimplePagination({
       </div>
 
       <button
+        type="button"
         onClick={() => movePage(currentPage + 1)}
         disabled={currentPage === totalPages || total === 0}
       >
@@ -73,6 +80,7 @@ export default function SimplePagination({
       </button>
 
       <button
+        type="button"
         onClick={() => movePage(totalPages)}
         disabled={currentPage === totalPages || total === 0}
       >

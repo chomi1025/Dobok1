@@ -1,0 +1,390 @@
+@import "../../../components/style/variables.module";
+
+.inner {
+  padding-bottom: 300px;
+  min-height: 100vh;
+
+  nav {
+    margin: 30px 0;
+  }
+}
+
+.titleWrapper {
+  display: flex;
+  align-items: center;
+
+  h2 {
+    display: inline-block;
+    font-size: 32px;
+    margin-right: 25px;
+  }
+
+  button {
+    border-radius: 30px;
+  }
+}
+
+.mainImage {
+  width: 200px; // 예시 크기, 상황에 맞게 조절
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+
+  // 이미지가 없을 때 점선 테두리와 배경색
+  background-color: #f9fafb;
+  border: 2px dashed #e5e7eb;
+  transition: all 0.2s ease-in-out;
+
+  // 호버했을 때 테두리 색상과 배경색 변경
+  &:hover {
+    border-color: #3b82f6; // 포인트 컬러 (예: 블루)
+    background-color: #eff6ff;
+
+    .uploadPlaceholder {
+      .icon {
+        color: #3b82f6; // 호버 시 아이콘 색상 변경
+      }
+      .placeholderText {
+        color: #1d4ed8;
+      }
+    }
+  }
+
+  // Next/Image fill 속성 사용 시 꽉 차게
+  img {
+    object-fit: cover;
+  }
+}
+
+// 이미지가 없을 때 중앙 정렬을 위한 스타일 (styles.centered일 때)
+.centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// 플레이스홀더 컨테이너 (아이콘 + 텍스트)
+.uploadPlaceholder {
+  display: flex;
+  flex-direction: column; // 세로 정렬
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  width: 100%;
+  height: 100%;
+
+  .icon {
+    color: #9ca3af; // 기본 아이콘 색상 (회색)
+    margin-bottom: 12px; // 아이콘과 텍스트 간격
+    transition: color 0.2s;
+  }
+
+  .placeholderText {
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    margin-bottom: 4px; // 메인 텍스트와 보조 텍스트 간격
+    transition: color 0.2s;
+  }
+
+  .supportText {
+    font-size: 12px;
+    color: #9ca3af;
+  }
+}
+
+.categoryText {
+  font-size: 13px;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.productFilter {
+  margin-top: 20px;
+  padding: 30px;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-bottom: 30px;
+  border: 1px solid #ddd;
+
+  h4 {
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #222;
+    font-size: 16px;
+  }
+}
+
+.filterStatus {
+  margin-bottom: 35px;
+
+  ul {
+    display: flex;
+    gap: 7px;
+    list-style: none;
+    padding: 0;
+  }
+}
+
+.list {
+  button {
+    font-size: 14px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background-color: white;
+    color: #555;
+
+    &:hover {
+      background-color: #f9f9f9;
+    }
+
+    &.active {
+      color: white;
+      background-color: #333;
+    }
+  }
+}
+
+.filterGroup {
+  display: flex;
+}
+
+.filterCategoryStatus {
+  margin-right: 25px;
+
+  .selectBox {
+    display: inline-block;
+    position: relative;
+
+    select {
+      width: 7.5rem;
+      color: #444;
+      padding: 0.625rem 2.1875rem 0.625rem 0.75rem;
+      border-radius: 0.3125rem;
+      outline: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.625rem center;
+      background-size: 1rem;
+      background-color: white;
+      transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+
+      &:first-of-type {
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+.searchInput {
+  margin-right: 25px;
+
+  input {
+    padding: 10px;
+    border-radius: 5px;
+    width: 255px;
+  }
+}
+
+.filterActions {
+  display: flex;
+  gap: 8px;
+  align-self: flex-end;
+
+  button {
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+}
+
+.statusWrapper {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+
+  &::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 6px 10px;
+    background-color: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    font-size: 12px;
+    white-space: nowrap;
+    border-radius: 4px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 10;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 10;
+  }
+
+  &:hover::after,
+  &:hover::before {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.statusContainer {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+
+  .statusWrapper {
+    .statusCircle {
+      display: block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+  }
+}
+
+.productTable {
+  width: 100%;
+  width: 908px;
+  table-layout: fixed;
+  border-collapse: collapse;
+
+  th,
+  td {
+    text-align: center;
+    vertical-align: middle;
+    padding: rem(18) rem(10);
+    border-bottom: 1px solid #eee;
+    font-size: rem(15);
+    word-break: break-all;
+  }
+
+  th {
+    background-color: #f9f9f9;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .titleColumn {
+    text-align: left !important;
+    padding-left: rem(20);
+  }
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: rem(15);
+  text-decoration: none;
+
+  img {
+    border-radius: 6px;
+  }
+
+  .titleText {
+    color: #333;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.orderNumberWrapper {
+  .normalNumber {
+    font-weight: 500;
+    color: #333;
+  }
+  .subNumber {
+    font-size: rem(12);
+    color: #999;
+    margin-top: rem(4);
+    text-decoration: underline;
+  }
+}
+
+.statusBadge {
+  font-weight: 600;
+  font-size: rem(14);
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+
+  button {
+    width: 52px;
+    height: 30px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.editBtn {
+      background-color: #eff6ff;
+      color: #1e40af;
+      border-color: #bfdbfe;
+
+      &:hover {
+        background-color: #1e40af;
+        color: #ffffff;
+        border-color: #1e40af;
+      }
+    }
+
+    &.deleteBtn {
+      background-color: #fff1f2;
+      color: #e11d48;
+      border-color: #fecdd3;
+
+      &:hover {
+        background-color: #e11d48;
+        color: #ffffff;
+        border-color: #e11d48;
+      }
+    }
+  }
+}

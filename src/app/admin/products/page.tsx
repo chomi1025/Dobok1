@@ -1,5 +1,6 @@
 import AdminProductClientPage from "./page.client";
 import { prisma } from "@/lib/prisma";
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "관리자 페이지 - 상품관리",

@@ -31,14 +31,18 @@ export default function ProductInfo({
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
   const colorOptions = Array.from(
-    new Set(product.options.map((o) => o.color).filter(Boolean)),
+    new Set(product.options.map((o) => o.optionValue).filter(Boolean)),
   );
+
   const availableOptionsByColor = selectedColor
-    ? product.options.filter((o) => o.color === selectedColor)
+    ? product.options.filter(
+        (o) =>
+          o.optionValue === selectedColor || o.optionValue2 === selectedColor,
+      )
     : product.options;
 
   const sizeOptions = Array.from(
-    new Set(availableOptionsByColor.map((o) => o.size).filter(Boolean)),
+    new Set(availableOptionsByColor.map((o) => o.optionValue2).filter(Boolean)),
   );
 
   const handleSelectColor = (color: string) => {
@@ -50,8 +54,10 @@ export default function ProductInfo({
     setSelectedSize(size);
 
     const targetOpt = product.options.find((opt) => {
-      const colorMatch = !colorOptions.length || opt.color === selectedColor;
-      const sizeMatch = opt.size === size;
+      // 4. 필드명 변경: opt.color -> opt.optionValue / opt.size -> opt.optionValue2
+      const colorMatch =
+        !colorOptions.length || opt.optionValue === selectedColor;
+      const sizeMatch = !sizeOptions.length || opt.optionValue2 === size;
       return colorMatch && sizeMatch;
     });
 
@@ -75,9 +81,7 @@ export default function ProductInfo({
 
   const addOption = (opt: ProductOption) => {
     const isAlreadyAdded = addedOptions.find((item) => item.id === opt.id);
-    if (isAlreadyAdded) {
-      return;
-    }
+    if (isAlreadyAdded) return;
     setAddedOptions((prev) => [...prev, { ...opt, quantity: 1 }]);
   };
 
@@ -96,10 +100,11 @@ export default function ProductInfo({
   };
 
   useEffect(() => {
+    // 5. 단일 상품 체크 로직 필드명 변경
     const isSingleProduct =
       product.options.length === 1 &&
-      !product.options[0].color &&
-      !product.options[0].size;
+      !product.options[0].optionValue &&
+      !product.options[0].optionValue2;
 
     if (isSingleProduct && addedOptions.length === 0) {
       setAddedOptions([{ ...product.options[0], quantity: 1 }]);
@@ -199,7 +204,6 @@ export default function ProductInfo({
             <div className={styles.price}>
               <div>
                 <strong>
-                  {/* 첫번째 상품의 가격 */}
                   <span>{product.options[0]?.price.toLocaleString()}</span>
                 </strong>
                 원
@@ -254,15 +258,18 @@ export default function ProductInfo({
                 <div className={styles.selectedItem} key={item.id}>
                   <div className={styles.item_header}>
                     <span className={styles.option_name}>
-                      {product.name} -{" "}
-                      {item.color || item.size
-                        ? ` - ${item.color || ""} ${item.size || ""}`
-                        : ""}
+                      {product.name}
+                      {(item.optionValue || item.optionValue2) && (
+                        <>
+                          {" "}
+                          - {item.optionValue || ""} {item.optionValue2 || ""}
+                        </>
+                      )}
                     </span>
 
-                    {(colorOptions.length > 0 || sizeOptions.length > 0) && (
+                    {product.options.length > 1 && (
                       <button
-                        className="remove_btn"
+                        className={styles.remove_btn}
                         onClick={() => removeOption(item.id)}
                       >
                         ✕

@@ -42,21 +42,23 @@ export default function ProductDetailClientPage({ productId }: Prop) {
               };
             case "색상":
               const colors = Array.from(
-                new Set(product.options.map((o) => o.color).filter(Boolean)),
+                new Set(
+                  product.options.map((o) => o.optionValue).filter(Boolean),
+                ),
               );
               return {
                 ...item,
-                content:
-                  colors.length > 0 ? [colors.join(", ")] : ["단일 색상"],
+                options: colors,
               };
-            case "치수":
+            case "사이즈":
               const sizes = Array.from(
-                new Set(product.options.map((o) => o.size).filter(Boolean)),
+                new Set(
+                  product.options.map((o) => o.optionValue2).filter(Boolean),
+                ),
               );
               return {
                 ...item,
-                content:
-                  sizes.length > 0 ? [sizes.join(", ")] : ["상세페이지 참조"],
+                options: sizes,
               };
             case "제조국":
               return { ...item, content: [product.origin || "한국"] };
