@@ -134,15 +134,25 @@ model Product {
   productQnas    ProductQna[]
 }
 
+enum ProductStatus {
+  ONSALE
+  SOLDOUT
+  HIDDEN
+}
+
 model ProductOption {
   id        Int        @id @default(autoincrement())
   productId Int
-  color     String?
-  size      String?
-  price     Int
+  price       Int
+
+  optionName  String?
+  optionValue String?
+  optionName2  String?
+  optionValue2 String?
+
   stock     Int
   sale      Int?
-  status    String     @default("판매중")
+  status    ProductStatus    @default(ONSALE)
   cartItems CartItem[]
   product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
