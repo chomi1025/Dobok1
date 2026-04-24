@@ -1,13 +1,15 @@
 import { prisma } from "@/lib/prisma";
-import OrdersClientPage from "./page.client";
 import { OrderStatus, Prisma } from "@prisma/client";
+import dynamic from "next/dynamic";
 
 export const metadata = {
   title: "관리자 페이지 - 주문관리",
   description: "관리자페이지-주문관리입니다.",
 };
 
-export const dynamic = "force-dynamic";
+const OrdersClientPage = dynamic(() => import("./page.client"), {
+  ssr: false,
+});
 
 export default async function OrdersPage({
   searchParams,
