@@ -39,23 +39,26 @@ const STATUS_MAP: Record<string, string> = {
 };
 
 export default function AdminDashboard() {
-  const { data } = useQuery<AdminDashboardData>({
+  const { data, isLoading } = useQuery<AdminDashboardData>({
     queryKey: ["admin", "stats"],
     queryFn: async () => {
-      return {} as AdminDashboardData;
+      const res = await fetch("/api/admin/stats");
+      if (!res.ok) throw new Error("네트워크 응답 에러");
+      return res.json();
     },
     staleTime: 60000,
   });
-  if (!data) return null;
+
+  if (isLoading || !data) return <div>로딩 중...</div>;
 
   const {
-    todayOrderCount,
-    preparingCount,
-    todayNewUsers,
-    unansweredInquiries,
-    todaySales,
-    recentOrders,
-  } = data;
+    todayOrderCount = 0,
+    preparingCount = 0,
+    todayNewUsers = 0,
+    unansweredInquiries = 0,
+    todaySales = 0,
+    recentOrders = [],
+  } = data || {};
 
   const stats = [
     {
@@ -141,7 +144,7 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {recentOrders.map((order: Order) => {
+              {recentOrders?.map((order: Order) => {
                 return (
                   <tr key={order.orderNumber}>
                     <td>{order.orderNumber}</td>

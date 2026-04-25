@@ -6,6 +6,7 @@
   position: sticky;
   align-self: flex-start;
   top: rem(100);
+  flex-shrink: 0;
 
   h2 {
     display: block;
