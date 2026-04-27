@@ -111,6 +111,7 @@ model Category {
   parent    Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
   children  Category[] @relation("CategoryToCategory")
   products  Product[]
+  isVisible  Boolean    @default(true)
 }
 
 model Product {

@@ -1,0 +1,257 @@
+.container {
+  padding: 2rem;
+  background-color: #f8fafc;
+  min-height: 100vh;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+  }
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 1.5rem;
+}
+
+.treeSection {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+
+  .treeHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: #f1f5f9;
+    font-weight: 600;
+    border-bottom: 1px solid #e2e8f0;
+
+    .headerBtns {
+      display: flex;
+      gap: 8px;
+    }
+    .addBtn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #4f46e5;
+      color: white;
+      padding: 9px 15px;
+      border-radius: 8px;
+      font-weight: 500;
+      &:hover {
+        background: #4338ca;
+      }
+    }
+  }
+  .treeBody {
+    padding: 1rem;
+  }
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.saveOrderBtn {
+  @extend .actionBtn;
+  background-color: #0f172a;
+  color: #ffffff;
+
+  &:hover {
+    background-color: #334155;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  svg {
+    color: #ffffff;
+  }
+}
+
+.itemWrapper {
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #1e293b;
+
+    &:hover {
+      background: #f1f5f9;
+
+      .actions {
+        opacity: 1;
+      }
+    }
+
+    .toggle {
+      width: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .folderIcon {
+      color: #4f46e5;
+    } // 1차는 포인트 컬러
+    .name {
+      flex: 1;
+      font-size: 0.95rem;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.8rem; // 간격 살짝 넓힘
+      opacity: 0; // 평소엔 숨김
+      transition: opacity 0.2s ease; // 부드럽게 나타나게
+      color: #94a3b8;
+
+      svg {
+        cursor: pointer;
+        transition: color 0.2s;
+
+        &:hover {
+          color: #4f46e5; // 기본 수정/추가 아이콘 호버 색상
+        }
+      }
+
+      .delete:hover {
+        color: #ef4444;
+      }
+    }
+  }
+
+  .subList {
+    margin-left: 10px; // 점선 위치
+    padding-left: 24px;
+    border-left: 1px dashed #cbd5e1;
+    margin-top: 2px;
+    margin-bottom: 4px;
+
+    .item {
+      font-weight: 400;
+      color: #475569;
+      padding: 0.4rem 0.6rem;
+
+      .folderIcon {
+        color: #94a3b8;
+        width: 14px;
+      }
+
+      .name {
+        font-size: 0.9rem;
+      }
+    }
+
+    .subList {
+      padding-left: 20px;
+    }
+  }
+}
+
+.emptySection {
+  flex: 1; // editSection과 동일한 비율 유지
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8fafc; // 아주 연한 회색 배경으로 차별화
+  border-radius: 12px;
+  border: 2px dashed #e2e8f0; // 점선 테두리로 '비어있음' 표현
+  margin: 20px;
+}
+
+.emptyMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: #94a3b8; // 차분한 회색 톤
+  text-align: center;
+
+  svg {
+    color: #cbd5e1; // 아이콘은 좀 더 연하게
+  }
+
+  p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    font-weight: 500;
+  }
+}
+
+.editSection {
+  .card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+
+    h3 {
+      margin-bottom: 1.5rem;
+      font-size: 1.1rem;
+    }
+  }
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    .inputGroup {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+
+      span {
+        font-size: 14px;
+      }
+      label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #64748b;
+      }
+      input,
+      select {
+        padding: 0.6rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        &:focus {
+          outline: 2px solid #4f46e5;
+          border-color: transparent;
+        }
+      }
+    }
+    .saveBtn {
+      align-self: flex-start;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #10b981;
+      color: white;
+      padding: 0.7rem 1.5rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+  }
+}
