@@ -108,10 +108,10 @@ model Category {
   slug      String     @unique
   sortOrder Int?
   imageUrl  String?
+  isVisible Boolean    @default(true)
   parent    Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
   children  Category[] @relation("CategoryToCategory")
   products  Product[]
-  isVisible  Boolean    @default(true)
 }
 
 model Product {
@@ -135,27 +135,19 @@ model Product {
   productQnas    ProductQna[]
 }
 
-enum ProductStatus {
-  ONSALE
-  SOLDOUT
-  HIDDEN
-}
-
 model ProductOption {
-  id        Int        @id @default(autoincrement())
-  productId Int
-  price       Int
-
-  optionName  String?
-  optionValue String?
+  id           Int           @id @default(autoincrement())
+  productId    Int
+  price        Int
+  stock        Int
+  sale         Int?
+  optionName   String?
   optionName2  String?
+  optionValue  String?
   optionValue2 String?
-
-  stock     Int
-  sale      Int?
-  status    ProductStatus    @default(ONSALE)
-  cartItems CartItem[]
-  product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  status       ProductStatus @default(ONSALE)
+  cartItems    CartItem[]
+  product      Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model CartItem {
@@ -370,6 +362,12 @@ model Comment {
   authorId  Int
   author    User     @relation(fields: [authorId], references: [id])
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+enum ProductStatus {
+  ONSALE
+  SOLDOUT
+  HIDDEN
 }
 
 enum UserStatus {
