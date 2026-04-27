@@ -22,3 +22,24 @@ export async function GET() {
     );
   }
 }
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const { name, slug, isVisible, parentId } = body;
+
+    const newCategory = await prisma.category.create({
+      data: {
+        name,
+        slug,
+        isVisible,
+        parentId,
+      },
+    });
+
+    return NextResponse.json(newCategory);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: "에러 발생" }, { status: 500 });
+  }
+}

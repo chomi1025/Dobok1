@@ -41,7 +41,6 @@ export default function AdminProductDetailLayout({
   categories,
   mode,
 }: AdminProductClientProps) {
-  console.log(product);
   const isEditMode = mode === "edit";
 
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
