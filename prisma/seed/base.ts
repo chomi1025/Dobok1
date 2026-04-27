@@ -77,12 +77,14 @@ async function main() {
         name: cat.name,
         sortOrder: cat.sortOrder,
         imageUrl: cat.imageUrl,
+        isVisible: true,
       },
       create: {
         name: cat.name,
         slug: cat.slug,
         sortOrder: cat.sortOrder,
         imageUrl: cat.imageUrl,
+        isVisible: true,
       },
     });
 
@@ -96,12 +98,14 @@ async function main() {
             name: sub.name,
             sortOrder: sub.sortOrder,
             parentId: parent.id,
+            isVisible: true,
           },
           create: {
             name: sub.name,
             slug: sub.slug,
             sortOrder: sub.sortOrder,
             parentId: parent.id,
+            isVisible: true,
           },
         });
       }
@@ -152,8 +156,22 @@ async function seedProducts(prisma: PrismaClient) {
       material: i % 2 === 0 ? "최고급 면 100%" : "기능성 혼방 소재",
       origin: i % 3 === 0 ? "대한민국" : "해외 OEM",
       options: [
-        { size: "S", color: "Basic", price: 20000 + i * 500, stock: 50 },
-        { size: "L", color: "Premium", price: 35000 + i * 500, stock: 30 },
+        {
+          optionName: "사이즈",
+          optionValue: "S",
+          optionName2: "등급",
+          optionValue2: "Basic",
+          price: 20000 + i * 500,
+          stock: 50,
+        },
+        {
+          optionName: "사이즈",
+          optionValue: "L",
+          optionName2: "등급",
+          optionValue2: "Premium",
+          price: 35000 + i * 500,
+          stock: 30,
+        },
       ],
     });
   }
@@ -169,13 +187,14 @@ async function seedProducts(prisma: PrismaClient) {
           name: item.name,
           description: item.description,
           thumbnail: item.thumbnail,
+          images: [item.thumbnail],
           isBest: item.isBest,
           isNew: item.isNew,
           material: item.material,
           origin: item.origin,
           categoryId: category.id,
           options: {
-            create: item.options, // 여기서 .map() 안 쓰고 그냥 넘겨도 Prisma가 알아서 처리해
+            create: item.options,
           },
         },
       });
