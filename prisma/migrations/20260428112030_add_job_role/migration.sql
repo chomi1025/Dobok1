@@ -1,0 +1,2 @@
+-- CreateEnum
+CREATE TYPE "JobRole" AS ENUM ('TAEKWONDO', 'JUDO', 'HAPKIDO', 'KENDO', 'JUMP_ROPE', 'GYM_PT', 'SWIMMING', 'ETC');

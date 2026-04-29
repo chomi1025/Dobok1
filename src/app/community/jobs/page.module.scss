@@ -35,19 +35,106 @@
 }
 
 .tableWrapper {
+  margin-top: rem(20);
+  display: flex;
+  flex-direction: column;
+  gap: rem(15);
   position: relative;
+}
 
-  > a {
-    position: absolute;
-    top: -40px;
-    right: 0;
+.buttonGroup {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-bottom: rem(15);
+  position: absolute;
+  right: 0;
+  top: -50px;
+
+  button,
+  a {
+    padding: rem(8) rem(12);
+    border-radius: 6px;
+    font-size: rem(14);
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+  }
+}
+
+.noticeTable {
+  width: 100%;
+  max-width: rem(908);
+  table-layout: fixed;
+  border-collapse: collapse;
+  margin: 0 auto;
+
+  .hiringBadge,
+  .seekingBadge {
+    display: inline-flex;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
   }
 
-  > section {
-    > div:last-of-type {
-      > div {
-        padding: 18px 0;
-      }
+  .hiringBadge {
+    background-color: #e6f7ff;
+    color: #1890ff;
+    border: 1px solid #91d5ff;
+  }
+
+  .seekingBadge {
+    background-color: #fff3e0;
+    color: #ef6c00;
+    border: 1px solid #ffe0b2;
+  }
+
+  th,
+  td {
+    text-align: center;
+    vertical-align: middle;
+    padding: rem(18) rem(10);
+    border-bottom: 1px solid #eee;
+    font-size: rem(15);
+    word-break: break-all;
+  }
+
+  th {
+    background-color: #f9f9f9;
+    font-weight: 600;
+    color: #333;
+  }
+
+  tbody tr:hover {
+    background-color: #fcfcfc;
+  }
+
+  .title {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    text-decoration: none;
+    color: #333;
+    width: 100%;
+
+    .titleText {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: left;
+    }
+
+    .experienceTag {
+      font-size: 11px;
+      color: #666;
+      background: #f0f0f0;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
   }
 }

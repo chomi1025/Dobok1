@@ -46,10 +46,16 @@ export default function SignupStep1() {
     details: null,
   });
 
-  <Script src="https://cdn.iamport.kr/v1/iamport.js" strategy="lazyOnload" />;
-
   const handleCertification = () => {
     const { IMP } = window as any;
+
+    if (!IMP) {
+      toast.error(
+        "인증 라이브러리가 아직 로드되지 않았습니다. \n잠시 후 다시 시도해주세요.",
+      );
+      return;
+    }
+
     IMP.init(process.env.NEXT_PUBLIC_IMP_CODE);
 
     IMP.certification(
@@ -130,17 +136,20 @@ export default function SignupStep1() {
 
   return (
     <Inner>
+      <Script
+        src="https://cdn.iamport.kr/v1/iamport.js"
+        strategy="lazyOnload"
+      />
+      ;
       <TitleArea>
         <h2>도복일번지 가입을 환영합니다!</h2>
         <p>안전한 거래를 위해 본인인증이 필요합니다.</p>
       </TitleArea>
-
       <StepArea>
         <Step active>1. 본인인증</Step>
         <StepLine />
         <Step>2. 정보입력</Step>
       </StepArea>
-
       <form onSubmit={(e) => e.preventDefault()}>
         <CertArea>
           <CertStatus isCerted={isCerted}>

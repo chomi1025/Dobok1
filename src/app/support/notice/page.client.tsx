@@ -2,7 +2,7 @@
 import styles from "./page.module.scss";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { Fragment, useMemo } from "react";
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   createColumnHelper,
@@ -34,13 +34,14 @@ export default function NoticeClientPage({ pageSize, currentPage }: Props) {
     queryKey: ["notices", currentPage],
     queryFn: async () => {
       const res = await fetch(
-        `/api/notice?page=${currentPage}&pageSize=${pageSize}`,
+        `/api/support/notice?page=${currentPage}&pageSize=${pageSize}`,
       );
       return res.json();
     },
 
     staleTime: 60 * 1000,
   });
+
   const allNotices = data?.allNotices || [];
   const total = data?.total || 0;
   const fixedCount = useMemo(

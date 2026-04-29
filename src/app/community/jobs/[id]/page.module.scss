@@ -217,9 +217,8 @@
           display: flex;
           flex-direction: column;
           gap: rem(10);
-          font-size: rem(18);
+          font-size: rem(14);
           font-weight: 700;
-          color: #1971c2;
         }
       }
     }
@@ -232,6 +231,135 @@
       > a {
         font-size: rem(16);
       }
+    }
+  }
+}
+
+// 경고
+.revealWrapper {
+  text-align: center;
+  background: #fff5f5;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px dashed #ffa8a8;
+
+  .revealNotice {
+    font-size: 0.85rem;
+    color: #fa5252;
+    margin-bottom: 10px;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+}
+
+.legalNotice {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #f1f3f5;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+
+  .legalHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+
+    h4 {
+      font-size: 0.95rem;
+      color: #343a40;
+      margin: 0;
+      line-height: 1;
+    }
+  }
+
+  .legalBody {
+    .mainLaw {
+      font-size: 0.9rem;
+      color: #212529;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+      padding-left: 2px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        font-size: 0.8rem;
+        color: #495057;
+        line-height: 1.6;
+        margin-bottom: 0.6rem;
+        display: flex;
+        gap: 8px;
+
+        &::before {
+          content: "•";
+          color: #adb5bd;
+          flex-shrink: 0;
+        }
+
+        strong {
+          color: #343a40;
+        }
+      }
+    }
+  }
+}
+
+.nicknameWrapper {
+  position: relative;
+
+  .nickname {
+    display: inline-block;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    color: #333;
+    font-weight: 500;
+    text-decoration: underline;
+
+    &:hover {
+      font-weight: 700;
+    }
+  }
+}
+
+.userPopOver {
+  position: absolute;
+  z-index: 100;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  min-width: 130px;
+  margin: 0;
+  pointer-events: auto;
+  top: 30px;
+  left: -10px;
+
+  button {
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    text-align: left;
+    font-size: rem(14);
+    cursor: pointer;
+    border-radius: 4px;
+    color: #444;
+
+    &:hover {
+      background-color: #f1f3f5;
+      color: #1971c2;
+    }
+
+    &:not(:last-child) {
+      border-bottom: 1px solid #f8f9fa;
     }
   }
 }

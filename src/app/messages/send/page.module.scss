@@ -1,0 +1,68 @@
+@import "../../../components/style/variables.module";
+
+.container {
+  max-width: rem(600);
+  margin: rem(60) auto;
+  padding: rem(30);
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: rem(12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+
+  h2 {
+    font-size: rem(22);
+    font-weight: 700;
+    margin-bottom: rem(20);
+    color: #222;
+    display: flex;
+    align-items: center;
+    gap: rem(8);
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: rem(20);
+
+    textarea {
+      width: 100%;
+      min-height: rem(200);
+      padding: rem(15);
+      border: 1px solid #ddd;
+      border-radius: rem(8);
+      font-size: rem(15);
+      font-family: inherit;
+      resize: none;
+      line-height: 1.6;
+      transition: border-color 0.2s;
+
+      &::placeholder {
+        color: #aaa;
+      }
+    }
+
+    .btnGroup {
+      display: flex;
+      justify-content: flex-end;
+      gap: rem(10);
+
+      button {
+        padding: rem(10) rem(25);
+        font-size: rem(15);
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+// 모바일 대응
+@media (max-width: 768px) {
+  .container {
+    margin: rem(20);
+    padding: rem(20);
+
+    textarea {
+      min-height: rem(150);
+    }
+  }
+}
