@@ -1,5 +1,5 @@
 "use client";
-import { Table } from "@/components/Table/page";
+
 import Link from "next/link";
 import styles from "./page.module.scss";
 import PagenationComponent from "@/components/pagenation/page";
@@ -11,12 +11,24 @@ import { EXPERIENCE_MAP, JOB_ROLE_MAP } from "@/constants/jobs";
 import { CITY_OPTIONS } from "@/constants/regions";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
+import { UnifiedTable } from "@/components/common/DataTable";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  CellContext,
+} from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
+import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
 
 interface JobsRow {
   id: number;
+  type: "HIRING" | "SEEKING";
   jobRole: string;
   title: string;
   companyName: string;
+  authorName?: string;
   experience: string;
   city: string;
   district: string;
@@ -38,21 +50,31 @@ const categories = [
 ];
 
 export default function JobsClientPage({
-  jobs,
-  total,
   pageSize,
   currentPage,
   initialType,
-}: Props) {
+}: Omit<Props, "jobs" | "total">) {
   const { data: session, status } = useSession();
-
-  const isMember =
-    session?.user &&
-    (session.user.role === "ADMIN" || session.user.role === "USER");
-
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(initialType);
+
+  const { data } = useQuery({
+    queryKey: ["jobs", activeTab, currentPage],
+    queryFn: async () => {
+      const typeParam =
+        activeTab === "ALL" ? "" : `&type=${activeTab.toLowerCase()}`;
+      const res = await fetch(
+        `/api/community/jobs?page=${currentPage}${typeParam}`,
+      );
+      if (!res.ok) throw new Error("데이터 로드 실패");
+      return res.json();
+    },
+    staleTime: 60 * 1000,
+  });
+
+  const jobs = data?.jobs || [];
+  const total = data?.total || 0;
 
   useEffect(() => {
     const typeFromUrl = searchParams.get("type")?.toUpperCase();
@@ -72,114 +94,121 @@ export default function JobsClientPage({
     router.push(`/community/jobs?type=${nextType}&page=1`);
   };
 
-  const currentJobs = jobs;
-
-  const getColumns = () => {
+  const getColumns = (): ColumnDef<JobsRow, any>[] => {
     const commonStart = [
-      ...(activeTab === "ALL"
-        ? [
-            {
-              key: "type",
-              label: "구분",
-              flex: 0.4,
-              render: (row: any) => (
-                <span
-                  className={
-                    row.type === "HIRING"
-                      ? styles.hiringBadge
-                      : styles.seekingBadge
-                  }
-                >
-                  {row.type === "HIRING" ? "구인" : "구직"}
-                </span>
-              ),
-            },
-          ]
-        : []),
       {
-        key: "jobRole",
-        label: "직무",
-        flex: 0.6,
-        render: (row: any) => <span>{JOB_ROLE_MAP[row.jobRole]}</span>,
-      },
-      {
-        key: "title",
-        label: "제목",
-        flex: 2,
-        render: (row: any) => (
-          <Link href={`/community/jobs/${row.id}`} className={styles.title}>
-            <span className={styles.titleText}>{row.title}</span>
-          </Link>
-        ),
-      },
-    ];
+        id: "type",
+        header: "구분",
+        size: 80,
+        cell: ({ row }: CellContext<JobsRow, any>) => {
+          const data = row.original;
+          const isHiring = data.type === "HIRING";
 
-    // 2. 중간 유동 컬럼 (작성자/회사명/경력)
-    let middleColumn;
-    if (activeTab === "HIRING") {
-      middleColumn = {
-        key: "companyName",
-        label: "회사명",
-        flex: 0.8,
-        render: (row: any) => <span>{row.companyName}</span>,
-      };
-    } else if (activeTab === "SEEKING") {
-      middleColumn = {
-        key: "experience",
-        label: "경력",
-        flex: 0.6,
-        render: (row: any) => <span>{EXPERIENCE_MAP[row.experience]}</span>,
-      };
-    } else {
-      // '전체' 탭일 때: 작성자(회사명 혹은 닉네임)로 통일
-      middleColumn = {
-        key: "author",
-        label: "작성자",
-        flex: 0.8,
-        render: (row: any) => (
-          <span>
-            {row.type === "HIRING" ? row.companyName : row.authorName || "개인"}
-          </span>
-        ),
-      };
-    }
-
-    // 3. 공통 끝 (지역, 등록일)
-    const commonEnd = [
-      {
-        key: "location",
-        label: "지역",
-        flex: 0.6,
-        render: (row: any) => {
-          const cityLabel =
-            CITY_OPTIONS.find((opt) => opt.value === row.city)?.label ||
-            row.city;
           return (
-            <span>
-              {cityLabel} {row.district}
+            <span
+              className={isHiring ? styles.hiringBadge : styles.seekingBadge}
+            >
+              {isHiring ? "구인" : "구직"}
             </span>
           );
         },
       },
       {
-        key: "date",
-        label: "등록일",
-        flex: 0.6,
-        render: (row: any) => (
-          <span>{new Date(row.createdAt).toLocaleDateString()}</span>
-        ),
+        accessorKey: "jobRole",
+        header: "직무",
+        size: 90,
+        cell: ({ row }: CellContext<JobsRow, any>) => {
+          const role = row.original.jobRole;
+          return (
+            <span className={styles.roleBadge}>
+              {role ? JOB_ROLE_MAP[role] : "-"}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: "title",
+        header: "제목",
+        size: 388,
+        cell: ({ row }: CellContext<JobsRow, any>) => {
+          const data = row.original;
+          return (
+            <Link href={`/community/jobs/${data.id}`} className={styles.title}>
+              <span className={styles.titleText}>{data.title}</span>
+
+              <span className={styles.experienceTag}>
+                {EXPERIENCE_MAP[data.experience]}
+              </span>
+            </Link>
+          );
+        },
+      },
+    ];
+
+    const middleColumn = {
+      id: "author",
+      header: "작성자",
+      size: 130,
+      cell: ({ row }: CellContext<JobsRow, any>) => {
+        const data = row.original;
+        return (
+          <span>
+            {data.type === "HIRING"
+              ? data.companyName
+              : data.authorName || "개인"}
+          </span>
+        );
+      },
+    };
+
+    const commonEnd = [
+      {
+        id: "location",
+        header: "지역",
+        size: 110,
+        cell: ({ row }: any) => {
+          const data = row.original;
+          const cityLabel =
+            CITY_OPTIONS.find((opt) => opt.value === data.city)?.label ||
+            data.city;
+          return (
+            <span>
+              {cityLabel} {data.district}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: "createdAt",
+        header: "등록일",
+        size: 110,
+        cell: ({ row }: any) => {
+          const date = new Date(row.original.createdAt);
+          return <span>{format(date, "yy.MM.dd")}</span>;
+        },
       },
     ];
 
     return [...commonStart, middleColumn, ...commonEnd];
   };
+
+  const columns = getColumns();
+
+  const table = useReactTable({
+    data: jobs,
+    columns: columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    manualPagination: true,
+  });
+
   const handleWriteClick = (e: React.MouseEvent) => {
     if (status === "loading") {
       e.preventDefault();
       return;
     }
 
-    // 비로그인상태면
+    // 비로그인상태
     if (!session) {
       e.preventDefault();
       e.stopPropagation();
@@ -203,14 +232,25 @@ export default function JobsClientPage({
       />
 
       <section className={styles.tableWrapper}>
-        <Button
-          onClick={handleWriteClick}
-          href={`/community/jobs/new?type=${activeTab.toLowerCase()}`}
-        >
-          작성하기
-        </Button>
+        <div className={styles.buttonGroup}>
+          <Button
+            onClick={handleWriteClick}
+            href="/community/jobs/new?type=hiring"
+            className={styles.hiringWriteBtn}
+          >
+            구인 작성
+          </Button>
 
-        <Table columns={getColumns()} data={currentJobs} />
+          <Button
+            onClick={handleWriteClick}
+            href="/community/jobs/new?type=seeking"
+            className={styles.seekingWriteBtn}
+          >
+            구직 작성
+          </Button>
+        </div>
+
+        <UnifiedTable table={table} className={styles.noticeTable} />
       </section>
 
       <PagenationComponent

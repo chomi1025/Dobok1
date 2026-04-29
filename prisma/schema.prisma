@@ -61,6 +61,7 @@ model User {
   createdAt         DateTime          @default(now())
   birthDate         DateTime
   name              String
+  nickname          String?           @unique
   phone             String?           @unique
   username          String            @unique
   role              String            @default("USER")
@@ -84,6 +85,16 @@ model User {
   reviews           Review[]
   reviewReplies     ReviewReply[]
   sessions          Session[]
+  viewLogs          ContactViewLog[] @relation("ViewerRelation")
+}
+
+model ContactViewLog {
+  id           Int      @id @default(autoincrement())
+  viewerId     Int
+  authorId     Int
+  postId       Int
+  createdAt    DateTime @default(now())
+  viewer       User     @relation("ViewerRelation", fields: [viewerId], references: [id])
 }
 
 model Verification {
@@ -312,6 +323,17 @@ model Faq {
   question  String
   answer    String
   sortOrder Int    @default(0)
+}
+
+enum JobRole {
+  TAEKWONDO
+  JUDO
+  HAPKIDO
+  KENDO
+  JUMP_ROPE
+  GYM_PT
+  SWIMMING
+  ETC
 }
 
 model Post {

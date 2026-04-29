@@ -22,5 +22,5 @@ export const uploadToCloudinary = async (file: File) => {
   }
 
   const data = await response.json();
-  return data.secure_url; // 업로드된 이미지의 HTTPS 주소를 리턴
+  return data.secure_url;
 };

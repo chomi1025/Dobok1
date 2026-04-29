@@ -1,0 +1,124 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f1f1f1;
+  padding: 20px;
+  font-family:
+    "Pretendard",
+    -apple-system,
+    sans-serif;
+}
+
+.content {
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  background: #ffffff;
+  padding: 80px 50px;
+  border-radius: 32px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.03);
+
+  .iconWrapper {
+    width: 90px;
+    height: 90px;
+    background: #e9ecef;
+    color: #212529;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 28px;
+    margin: 0 auto 40px;
+  }
+
+  .title {
+    font-size: 26px;
+    font-weight: 800;
+    color: #111111;
+    margin-bottom: 24px;
+    letter-spacing: -1px;
+  }
+
+  .description {
+    font-size: 17px;
+    color: #495057;
+    line-height: 1.7;
+    margin-bottom: 48px;
+
+    strong {
+      color: #111111;
+      font-weight: 700;
+      background: linear-gradient(to bottom, transparent 60%, #ffe0e0 60%);
+    }
+  }
+
+  .infoBox {
+    background: #f8f9fa;
+    padding: 24px;
+    border-radius: 16px;
+    margin-bottom: 56px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    span {
+      font-size: 14px;
+      color: #868e96;
+    }
+
+    .emailLink {
+      font-size: 15px;
+      font-weight: 600;
+      color: #212529;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  button {
+    width: 100%;
+    padding: 18px;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border: none;
+  }
+
+  .primaryBtn {
+    background: #212529;
+    color: #ffffff;
+    &:hover {
+      background: #000000;
+      transform: translateY(-2px);
+    }
+  }
+
+  .secondaryBtn {
+    background: transparent;
+    color: #495057;
+    border: 1px solid #dee2e6;
+    &:hover {
+      background: #f1f3f5;
+      color: #212529;
+    }
+  }
+}
+
+.footer {
+  margin-top: 50px;
+  font-size: 13px;
+  color: #adb5bd;
+  letter-spacing: 0.5px;
+}

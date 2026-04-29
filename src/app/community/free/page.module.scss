@@ -1,0 +1,90 @@
+@import "../../../components/style/variables.module";
+
+.inner {
+  max-width: 100vw;
+  margin: 0 auto;
+
+  .header {
+    position: relative;
+    align-items: center;
+    margin-top: rem(20);
+
+    h1 {
+      font-size: rem(24);
+      font-weight: 700;
+      margin-bottom: rem(5);
+    }
+
+    p {
+      margin-bottom: rem(20);
+      font-size: rem(14);
+      color: #888;
+    }
+
+    a {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+    }
+  }
+
+  > nav {
+    margin: rem(30) 0;
+  }
+}
+
+.freeTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  &,
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  :global(thead) {
+    background: #f9f9f9;
+    th {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      font-weight: 600;
+      text-align: center;
+      font-size: 15px;
+    }
+  }
+
+  :global(tbody) {
+    td {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      text-align: center;
+      font-size: 15px;
+      color: #666;
+    }
+  }
+
+  .titleCell {
+    text-align: left;
+    display: flex;
+    align-items: center;
+
+    a {
+      color: #333;
+      text-decoration: none;
+      font-weight: 500;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.commentCount {
+  span {
+    display: inline-block;
+    margin-left: 3px;
+    font-weight: 700;
+  }
+}

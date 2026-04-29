@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "react-quill/dist/quill.snow.css";
 import styles from "./hiring.module.scss";
 import Button from "@/components/common/buttons/page";
@@ -10,22 +10,64 @@ import { CITY_OPTIONS, DISTRICTS } from "@/constants/regions";
 import toast from "react-hot-toast";
 import { JOB_ROLE_MAP } from "@/constants/jobs";
 import Editor from "@/components/common/editor/page";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Post } from "@prisma/client";
 
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+interface Props {
+  post?: Post;
+}
 
-export default function HiringLayout() {
-  // 지역
-  const [city, setCity] = useState(""); // 시
-  const [district, setDistrict] = useState(""); //구
-
-  //   직무
-  const [jobRole, setJobRole] = useState("MASTER");
-  const [customJobRole, setCustomJobRole] = useState("");
-  const isOthers = jobRole === "OTHERS";
-
-  //   모집내용
-  const [content, setContent] = useState("");
+export default function HiringLayout({ post }: Props) {
+  const isEdit = !!post;
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const isSubmitting = useRef(false); //광클 막기
+
+  const [city, setCity] = useState(post?.city || "");
+  const [district, setDistrict] = useState(post?.district || "");
+  const [jobRole, setJobRole] = useState(post?.jobRole || "TAEKWONDO");
+  const [customJobRole, setCustomJobRole] = useState("");
+  const [content, setContent] = useState(post?.content || "");
+
+  const isOthers = jobRole === "ETC";
+
+  useEffect(() => {
+    if (isEdit && post.jobRole === "ETC") {
+      const match = post.title.match(/\[(.*?)\]/);
+      if (match) setCustomJobRole(match[1]);
+    }
+  }, [isEdit, post]);
+
+  const { mutate: submitHiring, isPending } = useMutation({
+    mutationFn: async (payload: any) => {
+      const url = isEdit ? `/api/community/jobs/${post.id}` : "/api/hiring";
+      const method = isEdit ? "PATCH" : "POST";
+
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "처리에 실패했습니다.");
+      }
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast.success(
+        isEdit ? "공고가 수정되었습니다!" : "공고가 등록되었습니다!",
+      );
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+      router.push(`/community/jobs/${isEdit ? post.id : ""}`);
+      router.refresh();
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+      isSubmitting.current = false;
+    },
+  });
 
   const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCity(e.target.value);
@@ -34,7 +76,7 @@ export default function HiringLayout() {
 
   const handleJobRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setJobRole(e.target.value);
-    if (e.target.value !== "OTHERS") {
+    if (e.target.value !== "ETC") {
       setCustomJobRole("");
     }
   };
@@ -53,73 +95,37 @@ export default function HiringLayout() {
   // 등록버튼
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isSubmitting.current) return;
 
     const formData = new FormData(e.currentTarget);
-    const title = formData.get("title") as string;
+    let title = formData.get("title") as string;
     const companyName = formData.get("companyName") as string;
 
-    // 검증
-    const validate = () => {
-      if (!title?.trim()) return "공고 제목을 입력해주세요!";
-      if (!companyName?.trim()) return "도장명(회사명)을 입력해주세요!";
-      if (!city || !district) return "지역을 선택해주세요!";
-      if (isOthers && !customJobRole)
-        return "직접 입력할 종목명을 작성해주세요!";
-      if (content.replace(/<[^>]*>?/gm, "").trim() === "")
-        return "모집 내용을 입력해주세요!";
-      return null;
-    };
-
-    const errorMsg = validate();
-    if (errorMsg) {
-      toast.error(errorMsg);
-      return;
-    }
+    isSubmitting.current = true;
 
     const applyMethods = [];
     if (formData.get("showPhone")) applyMethods.push("PHONE");
     if (formData.get("showEmail")) applyMethods.push("EMAIL");
-    applyMethods.push("MESSAGE");
+    if (formData.get("allowMessage")) applyMethods.push("MESSAGE");
 
     const payload = {
-      title: formData.get("title"),
-      companyName: formData.get("companyName"),
-      city: city,
-      district: district,
-      jobRole: isOthers ? customJobRole : jobRole,
+      title: jobRole === "ETC" ? `[${customJobRole}] ${title}` : title,
+      companyName,
+      city,
+      district,
+      jobRole,
       experience: formData.get("experience"),
-      content: content,
+      content,
       applyMethod: applyMethods.join(","),
     };
 
-    try {
-      const response = await fetch("/api/hiring", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "등록에 실패했습니다.");
-      }
-
-      const result = await response.json();
-
-      toast.success("구인 공고가 성공적으로 등록되었습니다!");
-      router.refresh();
-      router.push(`/community/jobs?type=${result.jobType.toLowerCase()}`);
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "등록 중 에러 발생");
-    }
+    submitHiring(payload);
   };
 
   return (
     <div className={styles.inner}>
       <header className={styles.header}>
-        <h1>구인 글쓰기</h1>
+        <h1>{isEdit ? "구인 공고 수정" : "구인 글쓰기"}</h1>
       </header>
 
       <form className={styles.form} onSubmit={onSubmit}>
@@ -132,6 +138,7 @@ export default function HiringLayout() {
               type="text"
               id="title"
               name="title"
+              defaultValue={post?.title.replace(/\[.*?\]\s?/, "") || ""}
               placeholder="공고 제목을 입력해주세요."
             />
           </div>
@@ -143,6 +150,7 @@ export default function HiringLayout() {
                 type="text"
                 id="companyName"
                 name="companyName"
+                defaultValue={post?.companyName || ""}
                 placeholder="도장명"
               />
             </div>
@@ -226,7 +234,11 @@ export default function HiringLayout() {
 
             <div className={styles.field}>
               <label htmlFor="experience">경력</label>
-              <select id="experience" name="experience">
+              <select
+                id="experience"
+                name="experience"
+                defaultValue={post?.experience || "IRRELEVANT"}
+              >
                 <option value="IRRELEVANT">경력무관</option>
                 <option value="NEWBIE">신입(1년 미만 ~ 2년)</option>
                 <option value="JUNIOR">주니어(3~4년)</option>
@@ -258,45 +270,51 @@ export default function HiringLayout() {
               <span>(회원정보에 등록된 정보가 노출됩니다)</span>
             </label>
             <div className={styles.contactOptions}>
-              {/* 휴대폰 공개 여부 */}
               <label className={styles.checkboxLabel}>
-                <input type="checkbox" name="showPhone" defaultChecked />
+                <input
+                  type="checkbox"
+                  name="showPhone"
+                  defaultChecked={
+                    isEdit ? (post?.applyMethod || "").includes("PHONE") : true
+                  }
+                />
                 휴대폰 번호 노출
               </label>
 
-              {/* 이메일 공개 여부 */}
               <label className={styles.checkboxLabel}>
-                <input type="checkbox" name="showEmail" />
+                <input
+                  type="checkbox"
+                  name="showEmail"
+                  defaultChecked={
+                    isEdit ? (post?.applyMethod || "").includes("EMAIL") : false
+                  }
+                />
                 이메일 노출
               </label>
 
-              {/* 쪽지 허용 (기본값) */}
               <label className={styles.checkboxLabel}>
                 <input
                   type="checkbox"
                   name="allowMessage"
-                  checked={true}
-                  readOnly
-                  onClick={(e) => e.preventDefault()}
+                  defaultChecked={
+                    isEdit
+                      ? (post?.applyMethod || "").includes("MESSAGE")
+                      : true
+                  }
                 />
-                도복1번지 쪽지 받기 (기본)
+                도복1번지 쪽지 받기
               </label>
             </div>
           </div>
         </fieldset>
 
         <div className={styles.buttonWrapper}>
-          <Button
-            variant="edit"
-            type="button"
-            className={styles.submitBtn}
-            onClick={(e) => handleCancel(e)}
-          >
+          <Button variant="edit" type="button" onClick={(e) => handleCancel(e)}>
             취소하기
           </Button>
 
-          <Button type="submit" className={styles.submitBtn}>
-            등록하기
+          <Button type="submit" isPending={isPending}>
+            {isEdit ? "수정하기" : "등록하기"}
           </Button>
         </div>
       </form>

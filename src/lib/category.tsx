@@ -14,6 +14,7 @@ export async function getMainCategories() {
     const categories = await prisma.category.findMany({
       where: {
         parentId: null,
+        isVisible: true,
       },
       include: {
         children: {
@@ -36,7 +37,7 @@ export async function getMainCategories() {
 
 export const getCategories = async (): Promise<{ grouped: Category[] }> => {
   const main: CategoryWithChildren[] = await prisma.category.findMany({
-    where: { parentId: null },
+    where: { parentId: null, isVisible: true },
     orderBy: { sortOrder: "asc" },
     include: {
       children: {

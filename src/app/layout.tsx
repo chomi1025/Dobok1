@@ -1,7 +1,6 @@
 import "@/styles/globals.scss";
 import { ReactNode } from "react";
 import HeaderServer from "@/components/header/Header.server";
-import AuthProvider from "@/components/providers/AuthProvider";
 import EmotionRegistry from "@/lib/emotion-registry";
 import Footer from "@/components/footer/page";
 import MobileNavPage from "@/components/mobileNav/page";
@@ -50,52 +49,50 @@ export default async function RootLayout({
       <body className={`${pretendard.variable} ${paybooc.variable}`}>
         <Providers>
           <EmotionRegistry>
-            <AuthProvider>
-              <TopBanner />
-              <HeaderServer />
+            <TopBanner />
+            <HeaderServer />
 
-              <main className="main">{children}</main>
+            <main className="main">{children}</main>
 
-              <Toaster
-                position="top-center"
-                containerStyle={{
-                  position: "fixed",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  zIndex: 99999,
-                  pointerEvents: "none",
-                }}
-                toastOptions={{
-                  style: {
-                    minWidth: "280px",
-                    padding: "16px 24px",
-                    background: "#1a1a1a",
-                    color: "#fff",
-                    fontWeight: "600",
-                    borderRadius: "8px",
-                    border: "1px solid rgba(255, 255, 255, 0.15)",
-                    boxShadow:
-                      "0 12px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.2)",
+            <Toaster
+              position="top-center"
+              containerStyle={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 99999,
+                pointerEvents: "none",
+              }}
+              toastOptions={{
+                style: {
+                  minWidth: "280px",
+                  padding: "16px 24px",
+                  background: "#1a1a1a",
+                  color: "#fff",
+                  fontWeight: "600",
+                  borderRadius: "8px",
+                  border: "1px solid rgba(255, 255, 255, 0.15)",
+                  boxShadow:
+                    "0 12px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.2)",
+                },
+                success: {
+                  iconTheme: {
+                    primary: "#fff",
+                    secondary: "#1a1a1a",
                   },
-                  success: {
-                    iconTheme: {
-                      primary: "#fff",
-                      secondary: "#1a1a1a",
-                    },
+                },
+                error: {
+                  iconTheme: {
+                    primary: "#ff4b4b",
+                    secondary: "#fff",
                   },
-                  error: {
-                    iconTheme: {
-                      primary: "#ff4b4b",
-                      secondary: "#fff",
-                    },
-                  },
-                }}
-              />
-              <Footer />
-              <MobileNavPage />
-            </AuthProvider>
+                },
+              }}
+            />
+            <Footer />
+            <MobileNavPage />
           </EmotionRegistry>
         </Providers>
       </body>
