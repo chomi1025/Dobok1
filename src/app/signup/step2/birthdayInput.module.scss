@@ -1,0 +1,80 @@
+@import "../../../components/style/variables.module";
+
+.birthday {
+  width: 100%;
+  margin-top: rem(30);
+
+  label {
+    font-size: rem(14);
+  }
+
+  > div {
+    display: flex;
+    width: 100%;
+    gap: rem(12);
+    align-items: center;
+
+    > span {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+
+.errorWrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: rem(10);
+  position: relative;
+
+  p {
+    margin-left: rem(10);
+    font-size: rem(13);
+    color: red;
+  }
+
+  button {
+    position: absolute;
+    right: 0;
+    color: white;
+    background-color: #444;
+    padding: rem(5) rem(7);
+    font-size: rem(12);
+    border-radius: 3px;
+  }
+}
+
+.inputWrapper {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+
+  &:nth-of-type(1) {
+    flex: 1.5;
+  }
+
+  input {
+    background-color: #f9fafb;
+    width: 100%;
+    min-width: 0;
+    padding: rem(12) rem(20);
+    box-sizing: border-box;
+  }
+
+  &:nth-of-type(1)::after {
+    content: "년";
+    margin-left: 4px;
+    white-space: nowrap;
+  }
+  &:nth-of-type(2)::after {
+    content: "월";
+    margin-left: 4px;
+    white-space: nowrap;
+  }
+  &:nth-of-type(3)::after {
+    content: "일";
+    margin-left: 4px;
+    white-space: nowrap;
+  }
+}

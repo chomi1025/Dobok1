@@ -13,6 +13,7 @@ import PersonalInfo from "@/app/signup/step2/PersonalInfo";
 import AddressInput from "@/app/signup/step2/AddressInput";
 import EmailInfo from "@/app/signup/step2/EmailInfo";
 import BirthdayInput from "@/app/signup/step2/BirthdayInput";
+import Button from "@/components/common/buttons/page";
 
 interface ProfileEditProps {
   user: ProfileEditUser;
@@ -212,7 +213,7 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
         </div>
 
         {/*  회원가입 버튼 */}
-        <button type="submit">수정하기</button>
+        <Button variant="black">수정하기</Button>
       </form>
     </div>
   );

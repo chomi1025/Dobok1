@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 export async function POST(req: Request) {
   try {
     const { imp_uid } = await req.json();
+
     const getToken = await axios.post("https://api.iamport.kr/users/getToken", {
       imp_key: process.env.PORTONE_API_KEY,
       imp_secret: process.env.PORTONE_API_SECRET,
@@ -36,8 +37,8 @@ export async function POST(req: Request) {
         ],
       },
     });
-    console.log("검색된 유저 존재 여부:", !!existingUser);
-    return NextResponse.json({
+
+    const res = NextResponse.json({
       success: true,
       isAlreadyRegistered: !!existingUser,
       data: {
@@ -47,8 +48,19 @@ export async function POST(req: Request) {
         ci: certInfo.ci || null,
       },
     });
+
+    res.cookies.set("cert_verified", "true", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 10,
+    });
+
+    return res;
   } catch (error: any) {
     console.error("인증 검증 에러:", error.response?.data || error.message);
+
     return NextResponse.json(
       { success: false, message: "인증 정보 확인 실패" },
       { status: 500 },

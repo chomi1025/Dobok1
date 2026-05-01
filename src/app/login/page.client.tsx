@@ -5,6 +5,7 @@ import { getSession, signIn } from "next-auth/react";
 import toast from "react-hot-toast";
 import styles from "./page.module.scss";
 import Link from "next/link";
+import Button from "@/components/common/buttons/page";
 
 export default function LoginClientPage() {
   const router = useRouter();
@@ -105,17 +106,13 @@ export default function LoginClientPage() {
             </li>
           </ul>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className={loading ? styles.disabledBtn : ""}
-          >
+          <Button type="submit" variant="black" isPending={loading}>
             {loading ? "로그인 중..." : "로그인"}
-          </button>
+          </Button>
 
-          <Link href="/signup/step1" prefetch={false}>
+          <Button href="/signup/step1" variant="edit">
             회원가입
-          </Link>
+          </Button>
         </div>
       </form>
     </div>

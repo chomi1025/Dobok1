@@ -1,5 +1,6 @@
 "use client";
-import * as S from "./style";
+import styles from "./birthdayInput.module.scss";
+
 import {
   Control,
   Controller,
@@ -27,8 +28,8 @@ export default function BirthdayInput<T extends FieldValues>({
         const [year, month, day] = value ? value.split("-") : ["", "", ""];
 
         return (
-          <S.Birthday className="field">
-            <S.Error_Wrapper>
+          <div className={styles.birthday}>
+            <div className={styles.errorWrapper}>
               <label>생년월일</label>
 
               {isEdit && (
@@ -38,22 +39,22 @@ export default function BirthdayInput<T extends FieldValues>({
               {!isEdit && errors.birthDate && (
                 <p className="error">{String(errors.birthDate.message)}</p>
               )}
-            </S.Error_Wrapper>
+            </div>
 
             <div style={{ display: "flex", gap: "8px" }}>
-              <S.Input>
+              <span className={styles.inputWrapper}>
                 <input type="text" readOnly value={year} />
-              </S.Input>
+              </span>
 
-              <S.Input>
+              <span className={styles.inputWrapper}>
                 <input type="text" readOnly value={month} />
-              </S.Input>
+              </span>
 
-              <S.Input>
+              <span className={styles.inputWrapper}>
                 <input type="text" readOnly value={day} />
-              </S.Input>
+              </span>
             </div>
-          </S.Birthday>
+          </div>
         );
       }}
     />

@@ -1,78 +1,179 @@
 @import "/src/components/style/variables.module";
 
 .main {
-  padding-bottom: rem(250);
+  padding-bottom: rem(100);
 
-  @include mobile {
-    padding-bottom: 0;
+  > hr {
+    width: 100%;
+    max-width: rem(1200);
+    margin: rem(170) auto rem(180);
+    border: none;
+    background-color: #ddd;
+    height: 1px;
   }
 }
 
-.line {
-  border: none;
-  max-width: 75rem;
-  width: 70%;
-  height: 1px;
-  background-color: #ddd;
-  margin: rem(175) auto;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: rem(20);
+
+  @include mobile {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  li {
+    background: #fff;
+    border-radius: 12px;
+    padding: rem(24);
+    transition: 0.3s;
+    border: 1px solid #f2f2f2;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    h4 {
+      font-size: rem(18);
+      font-weight: 700;
+      margin-bottom: rem(8);
+    }
+
+    p {
+      font-size: rem(14);
+      color: #777;
+    }
+  }
 }
 
 .banner {
-  position: relative;
-  background-color: #ffc038;
-  padding: 0 rem(20);
-  width: 100%;
-  height: rem(250);
-  aspect-ratio: 1920 / 350;
-  margin: 200px 0;
+  max-width: rem(1200);
+  margin: rem(150) auto rem(150);
+  height: rem(260);
+  border-radius: 16px;
+  overflow: hidden;
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-size: rem(30);
-  font-weight: 700;
+  padding: rem(40);
+  background: linear-gradient(135deg, #111, #333);
+  color: #fff;
+  transition: 0.3s;
 
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
   }
 
-  @include tablet {
-    height: rem(200);
-  }
+  .textArea {
+    max-width: rem(500);
 
-  @include mobile {
-    height: rem(160);
+    .tag {
+      font-size: rem(13);
+      letter-spacing: 2px;
+      opacity: 0.8;
+
+      > h3 {
+        color: white;
+        font-size: rem(32);
+        margin: rem(10) 0;
+        font-weight: 800;
+      }
+
+      p {
+        font-size: rem(16);
+        opacity: 0.9;
+        margin-bottom: rem(20);
+      }
+
+      button {
+        padding: rem(10) rem(20);
+        border-radius: 999px;
+        border: none;
+        background: #fff;
+        color: #111;
+        font-weight: 600;
+        cursor: pointer;
+      }
+    }
   }
 }
 
-.banner2 {
-  display: flex;
-  justify-content: center;
-  gap: rem(20);
-  margin: rem(200) auto;
-  padding: 0 rem(20);
+.instagramSection {
+  padding: rem(80) 0;
+  border-top: 1px solid #f0f0f0;
+  margin-top: rem(150);
+
+  .sectionHeader {
+    text-align: center;
+    margin-bottom: rem(40);
+    .instaTitle {
+      font-size: rem(28);
+      font-weight: 800;
+      color: #333333;
+    }
+    .instaSubtitle {
+      font-size: rem(15);
+      color: #777777;
+      margin-top: rem(8);
+    }
+  }
+}
+
+.communitySection {
   max-width: rem(1200);
+  margin: rem(100) auto 0;
 
-  div {
-    position: relative;
-    height: rem(250);
-    background-color: black;
-    width: calc(100% / 2);
-    aspect-ratio: 16 / 6;
+  .header {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    color: white;
-    font-size: rem(30);
+    margin-bottom: rem(30);
 
-    @include tablet {
+    h2 {
+      font-size: rem(28);
+      font-weight: 800;
     }
 
-    @include mobile {
+    a {
+      font-size: rem(14);
+      color: #555;
+      transition: 0.2s;
+
+      &:hover {
+        color: #000;
+      }
     }
-    img {
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    width: 100%;
+    padding: 0;
+
+    li {
       width: 100%;
+
+      a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
     }
+  }
+
+  .iconWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #f3f4f6;
+    margin-bottom: 8px;
+    color: #3b82f6;
   }
 }
