@@ -1,5 +1,6 @@
 "use client";
-import * as S from "./style";
+import styles from "./personalInfo.module.scss";
+
 import {
   Control,
   Controller,
@@ -26,7 +27,7 @@ export default function PersonalInfo<T extends FieldValues>({
   errors,
 }: Props<T>) {
   return (
-    <S.PersonalInfo>
+    <fieldset className={styles.personalInfo}>
       <legend>개인 정보</legend>
 
       {/* 이름 */}
@@ -34,12 +35,12 @@ export default function PersonalInfo<T extends FieldValues>({
         name={"name" as Path<T>}
         control={control}
         render={({ field }) => (
-          <div className="field">
-            <S.Error_Wrapper>
+          <div className={styles.field}>
+            <div className={styles.errorWrapper}>
               <label htmlFor="name">이름</label>
 
               {isEdit && <p className="error">이름은 변경할 수 없습니다.</p>}
-            </S.Error_Wrapper>
+            </div>
 
             <input {...field} placeholder="이름" readOnly />
           </div>
@@ -47,12 +48,12 @@ export default function PersonalInfo<T extends FieldValues>({
       />
 
       {/* 핸드폰 번호 */}
-      <S.Phone className="field">
-        <S.Error_Wrapper>
+      <div className={styles.phone}>
+        <div className={styles.errorWrapper}>
           <label htmlFor="phone">핸드폰 번호</label>
 
           {isEdit && <p className="error">핸드폰 번호는 변경할 수 없습니다.</p>}
-        </S.Error_Wrapper>
+        </div>
 
         <div>
           <Controller
@@ -97,7 +98,7 @@ export default function PersonalInfo<T extends FieldValues>({
             )}
           />
         </div>
-      </S.Phone>
-    </S.PersonalInfo>
+      </div>
+    </fieldset>
   );
 }

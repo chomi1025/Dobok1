@@ -1,7 +1,5 @@
 "use client";
-
-import * as S from "./style";
-
+import styles from "./accountInfo.module.scss";
 import {
   FieldErrors,
   FieldValues,
@@ -12,6 +10,7 @@ import {
 } from "react-hook-form";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import Button from "@/components/common/buttons/page";
 
 type Props<T extends FieldValues> = {
   register: UseFormRegister<T>;
@@ -101,11 +100,11 @@ export default function AccountInfo<T extends FieldValues>({
   }, [checkMessage]);
 
   return (
-    <S.AccountInfo isEdit={isEdit}>
+    <fieldset className={styles.accountInfo}>
       <legend>계정 정보</legend>
 
-      <div className="field">
-        <S.Error_Wrapper>
+      <div className={`${styles.field} `}>
+        <div className={styles.errorWrapper}>
           <label htmlFor="username">아이디</label>
 
           {isEdit && <p className="error">아이디는 변경할 수 없습니다.</p>}
@@ -116,6 +115,7 @@ export default function AccountInfo<T extends FieldValues>({
 
           {isEdit || (
             <button
+              className={isChecking ? styles.checkButton : ""}
               type="button"
               onClick={handleCheckUsername}
               disabled={isChecking}
@@ -127,7 +127,7 @@ export default function AccountInfo<T extends FieldValues>({
               중복체크
             </button>
           )}
-        </S.Error_Wrapper>
+        </div>
 
         {checkMessage && (
           <div
@@ -166,17 +166,18 @@ export default function AccountInfo<T extends FieldValues>({
           id="username"
           {...register("username" as Path<T>)}
           placeholder={isEdit ? "" : "아이디"}
+          className={`${isEdit ? styles.edit : ""}`}
           readOnly={isEdit}
         />
       </div>
 
-      <div className="field">
-        <S.Error_Wrapper>
+      <div className={styles.field}>
+        <div className={styles.errorWrapper}>
           <label htmlFor="password">비밀번호</label>
           {errors.password && (
             <p className="error">{errors.password.message?.toString()}</p>
           )}
-        </S.Error_Wrapper>
+        </div>
 
         <input
           id="password"
@@ -187,8 +188,8 @@ export default function AccountInfo<T extends FieldValues>({
         />
       </div>
 
-      <div className="field">
-        <S.Error_Wrapper>
+      <div className={styles.field}>
+        <div className={styles.errorWrapper}>
           <label htmlFor="passwordConfirm">비밀번호 확인</label>
 
           {errors.passwordConfirm && (
@@ -196,7 +197,7 @@ export default function AccountInfo<T extends FieldValues>({
               {errors.passwordConfirm.message?.toString()}
             </p>
           )}
-        </S.Error_Wrapper>
+        </div>
 
         <input
           id="passwordConfirm"
@@ -205,6 +206,6 @@ export default function AccountInfo<T extends FieldValues>({
           {...register("passwordConfirm" as Path<T>)}
         />
       </div>
-    </S.AccountInfo>
+    </fieldset>
   );
 }

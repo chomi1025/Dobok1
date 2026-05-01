@@ -1,0 +1,78 @@
+@import "../../../components/style/variables.module";
+
+.emailInfo {
+  input {
+    width: 100%;
+    padding: rem(12) rem(20);
+  }
+  .field {
+    margin-bottom: rem(30);
+  }
+}
+
+.email {
+  > div:nth-of-type(2) {
+    display: flex;
+    justify-content: space-between;
+
+    > input {
+      width: 100%;
+      max-width: rem(180);
+    }
+  }
+}
+
+.errorWrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: rem(10);
+  position: relative;
+
+  p {
+    margin-left: rem(10);
+    font-size: rem(13);
+    color: red;
+  }
+
+  button {
+    position: absolute;
+    right: 0;
+    padding: rem(5) rem(7);
+    font-size: rem(12);
+  }
+}
+
+.emailSelectWrapper {
+  display: flex;
+  position: relative;
+  width: 100%;
+  max-width: rem(180);
+
+  &::before {
+    content: "@";
+    position: absolute;
+    top: 50%;
+    left: -27px;
+    transform: translateY(-50%);
+  }
+
+  select {
+    border: 1px solid #ddd;
+    width: 100%;
+    padding-left: rem(15);
+    appearance: none;
+    background-image: url("https://firebasestorage.googleapis.com/v0/b/myfirebase-34805.appspot.com/o/Keyboard%20arrow%20down.png?alt=media&token=b4055887-17dc-4dab-ac01-26e699caf8db");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: rem(24);
+  }
+}
+
+.arrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: rem(12);
+  color: #666;
+}

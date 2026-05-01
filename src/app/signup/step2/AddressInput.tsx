@@ -1,5 +1,5 @@
 "use client";
-import * as S from "./style";
+import styles from "./addressInput.module.scss";
 
 import {
   Control,
@@ -10,6 +10,7 @@ import {
 } from "react-hook-form";
 import DaumPostcodeEmbed from "react-daum-postcode";
 import { useState } from "react";
+import Button from "@/components/common/buttons/page";
 
 type Props<T extends FieldValues> = {
   control: Control<T>;
@@ -43,14 +44,14 @@ export default function AddressInput<T extends FieldValues>({
         const detailAddress = value?.detailAddress || "";
 
         return (
-          <S.address className="field">
-            <S.Error_Wrapper>
+          <fieldset className={styles.address}>
+            <div className={styles.errorWrapper}>
               <label htmlFor="address">주소</label>
 
               {errors.address && (
                 <p className="error">{String(errors.address.message)}</p>
               )}
-            </S.Error_Wrapper>
+            </div>
 
             <div>
               <input
@@ -59,9 +60,9 @@ export default function AddressInput<T extends FieldValues>({
                 value={postCode}
                 readOnly
               />
-              <button type="button" onClick={() => setIsPostOpen(true)}>
+              <Button variant="black" onClick={() => setIsPostOpen(true)}>
                 우편번호 찾기
-              </button>
+              </Button>
             </div>
 
             {isPostOpen && <DaumPostcodeEmbed onComplete={handleComplete} />}
@@ -76,7 +77,7 @@ export default function AddressInput<T extends FieldValues>({
                 onChange({ ...value, detailAddress: e.target.value })
               }
             />
-          </S.address>
+          </fieldset>
         );
       }}
     />

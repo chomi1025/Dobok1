@@ -261,7 +261,6 @@ export default function ProductInfo({
                       {product.name}
                       {(item.optionValue || item.optionValue2) && (
                         <>
-                          {" "}
                           - {item.optionValue || ""} {item.optionValue2 || ""}
                         </>
                       )}

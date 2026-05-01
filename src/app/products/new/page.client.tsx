@@ -2,11 +2,19 @@
 
 import { useQuery } from "@tanstack/react-query";
 import ProductPageComponent from "@/components/product/new_bestPage/page";
+import { ProductWithCategory } from "@/types/types";
 
 interface Props {
   currentPage: number;
   pageSize: number;
+  products: ProductWithCategory[];
+  totalItems: number;
 }
+
+const title = {
+  name: "신제품",
+  contents: "도복일번지에서 새롭게 출시한 제품을 만나보세요",
+};
 
 export default function NewProductClientPage({ currentPage, pageSize }: Props) {
   const { data } = useQuery({
@@ -17,11 +25,6 @@ export default function NewProductClientPage({ currentPage, pageSize }: Props) {
       return res.json();
     },
   });
-
-  const title = {
-    name: "신제품",
-    contents: "도복일번지에서 새롭게 출시한 제품을 만나보세요",
-  };
 
   const products = data?.products || [];
   const totalItems = data?.totalItems || 0;

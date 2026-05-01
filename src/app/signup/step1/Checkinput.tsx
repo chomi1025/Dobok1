@@ -1,6 +1,6 @@
 "use client";
-import styled from "@emotion/styled";
 import { useState } from "react";
+import styles from "./page.module.scss";
 
 interface CheckState {
   over14: boolean;
@@ -16,72 +16,6 @@ type Props = {
   }) => void;
   onOpenTerms: (type: "service" | "privacy") => void;
 };
-
-export const Check_Wrapper = styled.div`
-  margin-top: 20px;
-
-  > fieldset {
-    border: none;
-    padding: 0;
-
-    legend {
-      display: none;
-    }
-
-    .all-check {
-      padding-bottom: 15px;
-      margin-bottom: 20px;
-      border-bottom: 1px solid #eee;
-
-      > p {
-        font-size: 15px;
-        color: #000;
-      }
-    }
-
-    > label {
-      display: flex;
-      align-items: center;
-      font-size: 14px;
-      margin-bottom: 18px;
-      cursor: pointer;
-
-      > input {
-        width: 20px;
-        height: 20px;
-        margin-right: 10px;
-        accent-color: #000;
-        cursor: pointer;
-      }
-
-      > p {
-        color: #666;
-
-        span {
-          color: #c1272d;
-        }
-      }
-
-      > button {
-        margin-left: auto;
-        font-size: 12px;
-        color: #999;
-        text-decoration: underline;
-        background: none;
-        border: none;
-        cursor: pointer;
-
-        &:hover {
-          color: #333;
-        }
-      }
-    }
-
-    .sub-check {
-      padding-left: 5px;
-    }
-  }
-`;
 
 export default function CheckComponent({
   setIsAgreed,
@@ -122,7 +56,7 @@ export default function CheckComponent({
   const isAllChecked = Object.values(checks).every((val) => val === true);
 
   return (
-    <Check_Wrapper>
+    <div className={styles.check_Wrapper}>
       <fieldset>
         <legend>약관 동의</legend>
 
@@ -176,6 +110,6 @@ export default function CheckComponent({
           </button>
         </label>
       </fieldset>
-    </Check_Wrapper>
+    </div>
   );
 }

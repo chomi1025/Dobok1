@@ -17,18 +17,6 @@ const pretendard = localFont({
   variable: "--font-pretendard",
 });
 
-const paybooc = localFont({
-  src: [
-    {
-      path: "../../public/fonts/paybooc-ExtraBold.woff2",
-      weight: "800",
-      style: "normal",
-    },
-  ],
-  variable: "--font-paybooc",
-  display: "swap",
-});
-
 export const metadata: Metadata = {
   title: "도복일번지",
   description: "최고의 무술 용품 쇼핑몰",
@@ -45,8 +33,8 @@ export default async function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html lang="ko" className={`${pretendard.variable} ${paybooc.variable}`}>
-      <body className={`${pretendard.variable} ${paybooc.variable}`}>
+    <html lang="ko" className={`${pretendard.variable} `}>
+      <body className={`${pretendard.variable} `}>
         <Providers>
           <EmotionRegistry>
             <TopBanner />

@@ -1,5 +1,5 @@
 "use client";
-import * as S from "./style";
+import styles from "./emailInfo.module.scss";
 import {
   Control,
   Controller,
@@ -24,22 +24,21 @@ export default function EmailInfo<T extends FieldValues>({
   isEdit,
 }: Props<T>) {
   return (
-    <S.EmailInfo>
+    <fieldset className={styles.emailInfo}>
       <Controller
         name={"email" as Path<T>}
         control={control}
         render={({ field: { value, onChange } }) => (
-          <S.Email className="field">
-            <S.Error_Wrapper>
+          <div className={styles.email}>
+            <div className={styles.errorWrapper}>
               <label htmlFor="email">이메일</label>
 
               {isEdit && <p className="error">이메일은 변경할 수 없습니다.</p>}
 
-              {/* 3. 에러 메시지 String 처리 */}
               {!isEdit && errors.email && (
                 <p className="error">{String(errors.email.message)}</p>
               )}
-            </S.Error_Wrapper>
+            </div>
 
             <div>
               <input
@@ -51,7 +50,7 @@ export default function EmailInfo<T extends FieldValues>({
                 disabled={isEdit}
               />
 
-              <S.Email_Selectwrapper>
+              <div className={styles.emailSelectWrapper}>
                 <select
                   value={emailDomain}
                   onChange={(e) => {
@@ -68,12 +67,12 @@ export default function EmailInfo<T extends FieldValues>({
                   <option value="hanmail.net">hanmail.net</option>
                 </select>
 
-                <S.Arrow />
-              </S.Email_Selectwrapper>
+                <span className={styles.arrow} />
+              </div>
             </div>
-          </S.Email>
+          </div>
         )}
       />
-    </S.EmailInfo>
+    </fieldset>
   );
 }

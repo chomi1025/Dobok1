@@ -16,9 +16,7 @@ export async function GET(request: Request) {
         thumbnail: true,
         isNew: true,
         isCustomizable: true,
-        options: {
-          select: { id: true, price: true, size: true, color: true },
-        },
+        options: true,
         category: { select: { name: true, slug: true } },
       },
     });

@@ -28,9 +28,10 @@
 
   nav {
     ul {
+      margin: 0 auto;
+      width: rem(900);
       display: flex;
-      justify-content: center;
-      gap: rem(30);
+      justify-content: space-between;
 
       li {
         width: rem(132);

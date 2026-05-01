@@ -2,7 +2,7 @@ import styles from "./page.module.scss";
 import ProductList from "@/components/product/ProductList";
 import { ProductWithCategory } from "@/types/types";
 
-interface ProductPageProps {
+interface Props {
   title: {
     name: string;
     contents: string;
@@ -13,10 +13,7 @@ interface ProductPageProps {
   pageSize: number;
 }
 
-export default function ProductPageComponent({
-  title,
-  products,
-}: ProductPageProps) {
+export default function ProductPageComponent({ title, products }: Props) {
   return (
     <section className={styles.inner}>
       <div className={styles.title}>

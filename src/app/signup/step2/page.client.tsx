@@ -1,5 +1,5 @@
 "use client";
-import * as S from "./style";
+
 import * as yup from "yup";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -14,6 +14,8 @@ import PersonalInfo from "./PersonalInfo";
 import AddressInput from "./AddressInput";
 import EmailInfo from "./EmailInfo";
 import BirthdayInput from "./BirthdayInput";
+import styles from "./page.module.scss";
+import Button from "@/components/common/buttons/page";
 
 type TermsType = "service" | "privacy";
 
@@ -109,7 +111,7 @@ export default function SignupStep2Client() {
 
   const onSubmit: SubmitHandler<FormType> = async (data) => {
     const fullPhone = `${data.phone.prefix}-${data.phone.middle}-${data.phone.last}`;
-    console.log(data);
+
     try {
       const res = await fetch("/api/signup", {
         method: "POST",
@@ -166,16 +168,16 @@ export default function SignupStep2Client() {
 
   return (
     <>
-      <S.Inner>
-        <S.Title_Wrapper>
+      <section className={styles.inner}>
+        <div className={styles.title_Wrapper}>
           <h2>회원가입</h2>
           <p>도복일번지에 가입하시고 다양한 혜택을 받아보세요! </p>
-        </S.Title_Wrapper>
+        </div>
 
-        <S.Line />
+        <hr className={styles.line} />
 
-        <S.Form onSubmit={handleSubmit(onSubmit)}>
-          <S.Form_Inner>
+        <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+          <div className={styles.form_inner}>
             {/* 계정정보:아이디,비밀번호 */}
             <AccountInfo
               register={register}
@@ -203,10 +205,10 @@ export default function SignupStep2Client() {
 
             {/* 생년월일 */}
             <BirthdayInput control={control} errors={errors} />
-          </S.Form_Inner>
+          </div>
 
           {/* 구분선 */}
-          <S.Line2 />
+          <hr className={styles.line2} />
 
           {/* 모달창 */}
           <TermsModal
@@ -216,9 +218,9 @@ export default function SignupStep2Client() {
           />
 
           {/*  회원가입 버튼 */}
-          <S.Signup_Button type="submit">회원가입</S.Signup_Button>
-        </S.Form>
-      </S.Inner>
+          <Button variant="black">회원가입</Button>
+        </form>
+      </section>
     </>
   );
 }

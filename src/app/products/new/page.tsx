@@ -22,40 +22,34 @@ export default async function NewProductPage({
 }) {
   const currentPage = Number(searchParams.page) || 1;
   const pageSize = 12;
-  const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: ["products", "new", currentPage],
-    queryFn: async () => {
-      const skip = (currentPage - 1) * pageSize;
-      const [totalItems, products] = await Promise.all([
-        prisma.product.count({ where: { isNew: true } }),
-        prisma.product.findMany({
-          where: { isNew: true },
-          orderBy: { createdAt: "desc" },
-          skip,
-          take: pageSize,
-          select: {
-            id: true,
-            name: true,
-            description: true,
-            thumbnail: true,
-            isNew: true,
-            isCustomizable: true,
-            options: {
-              select: { id: true, price: true, size: true, color: true },
-            },
-            category: { select: { name: true, slug: true } },
-          },
-        }),
-      ]);
-      return { products, totalItems };
-    },
-  });
+  const skip = (currentPage - 1) * pageSize;
+  const [totalItems, products] = await Promise.all([
+    prisma.product.count({ where: { isNew: true } }),
+    prisma.product.findMany({
+      where: { isNew: true },
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: pageSize,
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        thumbnail: true,
+        isNew: true,
+        isCustomizable: true,
+        options: true,
+        category: { select: { name: true, slug: true } },
+      },
+    }),
+  ]);
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <NewProductClientPage currentPage={currentPage} pageSize={pageSize} />
-    </HydrationBoundary>
+    <NewProductClientPage
+      currentPage={currentPage}
+      pageSize={pageSize}
+      products={products}
+      totalItems={totalItems}
+    />
   );
 }

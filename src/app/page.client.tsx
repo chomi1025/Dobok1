@@ -1,22 +1,12 @@
 "use client";
 import styles from "./page.module.scss";
 import CategoryIconComponent from "@/components/main/CategoryIcon/CategoryIcon";
-import Carousel from "../components/main/Carousel/Carousel";
 import BestSectionComponent from "@/components/main/BestSection/page";
-import ScrollAnimation from "./../components/common/ScrollAnimation";
-import { useQuery } from "@tanstack/react-query";
-import dynamic from "next/dynamic";
-import { fetchProductPreview, fetchMainCategories } from "@/lib/api";
-
-const InstagramComponent = dynamic(
-  () => import("@/components/main/Instagram/page"),
-  { ssr: false },
-);
-
-const NewSectionComponent = dynamic(
-  () => import("@/components/main/NewSection/page"),
-  { ssr: false },
-);
+import Carousel from "@/components/main/Carousel/Carousel";
+import ScrollAnimation from "@/components/common/ScrollAnimation";
+import NewSectionComponent from "@/components/main/NewSection/page";
+import InstagramComponent from "@/components/main/Instagram/page";
+import { MessageSquare, Settings, Trophy, Users } from "lucide-react";
 
 export default function HomeClientPage() {
   return (
@@ -27,56 +17,85 @@ export default function HomeClientPage() {
         <CategoryIconComponent />
       </ScrollAnimation>
 
-      <hr className={styles.line} />
+      <hr />
 
-      {/* 베스트상품 */}
       <ScrollAnimation>
         <BestSectionComponent />
       </ScrollAnimation>
 
-      {/* 메인배너 */}
-      <ScrollAnimation>
-        <div className={styles.banner}>
-          {/* <Image src={"/no.png"} alt={"이벤트 배너"} fill /> */}
-
-          <p>이벤트배너</p>
+      <section className={styles.communitySection}>
+        <div className={styles.header}>
+          <h2>커뮤니티</h2>
+          <a href="/community">전체보기 →</a>
         </div>
-      </ScrollAnimation>
 
-      {/* 신제품  */}
+        <ul className={styles.grid}>
+          <li>
+            <a href="/community/jobs">
+              <div className={styles.iconWrapper}>
+                <Users size={24} />
+              </div>
+              <h4>구인구직</h4>
+              <p>도장 채용 / 취업 정보</p>
+            </a>
+          </li>
+
+          <li>
+            <a href="/community/free">
+              <div className={styles.iconWrapper}>
+                <MessageSquare size={24} />
+              </div>
+              <h4>자유게시판</h4>
+              <p>자유롭게 소통하세요</p>
+            </a>
+          </li>
+
+          <li>
+            <a href="/community/event">
+              <div className={styles.iconWrapper}>
+                <Trophy size={24} />
+              </div>
+              <h4>대회·행사</h4>
+              <p>최신 대회 정보</p>
+            </a>
+          </li>
+
+          <li>
+            <a href="/community/manage">
+              <div className={styles.iconWrapper}>
+                <Settings size={24} />
+              </div>
+              <h4>도장 운영자료</h4>
+              <p>운영 노하우 공유</p>
+            </a>
+          </li>
+        </ul>
+      </section>
+
+      <section className={styles.banner}>
+        <div className={styles.textArea}>
+          <span className={styles.tag}>EVENT</span>
+          <h3>단체복 30% 할인</h3>
+          <p>지금 바로 인기 상품을 만나보세요</p>
+          <button>자세히 보기 →</button>
+        </div>
+      </section>
+
       <ScrollAnimation>
         <NewSectionComponent />
       </ScrollAnimation>
 
-      <hr className={styles.line} />
-
-      <ScrollAnimation>
-        <section className={styles.banner2}>
-          <div>
-            이벤트 배너
-            {/* <Image
-              src="https://placehold.co/1920x400?text=Banner+Coming+Soon"
-              alt={"이벤트 배너"}
-              fill
-            /> */}
+      <div className={styles.instagramSection}>
+        <ScrollAnimation>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.instaTitle}>@OUR_INSTAGRAM</h2>
+            <p className={styles.instaSubtitle}>
+              일상 속에서 만나는 우리들의 이야기
+            </p>
           </div>
-
-          <div>
-            이벤트 배너
-            {/* <Image
-              src="https://placehold.co/1920x400?text=Banner+Coming+Soon"
-              alt={"이벤트 배너"}
-              fill
-            /> */}
-          </div>
-        </section>
-      </ScrollAnimation>
-
-      <hr className={styles.line} />
-
-      <ScrollAnimation>
-        <InstagramComponent />
-      </ScrollAnimation>
+          <InstagramComponent />
+        </ScrollAnimation>
+      </div>
     </div>
   );
 }

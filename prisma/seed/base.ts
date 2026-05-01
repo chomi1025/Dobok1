@@ -8,7 +8,7 @@ async function main() {
       slug: "ttibok",
       sortOrder: 1,
       imageUrl:
-        "https://images.unsplash.com/photo-1609516629191-4e4668d29759?q=80&w=400&auto=format&fit=crop",
+        "https://jbxwbgcgrqogbbwlzzdb.supabase.co/storage/v1/object/public/category/ttibok.jpg",
       subMenu: [
         { name: "태권도복", slug: "taekwondo", sortOrder: 1 },
         { name: "합기도복", slug: "hapkido", sortOrder: 2 },
@@ -21,7 +21,7 @@ async function main() {
       name: "보호장비",
       slug: "protection",
       imageUrl:
-        "https://images.unsplash.com/photo-1599863266223-5e933a25d2bd?q=80&w=400&auto=format&fit=crop",
+        "https://jbxwbgcgrqogbbwlzzdb.supabase.co/storage/v1/object/public/category/protection.jpg",
       sortOrder: 2,
       subMenu: [
         { name: "머리 보호대", slug: "headgear", sortOrder: 1 },
@@ -35,7 +35,8 @@ async function main() {
     {
       name: "훈련·격파용품",
       slug: "training",
-      imageUrl: "https://placehold.co/400x300/e0e0e0/333333?text=Training+Gear",
+      imageUrl:
+        "https://jbxwbgcgrqogbbwlzzdb.supabase.co/storage/v1/object/public/category/training.jpg",
       sortOrder: 3,
       subMenu: [
         { name: "미트·쉴드", slug: "mit-shield", sortOrder: 1 },
@@ -49,7 +50,7 @@ async function main() {
       name: "도장설비",
       slug: "studio",
       imageUrl:
-        "https://placehold.co/400x300/e0e0e0/333333?text=Studio+Equipment",
+        "https://jbxwbgcgrqogbbwlzzdb.supabase.co/storage/v1/object/public/category/mattress-pit.jpg",
       sortOrder: 4,
       subMenu: [
         { name: "매트리스·뜀틀", slug: "mattress-pit", sortOrder: 1 },
@@ -60,7 +61,8 @@ async function main() {
     {
       name: "부가용품",
       slug: "accessories",
-      imageUrl: "https://placehold.co/400x300/e0e0e0/333333?text=Accessories",
+      imageUrl:
+        "https://jbxwbgcgrqogbbwlzzdb.supabase.co/storage/v1/object/public/category/accessories.jpg",
       sortOrder: 5,
       subMenu: [
         { name: "신발·실내화", slug: "shoes", sortOrder: 1 },

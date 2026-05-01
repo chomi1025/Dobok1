@@ -29,8 +29,8 @@ model Account {
 model Message {
   id                Int       @id @default(autoincrement())
   content           String
-  senderId          Int
-  receiverId        Int
+  senderId          Int?
+  receiverId        Int?
   postId            Int?
   companyName       String?
   jobRole           String?
@@ -40,8 +40,8 @@ model Message {
   deletedByReceiver Boolean   @default(false)
   createdAt         DateTime  @default(now())
   post              Post?     @relation(fields: [postId], references: [id])
-  receiver          User      @relation("ReceivedMessages", fields: [receiverId], references: [id])
-  sender            User      @relation("SentMessages", fields: [senderId], references: [id])
+  receiver User? @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: SetNull)
+  sender   User? @relation("SentMessages", fields: [senderId], references: [id], onDelete: SetNull)
 
   @@index([receiverId, isRead])
 }
@@ -85,16 +85,21 @@ model User {
   reviews           Review[]
   reviewReplies     ReviewReply[]
   sessions          Session[]
-  viewLogs          ContactViewLog[] @relation("ViewerRelation")
+  viewLogs        ContactViewLog[] @relation("ViewerRelation")
+  authoredLogs    ContactViewLog[] @relation("AuthorRelation")
 }
 
 model ContactViewLog {
   id           Int      @id @default(autoincrement())
-  viewerId     Int
-  authorId     Int
+
+  viewerId     Int?
+  authorId     Int?
+
   postId       Int
   createdAt    DateTime @default(now())
-  viewer       User     @relation("ViewerRelation", fields: [viewerId], references: [id])
+
+  viewer       User? @relation("ViewerRelation", fields: [viewerId], references: [id], onDelete: SetNull)
+  author       User? @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: SetNull)
 }
 
 model Verification {
@@ -241,23 +246,25 @@ model Claim {
 model Review {
   id          Int          @id @default(autoincrement())
   orderItemId Int          @unique
-  userId      Int
+  userId      Int?
+  user        User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
   rating      Int
   content     String
   createdAt   DateTime     @default(now())
   images      String[]     @default([])
   orderItem   OrderItem    @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
-  user        User         @relation(fields: [userId], references: [id])
+
   reply       ReviewReply?
 }
 
 model ReviewReply {
   id        Int      @id @default(autoincrement())
   reviewId  Int      @unique
-  adminId   Int
+
   content   String
   createdAt DateTime @default(now())
-  admin     User     @relation(fields: [adminId], references: [id])
+  adminId   Int?
+  admin     User?    @relation(fields: [adminId], references: [id], onDelete: SetNull)
   review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
 }
 
@@ -265,22 +272,22 @@ model Inquiry {
   id        Int             @id @default(autoincrement())
   content   String
   createdAt DateTime        @default(now())
-  userId    Int
   title     String?
   category  InquiryCategory @default(OTHER)
   status    InquiryStatus   @default(WAITING)
   isPrivate Boolean         @default(true)
-  user      User            @relation(fields: [userId], references: [id])
+  userId    Int?
+  user      User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
   replies   InquiryReply?
 }
 
 model InquiryReply {
   id        Int      @id @default(autoincrement())
   inquiryId Int      @unique
-  adminId   Int
   content   String
   createdAt DateTime @default(now())
-  admin     User     @relation(fields: [adminId], references: [id])
+  adminId Int?
+  admin   User? @relation(fields: [adminId], references: [id], onDelete: SetNull)
   inquiry   Inquiry  @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
 }
 
@@ -289,11 +296,11 @@ model ProductQna {
   content   String
   isSecret  Boolean          @default(false)
   productId Int
-  userId    Int
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
   product   Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
-  user      User             @relation(fields: [userId], references: [id])
+  userId    Int?
+  user      User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
   reply     ProductQnaReply?
 }
 
@@ -301,9 +308,9 @@ model ProductQnaReply {
   id           Int        @id @default(autoincrement())
   content      String
   productQnaId Int        @unique
-  adminId      Int
   createdAt    DateTime   @default(now())
-  admin        User       @relation(fields: [adminId], references: [id])
+  adminId      Int?
+  admin        User?      @relation(fields: [adminId], references: [id], onDelete: SetNull)
   productQna   ProductQna @relation(fields: [productQnaId], references: [id], onDelete: Cascade)
 }
 
@@ -341,7 +348,6 @@ model Post {
   type        PostType
   title       String
   content     String
-  authorId    Int
   viewCount   Int              @default(0)
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
@@ -357,7 +363,8 @@ model Post {
   attachments Attachment[]
   comments    Comment[]
   messages    Message[]
-  author      User             @relation(fields: [authorId], references: [id])
+  authorId Int?
+  author   User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
 
   @@index([type])
   @@index([jobType])
@@ -381,8 +388,8 @@ model Comment {
   content   String
   createdAt DateTime @default(now())
   postId    Int
-  authorId  Int
-  author    User     @relation(fields: [authorId], references: [id])
+  authorId Int?
+  author   User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
