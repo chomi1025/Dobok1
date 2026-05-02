@@ -5,21 +5,22 @@ const prisma = new PrismaClient();
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const username = searchParams.get("username");
+  const nickname = searchParams.get("nickname")?.trim();
 
-  if (!username) {
+  if (!nickname) {
     return NextResponse.json(
-      { error: "아이디를 입력해주세요!" },
+      { error: "닉네임을 입력해주세요!" },
       { status: 400 },
     );
   }
 
   try {
     const user = await prisma.user.findUnique({
-      where: { username },
+      where: { status: "ACTIVE", nickname },
     });
 
     const exists = !!user;
+
     return NextResponse.json({ exists });
   } catch (error) {
     console.error(error);

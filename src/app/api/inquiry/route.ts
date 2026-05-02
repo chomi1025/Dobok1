@@ -14,10 +14,13 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
-    console.log(body);
 
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
+
+    const user = await prisma.user.findUnique({
+      where: { id: Number(userId) },
+    });
 
     const newInquiry = await prisma.inquiry.create({
       data: {
@@ -26,6 +29,7 @@ export async function POST(req: Request) {
         title,
         content,
         status: "WAITING",
+        authorNameSnapshot: user?.name || "익명",
       },
     });
 

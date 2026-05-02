@@ -68,7 +68,6 @@ model User {
   address           Json?
   ci                String?           @unique
   deletedAt         DateTime?
-  isDeleted         Boolean           @default(false)
   status            UserStatus        @default(ACTIVE)
   lastLoginAt       DateTime?
   updatedAt         DateTime          @default(now()) @updatedAt
@@ -87,6 +86,23 @@ model User {
   sessions          Session[]
   viewLogs        ContactViewLog[] @relation("ViewerRelation")
   authoredLogs    ContactViewLog[] @relation("AuthorRelation")
+  nicknameHistory UserNicknameHistory[]
+}
+
+model UserNicknameHistory {
+  id          String   @id @default(cuid())
+  userId      Int
+  nickname    String
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserWithdrawReason {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  reason    String?
+  detail    String?
+  createdAt DateTime @default(now())
 }
 
 model ContactViewLog {
@@ -279,6 +295,7 @@ model Inquiry {
   userId    Int?
   user      User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
   replies   InquiryReply?
+  authorNameSnapshot  String?
 }
 
 model InquiryReply {
@@ -344,27 +361,28 @@ enum JobRole {
 }
 
 model Post {
-  id          Int              @id @default(autoincrement())
-  type        PostType
-  title       String
-  content     String
-  viewCount   Int              @default(0)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  jobRole     String?
-  companyName String?
-  eventDate   DateTime?
-  eventVenue  String?
-  applyMethod String?
-  jobType     JobType?
-  experience  ExperienceLevel? @default(IRRELEVANT)
-  city        String?
-  district    String?
-  attachments Attachment[]
-  comments    Comment[]
-  messages    Message[]
-  authorId Int?
-  author   User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  id             Int              @id @default(autoincrement())
+  type           PostType
+  title          String
+  content        String
+  viewCount      Int              @default(0)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  jobRole        String?
+  companyName    String?
+  eventDate      DateTime?
+  eventVenue     String?
+  applyMethod    String?
+  jobType        JobType?
+  experience     ExperienceLevel? @default(IRRELEVANT)
+  city           String?
+  district       String?
+  attachments    Attachment[]
+  comments       Comment[]
+  messages       Message[]
+  authorId       Int?
+  author         User?            @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorNickname String?
 
   @@index([type])
   @@index([jobType])

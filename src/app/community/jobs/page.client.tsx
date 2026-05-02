@@ -28,7 +28,7 @@ interface JobsRow {
   jobRole: string;
   title: string;
   companyName: string;
-  authorName?: string;
+  authorNickname?: string;
   experience: string;
   city: string;
   district: string;
@@ -73,6 +73,7 @@ export default function JobsClientPage({
     staleTime: 60 * 1000,
   });
 
+  console.log(data);
   const jobs = data?.jobs || [];
   const total = data?.total || 0;
 
@@ -155,7 +156,7 @@ export default function JobsClientPage({
           <span>
             {data.type === "HIRING"
               ? data.companyName
-              : data.authorName || "개인"}
+              : data.authorNickname || "개인"}
           </span>
         );
       },

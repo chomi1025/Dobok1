@@ -1,16 +1,11 @@
 "use client";
 import styles from "./addressInput.module.scss";
 
-import {
-  Control,
-  Controller,
-  FieldErrors,
-  FieldValues,
-  Path,
-} from "react-hook-form";
+import { Control, Controller, FieldErrors, FieldValues } from "react-hook-form";
 import DaumPostcodeEmbed from "react-daum-postcode";
 import { useState } from "react";
 import Button from "@/components/common/buttons/page";
+import { ProfileEditFormType } from "@/app/mypage/profile-edit/page.client";
 
 type Props<T extends FieldValues> = {
   control: Control<T>;
@@ -21,12 +16,13 @@ type Props<T extends FieldValues> = {
 export default function AddressInput<T extends FieldValues>({
   control,
   errors,
+  isEdit,
 }: Props<T>) {
   const [isPostOpen, setIsPostOpen] = useState(false);
 
   return (
     <Controller
-      name={"address" as Path<T>}
+      name={"address" as any}
       control={control}
       defaultValue={{ address: "", postCode: "", detailAddress: "" } as any}
       render={({ field: { value, onChange } }) => {
@@ -42,14 +38,21 @@ export default function AddressInput<T extends FieldValues>({
         const postCode = value?.postCode || "";
         const address = value?.address || "";
         const detailAddress = value?.detailAddress || "";
+        const addressErrors = errors.address as any;
 
         return (
           <fieldset className={styles.address}>
             <div className={styles.errorWrapper}>
               <label htmlFor="address">주소</label>
 
-              {errors.address && (
-                <p className="error">{String(errors.address.message)}</p>
+              {addressErrors?.postCode && (
+                <p className="error">{addressErrors.postCode.message}</p>
+              )}
+              {addressErrors?.address && (
+                <p className="error">{addressErrors.address.message}</p>
+              )}
+              {addressErrors?.detailAddress && (
+                <p className="error">{addressErrors.detailAddress.message}</p>
               )}
             </div>
 

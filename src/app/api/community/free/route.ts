@@ -14,6 +14,11 @@ export async function POST(request: Request) {
       );
     }
 
+    const user = await prisma.user.findUnique({
+      where: { id: Number(session.user.id) },
+      select: { nickname: true },
+    });
+
     const { title, content } = await request.json();
 
     const post = await prisma.post.create({
@@ -21,7 +26,7 @@ export async function POST(request: Request) {
         title,
         content,
         type: "FREE",
-        authorId: Number(session.user.id),
+        authorNickname: user?.nickname || "개인",
       },
     });
 

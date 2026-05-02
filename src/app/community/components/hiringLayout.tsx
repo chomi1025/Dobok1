@@ -12,6 +12,7 @@ import { JOB_ROLE_MAP } from "@/constants/jobs";
 import Editor from "@/components/common/editor/page";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Post } from "@prisma/client";
+import { useSession } from "next-auth/react";
 
 interface Props {
   post?: Post;
@@ -22,6 +23,8 @@ export default function HiringLayout({ post }: Props) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const isSubmitting = useRef(false); //광클 막기
+  const { data } = useSession();
+  const nickname = data?.user?.nickname;
 
   const [city, setCity] = useState(post?.city || "");
   const [district, setDistrict] = useState(post?.district || "");
@@ -117,6 +120,7 @@ export default function HiringLayout({ post }: Props) {
       experience: formData.get("experience"),
       content,
       applyMethod: applyMethods.join(","),
+      authorNickname: nickname,
     };
 
     submitHiring(payload);

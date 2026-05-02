@@ -84,7 +84,10 @@ export default function FreeBoardClientPage({
         accessorKey: "authorId",
         header: "작성자",
         size: 130,
-        cell: ({ row }) => <span>{row.original.author.nickname}</span>,
+        cell: ({ row }) => {
+          const authorNickname = row.original.authorNickname || "익명";
+          return <span>{authorNickname}</span>;
+        },
       },
       {
         accessorKey: "createdAt",

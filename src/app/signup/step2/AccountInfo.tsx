@@ -10,7 +10,6 @@ import {
 } from "react-hook-form";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import Button from "@/components/common/buttons/page";
 
 type Props<T extends FieldValues> = {
   register: UseFormRegister<T>;
@@ -36,14 +35,12 @@ export default function AccountInfo<T extends FieldValues>({
   const [isChecking, setIsChecking] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
   const username = watch?.("username" as Path<T>);
-  const password = watch?.("password" as Path<T>);
-  const passwordConfirm = watch?.("passwordConfirm" as Path<T>);
 
   const handleCheckUsername = async () => {
     const usernameValue = getValues("username" as Path<T>);
 
     if (!usernameValue) {
-      toast.error("아이디를 입력해주세요! 🥋");
+      toast.error("아이디를 입력해주세요.");
       return;
     }
 
@@ -56,7 +53,7 @@ export default function AccountInfo<T extends FieldValues>({
     setIsChecking(true);
 
     try {
-      const res = await fetch(`/api/check-username?username=${username}`);
+      const res = await fetch(`/api/user/check/username?username=${username}`);
       const data = await res.json();
 
       if (data.exists) {
@@ -71,7 +68,7 @@ export default function AccountInfo<T extends FieldValues>({
       }
     } catch (error) {
       console.error(error);
-      toast.error("⚠️ 서버 오류가 발생했습니다.");
+      toast.error("서버 오류가 발생했습니다.");
     } finally {
       setIsChecking(false);
     }
@@ -80,8 +77,9 @@ export default function AccountInfo<T extends FieldValues>({
   useEffect(() => {
     if (!isEdit) {
       setValue?.("usernameChecked" as Path<T>, false as any);
+      clearErrors?.("usernameChecked" as Path<T>);
     }
-  }, [username, setValue, clearErrors, isEdit]);
+  }, [username]);
 
   useEffect(() => {
     if (checkMessage) {
@@ -182,7 +180,7 @@ export default function AccountInfo<T extends FieldValues>({
         <input
           id="password"
           type="password"
-          placeholder="비밀번호"
+          placeholder="영문, 숫자, 특수문자를 각각 1개 이상 포함"
           {...register("password" as Path<T>)}
           readOnly={false}
         />

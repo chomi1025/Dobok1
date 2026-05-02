@@ -1,0 +1,11 @@
+/*
+  Warnings:
+
+  - You are about to drop the column `isDeleted` on the `User` table. All the data in the column will be lost.
+
+*/
+-- AlterTable
+ALTER TABLE "Post" ADD COLUMN     "authorNickname" TEXT;
+
+-- AlterTable
+ALTER TABLE "User" DROP COLUMN "isDeleted";

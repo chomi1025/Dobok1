@@ -29,9 +29,10 @@ export interface ProfileEditUser {
   birthDate: string;
   address: {
     address: string;
-    zipCode: string;
-    address2: string;
+    postCode: string;
+    detailAddress: string;
   };
+  nickname: string;
 }
 
 export interface ProfileEditFormType {
@@ -47,45 +48,48 @@ export interface ProfileEditFormType {
   email: string;
   address: {
     address: string;
-    zipCode: string;
-    address2: string;
+    postCode: string;
+    detailAddress: string;
   };
   birthDate: string;
+  nickname: string;
+  nicknameChecked?: boolean;
 }
 
-const profileEditSchema: ObjectSchema<ProfileEditFormType> = yup.object({
-  username: yup.string().optional(),
+const editSchema: ObjectSchema<any> = yup.object({
+  username: yup.string(),
+
   password: yup
     .string()
-    .transform((value) => (value === "" ? undefined : value))
-    .optional()
-    .min(8, "8글자 이상")
-    .max(20, "20글자 이하")
-    .matches(
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&#])/,
-      "영문, 숫자, 특수문자 포함",
-    ),
+    .notRequired()
+    .test("password-check", "8~20자, 영문/숫자/특수문자 포함", (value) => {
+      if (!value) return true;
+      return /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&#]).{8,20}$/.test(value);
+    }),
+
   passwordConfirm: yup
     .string()
-    .oneOf([yup.ref("password")], "비밀번호가 일치하지 않습니다.")
-    .optional(),
-  name: yup.string().required("이름은 필수입니다."),
-  phone: yup
-    .object({
-      prefix: yup.string().required(),
-      middle: yup.string().required(),
-      last: yup.string().required(),
-    })
-    .required(),
-  email: yup.string().email("이메일 형식이 아닙니다.").required(),
-  address: yup
-    .object({
-      address: yup.string().required(),
-      zipCode: yup.string().required(),
-      address2: yup.string().required(),
-    })
-    .required(),
+    .oneOf([yup.ref("password"), ""], "비밀번호가 일치하지 않습니다."),
+
+  name: yup.string().required(),
+
+  phone: yup.object({
+    prefix: yup.string().required(),
+    middle: yup.string().required(),
+    last: yup.string().required(),
+  }),
+
+  email: yup.string().email().required(),
+
+  address: yup.object({
+    address: yup.string().required(),
+    postCode: yup.string().required(),
+    detailAddress: yup.string().required(),
+  }),
+
   birthDate: yup.string().required(),
+
+  nickname: yup.string().required().min(2).max(10),
 });
 
 export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
@@ -94,6 +98,7 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
   const [emailDomain, setEmailDomain] = useState(
     user.email?.split("@")[1] || "gmail.com",
   );
+  console.log(user);
 
   const {
     register,
@@ -105,7 +110,8 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
     clearErrors,
     formState: { errors },
   } = useForm<ProfileEditFormType>({
-    resolver: yupResolver(profileEditSchema),
+    resolver: yupResolver(editSchema),
+    mode: "onTouched",
     defaultValues: {
       username: isEdit && user?.username ? user.username : "",
       name: user.name,
@@ -118,15 +124,24 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
       },
       address: {
         address: user.address.address,
-        zipCode: user.address.zipCode,
-        address2: user.address.address2,
+        postCode: user.address.postCode,
+        detailAddress: user.address.detailAddress,
       },
       password: "",
       passwordConfirm: "",
+      nickname: user.nickname,
     },
   });
 
   const onSubmit = async (data: ProfileEditFormType) => {
+    const originalNickname = user.nickname;
+    const isNicknameChanged = data.nickname !== originalNickname;
+
+    if (isNicknameChanged && !data.nicknameChecked) {
+      alert("닉네임 중복체크를 해주세요.");
+      return;
+    }
+
     try {
       const res = await fetch("/api/user/update", {
         method: "POST",
@@ -138,6 +153,7 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
           email: data.email,
           address: data.address,
           birthDate: data.birthDate,
+          nickname: data.nickname,
         }),
       });
 
@@ -164,7 +180,7 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
 
         await new Promise((resolve) => setTimeout(resolve, 200));
 
-        router.push("/");
+        router.refresh();
       } else {
         router.push("/mypage");
       }
@@ -180,7 +196,12 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
         <h1>회원 정보 수정</h1>
       </header>
 
-      <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+      <form
+        className={styles.form}
+        onSubmit={handleSubmit(onSubmit, (errors) => {
+          console.log("❌ validation 에러", errors);
+        })}
+      >
         <div className={styles.formInner}>
           {/* 비밀번호 변경 (선택) */}
           <AccountInfo
@@ -194,12 +215,19 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
           />
 
           <PersonalInfo
-            control={control as any}
+            register={register}
+            errors={errors}
+            setValue={setValue}
+            clearErrors={clearErrors}
+            watch={watch}
+            getValues={getValues}
+          />
+
+          <AddressInput<ProfileEditFormType>
+            control={control}
             errors={errors}
             isEdit={true}
           />
-
-          <AddressInput control={control} errors={errors} isEdit={true} />
 
           <EmailInfo
             control={control}
@@ -213,7 +241,9 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
         </div>
 
         {/*  회원가입 버튼 */}
-        <Button variant="black">수정하기</Button>
+        <Button type="submit" variant="black">
+          수정하기
+        </Button>
       </form>
     </div>
   );

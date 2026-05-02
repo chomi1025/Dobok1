@@ -17,4 +17,6 @@ export interface FormType {
   };
   birthDate: string;
   agreeTerms: boolean;
+  nickname: string;
+  nicknameChecked: boolean;
 }

@@ -69,6 +69,15 @@ const schema: ObjectSchema<Omit<FormType, "agreeTerms">> = yup.object({
     )
     .required(),
   birthDate: yup.string().required("생년월일은 필수입니다."),
+  nickname: yup
+    .string()
+    .required("닉네임은 필수입니다.")
+    .min(2, "2글자 이상 입력해주세요.")
+    .max(10, "10글자 이하로 입력해주세요."),
+  nicknameChecked: yup
+    .boolean()
+    .required("닉네임 중복체크를 해주세요.")
+    .oneOf([true], "닉네임 중복체크를 해주세요."),
 });
 
 export default function SignupStep2Client() {
@@ -82,10 +91,10 @@ export default function SignupStep2Client() {
     clearErrors,
     getValues,
     watch,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<FormType>({
     resolver: yupResolver(schema) as any,
-    mode: "onSubmit",
+    mode: "onTouched",
     defaultValues: {
       username: "",
       usernameChecked: false,
@@ -96,6 +105,8 @@ export default function SignupStep2Client() {
       email: "",
       address: { address: "", postCode: "", detailAddress: "" },
       birthDate: "",
+      nickname: "",
+      nicknameChecked: false,
     },
     shouldUnregister: true,
   });
@@ -112,12 +123,20 @@ export default function SignupStep2Client() {
   const onSubmit: SubmitHandler<FormType> = async (data) => {
     const fullPhone = `${data.phone.prefix}-${data.phone.middle}-${data.phone.last}`;
 
+    if (!data.usernameChecked) {
+      toast.error("아이디 중복체크를 해주세요.");
+      return;
+    }
+    if (!data.nicknameChecked) {
+      toast.error("닉네임 중복체크를 해주세요.");
+      return;
+    }
     try {
       const res = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          username: data.username,
+          username: data.username.trim(),
           password: data.password,
           passwordConfirm: data.passwordConfirm,
           email: data.email,
@@ -126,6 +145,7 @@ export default function SignupStep2Client() {
           address: data.address,
           birth_date: data.birthDate,
           ci: userCi,
+          nickname: data.nickname.trim(),
         }),
       });
 
@@ -190,7 +210,14 @@ export default function SignupStep2Client() {
             />
 
             {/* 개인정보:이름,핸드폰번호 */}
-            <PersonalInfo control={control} />
+            <PersonalInfo
+              register={register}
+              errors={errors}
+              setValue={setValue}
+              clearErrors={clearErrors}
+              watch={watch}
+              getValues={getValues}
+            />
 
             {/* 주소 */}
             <AddressInput control={control} errors={errors} />
@@ -218,7 +245,15 @@ export default function SignupStep2Client() {
           />
 
           {/*  회원가입 버튼 */}
-          <Button variant="black">회원가입</Button>
+          <Button
+            type="submit"
+            variant="black"
+            disabled={
+              !isValid || !watch("usernameChecked") || !watch("nicknameChecked")
+            }
+          >
+            회원가입
+          </Button>
         </form>
       </section>
     </>
