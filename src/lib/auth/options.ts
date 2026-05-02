@@ -25,12 +25,18 @@ export const authOptions: NextAuthOptions = {
             where: { username: credentials.username },
           });
 
-          if (
-            !user ||
-            !(await bcrypt.compare(credentials.password, user.password))
-          ) {
-            return null;
+          if (!user) return null;
+
+          if (user.status === "WITHDRAWN" || user.isDeleted) {
+            throw new Error("탈퇴한 계정입니다.");
           }
+
+          const isValid = await bcrypt.compare(
+            credentials.password,
+            user.password,
+          );
+
+          if (!isValid) return null;
 
           await prisma.user.update({
             where: { id: user.id },
@@ -41,6 +47,7 @@ export const authOptions: NextAuthOptions = {
             id: String(user.id),
             username: user.username,
             name: user.name,
+            nickname: user.nickname,
             role: user.role,
             status: user.status,
           };
@@ -58,6 +65,7 @@ export const authOptions: NextAuthOptions = {
         token.username = (user as any).username;
         token.role = (user as any).role;
         token.status = (user as any).status;
+        token.nickname = (user as any).nickname;
       }
       return token;
     },
@@ -67,6 +75,7 @@ export const authOptions: NextAuthOptions = {
         session.user.username = token.username as string;
         session.user.role = token.role as any;
         (session.user as any).status = token.status;
+        (session.user as any).nickname = token.nickname;
       }
       return session;
     },

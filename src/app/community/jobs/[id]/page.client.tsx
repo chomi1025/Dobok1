@@ -222,7 +222,7 @@ export default function JobsDetailClientPage({ postId }: { postId: number }) {
               <li className={styles.nicknameWrapper}>
                 <span className={styles.nickname} onClick={handleNicknameClick}>
                   {post.jobType === "SEEKING"
-                    ? post?.author.nickname || "익명"
+                    ? post?.authorNickname || "익명"
                     : post?.companyName || "업체명 미기재"}
                 </span>
 

@@ -58,6 +58,7 @@ export default function InquiryClientPage({ currentPage, pageSize }: Props) {
     return name[0] + "*".repeat(name.length - 2) + name.slice(-1);
   };
 
+  console.log(data);
   const inquiryData = useMemo(() => data?.inquiries || [], [data]);
   const total = data?.totalCount || 0;
 

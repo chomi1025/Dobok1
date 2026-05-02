@@ -30,6 +30,7 @@ export async function POST(req: Request) {
 
     const existingUser = await prisma.user.findFirst({
       where: {
+        status: "ACTIVE",
         OR: [
           { ci: certInfo.ci || "TEST_MODE_NO_CI" },
           { phone: rawPhone },

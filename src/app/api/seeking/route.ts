@@ -17,6 +17,11 @@ export async function POST(req: Request) {
     const { title, city, district, jobRole, experience, content, applyMethod } =
       body;
 
+    const user = await prisma.user.findUnique({
+      where: { id: Number(session.user.id) },
+      select: { nickname: true, name: true },
+    });
+
     const newJobPost = await prisma.post.create({
       data: {
         title,
@@ -28,10 +33,16 @@ export async function POST(req: Request) {
         applyMethod,
         type: "JOB",
         jobType: "SEEKING",
-        authorId: parseInt(session.user.id),
+
+        author: {
+          connect: {
+            id: Number(session.user.id),
+          },
+        },
+
+        authorNickname: user?.nickname || user?.name || "개인",
       },
     });
-
     return NextResponse.json(
       {
         message: "구직 게시글이 등록되었습니다.",

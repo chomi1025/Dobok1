@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/options";
-import fs from "fs";
-import path from "path";
 import bcrypt from "bcryptjs";
 
 export async function POST(req: NextRequest) {
@@ -27,6 +25,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (user.isDeleted) {
+      return NextResponse.json(
+        { message: "이미 탈퇴한 계정입니다." },
+        { status: 400 },
+      );
+    }
+
     // 비밀번호 확인
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
@@ -37,23 +42,25 @@ export async function POST(req: NextRequest) {
     }
 
     // 삭제
-    await prisma.user.delete({ where: { id: user.id } });
-
-    // -------------------------------
-    // 탈퇴 로그 파일에 기록
-    // -------------------------------
-    const finalReason =
-      reason === "other" ? reasonText?.trim() || "other" : reason || "none";
-
-    const logFilePath = path.join(process.cwd(), "withdraw.log"); // 프로젝트 루트에 생성
-    const logText = `User ${user.username} withdrew at ${new Date().toISOString()}. Reason: ${finalReason}\n`;
-
-    fs.appendFile(logFilePath, logText, (err) => {
-      if (err) console.error("로그 작성 실패:", err);
+    await prisma.user.update({
+      where: { id: Number(session.user.id) },
+      data: {
+        status: "WITHDRAWN",
+        deletedAt: new Date(),
+        email: `withdrawn_${session.user.id}_${Date.now()}@deleted.com`,
+        username: `withdrawn_${session.user.id}_${Date.now()}`,
+        nickname: null,
+        phone: null,
+      },
     });
 
-    // 콘솔에도 남겨줌
-    console.log(logText);
+    await prisma.userWithdrawReason.create({
+      data: {
+        userId: user.id,
+        reason,
+        detail: reasonText,
+      },
+    });
 
     return NextResponse.json({ success: true });
   } catch (err) {

@@ -3,6 +3,7 @@ import styles from "./page.module.scss";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
+import toast from "react-hot-toast";
 
 export default function WithDraw() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export default function WithDraw() {
     }
 
     try {
-      const res = await fetch("/api/user/delete", {
+      const res = await fetch("/api/user/withdraw", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password, reason, reasonText: otherReason }),
@@ -33,10 +34,9 @@ export default function WithDraw() {
         return;
       }
 
-      alert("회원 탈퇴가 완료되었습니다.");
+      toast.success("회원 탈퇴가 완료되었습니다.");
 
-      await signOut({ redirect: false });
-      router.push("/");
+      await signOut({ callbackUrl: "/" });
     } catch (err) {
       console.error(err);
       alert("서버 오류가 발생했습니다.");

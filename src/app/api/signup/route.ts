@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { UserStatus } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,6 +16,7 @@ export async function POST(req: NextRequest) {
       phone,
       birth_date,
       address,
+      nickname,
     } = body;
 
     if (!password || password.trim() !== passwordConfirm?.trim()) {
@@ -33,11 +35,13 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
+
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
           { email },
           { username },
+          { nickname },
           ...(phoneStr ? [{ phone: phoneStr }] : []),
         ],
       },
@@ -47,6 +51,7 @@ export async function POST(req: NextRequest) {
       const duplicateFields = [];
       if (existingUser.email === email) duplicateFields.push("email");
       if (existingUser.username === username) duplicateFields.push("username");
+      if (existingUser.nickname === nickname) duplicateFields.push("nickname");
       if (phoneStr && existingUser.phone === phoneStr)
         duplicateFields.push("phone");
 
@@ -62,11 +67,13 @@ export async function POST(req: NextRequest) {
       data: {
         email,
         username,
+        nickname,
         password: hashedPassword,
         name,
         phone: phoneStr,
         birthDate: birth,
         address,
+        status: UserStatus.ACTIVE,
       },
     });
 

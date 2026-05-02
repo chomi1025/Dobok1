@@ -13,12 +13,14 @@ export default async function ProfileEditPage() {
     where: { id: Number(userId) },
   });
 
+  console.log(user);
+
   if (!user) return null;
 
   const address = (user.address ?? {}) as {
     address?: string;
-    zipCode?: string;
-    address2?: string;
+    postCode?: string;
+    detailAddress?: string;
   };
 
   const profileUser = {
@@ -30,9 +32,10 @@ export default async function ProfileEditPage() {
     birthDate: user.birthDate.toISOString().slice(0, 10),
     address: {
       address: address.address ?? "",
-      zipCode: address.zipCode ?? "",
-      address2: address.address2 ?? "",
+      postCode: address.postCode ?? "",
+      detailAddress: address.detailAddress ?? "",
     },
+    nickname: user.nickname,
   };
 
   return <ProfileEdit user={profileUser} isEdit />;

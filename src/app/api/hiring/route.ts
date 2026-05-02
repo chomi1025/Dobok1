@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    console.log("현재 세션 유저 정보:", session?.user);
+
     if (!session || !session.user) {
       return NextResponse.json(
         { message: "로그인이 필요합니다." },
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       experience,
       city,
       district,
-
+      user,
       applyMethod,
     } = body;
 
@@ -40,7 +40,6 @@ export async function POST(req: Request) {
         city,
         district,
         applyMethod,
-        authorId: Number(session.user.id),
       },
     });
 

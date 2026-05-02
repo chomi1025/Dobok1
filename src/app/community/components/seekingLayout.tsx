@@ -54,7 +54,7 @@ export default function SeekingLayout({ post }: Props) {
 
       const response = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/jsaon" },
         body: JSON.stringify(payload),
       });
 
