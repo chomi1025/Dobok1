@@ -129,7 +129,7 @@ export default function PostDetailClientPage({ post: initialPost }: Props) {
           <header className={styles.header}>
             <h2 className={styles.title}>{post.title}</h2>
             <div className={styles.meta}>
-              <span>{post.author.nickname ?? "익명"}</span>
+              <span>{post.authorNickname ?? "익명"}</span>
               <span>{formattedDate}</span>
               <span>조회 {post.viewCount}</span>
             </div>
