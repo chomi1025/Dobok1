@@ -31,13 +31,12 @@ export default function FreeEditClientPage({ post }: Props) {
       if (!res.ok) throw new Error("수정 실패");
       return res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["post", post.id] });
+    onSuccess: (updatedPost) => {
+      queryClient.setQueryData(["post", post.id], updatedPost);
+
       queryClient.invalidateQueries({ queryKey: ["posts", "FREE"] });
 
-      toast.success("글이 수정되었습니다!");
       router.push(`/community/free/${post.id}`);
-      router.refresh();
     },
     onError: () => {
       toast.error("수정 중 오류가 발생했습니다.");

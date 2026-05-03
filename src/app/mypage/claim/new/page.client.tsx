@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.scss";
+import toast from "react-hot-toast";
 
 interface OrderItem {
   id: number;
@@ -58,12 +59,11 @@ export default function ClaimNewClientPage({ order }: { order: Order }) {
       const data = await res.json();
 
       if (!res.ok) {
-        console.error("서버 오류 데이터:", data);
-        alert(data.message || "신청 실패");
+        toast(data.message || "신청 실패");
         return;
       }
 
-      alert("반품/교환 신청이 완료되었습니다!");
+      toast.success("반품/교환 신청이 완료되었습니다!");
       router.push("/mypage/order");
     } catch (e) {
       console.error("Fetch 에러:", e);

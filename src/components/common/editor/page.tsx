@@ -6,13 +6,6 @@ import "react-quill/dist/quill.snow.css";
 
 const ReactQuill = dynamic(() => import("react-quill"), {
   ssr: false,
-  loading: () => (
-    <div
-      style={{ height: "300px", background: "#f9f9f9", borderRadius: "8px" }}
-    >
-      에디터 로딩 중
-    </div>
-  ),
 });
 
 interface Props {
@@ -56,7 +49,7 @@ export default function EditorComponent({ value, onChange }: Props) {
           }
 
           .review-editor-container .ql-container.ql-snow {
-            border-bottom-left-radius: 8px;
+            border-bottom-left-radius: 8psx;
             border-bottom-right-radius: 8px;
             min-height: 300px;
             font-size: 15px;
@@ -80,12 +73,27 @@ export default function EditorComponent({ value, onChange }: Props) {
         `}</style>
       )}
 
-      <ReactQuill
-        theme="snow"
-        value={value}
-        onChange={onChange}
-        modules={modules}
-      />
+      <div style={{ minHeight: 300, position: "relative" }}>
+        {!isMounted && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "#f5f5f5",
+              borderRadius: 8,
+            }}
+          />
+        )}
+
+        {isMounted && (
+          <ReactQuill
+            theme="snow"
+            value={value}
+            onChange={onChange}
+            modules={modules}
+          />
+        )}
+      </div>
     </div>
   );
 }

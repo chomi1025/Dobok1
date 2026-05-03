@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { customConfirm } from "@/lib/swal";
 import toast from "react-hot-toast";
+import { useSession } from "next-auth/react";
 
 type CommentWithAuthor = {
   id: number;
@@ -44,6 +45,10 @@ export default function PostDetailClientPage({ post: initialPost }: Props) {
     initialData: initialPost,
     staleTime: 1000 * 60,
   });
+
+  const { data: session } = useSession();
+  const isOwner = session?.user?.id === String(post.authorId);
+  const isAdmin = session?.user?.role === "ADMIN";
 
   const [commentContent, setCommentContent] = useState("");
 
@@ -135,15 +140,20 @@ export default function PostDetailClientPage({ post: initialPost }: Props) {
             </div>
 
             <div className={styles.rightBtns}>
-              <Button
-                variant="edit"
-                href={`community/free/${initialPost.id}/edit`}
-              >
-                수정
-              </Button>
-              <Button variant="delete" onClick={handleDelete}>
-                삭제
-              </Button>
+              {isOwner && (
+                <Button
+                  variant="edit"
+                  href={`community/free/${initialPost.id}/edit`}
+                >
+                  수정
+                </Button>
+              )}
+
+              {(isOwner || isAdmin) && (
+                <Button variant="delete" onClick={handleDelete}>
+                  삭제
+                </Button>
+              )}
             </div>
           </header>
 
@@ -157,7 +167,7 @@ export default function PostDetailClientPage({ post: initialPost }: Props) {
 
         {/* 댓글 섹션 */}
         <section className={styles.commentsSection}>
-          <h3>댓글 {post.comments.length}</h3>
+          <h3>댓글 {post.comments?.length ?? 0}</h3>
 
           <div className={styles.commentInputWrapper}>
             <textarea

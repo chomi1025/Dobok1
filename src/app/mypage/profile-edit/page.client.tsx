@@ -98,7 +98,6 @@ export default function ProfileEdit({ user, isEdit }: ProfileEditProps) {
   const [emailDomain, setEmailDomain] = useState(
     user.email?.split("@")[1] || "gmail.com",
   );
-  console.log(user);
 
   const {
     register,

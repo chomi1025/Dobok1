@@ -18,6 +18,8 @@ export default async function PostDetailPage({
       content: true,
       viewCount: true,
       createdAt: true,
+      authorNickname: true,
+      authorId: true,
       comments: {
         select: {
           id: true,
@@ -30,11 +32,6 @@ export default async function PostDetailPage({
               nickname: true,
             },
           },
-        },
-      },
-      author: {
-        select: {
-          nickname: true,
         },
       },
     },

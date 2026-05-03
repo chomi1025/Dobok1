@@ -161,7 +161,7 @@ export async function DELETE(request: Request) {
     // 선택/개별 삭제
     if (idsString) {
       const ids = idsString.split(",").map((id) => Number(id));
-      console.log("숫자로 변환된 IDs 배열:", ids);
+
       const result = await prisma.cartItem.deleteMany({
         where: {
           id: { in: ids },

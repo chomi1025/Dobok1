@@ -203,7 +203,6 @@ export default function OrdersClientPage() {
           setLoading(false);
         }, 500);
       } catch (e) {
-        console.error(e);
         setLoading(false);
       }
     };
