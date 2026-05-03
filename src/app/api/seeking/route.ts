@@ -43,6 +43,7 @@ export async function POST(req: Request) {
         authorNickname: user?.nickname || user?.name || "개인",
       },
     });
+
     return NextResponse.json(
       {
         message: "구직 게시글이 등록되었습니다.",

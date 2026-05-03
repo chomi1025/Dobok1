@@ -152,6 +152,7 @@ export default function JobsClientPage({
       size: 130,
       cell: ({ row }: CellContext<JobsRow, any>) => {
         const data = row.original;
+        console.log("데이터", data);
         return (
           <span>
             {data.type === "HIRING"

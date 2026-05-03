@@ -63,8 +63,6 @@ const mockOrderDetail: FormattedOrder = {
 export default async function ClaimNewPage({ searchParams }: Props) {
   const { orderNumber } = searchParams;
 
-  console.log(orderNumber);
-
   if (!orderNumber) {
     throw new Error("orderId가 필요합니다");
   }

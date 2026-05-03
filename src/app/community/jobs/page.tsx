@@ -96,7 +96,7 @@ export default async function JobsPage({ searchParams }: PageProps) {
       const formattedJobs = jobs.map((job: any) => ({
         ...job,
         type: job.jobType,
-        authorName: job.author?.nickname || job.author?.name || "개인",
+        authorNickName: job.authorNickName || "개인",
       }));
 
       return { jobs: formattedJobs, total };

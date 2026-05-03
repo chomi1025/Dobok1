@@ -27,6 +27,7 @@ export async function POST(request: Request) {
         content,
         type: "FREE",
         authorNickname: user?.nickname || "개인",
+        authorId: Number(session.user.id),
       },
     });
 
