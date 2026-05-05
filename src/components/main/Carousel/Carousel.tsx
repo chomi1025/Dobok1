@@ -4,6 +4,7 @@ import { Swiper, SwiperSlide, useSwiper } from "swiper/react";
 import { Autoplay, Pagination, EffectFade } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
+import "swiper/css/effect-fade";
 import styles from "./Carousel.module.scss";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -35,24 +36,30 @@ const banners = [
   },
 ];
 
-// Swiper 내부에서 사용할 제어 버튼 컴포넌트
 function CarouselControls() {
   const swiper = useSwiper();
 
+  const moveNext = () => {
+    swiper.slideNext();
+  };
+
+  const movePrev = () => {
+    swiper.slidePrev();
+  };
+
   return (
     <>
-      {/* 100% 동작하는 좌우 버튼 */}
       <button
         type="button"
         className={`${styles.navBtn} ${styles.prevBtn}`}
-        onClick={() => swiper.slidePrev()}
-        aria-label="Previous Slide"
+        onClick={movePrev}
+        aria-label="이전 슬라이드"
       />
       <button
         type="button"
         className={`${styles.navBtn} ${styles.nextBtn}`}
-        onClick={() => swiper.slideNext()}
-        aria-label="Next Slide"
+        onClick={moveNext}
+        aria-label="다음 슬라이드"
       />
     </>
   );
@@ -77,15 +84,15 @@ export default function Carousel() {
         autoplay={{
           delay: 5000,
           disableOnInteraction: false,
+          pauseOnMouseEnter: false,
         }}
-        speed={1200}
+        speed={800}
         pagination={{ clickable: true }}
       >
-        {/* Swiper 컴포넌트 내부에 직접 제어 버튼을 배치 */}
         <CarouselControls />
 
-        {banners.map((banner) => (
-          <SwiperSlide key={banner.id}>
+        {banners.map((banner, index) => (
+          <SwiperSlide key={`banner-${banner.id}-${index}`}>
             <div className={`${styles.slideItem} ${styles[banner.className]}`}>
               <img
                 src={banner.img}
@@ -97,8 +104,20 @@ export default function Carousel() {
               <div className={styles.overlay} />
 
               <div className={styles.textGroup}>
-                <h2>{banner.title}</h2>
-                <p>{banner.desc}</p>
+                <h2>
+                  {banner.title.split("\n").map((line, idx) => (
+                    <span key={idx} style={{ display: "block" }}>
+                      {line}
+                    </span>
+                  ))}
+                </h2>
+                <p>
+                  {banner.desc.split("\n").map((line, idx) => (
+                    <span key={idx} style={{ display: "block" }}>
+                      {line}
+                    </span>
+                  ))}
+                </p>
                 {banner.link && (
                   <Link className={styles.detailBtn} href={banner.link}>
                     바로 가기

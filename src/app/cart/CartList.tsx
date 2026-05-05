@@ -36,8 +36,7 @@ interface UnifiedCartItem {
   quantity: number;
   optionName?: string;
   option?: string;
-  color?: string;
-  size?: string;
+  optionName2?: string;
   isCustomizable: boolean;
 }
 
@@ -64,12 +63,17 @@ export default function CartListComponent({
   const router = useRouter();
   const queryClient = useQueryClient();
 
+  console.log(cart);
   const tableData: UnifiedCartItem[] = useMemo(() => {
     return cart.map((item, index) => {
-      const displayOption =
-        item.optionDisplay ||
-        item.productOption?.name ||
-        (item.color || item.size ? `${item.color} ${item.size}`.trim() : "");
+      const displayOption = [
+        item.optionName,
+        item.optionValue,
+        item.optionName2,
+        item.optionValue2,
+      ]
+        .filter(Boolean)
+        .join(" ");
 
       const uniqueId =
         item.id ||
@@ -87,7 +91,7 @@ export default function CartListComponent({
           item.thumbnail || item.product?.thumbnail || "/image/default.png",
         price: item.price || item.product?.price || 0,
         quantity: item.quantity || 0,
-        optionName: item.optionName || displayOption || "옵션 없음", // 이 부분 확인
+        optionName: item.optionName || displayOption || "옵션 없음",
         option: displayOption,
         isCustomizable:
           item.isCustomizable || item.product?.isCustomizable || false,
