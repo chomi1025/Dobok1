@@ -54,7 +54,6 @@ export default function ProductInfo({
     setSelectedSize(size);
 
     const targetOpt = product.options.find((opt) => {
-      // 4. 필드명 변경: opt.color -> opt.optionValue / opt.size -> opt.optionValue2
       const colorMatch =
         !colorOptions.length || opt.optionValue === selectedColor;
       const sizeMatch = !sizeOptions.length || opt.optionValue2 === size;
@@ -100,7 +99,6 @@ export default function ProductInfo({
   };
 
   useEffect(() => {
-    // 5. 단일 상품 체크 로직 필드명 변경
     const isSingleProduct =
       product.options.length === 1 &&
       !product.options[0].optionValue &&

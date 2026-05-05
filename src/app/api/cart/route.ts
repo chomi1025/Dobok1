@@ -15,6 +15,10 @@ export async function GET(req: Request) {
 
     const user = await prisma.user.findUnique({
       where: { username: targetUsername },
+      select: {
+        id: true,
+        username: true,
+      },
     });
 
     if (!user) {
@@ -40,6 +44,8 @@ export async function GET(req: Request) {
             id: true,
             optionName: true,
             optionName2: true,
+            optionValue: true,
+            optionValue2: true,
             price: true,
             stock: true,
           },
@@ -50,19 +56,32 @@ export async function GET(req: Request) {
       },
     });
 
-    const formattedItems = cartItems.map((item: any) => ({
-      cartItemId: item.id,
-      productId: item.productId,
-      productName: item?.product?.name,
-      thumbnail: item?.product?.thumbnail,
-      isCustomizable: item?.product?.isCustomizable || false,
-      optionId: item.productOptionId,
-      optionName: item.option
-        ? `${item.option.optionName || ""} ${item.option.optionName2 || ""}`.trim()
-        : "옵션 없음",
-      price: item.option?.price || 0,
-      quantity: item.quantity,
-    }));
+    const formattedItems = cartItems.map((item: any) => {
+      const optionText = item.option
+        ? [
+            item.option.optionName,
+            item.option.optionValue,
+            item.option.optionName2,
+            item.option.optionValue2,
+          ]
+            .filter(Boolean)
+            .join(" ")
+        : "옵션 없음";
+
+      return {
+        cartItemId: item.id,
+        productId: item.productId,
+        productName: item?.product?.name,
+        thumbnail: item?.product?.thumbnail,
+        isCustomizable: item?.product?.isCustomizable || false,
+        optionId: item.productOptionId,
+
+        optionName: optionText,
+
+        price: item.option?.price || 0,
+        quantity: item.quantity,
+      };
+    });
 
     return NextResponse.json(formattedItems, { status: 200 });
   } catch (error) {
