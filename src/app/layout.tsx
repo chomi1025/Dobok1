@@ -34,7 +34,7 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="ko" className={`${pretendard.variable} `}>
-      <body className={`${pretendard.variable} `}>
+      <body>
         <Providers>
           <EmotionRegistry>
             <TopBanner />

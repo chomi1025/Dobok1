@@ -1,3 +1,9 @@
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+
 import { prisma } from "@/lib/prisma";
 import BestProductClientPage from "./page.client";
 
@@ -15,6 +21,7 @@ export default async function BestProductPage({
 }) {
   const currentPage = Number(searchParams.page) || 1;
   const pageSize = 12;
+  const queryClient = new QueryClient();
 
   const skip = (currentPage - 1) * pageSize;
   const [totalItems, products] = await Promise.all([
@@ -38,11 +45,8 @@ export default async function BestProductPage({
   ]);
 
   return (
-    <BestProductClientPage
-      currentPage={currentPage}
-      pageSize={pageSize}
-      products={products}
-      totalItems={totalItems}
-    />
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <BestProductClientPage currentPage={currentPage} pageSize={pageSize} />
+    </HydrationBoundary>
   );
 }

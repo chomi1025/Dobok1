@@ -38,8 +38,8 @@ export async function GET(req: Request) {
         option: {
           select: {
             id: true,
-            color: true,
-            size: true,
+            optionName: true,
+            optionName2: true,
             price: true,
             stock: true,
           },
@@ -58,7 +58,7 @@ export async function GET(req: Request) {
       isCustomizable: item?.product?.isCustomizable || false,
       optionId: item.productOptionId,
       optionName: item.option
-        ? `${item.option.color || ""} ${item.option.size || ""}`.trim()
+        ? `${item.option.optionName || ""} ${item.option.optionName2 || ""}`.trim()
         : "옵션 없음",
       price: item.option?.price || 0,
       quantity: item.quantity,

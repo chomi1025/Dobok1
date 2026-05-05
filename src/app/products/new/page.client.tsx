@@ -7,8 +7,6 @@ import { ProductWithCategory } from "@/types/types";
 interface Props {
   currentPage: number;
   pageSize: number;
-  products: ProductWithCategory[];
-  totalItems: number;
 }
 
 const title = {
