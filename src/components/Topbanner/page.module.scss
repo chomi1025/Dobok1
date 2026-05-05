@@ -1,9 +1,11 @@
+@import "../../components/style/variables.module";
+
 @keyframes darkShimmer {
   0% {
-    transform: translateX(-100%); // 왼쪽 밖에서 시작
+    transform: translateX(-100%);
   }
   100% {
-    transform: translateX(100%); // 오른쪽 밖으로 통과
+    transform: translateX(100%);
   }
 }
 
@@ -15,6 +17,10 @@
   justify-content: center;
   overflow: hidden;
   position: relative;
+
+  @include mobile {
+    display: none;
+  }
 
   &.shimmerBackground {
     background-color: #0f0f0f;
