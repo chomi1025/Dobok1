@@ -17,13 +17,6 @@ const pretendard = localFont({
   variable: "--font-pretendard",
 });
 
-const nanumMyeongjo = localFont({
-  src: "../../public/fonts/NanumMyeongjo.woff2",
-  weight: "400 700",
-  display: "swap",
-  variable: "--font-nanum-myeongjo",
-});
-
 export const metadata: Metadata = {
   title: "도복일번지",
   description: "최고의 무술 용품 쇼핑몰",
@@ -40,10 +33,7 @@ export default async function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html
-      lang="ko"
-      className={`${pretendard.variable} ${nanumMyeongjo.variable}`}
-    >
+    <html lang="ko" className={`${pretendard.variable} `}>
       <body>
         <Providers>
           <EmotionRegistry>
