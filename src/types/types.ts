@@ -21,7 +21,7 @@ export type CategoryWithChildren = Prisma.CategoryGetPayload<{
 }>;
 
 export interface CategoryApiResponse {
-  products: ProductWithDetails[];
+  products: ProductWithCategory[];
   total: number;
 }
 
@@ -46,33 +46,24 @@ export interface Announcement {
   precautions?: string;
 }
 
-type PrismaProduct = Prisma.ProductGetPayload<{
-  include: {
-    category: { include: { parent: true } };
-    options: true;
-  };
-}>;
-
-type PrismaProductWithAll = Prisma.ProductGetPayload<{
-  include: {
-    options: true;
-    category: {
-      include: {
-        parent: true;
+export type ProductWithCategory = Omit<
+  Prisma.ProductGetPayload<{
+    include: {
+      options: true;
+      category: {
+        include: {
+          parent: true;
+        };
       };
     };
-  };
-}>;
-
-export type ProductWithCategory = Omit<PrismaProductWithAll, "announcement"> & {
+  }>,
+  "announcement"
+> & {
   isCustomizable: boolean;
-  announcement?:
-    | {
-        washing?: string;
-        notice?: string;
-      }
-    | null
-    | any;
+  announcement?: {
+    washing?: string;
+    notice?: string;
+  } | null;
   discountType: "PERCENTAGE" | "FIXED";
   discountValue: number | null;
   isRecommended: boolean;
