@@ -1,6 +1,10 @@
-"use client";
-import { Category, ProductWithCategory, Title } from "@/types/types";
+import { Title } from "@/types/types";
 import ProductSectionComponent from "../ProductSection/page";
+import { Category } from "@prisma/client";
+
+interface Props {
+  categories: Category[];
+}
 
 const title: Title = {
   name: "신제품",
@@ -9,10 +13,14 @@ const title: Title = {
   href: "/products/new",
 };
 
-export default async function NewSectionComponent() {
+export default async function NewSectionComponent({ categories }: Props) {
   return (
     <>
-      <ProductSectionComponent type={"new"} title={title} />
+      <ProductSectionComponent
+        type={"new"}
+        title={title}
+        categories={categories}
+      />
     </>
   );
 }

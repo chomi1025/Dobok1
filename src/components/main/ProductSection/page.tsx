@@ -3,35 +3,31 @@
 import { useState } from "react";
 import styles from "./page.module.scss";
 import ProductList from "@/components/product/ProductList";
-import { Category, Title } from "../../../types/types";
+import { Title } from "../../../types/types";
 import CategoryTabs from "@/components/CategoryTabs/page";
 import Button from "@/components/common/buttons/page";
 import { useQuery } from "@tanstack/react-query";
-import { fetchMainCategories, fetchProductPreview } from "@/lib/api";
+import { fetchProductPreview } from "@/lib/api";
+import { Category } from "@prisma/client";
 
 interface Props {
   title: Title;
   type: "best" | "new";
+  categories: Category[];
 }
 
-export default function ProductSectionComponent({ title, type }: Props) {
+export default function ProductSectionComponent({
+  title,
+  type,
+  categories,
+}: Props) {
   const [activeTab, setActiveTab] = useState<number | string>("all");
-
-  const { data: mainCategories = [] } = useQuery<Category[]>({
-    queryKey: ["mainCategories"],
-    queryFn: fetchMainCategories,
-    staleTime: 1000 * 60 * 5,
-  });
 
   const { data: products, isLoading } = useQuery({
     queryKey: ["products", type, activeTab],
     queryFn: () => fetchProductPreview(type, String(activeTab)),
     staleTime: 1000 * 60 * 5,
   });
-
-  const categoryList = Array.isArray(mainCategories)
-    ? mainCategories
-    : (mainCategories as any).categories || [];
 
   return (
     <section className={styles.inner}>
@@ -42,7 +38,7 @@ export default function ProductSectionComponent({ title, type }: Props) {
 
       {/* 탭 */}
       <CategoryTabs
-        categories={categoryList}
+        categories={categories}
         activeTab={activeTab}
         onTabChange={setActiveTab}
         className={styles.customMargin}
