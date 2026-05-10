@@ -9,6 +9,8 @@ import localFont from "next/font/local";
 import { Metadata } from "next";
 import TopBanner from "@/components/Topbanner/page";
 import Providers from "./providers";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/options";
 
 const pretendard = localFont({
   src: "../../public/fonts/PretendardVariable.woff2",
@@ -32,10 +34,12 @@ export default async function RootLayout({
 }: {
   children: ReactNode;
 }) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="ko" className={`${pretendard.variable} `}>
       <body>
-        <Providers>
+        <Providers session={session}>
           <EmotionRegistry>
             <TopBanner />
             <HeaderServer />
