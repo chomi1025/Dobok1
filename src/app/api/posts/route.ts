@@ -18,20 +18,25 @@ export async function GET(request: Request) {
     );
   }
 
+  const where = {
+    type: type as any,
+    deletedAt: null,
+  };
+
   try {
     const [posts, total] = await Promise.all([
       prisma.post.findMany({
-        where: { type: type as any },
+        where,
         orderBy: { createdAt: "desc" },
         take: limit,
-        skip: skip,
+        skip,
         include: {
           author: { select: { nickname: true } },
           _count: { select: { comments: true } },
         },
       }),
       prisma.post.count({
-        where: { type: type as any },
+        where,
       }),
     ]);
 

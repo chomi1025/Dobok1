@@ -14,8 +14,19 @@ interface ProductCardProps {
   product: ProductWithCategory;
 }
 
+const getDiscountedPrice = (price: number, type: string, value: number) => {
+  if (type === "PERCENTAGE") {
+    return price * (1 - value / 100);
+  }
+  if (type === "FIXED") {
+    return Math.max(0, price - value);
+  }
+  return price;
+};
+
 export default function ProductCard({ product }: ProductCardProps) {
   const { data: session } = useSession();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -48,6 +59,26 @@ export default function ProductCard({ product }: ProductCardProps) {
     }
   };
 
+  const baseOption = product.options?.[0];
+  const originalPrice = baseOption?.price || 0;
+
+  const isDiscounted =
+    product.discountValue !== null && (product.discountValue ?? 0) > 0;
+
+  const discountedPrice = isDiscounted
+    ? getDiscountedPrice(
+        originalPrice,
+        product.discountType || "PERCENTAGE",
+        product.discountValue || 0,
+      )
+    : originalPrice;
+
+  const discountRate = isDiscounted
+    ? product.discountType === "PERCENTAGE"
+      ? product.discountValue
+      : Math.round(((originalPrice - discountedPrice) / originalPrice) * 100)
+    : 0;
+
   return (
     <li>
       <Link
@@ -71,9 +102,43 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         <div>
           <p>{product.name}</p>
-          <strong>
-            <span>{product?.options?.[0]?.price?.toLocaleString()}</span>원
-          </strong>
+
+          {/* 가격 */}
+          <div className={styles.priceContainer}>
+            {isDiscounted ? (
+              <div className={styles.discountRow}>
+                <span className={styles.discountRate}>{discountRate}%</span>
+                <strong className={styles.finalPrice}>
+                  {discountedPrice.toLocaleString()}원
+                </strong>
+                <span className={styles.originalPrice}>
+                  {originalPrice.toLocaleString()}원
+                </span>
+              </div>
+            ) : (
+              <strong className={styles.finalPrice}>
+                {originalPrice.toLocaleString()}원
+              </strong>
+            )}
+          </div>
+
+          {/* 뱃지 */}
+          <div className={styles.badgeContainer}>
+            {product.isNew && (
+              <span className={`${styles.badge} ${styles.new}`}>NEW</span>
+            )}
+            {product.isBest && (
+              <span className={`${styles.badge} ${styles.best}`}>BEST</span>
+            )}
+            {product.isRecommended && (
+              <span className={`${styles.badge} ${styles.recommend}`}>
+                추천
+              </span>
+            )}
+            {isDiscounted && (
+              <span className={`${styles.badge} ${styles.sale}`}>SALE</span>
+            )}
+          </div>
         </div>
       </Link>
 

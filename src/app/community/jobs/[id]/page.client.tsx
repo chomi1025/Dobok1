@@ -60,11 +60,15 @@ export default function JobsDetailClientPage({ postId }: { postId: number }) {
       }
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("게시글이 삭제되었습니다.");
-      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+
+      await queryClient.invalidateQueries({
+        queryKey: ["jobs"],
+        exact: false,
+      });
+
       router.push("/community/jobs");
-      router.refresh();
     },
     onError: (error: any) => {
       toast.error(error.message || "삭제에 실패했습니다.");

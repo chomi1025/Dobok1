@@ -40,6 +40,7 @@ export async function POST(req: Request) {
       images,
       options,
       optionNames,
+      promotion,
     } = data;
 
     const product = await prisma.product.create({
@@ -53,20 +54,38 @@ export async function POST(req: Request) {
         options: {
           create: options.map((opt: any) => ({
             optionName: optionNames.name1,
-            optionName2: optionNames.name2,
+            optionName2: optionNames.name2 || null,
             optionValue: opt.optionValue,
             optionValue2: opt.optionValue2,
             price: Number(opt.price),
             stock: Number(opt.stock),
             status: opt.status,
+
+            discountType: opt.discountType || null,
+            discountValue:
+              opt.discountValue === "" || opt.discountValue == null
+                ? null
+                : Number(opt.discountValue),
           })),
         },
+
+        promotions: promotion?.value
+          ? {
+              create: [
+                {
+                  name: promotion.name || `${name} 할인`,
+                  type: promotion.type,
+                  value: Number(promotion.value),
+                  isActive: true,
+                },
+              ],
+            }
+          : undefined,
       },
     });
 
     return NextResponse.json(product);
   } catch (error: any) {
-    console.error("상품 등록 실패:", error);
     return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }

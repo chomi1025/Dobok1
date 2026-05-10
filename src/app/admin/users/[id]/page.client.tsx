@@ -6,6 +6,7 @@ import Button from "@/components/common/buttons/page";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { customConfirm } from "@/lib/swal";
+import UserPostsTab from "../components/userPostsTab";
 
 type TabType = "orders" | "posts" | "comments";
 
@@ -120,13 +121,14 @@ export default function UserDetailClientPage({ user }: { user: any }) {
         <div className={styles.tabContent}>
           {activeTab === "orders" && (
             <div className={styles.tablePlaceholder}>
-              {/* 여기에 UnifiedTable 또는 주문 리스트 컴포넌트 삽입 */}
               <p>최근 주문 내역이 표시됩니다.</p>
             </div>
           )}
+
           {activeTab === "posts" && (
-            <p>해당 유저가 작성한 전체 게시글 목록입니다.</p>
+            <UserPostsTab userId={user.id} active={activeTab === "posts"} />
           )}
+
           {activeTab === "comments" && <p>해당 유저가 남긴 댓글 목록입니다.</p>}
         </div>
       </section>

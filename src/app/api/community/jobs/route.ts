@@ -19,6 +19,7 @@ export async function GET(req: Request) {
 
     const whereClause: any = {
       type: "JOB",
+      deletedAt: null,
     };
 
     if (type === "HIRING" || type === "SEEKING") {

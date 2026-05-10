@@ -9,15 +9,14 @@ export async function GET(request: Request) {
       where: { isBest: true },
       orderBy: { createdAt: "desc" },
       take: DISPLAY_COUNT,
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        thumbnail: true,
-        isBest: true,
-        isCustomizable: true,
+      include: {
         options: true,
-        category: { select: { name: true, slug: true } },
+        category: {
+          select: {
+            name: true,
+            slug: true,
+          },
+        },
       },
     });
 

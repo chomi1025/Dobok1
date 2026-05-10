@@ -22,31 +22,23 @@ type PostWithAuthor = Post & {
 };
 
 interface Props {
-  initialPosts: PostWithAuthor[];
-  total: number;
   pageSize: number;
   currentPage: number;
 }
 
-export default function FreeBoardClientPage({
-  initialPosts,
-  total,
-  pageSize,
-  currentPage,
-}: Props) {
+export default function FreeBoardClientPage({ pageSize, currentPage }: Props) {
   const { data } = useQuery({
     queryKey: ["posts", "FREE", currentPage],
     queryFn: async () => {
       const res = await fetch(
         `/api/posts?type=FREE&page=${currentPage}&limit=${pageSize}`,
       );
-      return await res.json();
+      return res.json();
     },
-    initialData:
-      currentPage === 1 ? { posts: initialPosts, total: total } : undefined,
     staleTime: 1000 * 60,
   });
 
+  const total = data?.total;
   const displayPosts = data?.posts ?? [];
 
   const columns = useMemo<ColumnDef<PostWithAuthor>[]>(
@@ -122,7 +114,7 @@ export default function FreeBoardClientPage({
       <header className={styles.header}>
         <h1>자유게시판</h1>
 
-        <p>자유로운 소통과 유익한 정보가 가득한 커뮤니티 공간입니다</p>
+        <p>자유로운 소통과 유익한 정보가 가득한 커뮤니티 공간입니다.</p>
         <Button href="/community/free/new">글쓰기</Button>
       </header>
 

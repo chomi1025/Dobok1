@@ -10,12 +10,13 @@ import {
 } from "lucide-react";
 import { Order } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 
 const SalesChart = dynamic(() => import("../component/SalesChart"), {
   ssr: false,
   loading: () => (
     <div
-      style={{ height: 300, backgroundColor: "#f3f4f6", borderRadius: "12px" }}
+      style={{ height: 500, backgroundColor: "#f3f4f6", borderRadius: "12px" }}
     />
   ),
 });
@@ -27,6 +28,7 @@ interface AdminDashboardData {
   unansweredInquiries: number;
   todaySales: number;
   recentOrders: Order[];
+  pendingBusinessUsers: number;
 }
 
 const STATUS_MAP: Record<string, string> = {
@@ -58,6 +60,7 @@ export default function AdminDashboard() {
     unansweredInquiries = 0,
     todaySales = 0,
     recentOrders = [],
+    pendingBusinessUsers = 0,
   } = data || {};
 
   const stats = [
@@ -67,6 +70,7 @@ export default function AdminDashboard() {
       value: `${todayOrderCount}건`,
       icon: <ShoppingBag />,
       color: "#4f46e5",
+      href: "/admin/order",
     },
     {
       id: 2,
@@ -74,6 +78,7 @@ export default function AdminDashboard() {
       value: `${preparingCount}건`,
       icon: <Package />,
       color: "#ec4899",
+      href: "/admin/order?status=PREPARING",
     },
     {
       id: 3,
@@ -81,6 +86,7 @@ export default function AdminDashboard() {
       value: `${Number(todaySales).toLocaleString()}원`,
       icon: <CreditCard />,
       color: "#f59e0b",
+      href: "/admin/sales",
     },
     {
       id: 4,
@@ -88,6 +94,7 @@ export default function AdminDashboard() {
       value: `${todayNewUsers}건`,
       icon: <Users />,
       color: "#10b981",
+      href: "/admin/users",
     },
     {
       id: 5,
@@ -95,6 +102,15 @@ export default function AdminDashboard() {
       value: `${unansweredInquiries}건`,
       icon: <MessageSquare />,
       color: "#ef4444",
+      href: "/admin/inquiry?status=pending",
+    },
+    {
+      id: 6,
+      label: "사업자 승인 대기",
+      value: `${pendingBusinessUsers}건`,
+      icon: <Users />,
+      color: "#6366f1",
+      href: "/admin/business?period=30days&status=PENDING&page=1",
     },
   ];
 
@@ -104,18 +120,19 @@ export default function AdminDashboard() {
 
       <section className={styles.statsGrid}>
         {stats.map((stat) => (
-          <div key={stat.id} className={styles.statCard}>
+          <Link key={stat.id} href={stat.href} className={styles.statCard}>
             <div
               className={styles.iconWrapper}
               style={{ backgroundColor: stat.color }}
             >
               {stat.icon}
             </div>
+
             <div className={styles.statInfo}>
               <p className={styles.statLabel}>{stat.label}</p>
               <h3 className={styles.statValue}>{stat.value}</h3>
             </div>
-          </div>
+          </Link>
         ))}
       </section>
 

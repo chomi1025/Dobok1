@@ -8,7 +8,8 @@ const menuItems = [
   { slug: "orders", label: "주문 관리" },
   { slug: "products", label: "상품 관리" },
   { slug: "categories", label: "카테고리 관리" },
-  { slug: "users", label: "회원관리 " },
+  { slug: "users", label: "회원관리(전체) " },
+  { slug: "business", label: "회원관리(사업자) " },
 ];
 
 export default function AdminSidebar() {

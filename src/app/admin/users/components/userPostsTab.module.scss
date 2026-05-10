@@ -1,0 +1,74 @@
+.table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  text-align: center;
+  vertical-align: middle;
+
+  padding: 18px 10px;
+  border-bottom: 1px solid #eee;
+
+  font-size: 15px;
+  word-break: break-word;
+}
+
+.table th {
+  background-color: #f9f9f9;
+  font-weight: 600;
+  color: #333;
+}
+
+.titleColumn {
+  text-align: left !important;
+  padding-left: 20px;
+}
+
+.boardBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 4px 10px;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  background-color: #f3f4f6;
+  color: #555;
+}
+
+.titleLink {
+  color: #333;
+  font-weight: 500;
+
+  display: inline-block;
+  max-width: 100%;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.statusBadge {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.deleted {
+  color: #ef4444;
+}
+
+.empty {
+  padding: 100px 0;
+  text-align: center;
+  color: #999;
+}

@@ -122,7 +122,7 @@ export default function UsersClientPage({
   });
 
   return (
-    <div className={styles.Inner} style={{ width: "908px" }}>
+    <div className={styles.Inner}>
       <header>
         <h1>회원 관리</h1>
       </header>
@@ -140,7 +140,7 @@ export default function UsersClientPage({
   );
 }
 
-function UserFilter({ period, setPeriod }: UserFilterProps) {
+export function UserFilter({ period, setPeriod }: UserFilterProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -161,18 +161,17 @@ function UserFilter({ period, setPeriod }: UserFilterProps) {
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
-      }) // 결과: "2026. 04. 28."
-      .replace(/\. /g, ".") // 공백 제거: "2026.04.28."
-      .replace(/\.$/, ""); // 마지막 점 제거: "2026.04.28"
+      })
+      .replace(/\. /g, ".")
+      .replace(/\.$/, "");
   };
 
   const getPeriodRange = (period: Period) => {
-    const end = new Date(); // 오늘
-    const start = new Date(); // 시작일 계산용 변수
+    const end = new Date();
+    const start = new Date();
 
     switch (period) {
       case "today":
-        // 시작일이 오늘 그대로
         break;
       case "7days":
         start.setDate(end.getDate() - 7);
@@ -181,13 +180,11 @@ function UserFilter({ period, setPeriod }: UserFilterProps) {
         start.setDate(end.getDate() - 30);
         break;
       case "customDate":
-        // 달력에서 직접 고르는 모드일 때는 텍스트를 따로 표시
         return "직접 선택";
       default:
         return "기간 설정";
     }
 
-    // formatDate 함수를 이용해 "YYYY.MM.DD ~ YYYY.MM.DD" 형식으로 반환
     return `${formatDate(start)} ~ ${formatDate(end)}`;
   };
 
@@ -223,7 +220,6 @@ function UserFilter({ period, setPeriod }: UserFilterProps) {
   };
   return (
     <section className={styles.OrderFilter} aria-label="회원관리-검색필터">
-      {/* 기간 필터: 가입일 기준 */}
       <div className={styles.FilterPeriod}>
         <div className={styles.PeriodHeader}>
           <span>가입일자</span>
@@ -264,7 +260,6 @@ function UserFilter({ period, setPeriod }: UserFilterProps) {
         </div>
       </div>
 
-      {/* 회원 상태 및 텍스트 검색 */}
       <div className={styles.FilterGroup}>
         <div className={styles.FilterOrderStatus}>
           <span>회원상태</span>

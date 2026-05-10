@@ -62,12 +62,18 @@
 }
 
 .imageWrapper {
+  padding: 10px 5px;
   position: relative;
   width: 100%;
   overflow: hidden;
   aspect-ratio: 1 / 1;
   border-radius: rem(10);
 
+  .name {
+    font-size: 0.95rem;
+    margin-bottom: 5px;
+    color: #333;
+  }
   img {
     width: 100% !important;
     height: 100% !important;
@@ -96,4 +102,102 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
   }
+}
+
+.priceContainer {
+  .discountRow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+
+    .discountRate {
+      color: #ff4d4f;
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+
+    .finalPrice {
+      font-size: 1.1rem;
+      color: #222;
+    }
+
+    .originalPrice {
+      font-size: 0.85rem;
+      color: #bbb;
+      text-decoration: line-through;
+      margin-left: 2px;
+    }
+  }
+
+  .finalPrice {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+}
+
+.discountBadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #ff4d4f;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  z-index: 10;
+}
+
+// 뱃지
+.badgeList {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 5;
+}
+
+.badgeContainer {
+  display: flex;
+  gap: rem(5);
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 7px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 4px;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  text-transform: uppercase;
+
+  &.best {
+    background-color: #ffb800;
+  }
+
+  &.new {
+    background-color: #32a852;
+  }
+
+  &.hot {
+    background-color: #6366f1;
+  }
+
+  &.sale {
+    background-color: #ff4d4f;
+  }
+}
+
+.thumbnail {
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+&:hover .thumbnail {
+  transform: scale(1.05);
 }

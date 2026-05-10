@@ -281,6 +281,7 @@ export default function AdminProductClientPage({
 
     route.push(`${pathname}?${params.toString()}`);
   };
+
   const handleReset = () => {
     setFilters({ status: "ALL", mainId: "", subId: "", q: "" });
     route.push(pathname);
@@ -371,7 +372,9 @@ export default function AdminProductClientPage({
             </div>
 
             <div className={styles.filterActions}>
-              <Button className={styles.submitBtn}>검색</Button>
+              <Button className={styles.submitBtn} type="submit">
+                검색
+              </Button>
               <Button
                 variant="edit"
                 className={styles.resetBtn}

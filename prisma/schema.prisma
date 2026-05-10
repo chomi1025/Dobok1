@@ -54,6 +54,13 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+enum AuthStatus {
+  NONE
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id                Int               @id @default(autoincrement())
   email             String            @unique
@@ -71,8 +78,15 @@ model User {
   status            UserStatus        @default(ACTIVE)
   lastLoginAt       DateTime?
   updatedAt         DateTime          @default(now()) @updatedAt
+
+
+  businessStatus AuthStatus    @default(NONE)
+
+  businessInfo   BusinessInfo?
+
   accounts          Account[]
   comments          Comment[]
+
   inquiries         Inquiry[]
   inquiryReplies    InquiryReply[]
   receivedMessages  Message[]         @relation("ReceivedMessages")
@@ -84,9 +98,23 @@ model User {
   reviews           Review[]
   reviewReplies     ReviewReply[]
   sessions          Session[]
-  viewLogs        ContactViewLog[] @relation("ViewerRelation")
-  authoredLogs    ContactViewLog[] @relation("AuthorRelation")
-  nicknameHistory UserNicknameHistory[]
+  viewLogs          ContactViewLog[] @relation("ViewerRelation")
+  authoredLogs      ContactViewLog[] @relation("AuthorRelation")
+  nicknameHistory   UserNicknameHistory[]
+  deletedPosts      Post[]            @relation("DeletedPosts")
+}
+
+model BusinessInfo {
+  id             Int      @id @default(autoincrement())
+  userId         Int      @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName    String   // 상호명
+  businessNumber String   @unique // 사업자 번호
+  representative String   // 대표자명
+  taxEmail       String   // 세금계산서용 이메일
+  paperUrl       String   // 이미지/PDF URL
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model UserNicknameHistory {
@@ -104,6 +132,8 @@ model UserWithdrawReason {
   detail    String?
   createdAt DateTime @default(now())
 }
+
+
 
 model ContactViewLog {
   id           Int      @id @default(autoincrement())
@@ -144,6 +174,9 @@ model Category {
   parent    Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
   children  Category[] @relation("CategoryToCategory")
   products  Product[]
+
+  discountType  PromotionType?
+  discountValue Int?
 }
 
 model Product {
@@ -158,6 +191,7 @@ model Product {
   thumbnail      String?
   isBest         Boolean         @default(false)
   isNew          Boolean         @default(false)
+  isRecommended  Boolean         @default(false)
   announcement   Json?
   isCustomizable Boolean         @default(false)
   cartItems      CartItem[]
@@ -165,22 +199,35 @@ model Product {
   category       Category        @relation(fields: [categoryId], references: [id])
   options        ProductOption[]
   productQnas    ProductQna[]
+  discountType   PromotionType?
+  discountValue  Int?
 }
 
 model ProductOption {
   id           Int           @id @default(autoincrement())
   productId    Int
-  price        Int
   stock        Int
-  sale         Int?
   optionName   String?
   optionName2  String?
   optionValue  String?
   optionValue2 String?
   status       ProductStatus @default(ONSALE)
+
+  price        Int //원가
+  discountType PromotionType? //퍼센트 혹은 가격
+  discountValue Int? //할인값
+
   cartItems    CartItem[]
   product      Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
+
+
+enum PromotionType {
+  PERCENTAGE
+  FIXED
+}
+
+
 
 model CartItem {
   id              Int           @id @default(autoincrement())
@@ -384,10 +431,22 @@ model Post {
   author         User?            @relation(fields: [authorId], references: [id], onDelete: SetNull)
   authorNickname String?
 
+  deletedAt DateTime?
+  deletedBy Int?
+  deletedByUser User? @relation("DeletedPosts", fields: [deletedBy], references: [id])
+  deleteReason DeleteReason?
+
   @@index([type])
   @@index([jobType])
   @@index([city])
   @@index([jobRole])
+}
+
+enum DeleteReason {
+  USER
+  ADMIN
+  REPORTED
+  SPAM
 }
 
 model Attachment {
@@ -426,6 +485,7 @@ enum UserStatus {
 enum Role {
   USER
   ADMIN
+  BUSINESS
 }
 
 enum OrderStatus {

@@ -21,6 +21,9 @@ const data = [
   { name: "04/22", sales: 189000 },
   { name: "04/23", sales: 239000 },
   { name: "04/24", sales: 349000 },
+  { name: "04/25", sales: 349000 },
+  { name: "04/26", sales: 349000 },
+  { name: "04/27", sales: 349000 },
 ];
 
 export default function SalesChart() {
@@ -35,10 +38,10 @@ export default function SalesChart() {
   }
 
   return (
-    <div style={{ width: "100%", height: 300, marginTop: "20px", minWidth: 0 }}>
+    <div style={{ width: "100%", height: 500, marginTop: "20px", minWidth: 0 }}>
       <AreaChart
-        width={800}
-        height={300}
+        width={1144}
+        height={500}
         data={data}
         margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
         style={{ width: "100%" }}
