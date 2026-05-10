@@ -13,13 +13,32 @@ export default async function AdminProductDetailPage({
     prisma.product.findUnique({
       where: { id: productId },
       include: {
-        category: true,
-        options: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+            discountType: true,
+            discountValue: true,
+          },
+        },
+
+        options: {
+          orderBy: { id: "asc" },
+        },
       },
     }),
     prisma.category.findMany({
       where: { parentId: null },
-      include: { children: true },
+      include: {
+        children: {
+          select: {
+            id: true,
+            name: true,
+            discountType: true,
+            discountValue: true,
+          },
+        },
+      },
       orderBy: { sortOrder: "asc" },
     }),
   ]);

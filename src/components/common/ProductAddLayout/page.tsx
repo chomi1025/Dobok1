@@ -51,6 +51,9 @@ export default function AdminProductDetailLayout({
     parentCategoryId: product?.category?.parentId || "",
     categoryId: product?.categoryId || "",
     isCustomizable: product?.isCustomizable || false,
+
+    discountType: product?.discountType || "PERCENTAGE",
+    discountValue: product?.discountValue || "",
   });
 
   const [thumbnailPreview, setThumbnailPreview] = useState<string>(
@@ -143,7 +146,20 @@ export default function AdminProductDetailLayout({
     name2: product?.options?.[0]?.optionName2 || "",
   });
 
-  const [options, setOptions] = useState<any[]>(product?.options || []);
+  const [options, setOptions] = useState<any[]>(
+    product?.options?.map((opt: any) => ({
+      id: opt.id,
+
+      optionValue: opt.optionValue,
+      optionValue2: opt.optionValue2,
+      price: opt.price,
+      stock: opt.stock,
+      status: opt.status,
+
+      discountType: opt.discountType ?? "PERCENTAGE",
+      discountValue: opt.discountValue ?? "",
+    })) || [],
+  );
 
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
@@ -157,14 +173,57 @@ export default function AdminProductDetailLayout({
       price: 0,
       stock: 0,
       status: "ONSALE",
+      discountType: "PERCENTAGE",
+      discountValue: "",
     };
     setOptions([...options, newOption]);
   };
 
   const handleOptionChange = (id: string, field: string, value: any) => {
     setOptions((prev) =>
-      prev.map((opt) => (opt.id === id ? { ...opt, [field]: value } : opt)),
+      prev.map((opt) => {
+        if (opt.id !== id) return opt;
+
+        const updated = { ...opt, [field]: value };
+
+        const price = Number(updated.price) || 0;
+        const discountValue = Number(updated.discountValue) || 0;
+
+        if (field === "discountValue") {
+          if (updated.discountType === "FIXED") {
+            if (discountValue > price) {
+              toast.error("할인 금액은 원가를 넘을 수 없습니다.");
+              updated.discountValue = price;
+            }
+          }
+
+          if (updated.discountType === "PERCENTAGE") {
+            if (discountValue > 100) {
+              toast.error("할인율은 100%를 넘을 수 없습니다.");
+              updated.discountValue = 100;
+            }
+          }
+        }
+
+        if (field === "price") {
+          if (updated.discountType === "FIXED") {
+            if (Number(updated.discountValue) > Number(value)) {
+              updated.discountValue = value;
+              toast.error("할인 금액이 원가보다 높아 자동 조정됐습니다.");
+            }
+          }
+        }
+
+        return updated;
+      }),
     );
+  };
+
+  const handleDeleteOption = (id: string) => {
+    if (options.length <= 1) {
+      return toast.error("최소 한 개의 옵션은 있어야 합니다.");
+    }
+    setOptions(options.filter((opt) => opt.id !== id));
   };
 
   const handleSubmit = async () => {
@@ -199,6 +258,23 @@ export default function AdminProductDetailLayout({
       }
     }
 
+    for (const [index, opt] of options.entries()) {
+      const price = Number(opt.price) || 0;
+      const discount = Number(opt.discountValue) || 0;
+
+      if (opt.discountType === "FIXED" && discount > price) {
+        return toast.error(
+          `${index + 1}번째 옵션: 할인 금액이 원가를 초과할 수 없습니다.`,
+        );
+      }
+
+      if (opt.discountType === "PERCENTAGE" && discount > 100) {
+        return toast.error(
+          `${index + 1}번째 옵션: 할인율은 100%를 넘을 수 없습니다.`,
+        );
+      }
+    }
+
     const loadingToast = toast.loading(
       isEditMode ? "수정 중..." : "등록 중...",
     );
@@ -223,7 +299,16 @@ export default function AdminProductDetailLayout({
         isCustomizable: formData.isCustomizable,
         thumbnail: thumbnailUrl,
         images: finalImages,
-        options: options,
+        discountType: formData.discountType,
+        discountValue: formData.discountValue
+          ? Number(formData.discountValue)
+          : null,
+
+        options: options.map((opt) => ({
+          ...opt,
+          id: String(opt.id).startsWith("new-") ? undefined : opt.id,
+          discountValue: opt.discountValue ? Number(opt.discountValue) : null,
+        })),
         optionNames: optionNames,
       };
 
@@ -233,9 +318,7 @@ export default function AdminProductDetailLayout({
 
       const response = await fetch(url, {
         method: isEditMode ? "PUT" : "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
@@ -357,6 +440,37 @@ export default function AdminProductDetailLayout({
               )}
             </div>
           </div>
+
+          <div className={styles.inputGroup}>
+            <label>상품 전체 할인 설정 (카테고리 할인보다 우선 적용)</label>
+            <div
+              style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
+            >
+              <select
+                value={formData.discountType}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    discountType: e.target.value as any,
+                  })
+                }
+                style={{ width: "120px" }}
+              >
+                <option value="PERCENTAGE">퍼센트(%)</option>
+                <option value="FIXED">금액(원)</option>
+              </select>
+              <input
+                type="number"
+                placeholder="할인값 입력 (미입력 시 할인 없음)"
+                value={formData.discountValue}
+                onChange={(e) =>
+                  setFormData({ ...formData, discountValue: e.target.value })
+                }
+                style={{ flex: 1 }}
+              />
+            </div>
+          </div>
+
           <div className={styles.inputGroup}>
             <label>설명</label>
             <textarea
@@ -464,7 +578,8 @@ export default function AdminProductDetailLayout({
                   placeholder="옵션명 2"
                 />
               </th>
-              <th>가격</th>
+              <th>가격(원가)</th>
+              <th>할인 설정</th>
               <th>재고</th>
               <th>상태</th>
               <th>삭제</th>
@@ -513,6 +628,59 @@ export default function AdminProductDetailLayout({
                   </div>
                 </td>
 
+                {/* 할인 */}
+                <td>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <select
+                      value={opt.discountType || "PERCENTAGE"}
+                      onChange={(e) =>
+                        handleOptionChange(
+                          opt.id,
+                          "discountType",
+                          e.target.value,
+                        )
+                      }
+                      style={{
+                        height: "32px",
+                        fontSize: "12px",
+                        width: "75px",
+                      }}
+                    >
+                      <option value="PERCENTAGE">할인율(%)</option>
+                      <option value="FIXED">할인가(원)</option>
+                    </select>
+                    <input
+                      type="number"
+                      placeholder="값"
+                      value={
+                        opt.discountValue === null
+                          ? ""
+                          : String(opt.discountValue)
+                      }
+                      onChange={(e) =>
+                        handleOptionChange(
+                          opt.id,
+                          "discountValue",
+                          e.target.value === "" ? null : Number(e.target.value),
+                        )
+                      }
+                      style={{
+                        width: "60px",
+                        height: "32px",
+                        textAlign: "right",
+                      }}
+                    />
+                  </div>
+                </td>
+
+                {/* 가격 */}
+
                 {/* 재고 */}
                 <td>
                   <div className={styles.inputWrapper}>
@@ -548,15 +716,8 @@ export default function AdminProductDetailLayout({
                 </td>
 
                 {/* 삭제 버튼 */}
-                <td>
-                  <button
-                    className={styles.deleteBtn}
-                    onClick={() =>
-                      setOptions(options.filter((o) => o.id !== opt.id))
-                    }
-                  >
-                    삭제
-                  </button>
+                <td className={styles.deleteCol}>
+                  <button onClick={() => handleDeleteOption(opt.id)}>🗑</button>
                 </td>
               </tr>
             ))}

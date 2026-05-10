@@ -148,7 +148,7 @@ export default function OrdersClientPage({
   });
 
   return (
-    <div className={styles.Inner} style={{ width: "908px" }}>
+    <div className={styles.Inner}>
       <header>
         <h1>주문 관리</h1>
       </header>

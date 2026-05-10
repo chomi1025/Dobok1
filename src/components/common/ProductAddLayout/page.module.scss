@@ -160,7 +160,7 @@
     .optionTable {
       width: 100%;
       border-collapse: collapse;
-
+      table-layout: fixed;
       th,
       td {
         padding: 15px;
@@ -198,7 +198,6 @@
 
         input {
           width: 100px;
-          margin-right: 10px;
           padding: 8px 12px;
           border-radius: 4px;
           font-size: 14px;
@@ -400,7 +399,7 @@
 
     h4 {
       font-size: 18px;
-      margin: 0; // 헤더와 정렬 맞추기 위해 마진 제거
+      margin: 0;
       color: #333;
       border-left: 4px solid #000;
       padding-left: 12px;
@@ -410,12 +409,12 @@
   .optionTable {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; // 열 너비를 일정하게 유지
+    table-layout: fixed;
 
     th,
     td {
-      padding: 12px 10px; // 간격 최적화
-      text-align: center; // 기본 중앙 정렬
+      padding: 12px 10px;
+      text-align: center;
       border-bottom: 1px solid #eee;
       vertical-align: middle;
     }
@@ -445,8 +444,7 @@
       }
 
       td {
-        input[type="text"],
-        input[type="number"] {
+        input[type="text"] {
           width: 100%;
           padding: 10px;
           border-radius: 4px;
@@ -459,11 +457,13 @@
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 6px;
+
+          width: 100%;
 
           input {
-            width: 80px;
-            margin-right: 0;
+            width: 100%;
+            max-width: 100px;
+            box-sizing: border-box;
           }
 
           span {
@@ -501,4 +501,46 @@
       }
     }
   }
+}
+
+.deleteCol {
+  width: 50px;
+  text-align: center;
+}
+
+.deleteCol button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.optionTable th:nth-child(1),
+.optionTable td:nth-child(1) {
+  width: 15%;
+}
+
+.optionTable th:nth-child(2),
+.optionTable td:nth-child(2) {
+  width: 15%;
+}
+
+.optionTable th:nth-child(3),
+.optionTable td:nth-child(3) {
+  width: 15%;
+}
+
+.optionTable th:nth-child(4),
+.optionTable td:nth-child(4) {
+  width: 22%;
+}
+
+.optionTable th:nth-child(5),
+.optionTable td:nth-child(5) {
+  width: 13%;
+}
+
+.optionTable th:nth-child(6),
+.optionTable td:nth-child(6) {
+  width: 13%;
 }

@@ -40,15 +40,31 @@ export default async function NewProductPage({
             name: true,
             description: true,
             thumbnail: true,
-            isNew: true,
             isCustomizable: true,
+            createdAt: true,
+
+            discountType: true,
+            discountValue: true,
+            isNew: true,
+            isBest: true,
+            isRecommended: true,
             options: {
-              select: { id: true, price: true, size: true, color: true },
+              select: {
+                id: true,
+                price: true,
+                optionValue: true,
+                optionValue2: true,
+                status: true,
+                stock: true,
+                discountType: true,
+                discountValue: true,
+              },
             },
             category: { select: { name: true, slug: true } },
           },
         }),
       ]);
+
       return { products, totalItems };
     },
   });

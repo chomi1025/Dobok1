@@ -73,7 +73,11 @@ export type ProductWithCategory = Omit<PrismaProductWithAll, "announcement"> & {
       }
     | null
     | any;
+  discountType: "PERCENTAGE" | "FIXED";
+  discountValue: number | null;
+  isRecommended: boolean;
 };
+
 export interface Title {
   name: string;
   contents: string;

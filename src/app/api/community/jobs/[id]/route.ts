@@ -28,6 +28,12 @@ export async function DELETE(
   req: Request,
   { params }: { params: { id: string } },
 ) {
-  await prisma.post.delete({ where: { id: Number(params.id) } });
+  await prisma.post.update({
+    where: { id: Number(params.id) },
+    data: {
+      deletedAt: new Date(),
+    },
+  });
+
   return NextResponse.json({ success: true });
 }

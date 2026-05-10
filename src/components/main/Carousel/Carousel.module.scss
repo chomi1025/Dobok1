@@ -308,10 +308,9 @@
   position: relative;
 
   .bgImage {
-    transform: scale(2) translateX(-4%) translateY(-1%);
+    transform: scale(1.2) translateX(2%) translateY(-1%);
     object-position: 20% center;
     transition: transform 5s ease;
-    filter: brightness(1.03) contrast(1.1);
     object-position: center center;
     object-fit: cover;
     width: 100%;

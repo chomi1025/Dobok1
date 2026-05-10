@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import ProductPageComponent from "@/components/product/new_bestPage/page";
-import { ProductWithCategory } from "@/types/types";
 
 interface Props {
   currentPage: number;

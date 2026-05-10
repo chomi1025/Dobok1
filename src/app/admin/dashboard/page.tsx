@@ -27,6 +27,7 @@ export default async function DashboardPage() {
         unansweredInquiries,
         todaySalesResult,
         recentOrders,
+        pendingBusinessUsers,
       ] = await Promise.all([
         prisma.order.count({
           where: {
@@ -53,6 +54,11 @@ export default async function DashboardPage() {
           orderBy: { createdAt: "desc" },
           take: 5,
         }),
+        prisma.user.count({
+          where: {
+            businessStatus: "PENDING",
+          },
+        }),
       ]);
 
       return {
@@ -62,6 +68,7 @@ export default async function DashboardPage() {
         unansweredInquiries,
         todaySales: todaySalesResult._sum?.total || 0,
         recentOrders: JSON.parse(JSON.stringify(recentOrders)),
+        pendingBusinessUsers,
       };
     },
   });

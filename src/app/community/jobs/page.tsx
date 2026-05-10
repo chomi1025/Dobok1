@@ -64,6 +64,7 @@ export default async function JobsPage({ searchParams }: PageProps) {
 
   const whereClause: any = {
     type: "JOB",
+    deletedAt: null,
   };
 
   if (currentType === "HIRING" || currentType === "SEEKING") {
@@ -75,7 +76,11 @@ export default async function JobsPage({ searchParams }: PageProps) {
   await queryClient.prefetchQuery({
     queryKey: ["jobs", currentType, currentPage],
     queryFn: async () => {
-      const whereClause: any = { type: "JOB" };
+      const whereClause: any = {
+        type: "JOB",
+        deletedAt: null,
+      };
+
       if (currentType !== "ALL") {
         whereClause.jobType = currentType;
       }
