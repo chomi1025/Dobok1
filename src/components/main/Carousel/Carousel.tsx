@@ -123,7 +123,11 @@ export default function Carousel() {
                   ))}
                 </p>
                 {banner.link && (
-                  <Link className={styles.detailBtn} href={banner.link}>
+                  <Link
+                    className={styles.detailBtn}
+                    href={banner.link}
+                    prefetch={false}
+                  >
                     바로 가기
                     <ArrowRight
                       style={{
