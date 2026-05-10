@@ -6,14 +6,10 @@ import CategoryTabs from "@/components/CategoryTabs/page";
 import { useRouter } from "next/navigation";
 import ProductList from "@/components/product/ProductList";
 import PagenationComponent from "@/components/pagenation/page";
-import { ChevronRight } from "lucide-react";
-import { Category } from "@/lib/category";
+
 import { useQuery } from "@tanstack/react-query";
-import {
-  ProductWithDetails,
-  CategoryWithChildren,
-  CategoryApiResponse,
-} from "@/types/types";
+import { CategoryWithChildren, CategoryApiResponse } from "@/types/types";
+import { ChevronRight } from "lucide-react";
 
 type Props = {
   categories: CategoryWithChildren[];
