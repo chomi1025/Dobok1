@@ -21,7 +21,7 @@ const banners = [
   },
   {
     id: 2,
-    title: "노력의 결과를 두르다.",
+    title: "노력의 결과를 두르다. 하하하",
     desc: "수많은 땀방울이 만들어낸 수련의 깊이,\n도복일번지와 함께 시작하세요.",
     img: "https://res.cloudinary.com/dxak1ux7x/image/upload/f_auto,q_auto/v1777973365/2_f8dntg.png",
     className: "second",
@@ -67,14 +67,6 @@ function CarouselControls() {
 }
 
 export default function Carousel() {
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    setIsReady(true);
-  }, []);
-
-  if (!isReady) return null;
-
   return (
     <div className={styles.container}>
       <Swiper
@@ -100,6 +92,7 @@ export default function Carousel() {
                 alt={banner.title}
                 fill
                 className={styles.bgImage}
+                priority={index === 0}
                 loading="eager"
                 decoding="async"
                 quality={100}

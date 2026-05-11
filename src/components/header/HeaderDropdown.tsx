@@ -1,24 +1,16 @@
-"use client";
 import Link from "next/link";
 import styles from "./Header.module.scss";
-import { useQuery } from "@tanstack/react-query";
-import { getMainCategories } from "@/lib/category";
+import { Category } from "@prisma/client";
 
-interface Category {
-  id: number;
-  name: string;
-  slug: string;
-  parentId: number | null;
-  sortOrder: number | null;
-  children?: Category[];
+type CategoryWithChidren = Category & {
+  children?: CategoryWithChidren[];
+};
+
+interface Props {
+  categories: CategoryWithChidren[];
 }
 
-export default function HeaderDropdown() {
-  const { data: categories = [] } = useQuery<Category[]>({
-    queryKey: ["categories"],
-    queryFn: () => fetch("/api/categories").then((res) => res.json()),
-  });
-
+export default function HeaderDropdown({ categories }: Props) {
   return (
     <>
       {categories.map((cat) => (
