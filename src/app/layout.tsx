@@ -16,7 +16,7 @@ import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 
 const pretendard = localFont({
-  src: "../../public/fonts/dehinted-subset-PretendardVariable-Regular.woff2",
+  src: "../../public/fonts/PretendardVariable.woff2",
   weight: "400 800",
   display: "swap",
   preload: true,

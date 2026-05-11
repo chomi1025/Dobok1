@@ -2,12 +2,8 @@
 
 import { Swiper, SwiperSlide, useSwiper } from "swiper/react";
 import { Autoplay, Pagination, EffectFade } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/effect-fade";
 import styles from "./Carousel.module.scss";
 import Link from "next/link";
-import { useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 
@@ -21,7 +17,7 @@ const banners = [
   },
   {
     id: 2,
-    title: "노력의 결과를 두르다. 하하하",
+    title: "노력의 결과를 두르다.",
     desc: "수많은 땀방울이 만들어낸 수련의 깊이,\n도복일번지와 함께 시작하세요.",
     img: "https://res.cloudinary.com/dxak1ux7x/image/upload/f_auto,q_auto/v1777973365/2_f8dntg.png",
     className: "second",
