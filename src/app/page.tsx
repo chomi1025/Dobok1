@@ -3,7 +3,6 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import styles from "./page.module.scss";
 import { getQueryClient } from "@/lib/query.client";
 import { fetchMainCategories, fetchProductPreview } from "@/lib/api";
-import Carousel from "@/components/main/Carousel/Carousel";
 import ScrollAnimation from "@/components/common/ScrollAnimation";
 import CategoryIconComponent from "@/components/main/CategoryIcon/CategoryIcon";
 import BestSectionComponent from "@/components/main/BestSection/page";
@@ -11,6 +10,7 @@ import { MessageSquare, Settings, Trophy, Users } from "lucide-react";
 import Link from "next/link";
 import NewSectionComponent from "@/components/main/NewSection/page";
 import InstagramComponent from "@/components/main/Instagram/page";
+import dynamic from "next/dynamic";
 
 export const metadata: Metadata = {
   title: "도복일번지",
@@ -18,6 +18,10 @@ export const metadata: Metadata = {
 };
 
 export const revalidate = 60;
+
+const Carousel = dynamic(() => import("@/components/main/Carousel/Carousel"), {
+  ssr: false,
+});
 
 export default async function HomePage() {
   const queryClient = getQueryClient();
