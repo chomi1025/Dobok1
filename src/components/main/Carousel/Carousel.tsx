@@ -91,7 +91,7 @@ export default function Carousel() {
                 priority={index === 0}
                 loading="eager"
                 decoding="async"
-                quality={100}
+                quality={85}
                 sizes="100vw"
               />
               <div className={styles.overlay} />
