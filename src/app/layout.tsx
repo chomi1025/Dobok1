@@ -11,11 +11,15 @@ import TopBanner from "@/components/Topbanner/page";
 import Providers from "./providers";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/options";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/effect-fade";
 
 const pretendard = localFont({
-  src: "../../public/fonts/PretendardVariable.woff2",
-  weight: "100 900",
+  src: "../../public/fonts/dehinted-subset-PretendardVariable-Regular.woff2",
+  weight: "400 800",
   display: "swap",
+  preload: true,
   variable: "--font-pretendard",
 });
 
@@ -42,10 +46,14 @@ export default async function RootLayout({
         <Providers session={session}>
           <EmotionRegistry>
             <TopBanner />
-            <HeaderServer />
 
+            {/* 헤더 */}
+            <HeaderServer session={session} />
+
+            {/* 메인 */}
             <main className="main">{children}</main>
 
+            {/* 토스터 */}
             <Toaster
               position="top-center"
               containerStyle={{
@@ -83,6 +91,8 @@ export default async function RootLayout({
                 },
               }}
             />
+
+            {/* 푸터 */}
             <Footer />
             <MobileNavPage />
           </EmotionRegistry>

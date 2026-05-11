@@ -5,14 +5,15 @@
   width: 100%;
   overflow: hidden;
   padding: 0;
+  min-height: rem(600);
 
   .navBtn {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     z-index: 20;
-    width: 60px;
-    height: 60px;
+    width: rem(60);
+    height: rem(60);
     cursor: pointer;
     background: transparent;
     border: none;
@@ -28,8 +29,8 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 20px;
-      height: 20px;
+      width: rem(20);
+      height: rem(20);
       border-top: 2px solid #fff;
       border-right: 2px solid #fff;
       filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.8));
@@ -121,11 +122,18 @@
   :global(.swiper-pagination) {
     z-index: 20;
   }
+
+  :global(.swiper),
+  :global(.swiper-wrapper),
+  :global(.swiper-slide) {
+    height: rem(600);
+  }
 }
 
 .slideItem {
   width: 100%;
-  height: rem(600);
+  min-height: rem(600);
+  height: 100vh;
   position: relative;
   display: flex;
   align-items: center;
