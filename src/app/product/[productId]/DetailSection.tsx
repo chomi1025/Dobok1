@@ -1,9 +1,9 @@
 import Image from "next/image";
 import styles from "./Detailsection.module.scss";
-import { ProductWithCategory } from "@/types/types";
+import { ProductFull } from "./page.client";
 
 interface DetailSectionProps {
-  product: ProductWithCategory;
+  product: ProductFull;
 }
 
 export default function DetailSection({ product }: DetailSectionProps) {

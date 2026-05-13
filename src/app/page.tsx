@@ -11,6 +11,7 @@ import Link from "next/link";
 import NewSectionComponent from "@/components/main/NewSection/page";
 import InstagramComponent from "@/components/main/Instagram/page";
 import dynamic from "next/dynamic";
+import Carousel from "@/components/main/Carousel/Carousel";
 
 export const metadata: Metadata = {
   title: "도복일번지",
@@ -18,10 +19,6 @@ export const metadata: Metadata = {
 };
 
 export const revalidate = 60;
-
-const Carousel = dynamic(() => import("@/components/main/Carousel/Carousel"), {
-  ssr: false,
-});
 
 export default async function HomePage() {
   const queryClient = getQueryClient();
