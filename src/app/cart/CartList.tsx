@@ -1,8 +1,8 @@
 "use client";
-import { Table } from "@/components/Table/page";
+
 import styles from "./CartList.module.scss";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { customConfirm } from "@/lib/swal";
@@ -10,21 +10,12 @@ import Button from "@/components/common/buttons/page";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   createColumnHelper,
-  flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { X } from "lucide-react";
-import { UnifiedTable } from "@/components/common/DataTable";
 
-interface Column<T> {
-  key: keyof T | string;
-  label: React.ReactNode;
-  width?: string;
-  flex?: number;
-  align?: "left" | "center" | "right";
-  render?: (row: T) => React.ReactNode;
-}
+import { UnifiedTable } from "@/components/common/DataTable";
+import { X } from "lucide-react";
 
 interface UnifiedCartItem {
   id: number;
@@ -32,12 +23,27 @@ interface UnifiedCartItem {
   productOptionId?: number;
   productName: string;
   thumbnail: string;
+
   price: number;
+  originPrice: number;
+
   quantity: number;
+
   optionName?: string;
   option?: string;
   optionName2?: string;
+
   isCustomizable: boolean;
+}
+
+declare module "@tanstack/react-table" {
+  interface TableMeta<TData> {
+    checkedItems: number[];
+    toggleCheck: (id: number) => void;
+
+    isAllChecked: boolean;
+    toggleAll: () => void;
+  }
 }
 
 interface Props {
@@ -53,6 +59,14 @@ const STEPS = [
   { label: "주문완료", step: 2, path: "/order/success" },
 ];
 
+const columnHelper = createColumnHelper<UnifiedCartItem>();
+
+const Checkbox = React.memo(
+  ({ checked, onChange }: { checked: boolean; onChange: () => void }) => {
+    return <input type="checkbox" checked={checked} onChange={onChange} />;
+  },
+);
+
 export default function CartListComponent({
   user,
   cart,
@@ -63,7 +77,6 @@ export default function CartListComponent({
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  console.log(cart);
   const tableData: UnifiedCartItem[] = useMemo(() => {
     return cart.map((item, index) => {
       const displayOption = [
@@ -86,32 +99,42 @@ export default function CartListComponent({
         id: uniqueId,
         productId: item.productId || item.product?.id,
         productOptionId: item.productOptionId,
+
         productName: item.productName || item.product?.name || "상품 정보 없음",
+
         thumbnail:
           item.thumbnail || item.product?.thumbnail || "/image/default.png",
-        price: item.price || item.product?.price || 0,
+
+        originPrice: item.originPrice || 0,
+        price: item.finalPrice || 0,
+
         quantity: item.quantity || 0,
+
         optionName: item.optionName || displayOption || "옵션 없음",
+
         option: displayOption,
+
         isCustomizable:
           item.isCustomizable || item.product?.isCustomizable || false,
       };
     });
   }, [cart]);
 
-  const toggleCheck = (id: number) => {
+  const toggleCheck = useCallback((id: number) => {
     setCheckedItems((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
-  };
+  }, []);
 
-  const toggleAll = () => {
-    if (checkedItems.length === tableData.length) {
-      setCheckedItems([]);
-    } else {
-      setCheckedItems(tableData.map((item) => item.id));
-    }
-  };
+  const toggleAll = useCallback(() => {
+    setCheckedItems((prev) => {
+      if (prev.length === tableData.length) {
+        return [];
+      }
+
+      return tableData.map((item) => item.id);
+    });
+  }, [tableData]);
 
   const afterDelete = () => {
     if (user) {
@@ -205,65 +228,55 @@ export default function CartListComponent({
     }
   };
 
-  const columnHelper = createColumnHelper<UnifiedCartItem>();
+  const isAllChecked =
+    tableData.length > 0 && checkedItems.length === tableData.length;
 
   const columns = useMemo(
     () => [
       columnHelper.display({
         id: "select",
         size: 40,
-        header: () => (
-          <input
-            type="checkbox"
-            checked={
-              tableData.length > 0 && checkedItems.length === tableData.length
-            }
-            onChange={toggleAll}
-          />
-        ),
-        cell: ({ row }) => (
-          <input
-            type="checkbox"
-            checked={checkedItems.includes(row.original.id)}
-            onChange={() => toggleCheck(row.original.id)}
-          />
-        ),
+
+        header: ({ table }) => {
+          const { isAllChecked, toggleAll } = table.options.meta!;
+
+          return <Checkbox checked={isAllChecked} onChange={toggleAll} />;
+        },
+
+        cell: ({ row, table }) => {
+          const { checkedItems, toggleCheck } = table.options.meta!;
+
+          return (
+            <Checkbox
+              checked={checkedItems.includes(row.original.id)}
+              onChange={() => toggleCheck(row.original.id)}
+            />
+          );
+        },
       }),
+
       columnHelper.accessor("productName", {
         header: "상품명",
         size: 440,
+
         cell: ({ row }) => (
-          <div
-            className={styles.productNameArea}
-            style={{ display: "flex", alignItems: "center", gap: "12px" }}
-          >
-            <div
-              className={styles.thumb}
-              style={{
-                position: "relative",
-                width: "90px",
-                height: "90px",
-                flexShrink: 0,
-              }}
-            >
+          <div className={styles.productNameArea}>
+            <div className={styles.imageWrapper}>
               <Image
                 src={row.original.thumbnail}
                 fill
                 alt="thumb"
-                style={{ objectFit: "cover", borderRadius: "4px" }}
+                sizes="90px"
+                unoptimized
               />
             </div>
-            <div
-              className={styles.infoText}
-              style={{ textAlign: "left", overflow: "hidden" }}
-            >
-              <p style={{ fontWeight: 700, margin: "0 0 4px 0" }}>
-                {row.original.productName}
-              </p>
+
+            <div className={styles.infoText}>
+              <p className={styles.name}>{row.original.productName}</p>
 
               {row.original.optionName &&
                 row.original.optionName !== "옵션 없음" && (
-                  <span style={{ color: "#888", fontSize: "13px" }}>
+                  <span className={styles.option}>
                     [옵션] {row.original.optionName}
                   </span>
                 )}
@@ -274,38 +287,62 @@ export default function CartListComponent({
       columnHelper.accessor("quantity", {
         header: "수량",
         size: 80,
+
         cell: (info) => <span>{info.getValue()}개</span>,
       }),
+
       columnHelper.accessor("price", {
         header: "상품금액",
         size: 150,
-        cell: (info) => (
-          <span style={{ fontWeight: 600 }}>
-            {info.getValue().toLocaleString()}원
-          </span>
-        ),
+
+        cell: ({ row }) => {
+          const origin = row.original.originPrice;
+          const final = row.original.price;
+
+          const isDiscount = origin > final;
+
+          return (
+            <div className={styles.priceArea}>
+              {isDiscount && (
+                <p className={styles.originPrice}>
+                  {origin.toLocaleString()}원
+                </p>
+              )}
+
+              <strong className={styles.finalPrice}>
+                {final.toLocaleString()}
+                <span>원</span>
+              </strong>
+            </div>
+          );
+        },
       }),
+
       columnHelper.display({
         id: "delete",
         header: "삭제",
         size: 60,
+
         cell: ({ row }) => (
-          <button
-            onClick={() => removeItem(row.original.id)}
-            className={styles.deleteBtn}
-          >
-            <X size={18} color="#999" />
+          <button className={styles.deleteBtn}>
+            <X size={18} />
           </button>
         ),
       }),
     ],
-    [checkedItems, tableData],
+    [],
   );
 
   const table = useReactTable({
     data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    meta: {
+      checkedItems,
+      toggleCheck,
+      isAllChecked,
+      toggleAll,
+    },
   });
 
   const selectedItemsData = tableData.filter((item) =>

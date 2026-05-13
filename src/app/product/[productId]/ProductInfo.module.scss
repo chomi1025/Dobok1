@@ -12,10 +12,71 @@
   gap: 80px;
   align-items: flex-start;
 
+  @include mobile {
+    display: block;
+  }
+
   > div {
     width: calc(100% / 2);
   }
 }
+
+// 가격
+.price {
+  margin-bottom: rem(28);
+
+  > div {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    > span {
+      margin-left: rem(8);
+    }
+  }
+
+  strong {
+    font-size: rem(34);
+    font-weight: 800;
+    color: #111;
+    line-height: 1;
+  }
+}
+
+.priceArea {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: rem(4);
+
+  .originPrice {
+    font-size: rem(13);
+    color: #aaa;
+    text-decoration: line-through;
+    line-height: 1;
+  }
+
+  .finalPrice {
+    font-size: rem(18);
+    font-weight: 700;
+    color: #111;
+    line-height: 1;
+  }
+}
+
+.originalPrice {
+  font-size: rem(15);
+  color: #999;
+  text-decoration: line-through;
+}
+
+.discountPercent {
+  font-size: rem(15);
+  font-weight: 700;
+  color: #e53935;
+}
+
+// 썸네일
 
 .thumbnailArea {
   position: relative;
@@ -56,7 +117,6 @@
     > strong {
       font-size: rem(24);
       font-weight: 700;
-      margin-right: rem(5);
     }
   }
 }
@@ -88,6 +148,13 @@
   }
 }
 
+.selectedItem {
+  padding: rem(16);
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: rem(8);
+}
+
 .optionGroup {
   margin-top: rem(24);
 
@@ -115,8 +182,12 @@
 
       &.active {
         background-color: #333;
-        color: #fff;
+
         border: none;
+
+        button {
+          color: #fff;
+        }
       }
 
       small {

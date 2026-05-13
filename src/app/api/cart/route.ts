@@ -1,5 +1,6 @@
 import { authOptions } from "@/lib/auth/options";
 import { prisma } from "@/lib/prisma";
+import { calcDiscountPrice } from "@/utils/calcDiscoutPrice";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
@@ -37,6 +38,9 @@ export async function GET(req: Request) {
             name: true,
             thumbnail: true,
             isCustomizable: true,
+
+            discountType: true,
+            discountValue: true,
           },
         },
         option: {
@@ -48,6 +52,9 @@ export async function GET(req: Request) {
             optionValue2: true,
             price: true,
             stock: true,
+
+            discountType: true,
+            discountValue: true,
           },
         },
       },
@@ -68,6 +75,28 @@ export async function GET(req: Request) {
             .join(" ")
         : "옵션 없음";
 
+      const originPrice = item.option?.price || 0;
+
+      let finalPrice = originPrice;
+
+      // 옵션 할인 우선
+      if (item.option?.discountType && item.option?.discountValue) {
+        finalPrice = calcDiscountPrice({
+          price: originPrice,
+          discountType: item.option.discountType,
+          discountValue: item.option.discountValue,
+        });
+      }
+
+      // 상품 할인
+      else if (item.product?.discountType && item.product?.discountValue) {
+        finalPrice = calcDiscountPrice({
+          price: originPrice,
+          discountType: item.product.discountType,
+          discountValue: item.product.discountValue,
+        });
+      }
+
       return {
         cartItemId: item.id,
         productId: item.productId,
@@ -78,7 +107,9 @@ export async function GET(req: Request) {
 
         optionName: optionText,
 
-        price: item.option?.price || 0,
+        originPrice,
+        finalPrice,
+
         quantity: item.quantity,
       };
     });
@@ -94,62 +125,87 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.username) {
-    return NextResponse.json(
-      { message: "로그인이 필요합니다." },
-      { status: 401 },
-    );
-  }
-
   try {
-    const user = await prisma.user.findUnique({
-      where: { username: session.user.username },
-    });
+    const session = await getServerSession(authOptions);
 
-    if (!user) {
+    if (!session?.user?.id) {
       return NextResponse.json(
-        { message: "유저를 찾을 수 없습니다." },
-        { status: 404 },
+        { message: "로그인이 필요합니다." },
+        { status: 401 },
       );
     }
 
-    const userId = user.id;
-    const { items } = await req.json();
+    const body = await req.json();
+
+    const items: {
+      productId: number;
+      productOptionId: number;
+      quantity: number;
+    }[] = body.items;
 
     for (const item of items) {
-      const pId = Number(item.productId);
-      const oId = Number(item.productOptionId);
-      const qty = Number(item.quantity);
-
       const option = await prisma.productOption.findUnique({
-        where: { id: oId },
+        where: {
+          id: item.productOptionId,
+        },
       });
 
-      if (!option) continue;
+      if (!option) {
+        return NextResponse.json(
+          { message: "존재하지 않는 옵션입니다." },
+          { status: 404 },
+        );
+      }
 
-      await prisma.cartItem.upsert({
+      if (option.status !== "ONSALE") {
+        return NextResponse.json(
+          { message: "판매 불가능한 상품입니다." },
+          { status: 400 },
+        );
+      }
+
+      const exist = await prisma.cartItem.findUnique({
         where: {
           userId_productOptionId: {
-            userId: userId,
-            productOptionId: oId,
+            userId: Number(session.user.id),
+            productOptionId: item.productOptionId,
           },
         },
-        create: {
-          userId: userId,
-          productId: pId,
-          productOptionId: oId,
-          quantity: qty,
-        },
-        update: {
-          quantity: { increment: qty },
-        },
       });
+
+      // 수량 증가
+      if (exist) {
+        await prisma.cartItem.update({
+          where: {
+            id: exist.id,
+          },
+          data: {
+            quantity: exist.quantity + item.quantity,
+          },
+        });
+      } else {
+        // 새로 생성
+        await prisma.cartItem.create({
+          data: {
+            userId: Number(session.user.id),
+            productId: item.productId,
+            productOptionId: item.productOptionId,
+            quantity: item.quantity,
+          },
+        });
+      }
     }
-    return NextResponse.json({ message: "장바구니 담기 성공" });
+
+    return NextResponse.json({
+      ok: true,
+    });
   } catch (error) {
-    console.error("POST 에러 상세 정보:", error);
-    return NextResponse.json({ message: "서버 에러 발생" }, { status: 500 });
+    console.error(error);
+
+    return NextResponse.json(
+      { message: "장바구니 추가 실패" },
+      { status: 500 },
+    );
   }
 }
 

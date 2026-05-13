@@ -210,28 +210,91 @@
 
 .productNameArea {
   display: flex;
-  align-items: center;
-  gap: 15px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: rem(25);
+  width: 100%;
   text-align: left;
+
+  @include mobile {
+    gap: rem(10);
+  }
 
   .imageWrapper {
     position: relative;
-    width: 80px;
-    height: 80px;
+    width: rem(90);
+    height: rem(90);
     flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: rem(8);
+    }
   }
 
   .infoText {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: rem(4);
+
     .name {
+      font-size: rem(15);
       font-weight: 700;
       color: #111;
+      line-height: 1.4;
     }
+
     .option {
-      font-size: 13px;
+      font-size: rem(13);
       color: #888;
+      line-height: 1.4;
     }
+  }
+}
+
+// 가격
+.priceArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: rem(4);
+}
+
+.originPrice {
+  font-size: rem(13);
+  color: #aaa;
+  text-decoration: line-through;
+  line-height: 1;
+}
+
+.finalPrice {
+  display: flex;
+  align-items: baseline;
+  gap: rem(2);
+
+  font-size: rem(17);
+  font-weight: 700;
+  color: #111;
+  line-height: 1;
+
+  span {
+    font-size: rem(13);
+    font-weight: 500;
+  }
+}
+
+.deleteBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  color: #999;
+  transition: 0.2s;
+
+  &:hover {
+    color: #e11d48;
   }
 }
