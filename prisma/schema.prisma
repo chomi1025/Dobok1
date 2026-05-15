@@ -277,6 +277,11 @@ model OrderItem {
   productName  String
   totalPrice   Int
   unitPrice    Int
+
+  originPrice  Int?
+  salePrice    Int?
+  discountRate Int?
+
   isCustom     Boolean  @default(false)
   claims       Claim[]
   order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)

@@ -56,7 +56,7 @@ export default function OrdersClientPage({
     () => [
       columnHelper.accessor("orderNumber", {
         header: "주문번호",
-        size: 140,
+        meta: { flex: 1.4 },
         cell: (info) => {
           const orderNumber = info.getValue();
 
@@ -74,22 +74,26 @@ export default function OrdersClientPage({
           );
         },
       }),
+
       columnHelper.accessor("createdAt", {
         header: "주문일",
-        size: 110,
+        meta: { flex: 1 },
         cell: (info) => new Date(info.getValue()).toLocaleDateString(),
       }),
+
       columnHelper.accessor("buyerName", {
         header: "고객명",
-        size: 100,
+        meta: { flex: 1 },
       }),
+
       columnHelper.display({
         id: "productName",
         header: "상품명",
-        size: 358,
+        meta: { flex: 3.5 },
         cell: ({ row }) => {
           const items = row.original.items;
           const firstItem = items[0]?.productName || "상품 없음";
+
           const totalQuantity = items.reduce(
             (sum, item) => sum + (item.quantity || 0),
             0,
@@ -116,17 +120,32 @@ export default function OrdersClientPage({
           );
         },
       }),
+
+      columnHelper.accessor("total", {
+        header: "합계금액",
+        meta: { flex: 1 },
+        cell: (info) => {
+          return (
+            <span className={styles.normalNumber}>
+              {info.getValue().toLocaleString()}원
+            </span>
+          );
+        },
+      }),
+
       columnHelper.accessor("status", {
         header: "상태",
-        size: 100,
+        meta: { flex: 1 },
         cell: (info) => {
           const status = info.getValue();
+
           const getStatusColor = (s: string) => {
             if (s === "CANCELLED") return "#ff4d4f";
             if (s === "PAYMENT_COMPLETE") return "#1890ff";
             if (s === "DELIVERED") return "#52c41a";
             return "#333";
           };
+
           return (
             <span
               className={styles.statusBadge}
@@ -261,6 +280,7 @@ function OrderFilter({ period, setPeriod }: FilterProps) {
     setSearchKeyword("");
     router.push(pathname);
   };
+
   return (
     <section className={styles.OrderFilter} aria-label="주문관리-검색필터">
       <div className={styles.FilterPeriod}>

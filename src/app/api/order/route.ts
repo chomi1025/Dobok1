@@ -78,6 +78,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
+
     const {
       name,
       email,
@@ -95,31 +96,27 @@ export async function POST(req: Request) {
     let calculatedTotal = 0;
 
     for (const item of items) {
-      const targetOptionId = Number(item.optionId);
+      const qty = Number(item.quantity) || 0;
+      const unitPrice = Number(item.unitPrice) || 0;
 
-      const option = await prisma.productOption.findUnique({
-        where: { id: targetOptionId },
-      });
-
-      if (option) {
-        const price = Number(option.price) || 0;
-        const qty = Number(item.quantity) || 0;
-        calculatedTotal += price * qty;
-      }
+      calculatedTotal += unitPrice * qty;
     }
 
+    // 배송비
     const deliveryFee = calculatedTotal >= 50000 ? 0 : 3000;
     const finalServerTotal = calculatedTotal + deliveryFee;
 
-    if (finalServerTotal !== Number(total)) {
+    if (Math.abs(finalServerTotal - Number(total)) > 1) {
       return NextResponse.json(
         { message: "결제 금액 위변조 감지" },
         { status: 400 },
       );
     }
 
-    // 주문 생성
-    const orderNumber = `HS${new Date().toISOString().slice(2, 10).replace(/-/g, "")}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const orderNumber = `HS${new Date()
+      .toISOString()
+      .slice(2, 10)
+      .replace(/-/g, "")}-${Math.floor(1000 + Math.random() * 9000)}`;
 
     const order = await prisma.$transaction(
       async (tx: Prisma.TransactionClient) => {
@@ -133,12 +130,12 @@ export async function POST(req: Request) {
             buyerEmail: email,
             buyerPhone: phone,
 
-            receiverName: receiverName,
+            receiverName,
             receiverPhone: cellphone,
-            postcode: postcode,
-            address: address,
-            detailAddress: detailAddress,
-            customRequest: customRequest,
+            postcode,
+            address,
+            detailAddress,
+            customRequest,
 
             ...(session?.user?.id && {
               user: {
@@ -147,19 +144,42 @@ export async function POST(req: Request) {
             }),
 
             items: {
-              create: items.map((item: any) => ({
-                productId: item.productId,
-                productName: item.productName,
-                productImage: item.ProductImage,
-                quantity: item.quantity,
-                unitPrice: item.unitPrice,
-                totalPrice: item.unitPrice * item.quantity, //
-                optionText: item.optionText,
-                isCustom: item.isCustomizable || false, //
-              })),
+              create: items.map((item: any) => {
+                const unitPrice = Number(item.unitPrice) || 0;
+                const qty = Number(item.quantity) || 0;
+
+                const originalPrice = Number(item.originalPrice) || unitPrice;
+                const salePrice = unitPrice;
+
+                const discountRate =
+                  originalPrice > salePrice
+                    ? Math.round(
+                        ((originalPrice - salePrice) / originalPrice) * 100,
+                      )
+                    : 0;
+
+                return {
+                  productId: item.productId,
+                  productName: item.productName,
+                  productImage: item.ProductImage,
+
+                  quantity: qty,
+                  unitPrice,
+
+                  totalPrice: unitPrice * qty,
+
+                  originPrice: originalPrice,
+                  salePrice,
+                  discountRate,
+
+                  optionText: item.optionText,
+                  isCustom: item.isCustomizable || false,
+                };
+              }),
             },
           },
         });
+
         return newOrder;
       },
     );
@@ -170,8 +190,12 @@ export async function POST(req: Request) {
     });
   } catch (error: any) {
     console.error("주문 생성 에러:", error);
+
     return NextResponse.json(
-      { message: "주문 생성 중 오류가 발생했습니다.", error: error.message },
+      {
+        message: "주문 생성 중 오류가 발생했습니다.",
+        error: error.message,
+      },
       { status: 500 },
     );
   }

@@ -120,84 +120,118 @@ export default function AdminProductClientPage({
     });
   }, [searchParams]);
 
-  const columns = useMemo(
-    () => [
-      columnHelper.accessor("name", {
-        header: "상품명",
-        size: 350,
-        cell: (info) => (
-          <div
-            className={styles.title}
-            style={{ cursor: "pointer" }}
-            onClick={() =>
-              route.push(`/admin/products/${info.row.original.id}`)
+ const columns = useMemo(
+  () => [
+    columnHelper.accessor("name", {
+      header: "상품명",
+      meta: { flex: 4 },
+      cell: (info) => (
+        <div
+          className={styles.title}
+          style={{ cursor: "pointer" }}
+          onClick={() =>
+            route.push(`/admin/products/${info.row.original.id}`)
+          }
+        >
+          <Image
+            width={60}
+            height={60}
+            src={
+              info.row.original.thumbnail ||
+              "/no-image.png"
             }
-          >
-            <Image
-              width={60}
-              height={60}
-              src={info.row.original.thumbnail || "/no-image.png"}
-              alt="상품 이미지"
-              unoptimized
-            />
-            <span className={styles.titleText}>{info.getValue()}</span>
-          </div>
-        ),
-      }),
-      columnHelper.accessor("category", {
-        header: "카테고리",
-        size: 200,
-        cell: (info) => {
-          const category = info.getValue();
-          if (!category)
-            return <span className={styles.categoryText}>분류 없음</span>;
+            alt="상품 이미지"
+            unoptimized
+          />
 
-          const categoryName = category.parent
-            ? `${category.parent.name} > ${category.name}`
-            : category.name;
+          <span className={styles.titleText}>
+            {info.getValue()}
+          </span>
+        </div>
+      ),
+    }),
 
-          return <span className={styles.categoryText}>{categoryName}</span>;
-        },
-      }),
-      columnHelper.display({
-        id: "price",
-        header: "판매가",
-        size: 100,
-        cell: (info) => (
-          <div className={styles.priceText}>
-            {info.row.original.options?.[0]?.price?.toLocaleString()}원
-          </div>
-        ),
-      }),
-      columnHelper.display({
-        id: "stock",
-        header: "재고",
-        size: 80,
-        cell: (info) => {
-          const totalStock = info.row.original.options?.reduce((acc, opt) => {
-            return acc + (Number(opt.stock) || 0);
-          }, 0);
+    columnHelper.accessor("category", {
+      header: "카테고리",
+      meta: { flex: 2.5 },
+      cell: (info) => {
+        const category = info.getValue();
 
+        if (!category) {
           return (
-            <div className={styles.stockText}>
-              {totalStock?.toLocaleString() ?? 0}
-            </div>
+            <span className={styles.categoryText}>
+              분류 없음
+            </span>
           );
-        },
-      }),
-      columnHelper.accessor("options", {
-        header: "상태",
-        size: 80,
-        cell: (info) => {
-          const uniqueStatuses = Array.from(
-            new Set(info.getValue()?.map((opt: any) => opt.status)),
-          ) as Array<keyof typeof STATUS_MAP>;
+        }
 
-          return (
-            <div className={styles.statusContainer}>
-              {uniqueStatuses.slice(0, 3).map((statusKey) => {
-                const config = STATUS_MAP[statusKey];
+        const categoryName = category.parent
+          ? `${category.parent.name} > ${category.name}`
+          : category.name;
+
+        return (
+          <span className={styles.categoryText}>
+            {categoryName}
+          </span>
+        );
+      },
+    }),
+
+    columnHelper.display({
+      id: "price",
+      header: "판매가",
+      meta: { flex: 1.5 },
+      cell: (info) => (
+        <div className={styles.priceText}>
+          {info.row.original.options?.[0]?.price?.toLocaleString()}
+          원
+        </div>
+      ),
+    }),
+
+    columnHelper.display({
+      id: "stock",
+      header: "재고",
+      meta: { flex: 1 },
+      cell: (info) => {
+        const totalStock =
+          info.row.original.options?.reduce(
+            (acc, opt) => {
+              return acc + (Number(opt.stock) || 0);
+            },
+            0,
+          );
+
+        return (
+          <div className={styles.stockText}>
+            {totalStock?.toLocaleString() ?? 0}
+          </div>
+        );
+      },
+    }),
+
+    columnHelper.accessor("options", {
+      header: "상태",
+      meta: { flex: 1 },
+      cell: (info) => {
+        const uniqueStatuses = Array.from(
+          new Set(
+            info
+              .getValue()
+              ?.map((opt: any) => opt.status),
+          ),
+        ) as Array<keyof typeof STATUS_MAP>;
+
+        return (
+          <div className={styles.statusContainer}>
+            {uniqueStatuses
+              .slice(0, 3)
+              .map((statusKey) => {
+                const config =
+                  STATUS_MAP[statusKey];
+
                 if (!config) return null;
+
                 return (
                   <div
                     key={statusKey}
@@ -205,46 +239,58 @@ export default function AdminProductClientPage({
                     data-tooltip={config.label}
                   >
                     <span
-                      className={styles.statusCircle}
-                      style={{ backgroundColor: config.color }}
+                      className={
+                        styles.statusCircle
+                      }
+                      style={{
+                        backgroundColor:
+                          config.color,
+                      }}
                     />
                   </div>
                 );
               })}
-            </div>
-          );
-        },
-      }),
-      columnHelper.display({
-        id: "actions",
-        header: "관리",
-        size: 148,
-        cell: (info) => (
-          <div className={styles.actionButtons}>
-            <button
-              type="button"
-              onClick={() =>
-                route.push(`/admin/products/${info.row.original.id}`)
-              }
-              className={styles.editBtn}
-            >
-              수정
-            </button>
-            <button
-              type="button"
-              className={styles.deleteBtn}
-              onClick={() =>
-                handleDelete(info.row.original.id, info.row.original.name)
-              }
-            >
-              삭제
-            </button>
           </div>
-        ),
-      }),
-    ],
-    [],
-  );
+        );
+      },
+    }),
+
+    columnHelper.display({
+      id: "actions",
+      header: "관리",
+      meta: { flex: 1.8 },
+      cell: (info) => (
+        <div className={styles.actionButtons}>
+          <button
+            type="button"
+            onClick={() =>
+              route.push(
+                `/admin/products/${info.row.original.id}`,
+              )
+            }
+            className={styles.editBtn}
+          >
+            수정
+          </button>
+
+          <button
+            type="button"
+            className={styles.deleteBtn}
+            onClick={() =>
+              handleDelete(
+                info.row.original.id,
+                info.row.original.name,
+              )
+            }
+          >
+            삭제
+          </button>
+        </div>
+      ),
+    }),
+  ],
+  [],
+);
 
   const table = useReactTable({
     data: products,

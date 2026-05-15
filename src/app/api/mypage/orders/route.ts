@@ -9,12 +9,11 @@ type OrderWithItemsAndClaims = Prisma.OrderGetPayload<{
     items: {
       include: {
         claims: true;
+        reviews: true;
       };
     };
   };
 }>;
-
-type OrderItemWithClaims = OrderWithItemsAndClaims["items"][number];
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -27,15 +26,20 @@ export async function GET() {
   }
 
   const orders = await prisma.order.findMany({
-    where: { userId: Number(session.user.id) },
+    where: {
+      userId: Number(session.user.id),
+    },
     include: {
       items: {
         include: {
           claims: true,
+          reviews: true,
         },
       },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   const formatted = orders
@@ -45,6 +49,8 @@ export async function GET() {
       const firstItem = o.items[0];
       const productCount = o.items.length;
       const totalQuantity = o.items.reduce((sum, i) => sum + i.quantity, 0);
+      const reviewWritten =
+        o.items.length > 0 && o.items.every((item) => item.reviews != null);
 
       return {
         id: o.id,
@@ -55,9 +61,11 @@ export async function GET() {
           productCount > 1
             ? `${firstItem.productName} 외 ${productCount - 1}건`
             : firstItem.productName,
+        price: firstItem.unitPrice,
         quantity: totalQuantity,
         total: o.total,
         status: o.status,
+        reviewWritten,
         items: o.items,
         claims: o.items.flatMap((item) => item.claims ?? []),
       };

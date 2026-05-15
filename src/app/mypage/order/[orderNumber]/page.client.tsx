@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import styles from "./page.module.scss";
 
 interface Address {
-  postcode: string;
+  postCode: string;
   address: string;
   detailAddress: string;
 }
@@ -20,6 +20,10 @@ interface OrderItem {
   productName: string;
   quantity: number;
   totalPrice: number;
+  productImage: string;
+  originalPrice?: number;
+  salePrice?: number;
+  discountRate?: number;
 }
 
 interface Order {
@@ -41,7 +45,7 @@ const ORDER_STATUS_LABEL: Record<string, string> = {
 export default function OrderDetailClientPage({ order }: { order: Order }) {
   const router = useRouter();
   const totalPrice = order.items.reduce((sum, i) => sum + i.totalPrice, 0);
-  const deliveryFee = 3000;
+  const deliveryFee = totalPrice >= 50000 ? 0 : 3000;
   const grandTotal = totalPrice + deliveryFee;
 
   return (
@@ -82,7 +86,7 @@ export default function OrderDetailClientPage({ order }: { order: Order }) {
           <span className={styles.label}>배송지</span>
           <p className={styles.address}>
             {order.shipping?.address
-              ? `${order.shipping.address.postcode} ${order.shipping.address.address} (${order.shipping.address.detailAddress})`
+              ? `(${order.shipping.address.postCode}) ${order.shipping.address.address} ${order.shipping.address.detailAddress}`
               : "주소 없음"}
           </p>
         </div>
@@ -93,29 +97,61 @@ export default function OrderDetailClientPage({ order }: { order: Order }) {
       {/* 상품 정보 */}
       <section className={styles.card}>
         <h2>주문 상품</h2>
-        {order.items.map((item) => (
-          <div className={styles.productCard} key={item.id}>
-            <Image
-              src="/sample.png"
-              alt={item.productName}
-              width={80}
-              height={80}
-              style={{
-                objectFit: "cover",
-                background: "grey",
-                borderRadius: "5px",
-              }}
-            />
+        {order.items.map((item) => {
+          const unitSalePrice = item.totalPrice / item.quantity;
 
-            <div className={styles.productInfo}>
-              <p className={styles.productName}>{item.productName}</p>
-              <p className={styles.productMeta}>{item.quantity}개</p>
-              <p className={styles.productPrice}>
-                {item.totalPrice.toLocaleString()}원
-              </p>
+          const originalPrice = item.originalPrice ?? unitSalePrice;
+
+          const discountRate =
+            originalPrice > unitSalePrice
+              ? Math.round(
+                  ((originalPrice - unitSalePrice) / originalPrice) * 100,
+                )
+              : 0;
+
+          return (
+            <div className={styles.productCard} key={item.id}>
+              <Image
+                src={item.productImage || "/images/no-image.png"}
+                alt={item.productName}
+                width={80}
+                height={80}
+                style={{
+                  objectFit: "cover",
+                  background: "grey",
+                  borderRadius: "5px",
+                }}
+              />
+
+              <div className={styles.productInfo}>
+                <p className={styles.productName}>{item.productName}</p>
+
+                <p className={styles.productMeta}>{item.quantity}개</p>
+
+                {/* 정가 */}
+                {originalPrice > unitSalePrice && (
+                  <p className={styles.originalPrice}>
+                    {originalPrice.toLocaleString()}원
+                  </p>
+                )}
+
+                <div className={styles.saleWrapper}>
+                  {/* 판매가 */}
+                  <p className={styles.salePrice}>
+                    {unitSalePrice.toLocaleString()}원
+                  </p>
+
+                  {/* 할인율 */}
+                  {discountRate > 0 && (
+                    <span className={styles.discountRate}>
+                      {discountRate}% 할인
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </section>
 
       <hr />

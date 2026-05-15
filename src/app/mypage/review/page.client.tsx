@@ -71,40 +71,45 @@ export default function ReviewClientPage() {
     () => [
       columnHelper.accessor("productName", {
         header: "상품명/옵션",
-        size: 508,
+        meta: { flex: 5 },
         cell: (info) => (
           <div className={styles.titleColumn}>
             <div className={styles.title}>
               <div className={styles.productThumb}>
                 <Image
-                  src={info.row.original.img}
+                  src={info.row.original.img || "/images/no-image.png"}
                   width={90}
                   height={90}
                   alt="상품"
                 />
               </div>
+
               <span className={styles.titleText}>{info.getValue()}</span>
             </div>
           </div>
         ),
       }),
+
       columnHelper.accessor("deliveredAt", {
         header: "배송완료일",
-        size: 150,
+        meta: { flex: 2 },
         cell: (info) => (
           <span className={styles.normalNumber}>{info.getValue()}</span>
         ),
       }),
+
       columnHelper.accessor("reviewStatus", {
         header: "상태/관리",
-        size: 250,
+        meta: { flex: 2 },
         cell: (info) => {
           const isDone = info.getValue() === "리뷰작성완료";
+
           return (
             <div className={styles.actionCell}>
               <span className={isDone ? styles.statusDone : styles.statusWait}>
                 {info.getValue()}
               </span>
+
               <Link
                 href={
                   isDone

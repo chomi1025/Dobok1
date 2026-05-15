@@ -17,7 +17,7 @@ export async function PATCH(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error("❌ 순서 재배치 에러:", error.message);
+    console.error(" 순서 재배치 에러:", error.message);
     return NextResponse.json(
       { error: "순서 저장 중 오류가 발생했습니다." },
       { status: 500 },

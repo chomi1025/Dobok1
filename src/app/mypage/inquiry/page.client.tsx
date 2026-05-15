@@ -63,14 +63,15 @@ export default function InquiryClientPage({ inquiries }: Props) {
     () => [
       columnHelper.accessor("inquiryType", {
         header: "문의유형",
-        size: 140,
+        meta: { flex: 1.5 },
         cell: (info) => (
           <span className={styles.typeBadge}>{info.getValue()}</span>
         ),
       }),
+
       columnHelper.accessor("inquiryTitle", {
         header: "제목",
-        size: 478,
+        meta: { flex: 5 },
         cell: (info) => (
           <div className={styles.titleColumn}>
             <div className={styles.inquiryTextContent}>
@@ -85,18 +86,21 @@ export default function InquiryClientPage({ inquiries }: Props) {
           </div>
         ),
       }),
+
       columnHelper.accessor("inquiryAt", {
         header: "작성일",
-        size: 150,
+        meta: { flex: 1.5 },
         cell: (info) => (
           <span className={styles.dateText}>{info.getValue()}</span>
         ),
       }),
+
       columnHelper.accessor("inquiryStatus", {
         header: "상태",
-        size: 180,
+        meta: { flex: 1.5 },
         cell: (info) => {
           const isDone = info.getValue() === "답변완료";
+
           return (
             <span className={isDone ? styles.c : styles.statusWait}>
               {info.getValue()}

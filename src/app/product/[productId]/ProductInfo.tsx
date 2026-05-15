@@ -3,10 +3,33 @@ import styles from "./ProductInfo.module.scss";
 import { ProductOption } from "@/types/types";
 import Button from "@/components/common/buttons/page";
 import { ProductFull } from "./page.client";
+import Select from "react-select";
 
 export interface SelectedOption extends ProductOption {
   quantity: number;
 }
+
+type DiscountContext = {
+  coupon?: any;
+  memberDiscount?: any;
+};
+
+export type OptionType = {
+  id: number;
+  label: string;
+  value: string;
+
+  price: number;
+
+  originalPrice?: number;
+
+  discountValue?: number;
+  discountType?: "PERCENTAGE" | "FIXED";
+
+  discountText?: string;
+
+  stock?: number;
+};
 
 export interface Props {
   product: ProductFull;
@@ -25,6 +48,93 @@ export interface Props {
   hasOption2: boolean;
 }
 
+const customStyles = {
+  option: (base: any, state: any) => ({
+    ...base,
+
+    padding: "8px 10px",
+    minHeight: "unset",
+
+    fontSize: 14,
+
+    backgroundColor: state.isFocused ? "#f5f5f5" : "#fff",
+    color: "#222",
+
+    cursor: "pointer",
+  }),
+
+  control: (base: any) => ({
+    ...base,
+    minHeight: 40,
+    height: 40,
+
+    borderRadius: 8,
+    borderColor: "#ddd",
+    boxShadow: "none",
+
+    "&:hover": {
+      borderColor: "#999",
+    },
+  }),
+
+  valueContainer: (base: any) => ({
+    ...base,
+    height: 40,
+    padding: "0 12px",
+  }),
+
+  input: (base: any) => ({
+    ...base,
+    margin: 0,
+    padding: 0,
+  }),
+
+  indicatorsContainer: (base: any) => ({
+    ...base,
+    height: 40,
+  }),
+};
+
+function applyDiscount(price: number, d?: any) {
+  if (!d) return price;
+
+  if (d.discountType === "PERCENTAGE") {
+    return price * (1 - d.discountValue / 100);
+  }
+  return price - d.discountValue;
+}
+
+function getFinalPrice(
+  option: ProductOption,
+  product: ProductFull,
+  context: DiscountContext = {},
+) {
+  let price = option.price;
+
+  price = applyDiscount(price, option);
+
+  price = applyDiscount(price, product);
+
+  price = applyDiscount(price, context.coupon);
+
+  price = applyDiscount(price, context.memberDiscount);
+
+  return Math.max(price, 0);
+}
+
+const formatOptionLabel = (option: OptionType) => (
+  <div className={styles.optionRow}>
+    <span className={styles.optionName}>{option.label}</span>
+
+    <span className={styles.optionPrice}>
+      {option.discountText && (
+        <span className={styles.discount}>{option.discountText}</span>
+      )}
+      <span className={styles.price}>{option.price.toLocaleString()}원</span>
+    </span>
+  </div>
+);
+
 export default function ProductInfo({
   product,
   addedOptions,
@@ -34,7 +144,7 @@ export default function ProductInfo({
   option2List,
   onSelectOption1,
   onSelectOption2,
-  getFinalPrice,
+
   updateQty,
   removeOption,
   handleAddToCart,
@@ -42,16 +152,64 @@ export default function ProductInfo({
   hasOption2,
 }: Props) {
   const baseOption = product.options[0];
-  const finalPrice = getFinalPrice(baseOption);
+
+  const finalPrice = getFinalPrice(baseOption, product);
   const originalPrice = baseOption.price;
 
-  console.log(product.options);
-  const discountPercent =
-    originalPrice > finalPrice
-      ? Math.round(((originalPrice - finalPrice) / originalPrice) * 100)
-      : 0;
+  // 1차 옵션
+  const optionList: OptionType[] = product.options.map((option) => {
+    const finalPrice = getFinalPrice(option, product);
+
+    const discountText =
+      option.discountValue && option.discountValue > 0
+        ? option.discountType === "PERCENTAGE"
+          ? `(추가할인 ${option.discountValue}%)`
+          : `(추가할인 -${option.discountValue.toLocaleString()}원)`
+        : "";
+
+    return {
+      id: option.id,
+      value: option.optionValue || "",
+      label: option.optionValue || "",
+      price: finalPrice,
+      discountText,
+    };
+  });
+
+  //2차옵션(있으면)
+  const optionList2: OptionType[] = product.options
+    .filter((option) => option.optionValue === selectedOption1)
+    .map((option) => {
+      const finalPrice = getFinalPrice(option, product);
+
+      const discountText =
+        option.discountValue && option.discountValue > 0
+          ? option.discountType === "PERCENTAGE"
+            ? `(추가할인 ${option.discountValue}%)`
+            : `(추가할인 -${option.discountValue.toLocaleString()}원)`
+          : "";
+
+      return {
+        id: option.id,
+
+        value: option.optionValue2 || "",
+        label: option.optionValue2 || "",
+
+        price: finalPrice,
+        discountText,
+      };
+    });
+  const productDiscountPercent =
+    product.discountType === "PERCENTAGE" ? product.discountValue : null;
 
   const isDiscounted = originalPrice !== finalPrice;
+
+  const optionPrices = product.options.map((o) => getFinalPrice(o, product));
+
+  const minPrice = Math.min(...optionPrices);
+  const maxPrice = Math.max(...optionPrices);
+
+  const isRange = minPrice !== maxPrice;
 
   return (
     <>
@@ -74,9 +232,8 @@ export default function ProductInfo({
             <div className={styles.price}>
               <div>
                 <strong>
-                  <span>
-                    {getFinalPrice(product.options[0]).toLocaleString()}
-                  </span>
+                  {minPrice.toLocaleString()}
+                  {isRange && ` ~`}
                 </strong>
                 원
                 {isDiscounted && (
@@ -86,7 +243,7 @@ export default function ProductInfo({
                 )}
                 {isDiscounted && (
                   <span className={styles.discountPercent}>
-                    {discountPercent}%
+                    {productDiscountPercent}%
                   </span>
                 )}
               </div>
@@ -98,56 +255,31 @@ export default function ProductInfo({
             </div>
 
             {/* 옵션1 */}
-            <div className={styles.optionArea}>
-              {option1List.length > 0 && (
-                <div className={styles.optionGroup}>
-                  <label>{product.options[0]?.optionName || "옵션"}</label>
-                  <ul>
-                    {option1List.map((option) => (
-                      <li
-                        key={option}
-                        onClick={() => onSelectOption1(option)}
-                        className={
-                          selectedOption1 === option ? styles.active : ""
-                        }
-                      >
-                        <button type="button"> {option}</button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+            {option1List.length > 0 && (
+              <Select
+                styles={customStyles}
+                options={optionList}
+                formatOptionLabel={formatOptionLabel}
+                value={optionList.find((o) => o.value === selectedOption1)}
+                onChange={(opt) => onSelectOption1(opt?.value || "")}
+                placeholder="옵션 선택"
+              />
+            )}
 
-              {/* 옵션 */}
-              {hasOption2 &&
-                option1List.length > 0 &&
-                option2List.length > 0 && (
-                  <div className={styles.optionGroup}>
-                    <label>
-                      {product.options[0]?.optionName2 || "세부 옵션"}
-                    </label>
-
-                    <ul>
-                      {option2List.map((option) => (
-                        <li
-                          key={option}
-                          onClick={() => onSelectOption2(option)}
-                          className={
-                            selectedOption2 === option ? styles.active : ""
-                          }
-                        >
-                          <button type="button">{option}</button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-            </div>
+            {hasOption2 && option2List.length > 0 && (
+              <Select
+                options={optionList2}
+                formatOptionLabel={formatOptionLabel}
+                value={optionList2.find((o) => o.value === selectedOption2)}
+                onChange={(opt) => onSelectOption2(opt?.value || "")}
+                placeholder="세부 옵션 선택"
+              />
+            )}
 
             {/* 선택목록 */}
             <div className={styles.selectedListArea}>
               {addedOptions.map((item) => {
-                const final = getFinalPrice(item);
+                const final = getFinalPrice(item, product);
                 const origin = item.price;
                 const isDisc = origin !== final;
 
@@ -197,7 +329,8 @@ export default function ProductInfo({
                         {addedOptions
                           .reduce(
                             (acc, curr) =>
-                              acc + getFinalPrice(curr) * curr.quantity,
+                              acc +
+                              getFinalPrice(curr, product) * curr.quantity,
                             0,
                           )
                           .toLocaleString()}
@@ -226,8 +359,6 @@ export default function ProductInfo({
             </div>
           </div>
         </section>
-
-        {/* 탭 */}
       </section>
     </>
   );

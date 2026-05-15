@@ -17,7 +17,15 @@ export async function POST(request: Request) {
       );
     }
 
-    // 무한요청 방지
+    // 금액 검증
+    if (order.total !== Number(amount)) {
+      return NextResponse.json(
+        { message: "금액 위변조 감지" },
+        { status: 400 },
+      );
+    }
+
+    // 중복 방지
     if (order.status === "PAYMENT_COMPLETE") {
       return NextResponse.json({
         message: "Already Processed",

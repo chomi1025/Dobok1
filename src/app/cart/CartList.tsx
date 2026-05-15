@@ -76,6 +76,11 @@ export default function CartListComponent({
   const [checkedItems, setCheckedItems] = useState<number[]>([]);
   const router = useRouter();
   const queryClient = useQueryClient();
+  const getDiscountRate = (origin: number, final: number) => {
+    if (!origin || origin <= final) return 0;
+
+    return Math.round(((origin - final) / origin) * 100);
+  };
 
   const tableData: UnifiedCartItem[] = useMemo(() => {
     return cart.map((item, index) => {
@@ -235,7 +240,7 @@ export default function CartListComponent({
     () => [
       columnHelper.display({
         id: "select",
-        size: 40,
+        meta: { flex: 0.5 },
 
         header: ({ table }) => {
           const { isAllChecked, toggleAll } = table.options.meta!;
@@ -257,7 +262,7 @@ export default function CartListComponent({
 
       columnHelper.accessor("productName", {
         header: "상품명",
-        size: 440,
+        meta: { flex: 5 },
 
         cell: ({ row }) => (
           <div className={styles.productNameArea}>
@@ -284,35 +289,50 @@ export default function CartListComponent({
           </div>
         ),
       }),
+
       columnHelper.accessor("quantity", {
         header: "수량",
-        size: 80,
+        meta: { flex: 1 },
 
         cell: (info) => <span>{info.getValue()}개</span>,
       }),
 
       columnHelper.accessor("price", {
         header: "상품금액",
-        size: 150,
+        meta: { flex: 2 },
 
         cell: ({ row }) => {
           const origin = row.original.originPrice;
           const final = row.original.price;
 
           const isDiscount = origin > final;
+          const discountRate = getDiscountRate(origin, final);
 
           return (
             <div className={styles.priceArea}>
               {isDiscount && (
-                <p className={styles.originPrice}>
-                  {origin.toLocaleString()}원
-                </p>
+                <>
+                  <p className={styles.originPrice}>
+                    {origin.toLocaleString()}원
+                  </p>
+
+                  <div className={styles.finalRow}>
+                    <strong className={styles.finalPrice}>
+                      {final.toLocaleString()}
+                      <span>원</span>
+                    </strong>
+
+                    <span className={styles.discountRate}>{discountRate}%</span>
+                  </div>
+                </>
               )}
 
-              <strong className={styles.finalPrice}>
-                {final.toLocaleString()}
-                <span>원</span>
-              </strong>
+              {!isDiscount && (
+                <strong className={styles.finalPrice}>
+                  {final.toLocaleString()}
+                  <span>원</span>
+                </strong>
+              )}
             </div>
           );
         },
@@ -321,9 +341,9 @@ export default function CartListComponent({
       columnHelper.display({
         id: "delete",
         header: "삭제",
-        size: 60,
+        meta: { flex: 0.7 },
 
-        cell: ({ row }) => (
+        cell: () => (
           <button className={styles.deleteBtn}>
             <X size={18} />
           </button>

@@ -94,104 +94,121 @@ export default function JobsClientPage({
     router.push(`/community/jobs?type=${nextType}&page=1`);
   };
 
-  const getColumns = (): ColumnDef<JobsRow, any>[] => {
-    const commonStart = [
-      {
-        id: "type",
-        header: "구분",
-        size: 80,
-        cell: ({ row }: CellContext<JobsRow, any>) => {
-          const data = row.original;
-          const isHiring = data.type === "HIRING";
+ const getColumns = (): ColumnDef<JobsRow, any>[] => {
+  const commonStart = [
+    {
+      id: "type",
+      header: "구분",
+      meta: { flex: 0.8 },
 
-          return (
-            <span
-              className={isHiring ? styles.hiringBadge : styles.seekingBadge}
-            >
-              {isHiring ? "구인" : "구직"}
-            </span>
-          );
-        },
-      },
-      {
-        accessorKey: "jobRole",
-        header: "직무",
-        size: 90,
-        cell: ({ row }: CellContext<JobsRow, any>) => {
-          const role = row.original.jobRole;
-          return (
-            <span className={styles.roleBadge}>
-              {role ? JOB_ROLE_MAP[role] : "-"}
-            </span>
-          );
-        },
-      },
-      {
-        accessorKey: "title",
-        header: "제목",
-        size: 388,
-        cell: ({ row }: CellContext<JobsRow, any>) => {
-          const data = row.original;
-          return (
-            <Link href={`/community/jobs/${data.id}`} className={styles.title}>
-              <span className={styles.titleText}>{data.title}</span>
+      cell: ({ row }: CellContext<JobsRow, any>) => {
+        const data = row.original;
+        const isHiring = data.type === "HIRING";
 
-              <span className={styles.experienceTag}>
-                {EXPERIENCE_MAP[data.experience]}
-              </span>
-            </Link>
-          );
-        },
+        return (
+          <span
+            className={isHiring ? styles.hiringBadge : styles.seekingBadge}
+          >
+            {isHiring ? "구인" : "구직"}
+          </span>
+        );
       },
-    ];
+    },
 
-    const middleColumn = {
-      id: "author",
-      header: "작성자",
-      size: 130,
+    {
+      accessorKey: "jobRole",
+      header: "직무",
+      meta: { flex: 1 },
+
+      cell: ({ row }: CellContext<JobsRow, any>) => {
+        const role = row.original.jobRole;
+
+        return (
+          <span className={styles.roleBadge}>
+            {role ? JOB_ROLE_MAP[role] : "-"}
+          </span>
+        );
+      },
+    },
+
+    {
+      accessorKey: "title",
+      header: "제목",
+      meta: { flex: 4.2 },
+
       cell: ({ row }: CellContext<JobsRow, any>) => {
         const data = row.original;
 
         return (
+          <Link
+            href={`/community/jobs/${data.id}`}
+            className={styles.title}
+          >
+            <span className={styles.titleText}>{data.title}</span>
+
+            <span className={styles.experienceTag}>
+              {EXPERIENCE_MAP[data.experience]}
+            </span>
+          </Link>
+        );
+      },
+    },
+  ];
+
+  const middleColumn = {
+    id: "author",
+    header: "작성자",
+    meta: { flex: 1.5 },
+
+    cell: ({ row }: CellContext<JobsRow, any>) => {
+      const data = row.original;
+
+      return (
+        <span>
+          {data.type === "HIRING"
+            ? data.companyName
+            : data.authorNickname || "개인"}
+        </span>
+      );
+    },
+  };
+
+  const commonEnd = [
+    {
+      id: "location",
+      header: "지역",
+      meta: { flex: 1.2 },
+
+      cell: ({ row }: any) => {
+        const data = row.original;
+
+        const cityLabel =
+          CITY_OPTIONS.find((opt) => opt.value === data.city)?.label ||
+          data.city;
+
+        return (
           <span>
-            {data.type === "HIRING"
-              ? data.companyName
-              : data.authorNickname || "개인"}
+            {cityLabel} {data.district}
           </span>
         );
       },
-    };
+    },
 
-    const commonEnd = [
-      {
-        id: "location",
-        header: "지역",
-        size: 110,
-        cell: ({ row }: any) => {
-          const data = row.original;
-          const cityLabel =
-            CITY_OPTIONS.find((opt) => opt.value === data.city)?.label ||
-            data.city;
-          return (
-            <span>
-              {cityLabel} {data.district}
-            </span>
-          );
-        },
-      },
-      {
-        accessorKey: "createdAt",
-        header: "등록일",
-        size: 110,
-        cell: ({ row }: any) => {
-          const date = new Date(row.original.createdAt);
-          return <span>{format(date, "yy.MM.dd")}</span>;
-        },
-      },
-    ];
+    {
+      accessorKey: "createdAt",
+      header: "등록일",
+      meta: { flex: 1 },
 
-    return [...commonStart, middleColumn, ...commonEnd];
-  };
+      cell: ({ row }: any) => {
+        const date = new Date(row.original.createdAt);
+
+        return <span>{format(date, "yy.MM.dd")}</span>;
+      },
+    },
+  ];
+
+  return [...commonStart, middleColumn, ...commonEnd];
+};
 
   const columns = getColumns();
 

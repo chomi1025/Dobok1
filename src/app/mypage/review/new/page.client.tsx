@@ -58,6 +58,7 @@ export default function ReviewNewClientPage() {
     images.forEach((img) => {
       if (img) formData.append("images", img);
     });
+
     for (let [key, value] of formData.entries()) {
       console.log(key, value);
     }

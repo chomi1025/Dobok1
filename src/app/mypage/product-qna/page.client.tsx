@@ -47,64 +47,80 @@ export default function ProductQnaClientPage({ qnas }: Props) {
     return filteredQnas.slice(start, start + itemsPerPage);
   }, [filteredQnas, currentPage]);
 
-  const columns = useMemo(
-    () => [
-      columnHelper.accessor("productName", {
-        header: "상품명/문의제목",
-        size: 558,
-        cell: (info) => (
-          <div className={styles.titleColumn}>
-            <div className={styles.qnaProductBox}>
-              <div className={styles.productThumb}>
-                <Image
-                  src={info.row.original.img}
-                  width={90}
-                  height={90}
-                  alt="상품"
-                />
-              </div>
-              <div className={styles.qnaTextContent}>
-                <strong className={styles.prodName}>{info.getValue()}</strong>
-                <Link
-                  href={`/mypage/qna/${info.row.original.id}`}
-                  className={styles.qnaTitle}
-                  prefetch={false}
-                >
-                  {info.row.original.qnaTitle}
-                </Link>
-              </div>
+const columns = useMemo(
+  () => [
+    columnHelper.accessor("productName", {
+      header: "상품명/문의제목",
+      meta: { flex: 5 },
+      cell: (info) => (
+        <div className={styles.titleColumn}>
+          <div className={styles.qnaProductBox}>
+            <div className={styles.productThumb}>
+              <Image
+                src={info.row.original.img || "/images/no-image.png"}
+                width={90}
+                height={90}
+                alt="상품"
+              />
+            </div>
+
+            <div className={styles.qnaTextContent}>
+              <strong className={styles.prodName}>
+                {info.getValue()}
+              </strong>
+
+              <Link
+                href={`/mypage/qna/${info.row.original.id}`}
+                className={styles.qnaTitle}
+                prefetch={false}
+              >
+                {info.row.original.qnaTitle}
+              </Link>
             </div>
           </div>
-        ),
-      }),
-      columnHelper.accessor("qnaStatus", {
-        header: "상태",
-        size: 150,
-        cell: (info) => {
-          const isDone = info.getValue() === "답변완료";
-          return (
-            <Link
-              href={`/mypage/qna/${info.row.original.id}`}
-              className={styles.qnaTitle}
-              prefetch={false}
+        </div>
+      ),
+    }),
+
+    columnHelper.accessor("qnaStatus", {
+      header: "상태",
+      meta: { flex: 1.5 },
+      cell: (info) => {
+        const isDone =
+          info.getValue() === "답변완료";
+
+        return (
+          <Link
+            href={`/mypage/qna/${info.row.original.id}`}
+            className={styles.qnaTitle}
+            prefetch={false}
+          >
+            <span
+              className={
+                isDone
+                  ? styles.statusDone
+                  : styles.statusWait
+              }
             >
-              <span className={isDone ? styles.statusDone : styles.statusWait}>
-                {info.getValue()}
-              </span>
-            </Link>
-          );
-        },
-      }),
-      columnHelper.accessor("qnaAt", {
-        header: "작성일",
-        size: 200,
-        cell: (info) => (
-          <span className={styles.dateText}>{info.getValue()}</span>
-        ),
-      }),
-    ],
-    [],
-  );
+              {info.getValue()}
+            </span>
+          </Link>
+        );
+      },
+    }),
+
+    columnHelper.accessor("qnaAt", {
+      header: "작성일",
+      meta: { flex: 1.5 },
+      cell: (info) => (
+        <span className={styles.dateText}>
+          {info.getValue()}
+        </span>
+      ),
+    }),
+  ],
+  [],
+);
 
   const table = useReactTable({
     data: paginatedData,

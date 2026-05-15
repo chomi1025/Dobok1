@@ -58,7 +58,6 @@ export default function InquiryClientPage({ currentPage, pageSize }: Props) {
     return name[0] + "*".repeat(name.length - 2) + name.slice(-1);
   };
 
-  console.log(data);
   const inquiryData = useMemo(() => data?.inquiries || [], [data]);
   const total = data?.totalCount || 0;
 
@@ -67,26 +66,35 @@ export default function InquiryClientPage({ currentPage, pageSize }: Props) {
       columnHelper.display({
         id: "number",
         header: "번호",
-        size: 60,
+        meta: { flex: 0.6 },
+
         cell: (info) => total - (currentPage - 1) * pageSize - info.row.index,
       }),
+
       columnHelper.accessor("createdAt", {
         header: "작성일",
-        size: 120,
+        meta: { flex: 1.2 },
+
         cell: (info) => new Date(info.getValue()).toISOString().split("T")[0],
       }),
+
       columnHelper.accessor("category", {
         header: "카테고리",
-        size: 120,
+        meta: { flex: 1.2 },
+
         cell: (info) =>
           categoryName[info.getValue() as keyof typeof categoryName],
       }),
+
       columnHelper.accessor("title", {
         header: "제목",
-        size: 388,
+        meta: { flex: 4.5 },
+
         cell: (info) => {
           const row = info.row.original;
+
           const isLocked = row.isPrivate && row.title === "비밀글입니다.";
+
           return (
             <Link
               href={`/support/inquiry/${row.id}`}
@@ -94,6 +102,7 @@ export default function InquiryClientPage({ currentPage, pageSize }: Props) {
               prefetch={false}
             >
               {row.isPrivate && <span className={styles.lockIcon}>🔒</span>}
+
               <span className={styles.text}>
                 {isLocked ? "비밀글입니다." : row.title}
               </span>
@@ -101,13 +110,17 @@ export default function InquiryClientPage({ currentPage, pageSize }: Props) {
           );
         },
       }),
+
       columnHelper.accessor("user.name", {
         header: "작성자",
-        size: 120,
+        meta: { flex: 1 },
+
         cell: (info) => {
           const row = info.row.original;
           const isMine = Number(row.userId) === currentUserId;
+
           const name = info.getValue() || "";
+
           return (
             <span className={isMine ? styles.myId : styles.otherId}>
               {isMine ? name : maskName(name)}
@@ -115,14 +128,17 @@ export default function InquiryClientPage({ currentPage, pageSize }: Props) {
           );
         },
       }),
+
       columnHelper.accessor("status", {
         header: "상태",
-        size: 100,
+        meta: { flex: 1 },
+
         cell: (info) => statusName[info.getValue() as keyof typeof statusName],
       }),
     ],
     [total, currentPage, pageSize, currentUserId],
   );
+
   const table = useReactTable({
     data: inquiryData,
     columns,
@@ -149,9 +165,9 @@ export default function InquiryClientPage({ currentPage, pageSize }: Props) {
 
       <UnifiedTable
         table={table}
-        className={styles.noticeTable}
-        getRowProps={(row) => ({
-          className: row.original.isFixed ? styles.fixedRow : "",
+        className={styles.inquiryTable}
+        getRowProps={() => ({
+          className: styles.tableRow,
         })}
       />
     </>

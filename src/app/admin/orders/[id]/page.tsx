@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import AdminOrderDetailClientPage from "./page.client";
 import { Metadata } from "next";
-import { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 

@@ -1,9 +1,10 @@
 import { flexRender, Table as ReactTable } from "@tanstack/react-table";
+import styles from "./UnifiedTable.module.scss";
 
 interface TableProps<T> {
   table: ReactTable<T>;
   className?: string;
-  getRowProps?: (row: any) => React.HTMLAttributes<HTMLTableRowElement>;
+  getRowProps?: (row: any) => React.HTMLAttributes<HTMLDivElement>;
 }
 
 export function UnifiedTable<T>({
@@ -12,32 +13,49 @@ export function UnifiedTable<T>({
   getRowProps,
 }: TableProps<T>) {
   return (
-    <table className={className}>
-      <thead>
+    <div className={`${className} ${styles.table}`}>
+      <div className={styles.header}>
         {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
+          <div key={headerGroup.id} className={styles.row}>
             {headerGroup.headers.map((header) => (
-              <th key={header.id} style={{ width: header.getSize() }}>
+              <div
+                key={header.id}
+                className={`${styles.cell} ${styles.headerCell}`}
+                style={{
+                  flex: header.column.columnDef.meta?.flex ?? 1,
+                }}
+              >
                 {flexRender(
                   header.column.columnDef.header,
                   header.getContext(),
                 )}
-              </th>
+              </div>
             ))}
-          </tr>
+          </div>
         ))}
-      </thead>
-      <tbody>
+      </div>
+
+      <div className={styles.body}>
         {table.getRowModel().rows.map((row) => (
-          <tr key={row.id} {...(getRowProps ? getRowProps(row) : {})}>
+          <div
+            key={row.id}
+            className={styles.row}
+            {...(getRowProps ? getRowProps(row) : {})}
+          >
             {row.getVisibleCells().map((cell) => (
-              <td key={cell.id}>
+              <div
+                key={cell.id}
+                className={styles.cell}
+                style={{
+                  flex: cell.column.columnDef.meta?.flex ?? 1,
+                }}
+              >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </td>
+              </div>
             ))}
-          </tr>
+          </div>
         ))}
-      </tbody>
-    </table>
+      </div>
+    </div>
   );
 }

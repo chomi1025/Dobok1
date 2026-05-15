@@ -113,14 +113,14 @@ export default function BusinessUsersClientPage({
     () => [
       columnHelper.accessor("id", {
         header: "번호",
-        size: 60,
+        meta: { flex: 0.6 },
 
         cell: (info) => info.row.index + 1 + (currentPage - 1) * pageSize,
       }),
 
       columnHelper.accessor("businessInfo.companyName", {
         header: "업체명",
-        size: 220,
+        meta: { flex: 2.5 },
 
         cell: (info) => (
           <div className={styles.companyWrapper}>
@@ -133,21 +133,21 @@ export default function BusinessUsersClientPage({
 
       columnHelper.accessor("businessInfo.representative", {
         header: "대표자",
-        size: 120,
+        meta: { flex: 1.2 },
 
         cell: (info) => info.getValue() || "-",
       }),
 
       columnHelper.accessor("businessInfo.businessNumber", {
         header: "사업자번호",
-        size: 180,
+        meta: { flex: 1.8 },
 
         cell: (info) => info.getValue() || "-",
       }),
 
       columnHelper.accessor("businessInfo.paperUrl", {
         header: "첨부파일",
-        size: 120,
+        meta: { flex: 1.2 },
 
         cell: (info) => {
           const fileUrl = info.getValue();
@@ -169,7 +169,7 @@ export default function BusinessUsersClientPage({
 
       columnHelper.accessor("businessStatus", {
         header: "상태",
-        size: 120,
+        meta: { flex: 1 },
 
         cell: (info) => {
           const status = info.getValue();
@@ -186,7 +186,7 @@ export default function BusinessUsersClientPage({
 
       columnHelper.accessor("businessInfo.createdAt", {
         header: "신청일",
-        size: 180,
+        meta: { flex: 1.8 },
 
         cell: (info) => {
           const date = info.getValue();
@@ -206,7 +206,7 @@ export default function BusinessUsersClientPage({
       columnHelper.display({
         id: "manage",
         header: "관리",
-        size: 180,
+        meta: { flex: 1.8 },
 
         cell: (info) => {
           const user = info.row.original;

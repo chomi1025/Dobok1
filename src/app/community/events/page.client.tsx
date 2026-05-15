@@ -50,64 +50,73 @@ export default function EventsClientPage({
   const displayPosts = data?.posts ?? [];
 
   const columns = useMemo<ColumnDef<PostWithAuthor>[]>(
-    () => [
-      {
-        id: "number",
-        header: "번호",
-        size: 80,
-        cell: ({ row }) => row.index + 1,
-      },
-      {
-        accessorKey: "title",
-        header: "제목",
-        size: 478,
-        cell: ({ row }) => {
-          const { id, title, _count } = row.original;
-          const commentCount = _count?.comments ?? 0;
+  () => [
+    {
+      id: "number",
+      header: "번호",
+      meta: { flex: 0.7 },
 
-          return (
-            <div className={styles.titleCell}>
-              <Link href={`/community/free/${id}`}>
-                {title}
+      cell: ({ row }) => row.index + 1,
+    },
 
-                {commentCount > 0 && (
-                  <span className={styles.commentCount}>
-                    <span>({commentCount})</span>
-                  </span>
-                )}
-              </Link>
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: "authorId",
-        header: "작성자",
-        size: 130,
-        cell: ({ row }) => {
-          const authorNickname = row.original.authorNickname || "익명";
-          return <span>{authorNickname}</span>;
-        },
-      },
-      {
-        accessorKey: "createdAt",
-        header: "날짜",
-        size: 110,
-        cell: ({ row }) => {
-          const date = new Date(row.original.createdAt);
+    {
+      accessorKey: "title",
+      header: "제목",
+      meta: { flex: 4.3 }, // 기존보다 조금 줄임
 
-          return <span>{format(date, "yy.MM.dd")}</span>;
-        },
+      cell: ({ row }) => {
+        const { id, title, _count } = row.original;
+        const commentCount = _count?.comments ?? 0;
+
+        return (
+          <div className={styles.titleCell}>
+            <Link href={`/community/free/${id}`}>
+              {title}
+
+              {commentCount > 0 && (
+                <span className={styles.commentCount}>
+                  <span>({commentCount})</span>
+                </span>
+              )}
+            </Link>
+          </div>
+        );
       },
-      {
-        accessorKey: "viewCount",
-        header: "조회",
-        size: 110,
-        cell: ({ row }) => <span>{row.original.viewCount ?? 0}</span>,
+    },
+
+    {
+      accessorKey: "authorId",
+      header: "작성자",
+      meta: { flex: 1.4 }, // 조금 넓힘
+
+      cell: ({ row }) => {
+        const authorNickname = row.original.authorNickname || "익명";
+        return <span>{authorNickname}</span>;
       },
-    ],
-    [],
-  );
+    },
+
+    {
+      accessorKey: "createdAt",
+      header: "날짜",
+      meta: { flex: 1 },
+
+      cell: ({ row }) => {
+        const date = new Date(row.original.createdAt);
+
+        return <span>{format(date, "yy.MM.dd")}</span>;
+      },
+    },
+
+    {
+      accessorKey: "viewCount",
+      header: "조회",
+      meta: { flex: 0.8 },
+
+      cell: ({ row }) => <span>{row.original.viewCount ?? 0}</span>,
+    },
+  ],
+  [],
+);
 
   const table = useReactTable({
     data: displayPosts,
