@@ -117,16 +117,14 @@ export default function CtegoryAdminPage({ initialCategories }: Props) {
 
     try {
       if (isAddingNew) {
-        console.log("isAddingNew 진입");
         const res = await fetch("/api/categories", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(categoryData),
         });
-        console.log("res.ok:", res.ok, "status:", res.status);
+
         if (!res.ok) throw new Error("등록에 실패했습니다.");
         const savedCategory = await res.json();
-        console.log("savedCategory:", savedCategory);
 
         if (!parentId) {
           setCategoryList((prev) => [
@@ -301,7 +299,6 @@ export default function CtegoryAdminPage({ initialCategories }: Props) {
     const parent = list.find((c) => c.id === pId);
     return parent ? `${parent.slug}/` : "";
   };
-
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
@@ -310,30 +307,51 @@ export default function CtegoryAdminPage({ initialCategories }: Props) {
     const overId = String(over.id);
 
     setCategoryList((prev) => {
-      // 1차 카테고리 찾기
+      // =========================
+      // 1차 카테고리 정렬
+      // =========================
       const activeIndex = prev.findIndex((c) => String(c.id) === activeId);
       const overIndex = prev.findIndex((c) => String(c.id) === overId);
 
       if (activeIndex !== -1 && overIndex !== -1) {
-        return arrayMove(prev, activeIndex, overIndex);
+        const reordered = arrayMove(prev, activeIndex, overIndex);
+
+        return reordered.map((item, idx) => ({
+          ...item,
+          sortOrder: idx + 1,
+        }));
       }
 
-      // 2차 카테고리 찾기
+      // =========================
+      // 2차 카테고리 정렬
+      // =========================
       return prev.map((parent) => {
         if (!parent.children) return parent;
+
         const subActiveIdx = parent.children.findIndex(
           (c) => String(c.id) === activeId,
         );
+
         const subOverIdx = parent.children.findIndex(
           (c) => String(c.id) === overId,
         );
 
         if (subActiveIdx !== -1 && subOverIdx !== -1) {
+          const reorderedChildren = arrayMove(
+            parent.children,
+            subActiveIdx,
+            subOverIdx,
+          ).map((child, idx) => ({
+            ...child,
+            sortOrder: idx + 1,
+          }));
+
           return {
             ...parent,
-            children: arrayMove(parent.children, subActiveIdx, subOverIdx),
+            children: reorderedChildren,
           };
         }
+
         return parent;
       });
     });

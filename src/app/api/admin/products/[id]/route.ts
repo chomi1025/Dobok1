@@ -1,7 +1,19 @@
 import { authOptions } from "@/lib/auth/options";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
+
+type OptionInput = {
+  id?: string | number;
+  optionValue: string;
+  optionValue2?: string | null;
+  price: number;
+  stock: number;
+  status: string;
+  discountType?: "PERCENTAGE" | "FIXED";
+  discountValue?: number | null;
+};
 
 export async function PUT(
   req: Request,
@@ -35,6 +47,7 @@ export async function PUT(
 
     const currentProduct = await prisma.product.findUnique({
       where: { id: productId },
+      include: { options: true },
     });
 
     if (!currentProduct) {
@@ -48,31 +61,29 @@ export async function PUT(
       const price = Number(opt.price) || 0;
       const dValue = Number(opt.discountValue) || 0;
 
-      if (opt.discountType === "FIXED") {
-        if (dValue > price) {
-          return NextResponse.json(
-            {
-              message: `${index + 1}번째 옵션: 할인 금액이 원가를 초과할 수 없습니다.`,
-            },
-            { status: 400 },
-          );
-        }
+      if (opt.discountType === "FIXED" && dValue > price) {
+        return NextResponse.json(
+          {
+            message: `${index + 1}번째 옵션: 할인 금액이 원가를 초과할 수 없습니다.`,
+          },
+          { status: 400 },
+        );
       }
 
       if (opt.discountType === "PERCENTAGE") {
         if (dValue < 0 || dValue > 100) {
           return NextResponse.json(
-            { message: `${index + 1}번째 옵션: 할인율은 0~100%만 가능합니다.` },
+            {
+              message: `${index + 1}번째 옵션: 할인율은 0~100%만 가능합니다.`,
+            },
             { status: 400 },
           );
         }
       }
     }
 
-    await prisma.$transaction([
-      prisma.productOption.deleteMany({ where: { productId } }),
-
-      prisma.product.update({
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      await tx.product.update({
         where: { id: productId },
         data: {
           name,
@@ -86,9 +97,41 @@ export async function PUT(
             discountValue === "" || discountValue == null
               ? null
               : Number(discountValue),
+        },
+      });
 
-          options: {
-            create: options.map((opt: any) => ({
+      const existingMap = new Map(
+        currentProduct.options.map((opt: OptionInput) => [opt.id, opt]),
+      );
+
+      const incomingIds = new Set(
+        options
+          .filter((o: any) => o.id && !String(o.id).startsWith("new-"))
+          .map((o: any) => Number(o.id)),
+      );
+
+      const toDeactivate = currentProduct.options.filter(
+        (opt: OptionInput) => !incomingIds.has(opt.id),
+      );
+
+      if (toDeactivate.length > 0) {
+        await tx.productOption.updateMany({
+          where: {
+            id: { in: toDeactivate.map((o: OptionInput) => o.id) },
+          },
+          data: {
+            status: "HIDDEN",
+          },
+        });
+      }
+
+      for (const opt of options) {
+        const isNew = !opt.id || String(opt.id).startsWith("new-");
+
+        if (isNew) {
+          await tx.productOption.create({
+            data: {
+              productId,
               optionName: optionNames.name1,
               optionName2: optionNames.name2 || null,
               optionValue: opt.optionValue,
@@ -101,11 +144,27 @@ export async function PUT(
                 opt.discountValue === "" || opt.discountValue == null
                   ? null
                   : Number(opt.discountValue),
-            })),
-          },
-        },
-      }),
-    ]);
+            },
+          });
+        } else {
+          await tx.productOption.update({
+            where: { id: Number(opt.id) },
+            data: {
+              optionValue: opt.optionValue,
+              optionValue2: opt.optionValue2,
+              price: Number(opt.price),
+              stock: Number(opt.stock),
+              status: opt.status,
+              discountType: opt.discountType || "PERCENTAGE",
+              discountValue:
+                opt.discountValue === "" || opt.discountValue == null
+                  ? null
+                  : Number(opt.discountValue),
+            },
+          });
+        }
+      }
+    });
 
     return NextResponse.json({ message: "수정 성공" });
   } catch (error) {

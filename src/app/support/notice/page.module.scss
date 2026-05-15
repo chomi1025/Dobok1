@@ -86,12 +86,9 @@
 }
 
 .fixedRow {
+  display: flex;
   background-color: #fffdf0;
-  transition: background-color 0.2s;
-
-  &:hover {
-    background-color: #fff9c4 !important;
-  }
+  border-bottom: 1px solid #e5e5e5;
 }
 
 .noticeTable {
@@ -99,23 +96,14 @@
   table-layout: fixed;
   border-collapse: collapse;
 
-  th,
-  td {
-    text-align: center;
-    vertical-align: middle;
-    padding: rem(18) rem(10);
-    border-bottom: 1px solid #eee;
-    font-size: rem(15);
-  }
-
-  th {
-    background-color: #f9f9f9;
-    font-weight: 600;
-    color: #333;
-  }
-
   .titleColumn {
     text-align: left !important;
     padding-left: rem(20);
   }
+}
+
+.tableRow {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #e5e5e5;
 }

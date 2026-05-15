@@ -130,3 +130,33 @@
     }
   }
 }
+
+// 할인
+.priceBox {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.originalPrice {
+  text-decoration: line-through;
+  color: #999;
+  font-size: 13px;
+}
+
+.saleWrapper {
+  display: flex;
+  align-items : center;
+  gap: rem(5);
+}
+
+.salePrice {
+  font-weight: 600;
+  font-size: 15px;
+  color: #111;
+}
+
+.discountRate {
+  color: #e74c3c;
+  font-size: 13px;
+}

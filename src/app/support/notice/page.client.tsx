@@ -56,21 +56,27 @@ export default function NoticeClientPage({ pageSize, currentPage }: Props) {
       columnHelper.display({
         id: "number",
         header: "번호",
-        size: 80,
+        meta: { flex: 0.7 },
+
         cell: ({ row }) => {
           const item = row.original;
+
           if (item.isFixed)
             return <div className={styles.fixedPinWrapper}>📌</div>;
 
           const normalIndex = row.index - fixedCount;
+
           const virtualNumber =
             total - (currentPage - 1) * pageSize - normalIndex;
+
           return <span className={styles.normalNumber}>{virtualNumber}</span>;
         },
       }),
+
       columnHelper.accessor("title", {
         header: "제목",
-        size: 708,
+        meta: { flex: 5 },
+
         cell: ({ row }) => (
           <Link
             href={`/support/notice/${row.original.id}`}
@@ -85,14 +91,20 @@ export default function NoticeClientPage({ pageSize, currentPage }: Props) {
           </Link>
         ),
       }),
+
       columnHelper.accessor("createdAt", {
         header: "날짜",
-        size: 120,
+        meta: { flex: 1.2 },
+
         cell: ({ getValue }) => {
           const d = new Date(getValue());
+
           return (
             <span>
-              {`${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`}
+              {`${d.getFullYear()}.${String(d.getMonth() + 1).padStart(
+                2,
+                "0",
+              )}.${String(d.getDate()).padStart(2, "0")}`}
             </span>
           );
         },
@@ -125,7 +137,10 @@ export default function NoticeClientPage({ pageSize, currentPage }: Props) {
         table={table}
         className={styles.noticeTable}
         getRowProps={(row) => ({
-          className: row.original.isFixed ? styles.fixedRow : "",
+          className: [
+            styles.tableRow,
+            row.original.isFixed ? styles.fixedRow : "",
+          ].join(" "),
         })}
       />
 

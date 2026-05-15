@@ -1,11 +1,10 @@
 "use client";
 import Button from "@/components/common/buttons/page";
-import styles from "./GuestCheckout.module.scss";
+import styles from "./MemberCheckout.module.scss";
 import BreadCrumb from "@/components/breadcrumb";
-import { Column, Table } from "@/components/Table/page";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useMemo, useState, useEffect } from "react";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -13,6 +12,12 @@ import DaumPostcodeEmbed from "react-daum-postcode";
 import toast from "react-hot-toast";
 import { loadTossPayments } from "@tosspayments/payment-sdk";
 import Script from "next/script";
+import { UnifiedTable } from "@/components/common/DataTable";
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 
 declare global {
   interface Window {
@@ -79,9 +84,10 @@ export interface Order {
   productId: number;
   requestedAt?: string;
   productName: string;
-  ProductImage: string;
+  productImage: string;
   optionText: string;
   unitPrice: number;
+  originalPrice?: number;
   quantity: number;
   totalPrice?: number;
   isCustomizable?: boolean;
@@ -103,15 +109,22 @@ interface FormattedCartItem {
   id: number;
   quantity: number;
   productId: number;
+
   name: string;
-  optionId?: number;
+  optionId: number;
+
   thumbnail: string | null;
   description: string | null;
+
   isCustomizable: boolean;
+
+  originalPrice?: number;
   price: number;
-  size: string;
-  color: string;
-  sale: number | null;
+
+  optionName?: string | null;
+  optionValue?: string | null;
+  optionName2?: string | null;
+  optionValue2?: string | null;
 }
 
 interface Props {
@@ -126,7 +139,7 @@ const STEPS = [
   { label: "주문완료", step: 2, path: "/order/success" },
 ];
 
-<Script src="https://cdn.iamport.kr/v1/iamport.js" strategy="lazyOnload" />;
+const columnHelper = createColumnHelper<Order>();
 
 export default function MemberCheckoutPage({ user, memberCart }: Props) {
   const searchParams = useSearchParams();
@@ -139,7 +152,7 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
     handleSubmit,
     setValue,
     trigger,
-    watch,
+    getValues,
     clearErrors,
     formState: { errors },
   } = useForm<GuestOrderFormData>({
@@ -149,34 +162,41 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
       email: user.email,
       phone: user.phone,
       receiverName: "",
-      postcode: user.address.postCode,
-      address: user.address.address,
-      detailAddress: user.address.detailAddress,
+      postcode: "",
+      address: "",
+      detailAddress: "",
       customRequest: "",
       paymentMethod: "card",
-
       orderAgree: false,
     },
   });
 
-  const router = useRouter();
   const [isSameAsOrderer, setIsSameAsOrderer] = useState(false);
 
-  const handleSameAsOrderer = async (checked: boolean) => {
+  const handleSameAsOrderer = (checked: boolean) => {
     setIsSameAsOrderer(checked);
 
     if (checked) {
-      const name = watch("name");
-      const phone = watch("phone");
+      setValue("receiverName", user.name);
+      setValue("cellphone", user.phone);
 
-      setValue("receiverName", name);
-      setValue("cellphone", phone);
+      setValue("postcode", user.address.postCode);
+      setValue("address", user.address.address);
+      setValue("detailAddress", user.address.detailAddress);
 
-      if (name && phone) {
-        await trigger(["receiverName", "cellphone"]);
-      } else {
-        clearErrors(["receiverName", "cellphone"]);
-      }
+      clearErrors([
+        "receiverName",
+        "cellphone",
+        "postcode",
+        "address",
+        "detailAddress",
+      ]);
+    } else {
+      setValue("receiverName", "");
+      setValue("cellphone", "");
+      setValue("postcode", "");
+      setValue("address", "");
+      setValue("detailAddress", "");
     }
   };
 
@@ -214,23 +234,45 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
     setIsOpen(false);
   };
 
-  const cartItems: Order[] = (
-    requestedIds.length > 0
-      ? memberCart.filter((item) => requestedIds.includes(item.productId))
-      : memberCart
-  ).map((item) => ({
-    id: item.id,
-    orderId: 0,
-    productId: item.productId,
-    optionId: item.optionId || item.id,
-    productName: item.name,
-    ProductImage: item.thumbnail || "/img/default.png",
-    optionText: `${item.color} / ${item.size}`,
-    unitPrice: item.price,
-    quantity: item.quantity,
-    totalPrice: item.price * item.quantity,
-    isCustomizable: item.isCustomizable,
-  }));
+  const baseCartItems = memberCart;
+
+  const filteredCartItems = useMemo(() => {
+    if (requestedIds.length === 0) return baseCartItems;
+    return baseCartItems.filter((item) =>
+      requestedIds.includes(item.productId),
+    );
+  }, [memberCart, requestedIds]);
+
+  const cartItems: Order[] = useMemo(() => {
+    return filteredCartItems.map((item) => ({
+      id: item.id,
+      orderId: 0,
+      productId: item.productId,
+
+      optionId: item.optionId || item.id,
+
+      productName: item.name,
+      productImage: item.thumbnail || "/img/default.png",
+
+      optionText: [
+        item.optionName && item.optionValue
+          ? `${item.optionName}: ${item.optionValue}`
+          : null,
+
+        item.optionName2 && item.optionValue2
+          ? `${item.optionName2}: ${item.optionValue2}`
+          : null,
+      ]
+        .filter(Boolean)
+        .join(" / "),
+
+      unitPrice: item.price,
+      originalPrice: item.originalPrice,
+      quantity: item.quantity,
+      totalPrice: item.price * item.quantity,
+      isCustomizable: item.isCustomizable,
+    }));
+  }, [filteredCartItems]);
 
   const totalOrderPrice = cartItems.reduce(
     (acc, cur) => acc + cur.unitPrice * cur.quantity,
@@ -241,62 +283,145 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
 
   const hasCustomItem = cartItems.some((item) => item.isCustomizable);
 
-  const orderColumns: Column<Order>[] = [
-    {
-      key: "productName",
-      label: "상품명",
-      align: "center",
-      flex: 3,
-      hideLabel: true,
-      render: (row) => (
-        <div className={styles.productNameArea}>
-          <div className={styles.imageWrapper}>
-            <Image fill src={row.ProductImage} alt={row.productName} />
-          </div>
+  const getDiscountInfo = (originalPrice?: number, price?: number) => {
+  if (!originalPrice || !price || originalPrice <= price) {
+    return null;
+  }
 
-          <div>
-            <p>{row.productName}</p>
-            <p>{row.optionText || "기본옵션"}</p>
+  const discountRate = Math.round(
+    ((originalPrice - price) / originalPrice) * 100,
+  );
+
+  return {
+    originalPrice,
+    price,
+    discountRate,
+  };
+};
+
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor("productName", {
+        header: "상품명",
+
+        meta: {
+          flex: 4,
+        },
+
+        cell: ({ row }) => (
+          <div className={styles.productNameArea}>
+            <div className={styles.imageWrapper}>
+              <Image
+                fill
+                src={row.original.productImage}
+                alt={row.original.productName}
+              />
+            </div>
+
+            <div>
+              <p>{row.original.productName}</p>
+              <p>{row.original.optionText || "기본옵션"}</p>
+            </div>
           </div>
-        </div>
-      ),
-    },
-    {
-      key: "quantity",
-      label: "수량",
-      flex: 1,
-      align: "center",
-      render: (row) => <p className={styles.tableRow}>{row.quantity}개</p>,
-    },
-    {
-      key: "unitPrice",
-      label: "상품금액",
-      flex: 1,
-      align: "center",
-      render: (row) => (
-        <p className={styles.tableRow}>{row.unitPrice.toLocaleString()}원</p>
-      ),
-    },
-    {
-      key: "totalPrice",
-      label: "합계금액",
-      flex: 1,
-      align: "center",
-      render: (row) => (
-        <p className={styles.tableRow}>
-          {(row.quantity * row.unitPrice).toLocaleString()}원
-        </p>
-      ),
-    },
-  ];
+        ),
+      }),
+
+      columnHelper.accessor("quantity", {
+        header: "수량",
+
+        meta: {
+          flex: 1,
+        },
+
+        cell: ({ getValue }) => (
+          <p className={styles.tableRow}>{getValue()}개</p>
+        ),
+      }),
+
+      columnHelper.accessor("unitPrice", {
+        header: "상품금액",
+
+        meta: {
+          flex: 1.5,
+        },
+
+        cell: ({ row }) => {
+          const discount = getDiscountInfo(
+            row.original.originalPrice,
+            row.original.unitPrice,
+          );
+
+          return (
+            <div className={styles.priceArea}>
+              {discount ? (
+                <>
+                  <del className={styles.originalPrice}>
+                    {discount.originalPrice.toLocaleString()}원
+                  </del>
+
+                  <div className={styles.saleRow}>
+                    <p className={styles.salePrice}>
+                      {discount.price.toLocaleString()}원
+                    </p>
+
+                    <span className={styles.discountRate}>
+                      {discount.discountRate}%
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <p className={styles.salePrice}>
+                  {row.original.unitPrice.toLocaleString()}원
+                </p>
+              )}
+            </div>
+          );
+        },
+      }),
+
+      columnHelper.accessor("totalPrice", {
+        header: "합계금액",
+
+        meta: {
+          flex: 1.5,
+        },
+
+        cell: ({ row }) => (
+          <p className={styles.totalPrice}>
+            {(row.original.unitPrice * row.original.quantity).toLocaleString()}
+            원
+          </p>
+        ),
+      }),
+    ],
+    [],
+  );
+
+  const table = useReactTable({
+    data: cartItems,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  const newOrderNumber = useMemo(() => {
+    const today = new Date();
+
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+
+    const dateStr = `${mm}${dd}`;
+
+    return `HS-${dateStr}-${Date.now().toString().slice(-5)}`;
+  }, [user.id]);
 
   const onSubmit = async (data: GuestOrderFormData) => {
     try {
-      const createOrderRes = await fetch("/api/order", {
+      const createOrderRes = await fetch("/api/order/temp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...data,
+          orderNumber: newOrderNumber,
           userId: user.id,
           items: cartItems,
           total: totalOrderPrice + (isFreeDelivery ? 0 : 3000),
@@ -310,6 +435,7 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
       }
 
       if (!createOrderRes.ok) throw new Error("주문 생성 실패");
+
       const { orderNumber } = await createOrderRes.json();
 
       // 토스페이먼츠
@@ -325,7 +451,7 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
             : cartItems[0].productName,
         customerName: data.name,
         customerEmail: data.email,
-        successUrl: `${window.location.origin}/order/success`,
+        successUrl: `${window.location.origin}/order/success?orderNumber=${orderNumber}`,
         failUrl: `${window.location.origin}/order/fail`,
       };
 
@@ -340,12 +466,32 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
       }
     } catch (error) {
       console.error(error);
-      toast.error("결제 준비 중 오류가 발생했습니다.");
+      toast.error("결제가 취소되었습니다.");
     }
   };
 
+  // 반응형
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   return (
     <div className={styles.inner}>
+      <Script
+        src="https://cdn.iamport.kr/v1/iamport.js"
+        strategy="lazyOnload"
+      />
+      ;
       {isOpen && (
         <div
           style={{
@@ -383,7 +529,6 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
           </div>
         </div>
       )}
-
       <form
         onSubmit={handleSubmit(onSubmit, (errors) =>
           console.log("유효성 검사 실패:", errors),
@@ -398,7 +543,52 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
         <section className={styles.productListArea}>
           <h2>주문상품</h2>
 
-          <Table columns={orderColumns} data={cartItems} />
+          <div className={styles.desktopTable}>
+            <UnifiedTable table={table} className={styles.table} />
+          </div>
+
+          <div className={styles.mobileCardList}>
+            {cartItems.map((item) => (
+              <div key={item.id} className={styles.mobileCard}>
+                <div className={styles.mobileTop}>
+                  <div className={styles.mobileImage}>
+                    <Image
+                      fill
+                      src={item.productImage}
+                      alt={item.productName}
+                    />
+                  </div>
+
+                  <div className={styles.mobileInfo}>
+                    <p className={styles.mobileName}>{item.productName}</p>
+
+                    <p className={styles.mobileOption}>
+                      {item.optionText || "기본옵션"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className={styles.mobileBottom}>
+                  <div>
+                    <span>상품금액</span>
+                    <p>{item.unitPrice.toLocaleString()}원</p>
+                  </div>
+
+                  <div>
+                    <span>수량</span>
+                    <p>{item.quantity}개</p>
+                  </div>
+
+                  <div>
+                    <span>합계</span>
+                    <p className={styles.totalPrice}>
+                      {(item.unitPrice * item.quantity).toLocaleString()}원
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </section>
 
         {/* 주문제작 상품 있을 때 */}
@@ -495,7 +685,6 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
         )}
 
         {/* 주문자정보 */}
-
         <fieldset className={styles.ordererInfoArea}>
           <legend>주문자 정보</legend>
 
@@ -528,6 +717,19 @@ export default function MemberCheckoutPage({ user, memberCart }: Props) {
               <label htmlFor="phone">휴대전화</label>
 
               <p>{user.phone}</p>
+            </div>
+
+            {errors.phone && (
+              <span className={styles.error}>{errors.phone.message}</span>
+            )}
+          </div>
+
+          <div className={styles.inputRow}>
+            <div>
+              <label htmlFor="phone">기본 주소</label>
+
+              <p>{user.address.address}</p>
+              <p>{user.address.detailAddress}</p>
             </div>
 
             {errors.phone && (

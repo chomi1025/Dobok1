@@ -6,14 +6,22 @@ interface FormattedCartItem {
   id: number;
   quantity: number;
   productId: number;
+
   name: string;
+  optionId: number;
+
   thumbnail: string | null;
   description: string | null;
+
   isCustomizable: boolean;
+
+  originalPrice?: number;
   price: number;
-  size: string;
-  color: string;
-  sale: number | null;
+
+  optionName?: string | null;
+  optionValue?: string | null;
+  optionName2?: string | null;
+  optionValue2?: string | null;
 }
 
 interface MemberUser {

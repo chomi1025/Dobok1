@@ -52,22 +52,25 @@ export default function UsersClientPage({
     () => [
       columnHelper.accessor("id", {
         header: "번호",
-        size: 60,
+        meta: { flex: 0.8 },
         cell: (info) => info.row.index + 1 + (currentPage - 1) * pageSize,
       }),
+
       columnHelper.accessor("username", {
         header: "아이디",
-        size: 180,
+        meta: { flex: 2 },
         cell: (info) => info.getValue() || "-",
       }),
+
       columnHelper.accessor("name", {
         header: "회원명",
-        size: 100,
+        meta: { flex: 1.5 },
         cell: (info) => (
           <div className={styles.orderNumberWrapper}>
             <div className={styles.normalNumber}>
               {info.getValue() || "이름없음"}
             </div>
+
             <Link
               href={`/admin/users/${info.row.original.id}`}
               className={styles.subNumber}
@@ -78,30 +81,36 @@ export default function UsersClientPage({
           </div>
         ),
       }),
+
       columnHelper.accessor("nickname", {
         header: "닉네임",
-        size: 120,
+        meta: { flex: 1.5 },
         cell: (info) => info.getValue() || "-",
       }),
+
       columnHelper.accessor("phone" as any, {
-        size: 140,
+        header: "연락처",
+        meta: { flex: 1.8 },
         cell: (info) => {
           const phone = info.getValue();
-          return phone ? phone : "-";
+          return phone || "-";
         },
       }),
+
       columnHelper.accessor("createdAt", {
         header: "가입일",
-        size: 120,
+        meta: { flex: 1.5 },
         cell: (info) => {
           const date = info.getValue();
+
           return date ? new Date(date).toLocaleDateString() : "-";
         },
       }),
+
       columnHelper.accessor("manage" as any, {
         id: "manage",
         header: "관리",
-        size: 80,
+        meta: { flex: 1.2 },
         cell: (info) => (
           <Button
             variant="edit"

@@ -1,6 +1,5 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import ProductInfo from "./ProductInfo";
 import DetailSection from "./DetailSection";
 import ReviewSection from "./ReviewSection";

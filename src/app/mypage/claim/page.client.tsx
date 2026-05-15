@@ -145,9 +145,10 @@ export default function ClaimsClientPage({ claims: initialClaims }: Props) {
     () => [
       columnHelper.accessor("type", {
         header: "유형",
-        size: 80,
+        meta: { flex: 1 },
         cell: (info) => {
           const type = CLAIM_TYPE_INFO[info.getValue()];
+
           return (
             <span style={{ color: type.color, fontWeight: 600 }}>
               {type.label}
@@ -155,12 +156,14 @@ export default function ClaimsClientPage({ claims: initialClaims }: Props) {
           );
         },
       }),
+
       columnHelper.accessor("requestedAt", {
         header: "신청정보",
-        size: 150,
+        meta: { flex: 2 },
         cell: (info) => (
           <div className={styles.orderNumberWrapper}>
             <div className={styles.normalNumber}>{info.getValue()}</div>
+
             <Link
               href={`/mypage/claim/${info.row.original.claimNumber}`}
               className={styles.subNumber}
@@ -171,38 +174,43 @@ export default function ClaimsClientPage({ claims: initialClaims }: Props) {
           </div>
         ),
       }),
+
       columnHelper.accessor("name", {
         header: "상품명/옵션",
-        size: 428,
+        meta: { flex: 5 },
         cell: (info) => (
           <div className={styles.titleColumn}>
             <div className={styles.title}>
               <div className={styles.productThumb}>
                 <Image
-                  src={info.row.original.img}
+                  src={info.row.original.img || "/images/no-image.png"}
                   width={90}
                   height={90}
                   alt={info.row.original.name}
                 />
               </div>
+
               <span className={styles.titleText}>{info.getValue()}</span>
             </div>
           </div>
         ),
       }),
+
       columnHelper.accessor("price", {
         header: "상품금액/수량",
-        size: 120,
+        meta: { flex: 2 },
         cell: (info) => (
           <div className={styles.priceInfo}>
             <strong>{Number(info.getValue()).toLocaleString()}원</strong>
+
             <span>{info.row.original.quantity}개</span>
           </div>
         ),
       }),
+
       columnHelper.accessor("total", {
         header: "합계금액",
-        size: 130,
+        meta: { flex: 2 },
         cell: (info) => (
           <span className={styles.totalPrice}>
             {Number(info.getValue()).toLocaleString()}원

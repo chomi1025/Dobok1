@@ -1,67 +1,85 @@
 import OrderDetailClientPage from "./page.client";
-import { Prisma } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/options";
+import { redirect, notFound } from "next/navigation";
 
 interface Props {
-  params: Promise<{ orderNumber: string }>;
+  params: { orderNumber: string };
 }
 
-type Address = {
-  postcode: string;
-  address: string;
-  detailAddress: string;
-};
-
-interface FormattedOrder {
-  id: number;
-  orderNumber: string;
-  date: string;
-  status: string;
-  items: {
-    id: number;
-    productName: string;
-    quantity: number;
-    totalPrice: number;
-  }[];
-  shipping: {
-    name: string;
-    phone: string;
-    address: Address;
-  };
+interface Items {
+  id: string;
+  productName: string;
+  quantity: number;
+  totalPrice: number;
+  productImage: string;
 }
-
-// 테스트
-const mockOrderDetail: FormattedOrder = {
-  id: 1,
-  orderNumber: "ORD-20260316-001",
-  date: "2026-03-16",
-  status: "DELIVERED",
-  items: [
-    {
-      id: 101,
-      productName: "프리미엄 선수용 도복 - 화이트",
-      quantity: 1,
-      totalPrice: 125000,
-    },
-    {
-      id: 102,
-      productName: "고급 면 띠 - 블랙",
-      quantity: 1,
-      totalPrice: 25000,
-    },
-  ],
-  shipping: {
-    name: "초미",
-    phone: "010-1234-5678",
-    address: {
-      postcode: "02143",
-      address: "서울 중랑구 망우동",
-      detailAddress: "101동 202호",
-    },
-  },
-};
-
 export default async function OrderDetailPage({ params }: Props) {
-  // 세션+프리즈마로 주문번호 불러오기
+  const session = await getServerSession(authOptions);
 
-  return <OrderDetailClientPage order={mockOrderDetail} />;
+  // 로그인 체크
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+
+  const userId = Number(session.user.id);
+
+  // 본인 주문만
+  const order = await prisma.order.findFirst({
+    where: {
+      orderNumber: params.orderNumber,
+      userId: userId,
+    },
+    include: {
+      items: true,
+      user: {
+        select: {
+          name: true,
+          phone: true,
+          address: true,
+        },
+      },
+    },
+  });
+
+  if (!order) {
+    notFound();
+  }
+
+  const formattedOrder = {
+    id: order.id,
+    orderNumber: order.orderNumber,
+    date: order.createdAt.toISOString().split("T")[0],
+    status: order.status,
+    items: order.items.map((item: any) => {
+      const originalPrice = item.originPrice;
+      const salePrice = item.salePrice ?? item.totalPrice / item.quantity;
+
+      const discountRate =
+        originalPrice && salePrice && originalPrice > salePrice
+          ? Math.round(((originalPrice - salePrice) / originalPrice) * 100)
+          : 0;
+
+      return {
+        id: item.id,
+        productName: item.productName,
+        quantity: item.quantity,
+        productImage: item.productImage,
+
+        originalPrice,
+        salePrice,
+        discountRate,
+        totalPrice: item.totalPrice,
+      };
+    }),
+
+    shipping: {
+      name: order.user.name,
+      phone: order.user.phone,
+      address: order.user.address,
+    },
+  };
+
+  return <OrderDetailClientPage order={formattedOrder} />;
 }

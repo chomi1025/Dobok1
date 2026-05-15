@@ -13,8 +13,6 @@ export default async function ProfileEditPage() {
     where: { id: Number(userId) },
   });
 
-  console.log(user);
-
   if (!user) return null;
 
   const address = (user.address ?? {}) as {

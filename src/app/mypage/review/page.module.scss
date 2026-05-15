@@ -29,7 +29,7 @@
   }
 
   td {
-    font-size : rem(15);
+    font-size: rem(15);
     padding: rem(20) rem(10);
     border-bottom: 1px solid #eee;
     text-align: center;
@@ -38,6 +38,7 @@
 }
 
 .titleColumn {
+  width: 100%;
   text-align: left !important;
   padding-left: rem(20);
 }

@@ -18,7 +18,7 @@ export async function GET(
 
     return NextResponse.json({ productCount });
   } catch (error: any) {
-    console.error("❌ Prisma 에러 발생:", error.message);
+    console.error("Prisma 에러 발생:", error.message);
     return NextResponse.json(
       { error: "서버 내부 오류", details: error.message },
       { status: 500 },
@@ -59,7 +59,7 @@ export async function PATCH(
 
     return NextResponse.json(updatedCategory);
   } catch (error: any) {
-    console.error("❌ 카테고리 수정 에러:", error.message);
+    console.error(" 카테고리 수정 에러:", error.message);
     return NextResponse.json(
       { error: "수정 중 오류가 발생했습니다.", details: error.message },
       { status: 500 },
@@ -113,7 +113,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error("❌ 삭제 에러:", error.message);
+    console.error(" 삭제 에러:", error.message);
     return NextResponse.json(
       { error: "삭제 중 오류가 발생했습니다." },
       { status: 500 },

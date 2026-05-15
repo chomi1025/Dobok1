@@ -23,50 +23,23 @@ export default function OrderSuccessClientPage() {
   const hasCalled = useRef(false);
 
   useEffect(() => {
+    if (!paymentKey || !orderId || !amount) return;
+
     const confirmPayment = async () => {
+      const key = `${orderId}-${paymentKey}`;
+
       if (hasCalled.current) return;
       hasCalled.current = true;
 
-      try {
-        const response = await fetch("/api/payment/toss", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ paymentKey, orderId, amount }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-
-          setUserName(data.userName);
-          setIsLoading(false);
-        } else {
-          const errorData = await response.json();
-
-          const safeCodes = [
-            "ALREADY_PROCESSED_PAYMENT",
-            "ALREADY_PROCESSING_REQUEST",
-          ];
-
-          if (safeCodes.includes(errorData.code) || response.status === 409) {
-            console.log("이미 처리 중이거나 완료된 요청입니다.");
-
-            if (errorData.userName) setUserName(errorData.userName);
-
-            setIsLoading(false);
-            return;
-          }
-
-          router.push("/order/fail");
-        }
-      } catch (error) {
-        router.push("/order/fail");
-      }
+      await fetch("/api/payment/toss", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paymentKey, orderId, amount }),
+      });
     };
 
-    if (paymentKey && orderId && amount) {
-      confirmPayment();
-    }
-  }, [paymentKey, orderId, amount, router]);
+    confirmPayment();
+  }, []);
 
   const handleCopy = async (text: string) => {
     try {

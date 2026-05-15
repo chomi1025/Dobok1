@@ -172,40 +172,62 @@ export default function AdminOrderDetailClientPage({ order }: Props) {
 
       <section className={styles.section}>
         <h3 className={styles.section__title}>주문 상품 내역</h3>
+
         <div className={styles.product}>
           {order.items && order.items.length > 0 ? (
-            order.items.map((item: any) => (
-              <div key={item.id} className={styles.product__item}>
-                <div className={styles.image}>
-                  <Image
-                    width={90}
-                    height={90}
-                    src={item.productImage}
-                    alt={item.productName}
-                  />
-                </div>
+            order.items.map((item: any) => {
+              const imageSrc = item.productImage || "/placeholder.png";
 
-                <div className={styles.details}>
-                  <h4>{item.productName}</h4>
-                  <p>
-                    {item.optionName ? `옵션: ${item.optionName} / ` : ""}
-                    수량: {item.quantity}개
-                  </p>
-                  <p>
-                    <strong>
-                      {(item.unitPrice * item.quantity).toLocaleString()}원
-                    </strong>
-                    <span
-                      style={{
-                        fontSize: "12px",
-                        color: "#999",
-                        marginLeft: "8px",
-                      }}
-                    ></span>
-                  </p>
+              const discountRate =
+                item.discountRate ??
+                (item.originPrice && item.salePrice
+                  ? Math.round(
+                      ((item.originPrice - item.salePrice) / item.originPrice) *
+                        100,
+                    )
+                  : 0);
+
+              return (
+                <div key={item.id} className={styles.product__item}>
+                  <div className={styles.image}>
+                    <Image
+                      width={90}
+                      height={90}
+                      src={imageSrc}
+                      alt={item.productName || "상품"}
+                    />
+                  </div>
+
+                  <div className={styles.details}>
+                    <h4>{item.productName}</h4>
+
+                    <p>
+                      {item.optionText ? `옵션: ${item.optionText} / ` : ""}
+                      수량: {item.quantity}개
+                    </p>
+
+                    <div className={styles.priceDetail}>
+                      <div className={styles.row}>
+                        <span>정가</span>
+                        <del>{item.originPrice?.toLocaleString() || 0}원</del>
+                      </div>
+
+                      <div className={styles.row}>
+                        <span>판매가</span>
+                        <strong>
+                          {item.salePrice?.toLocaleString() || 0}원
+                        </strong>
+                      </div>
+
+                      <div className={styles.row}>
+                        <span>할인율</span>
+                        <em>{discountRate}%</em>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           ) : (
             <p className={styles.empty}>주문된 상품이 없습니다.</p>
           )}
@@ -219,9 +241,14 @@ export default function AdminOrderDetailClientPage({ order }: Props) {
             textAlign: "right",
           }}
         >
-          <span style={{ fontSize: "14px", color: "#666" }}>총 결제 금액 </span>
+          <span style={{ fontSize: "14px", color: "#666" }}>총 결제 금액</span>
+
           <strong
-            style={{ fontSize: "20px", color: "#222", marginLeft: "10px" }}
+            style={{
+              fontSize: "20px",
+              color: "#222",
+              marginLeft: "10px",
+            }}
           >
             {order.total.toLocaleString()}원
           </strong>
@@ -278,7 +305,6 @@ export default function AdminOrderDetailClientPage({ order }: Props) {
         <div className={styles.history__list}>
           {order.histories && order.histories.length > 0 ? (
             order.histories.map((item: any) => {
-              // 아까 알려준 한글 치환 로직 포함
               let displayContent = item.content;
               Object.keys(STATUS_MAP).forEach((key) => {
                 if (displayContent.includes(key)) {

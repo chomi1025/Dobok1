@@ -70,7 +70,7 @@ export default function AdminDashboard() {
       value: `${todayOrderCount}건`,
       icon: <ShoppingBag />,
       color: "#4f46e5",
-      href: "/admin/order",
+      href: "/admin/orders?period=today&page=1",
     },
     {
       id: 2,
@@ -86,7 +86,7 @@ export default function AdminDashboard() {
       value: `${Number(todaySales).toLocaleString()}원`,
       icon: <CreditCard />,
       color: "#f59e0b",
-      href: "/admin/sales",
+      href: "/admin/orders?period=today&status=PAYMENT_COMPLETE&page=1",
     },
     {
       id: 4,
@@ -94,7 +94,7 @@ export default function AdminDashboard() {
       value: `${todayNewUsers}건`,
       icon: <Users />,
       color: "#10b981",
-      href: "/admin/users",
+      href: "/admin/users?period=today&page=1",
     },
     {
       id: 5,
@@ -120,7 +120,12 @@ export default function AdminDashboard() {
 
       <section className={styles.statsGrid}>
         {stats.map((stat) => (
-          <Link key={stat.id} href={stat.href} className={styles.statCard}>
+          <Link
+            key={stat.id}
+            href={stat.href}
+            className={styles.statCard}
+            prefetch={false}
+          >
             <div
               className={styles.iconWrapper}
               style={{ backgroundColor: stat.color }}

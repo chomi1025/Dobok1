@@ -23,8 +23,6 @@
 
 // 가격
 .price {
-  margin-bottom: rem(28);
-
   > div {
     display: flex;
     align-items: center;
@@ -138,13 +136,49 @@
 }
 
 .optionArea {
-  min-height: rem(80);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
 
-  > label {
-    font-size: rem(16);
-    display: block;
-    font-weight: 700;
-    margin-bottom: rem(10) 10px;
+.optionGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+  }
+}
+
+.selectBox {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+
+  border: 1px solid #ddd;
+  border-radius: 8px;
+
+  font-size: 14px;
+  background-color: #fff;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background-image: url("data:image/svg+xml,%3Csvg fill='%23666' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+
+  &:hover {
+    border-color: #999;
   }
 }
 
@@ -153,50 +187,6 @@
   background: #fafafa;
   border: 1px solid #eee;
   border-radius: rem(8);
-}
-
-.optionGroup {
-  margin-top: rem(24);
-
-  label {
-    font-weight: 700;
-    color: #222;
-    display: block;
-    margin-bottom: rem(12);
-  }
-
-  ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: rem(8);
-    padding: 0;
-    margin: 0;
-    list-style: none;
-
-    li {
-      padding: rem(8) rem(12);
-      border-radius: rem(5);
-      font-size: rem(14);
-      color: #888;
-      border: 1px solid #888;
-
-      &.active {
-        background-color: #333;
-
-        border: none;
-
-        button {
-          color: #fff;
-        }
-      }
-
-      small {
-        font-size: rem(11);
-        opacity: 0.8;
-        margin-left: rem(4);
-      }
-    }
-  }
 }
 
 .selectedListArea {
@@ -328,4 +318,81 @@
       color: white;
     }
   }
+}
+
+.optionList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.optionItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 12px 14px;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+
+  transition: 0.2s;
+
+  &:hover {
+    border-color: #999;
+  }
+}
+
+.active {
+  border-color: #111;
+  background: #fafafa;
+}
+
+.optionRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.optionName {
+  font-size: 14px;
+  color: #222;
+  font-weight: 500;
+}
+
+.optionPrice {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.price {
+  font-size: 14px;
+  color: #111;
+}
+
+.discount {
+  font-size: 12px;
+  color: #e53935;
+  font-weight: 700;
+  background: rgba(229, 57, 53, 0.08);
+  padding: 2px 6px;
+  border-radius: 999px;
+}
+
+.selectBox {
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.selectBox:focus {
+  border-color: #111;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.12);
+}
+
+.optionRow {
 }
