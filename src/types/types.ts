@@ -1,3 +1,4 @@
+import { fetchProductPreview } from "@/lib/api";
 import { Prisma } from "@prisma/client";
 import { Inquiry } from "@prisma/client";
 export type Category = Prisma.CategoryGetPayload<{
@@ -15,6 +16,10 @@ export type ProductWithDetails = Prisma.ProductGetPayload<{
     options: true;
   };
 }>;
+
+export type ProductPreview = Awaited<
+  ReturnType<typeof fetchProductPreview>
+>[number];
 
 export type CategoryWithChildren = Prisma.CategoryGetPayload<{
   include: { children: true };

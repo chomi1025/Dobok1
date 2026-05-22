@@ -15,10 +15,13 @@ import { format } from "date-fns";
 import Link from "next/link";
 import { useMemo } from "react";
 import PagenationComponent from "@/components/pagenation/page";
+import { CITY_OPTIONS } from "@/constants/regions";
 
 type PostWithAuthor = Post & {
   author: User;
   _count?: { comments: number };
+  categoryLabel: string;
+  region: string;
 };
 
 interface Props {
@@ -50,73 +53,97 @@ export default function EventsClientPage({
   const displayPosts = data?.posts ?? [];
 
   const columns = useMemo<ColumnDef<PostWithAuthor>[]>(
-  () => [
-    {
-      id: "number",
-      header: "번호",
-      meta: { flex: 0.7 },
+    () => [
+      {
+        accessorKey: "category",
+        header: "유형",
+        meta: { flex: 1 },
 
-      cell: ({ row }) => row.index + 1,
-    },
+        cell: ({ row }) => {
+          const category = row.original.categoryLabel || "대회";
 
-    {
-      accessorKey: "title",
-      header: "제목",
-      meta: { flex: 4.3 }, // 기존보다 조금 줄임
-
-      cell: ({ row }) => {
-        const { id, title, _count } = row.original;
-        const commentCount = _count?.comments ?? 0;
-
-        return (
-          <div className={styles.titleCell}>
-            <Link href={`/community/free/${id}`}>
-              {title}
-
-              {commentCount > 0 && (
-                <span className={styles.commentCount}>
-                  <span>({commentCount})</span>
-                </span>
-              )}
-            </Link>
-          </div>
-        );
+          return <span className={styles.categoryBadge}>{category}</span>;
+        },
       },
-    },
 
-    {
-      accessorKey: "authorId",
-      header: "작성자",
-      meta: { flex: 1.4 }, // 조금 넓힘
+      {
+        accessorKey: "title",
+        header: "제목",
+        meta: { flex: 5.5 },
 
-      cell: ({ row }) => {
-        const authorNickname = row.original.authorNickname || "익명";
-        return <span>{authorNickname}</span>;
+        cell: ({ row }) => {
+          const { id, title, _count, city, district, eventDate } = row.original;
+
+          const commentCount = _count?.comments ?? 0;
+
+          const cityLabel =
+            CITY_OPTIONS.find((v) => v.value === city)?.label || city;
+
+          return (
+            <div className={styles.titleCell}>
+              <Link
+                href={`/community/events/${id}`}
+                className={styles.titleLink}
+              >
+                <div className={styles.titleTop}>
+                  <span className={styles.titleText}>{title}</span>
+
+                  {commentCount > 0 && (
+                    <span className={styles.commentCount}>
+                      ({commentCount})
+                    </span>
+                  )}
+                </div>
+
+                <div className={styles.meta}>
+                  {eventDate && (
+                    <>
+                      <span>
+                        개최일 : {format(new Date(eventDate), "yy.MM.dd")}
+                      </span>
+
+                      <span>/</span>
+                    </>
+                  )}
+
+                  <span>
+                    행사지역 : {cityLabel} {district}
+                  </span>
+                </div>
+              </Link>
+            </div>
+          );
+        },
       },
-    },
 
-    {
-      accessorKey: "createdAt",
-      header: "날짜",
-      meta: { flex: 1 },
+      {
+        accessorKey: "authorNickname",
+        header: "작성자",
+        meta: { flex: 1.2 },
 
-      cell: ({ row }) => {
-        const date = new Date(row.original.createdAt);
-
-        return <span>{format(date, "yy.MM.dd")}</span>;
+        cell: ({ row }) => <span>{row.original.authorNickname || "익명"}</span>,
       },
-    },
 
-    {
-      accessorKey: "viewCount",
-      header: "조회",
-      meta: { flex: 0.8 },
+      {
+        accessorKey: "createdAt",
+        header: "등록일",
+        meta: { flex: 1 },
 
-      cell: ({ row }) => <span>{row.original.viewCount ?? 0}</span>,
-    },
-  ],
-  [],
-);
+        cell: ({ row }) => (
+          <span>{format(new Date(row.original.createdAt), "yy.MM.dd")}</span>
+        ),
+      },
+
+      {
+        accessorKey: "viewCount",
+        header: "조회",
+        meta: { flex: 0.8 },
+
+        cell: ({ row }) => <span>{row.original.viewCount ?? 0}</span>,
+      },
+    ],
+    [],
+  );
 
   const table = useReactTable({
     data: displayPosts,
@@ -135,7 +162,7 @@ export default function EventsClientPage({
           전국 무도 대회와 세미나, 각종 행사 정보를 빠르게 확인하고
           참여해보세요.
         </p>
-        <Button href="/community/free/new">글쓰기</Button>
+        <Button href="/community/events/new">글쓰기</Button>
       </header>
 
       <UnifiedTable table={table} className={styles.eventTable} />

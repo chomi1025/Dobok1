@@ -24,7 +24,7 @@
     width: 100%;
     position: fixed;
     top: 0;
-    background-color: transparent;
+    background-color: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -257,4 +257,24 @@
   height: 1px;
   background-color: #ddd;
   margin: 13px 0 17px;
+}
+
+.mobileTransparent {
+  @include mobile {
+    .topHeader {
+      background: transparent;
+      transition: 0.3s ease;
+    }
+  }
+}
+
+.mobileScrolled {
+  @include mobile {
+    .topHeader {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: 0.3s ease;
+    }
+  }
 }

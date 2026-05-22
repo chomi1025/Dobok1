@@ -10,6 +10,12 @@
     border: none;
     background-color: #ddd;
     height: 1px;
+
+    @include mobile {
+      width: 100%;
+      max-width: rem(180);
+      margin: rem(90) auto rem(100);
+    }
   }
 }
 
@@ -60,57 +66,77 @@
   color: #fff;
   transition: 0.3s;
 
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  button {
+    padding: rem(12) rem(22);
+    border-radius: rem(999);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: white;
+    font-size: rem(14);
+    font-weight: 600;
+    transition: 0.3s ease;
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+
+      transform: translateY(-2px);
+    }
   }
 
-  .textArea {
-    max-width: rem(500);
+  @include mobile {
+    margin: rem(90) rem(16);
+    padding: rem(28);
+    height: auto;
+    border-radius: rem(20);
 
-    .tag {
-      font-size: rem(13);
-      letter-spacing: 2px;
-      opacity: 0.8;
+    .textArea {
+      .tag {
+        font-size: rem(11);
+        letter-spacing: 1.5px;
+      }
 
-      > h3 {
-        color: white;
-        font-size: rem(32);
-        margin: rem(10) 0;
-        font-weight: 800;
+      h3 {
+        font-size: rem(24);
+        line-height: 1.3;
+        margin: rem(10) 0 rem(12);
       }
 
       p {
-        font-size: rem(16);
-        opacity: 0.9;
-        margin-bottom: rem(20);
-      }
-
-      button {
-        padding: rem(10) rem(20);
-        border-radius: 999px;
-        border: none;
-        background: #fff;
-        color: #111;
-        font-weight: 600;
-        cursor: pointer;
+        font-size: rem(14);
+        line-height: 1.5;
+        margin-bottom: rem(18);
       }
     }
+  }
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
   }
 }
 
 .instagramSection {
   padding: rem(80) 0;
-  border-top: 1px solid #f0f0f0;
   margin-top: rem(150);
+
+  @include mobile {
+    padding: 0;
+    margin-top: 0;
+  }
 
   .sectionHeader {
     text-align: center;
     margin-bottom: rem(40);
+
     .instaTitle {
       font-size: rem(28);
       font-weight: 800;
       color: #333333;
+
+      @include mobile {
+        font-size: rem(22);
+      }
     }
     .instaSubtitle {
       font-size: rem(15);
@@ -175,5 +201,49 @@
     background-color: #f3f4f6;
     margin-bottom: 8px;
     color: #3b82f6;
+  }
+}
+
+@include mobile {
+  .communitySection {
+    margin-top: rem(70);
+    padding: 0 rem(20);
+
+    .header {
+      margin-bottom: rem(24);
+
+      h2 {
+        font-size: rem(22);
+      }
+    }
+
+    .grid {
+      gap: rem(12);
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid li {
+      padding: rem(18) rem(10);
+      border-radius: rem(14);
+
+      h4 {
+        font-size: rem(15);
+        margin-bottom: 0;
+      }
+    }
+
+    .iconWrapper {
+      width: rem(56);
+      height: rem(56);
+      margin-bottom: rem(10);
+    }
+  }
+
+  .banner {
+    margin: rem(90) rem(16);
+    height: auto;
+    padding: rem(28);
+    border-radius: rem(20);
+    align-items: flex-start;
   }
 }

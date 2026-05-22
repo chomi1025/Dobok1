@@ -59,10 +59,6 @@ export default function ReviewNewClientPage() {
       if (img) formData.append("images", img);
     });
 
-    for (let [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
-
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsSubmitting(false);
     alert("리뷰가 등록되었습니다.");
