@@ -42,74 +42,66 @@ export default function FreeBoardClientPage({ pageSize, currentPage }: Props) {
   const displayPosts = data?.posts ?? [];
 
   const columns = useMemo<ColumnDef<PostWithAuthor>[]>(
-  () => [
-    {
-      id: "number",
-      header: "번호",
-      meta: { flex: 0.7 },
+    () => [
+      {
+        accessorKey: "title",
+        header: "제목",
+        meta: { flex: 6.2 },
 
-      cell: ({ row }) => row.index + 1,
-    },
+        cell: ({ row }) => {
+          const { id, title, _count } = row.original;
+          const commentCount = _count?.comments ?? 0;
 
-    {
-      accessorKey: "title",
-      header: "제목",
-      meta: { flex: 5 },
+          return (
+            <div className={styles.titleCell}>
+              <Link href={`/community/free/${id}`}>
+                {title}
 
-      cell: ({ row }) => {
-        const { id, title, _count } = row.original;
-        const commentCount = _count?.comments ?? 0;
-
-        return (
-          <div className={styles.titleCell}>
-            <Link href={`/community/free/${id}`}>
-              {title}
-
-              {commentCount > 0 && (
-                <span className={styles.commentCount}>
-                  <span>({commentCount})</span>
-                </span>
-              )}
-            </Link>
-          </div>
-        );
+                {commentCount > 0 && (
+                  <span className={styles.commentCount}>
+                    <span>({commentCount})</span>
+                  </span>
+                )}
+              </Link>
+            </div>
+          );
+        },
       },
-    },
 
-    {
-      accessorKey: "authorId",
-      header: "작성자",
-      meta: { flex: 1.4 },
+      {
+        accessorKey: "authorId",
+        header: "작성자",
+        meta: { flex: 1.3 },
 
-      cell: ({ row }) => {
-        const authorNickname = row.original.authorNickname || "익명";
+        cell: ({ row }) => {
+          const authorNickname = row.original.authorNickname || "익명";
 
-        return <span>{authorNickname}</span>;
+          return <span>{authorNickname}</span>;
+        },
       },
-    },
 
-    {
-      accessorKey: "createdAt",
-      header: "날짜",
-      meta: { flex: 1.1 },
+      {
+        accessorKey: "createdAt",
+        header: "등록일",
+        meta: { flex: 1 },
 
-      cell: ({ row }) => {
-        const date = new Date(row.original.createdAt);
+        cell: ({ row }) => {
+          const date = new Date(row.original.createdAt);
 
-        return <span>{format(date, "yy.MM.dd")}</span>;
+          return <span>{format(date, "yy.MM.dd")}</span>;
+        },
       },
-    },
 
-    {
-      accessorKey: "viewCount",
-      header: "조회",
-      meta: { flex: 0.8 },
+      {
+        accessorKey: "viewCount",
+        header: "조회",
+        meta: { flex: 0.7 },
 
-      cell: ({ row }) => <span>{row.original.viewCount ?? 0}</span>,
-    },
-  ],
-  [],
-);
+        cell: ({ row }) => <span>{row.original.viewCount ?? 0}</span>,
+      },
+    ],
+    [],
+  );
 
   const table = useReactTable({
     data: displayPosts,

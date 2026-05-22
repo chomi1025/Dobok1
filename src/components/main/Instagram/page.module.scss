@@ -18,15 +18,23 @@
 
 .title {
   display: flex;
-  align-items: center;
+  flex-direction: column;
 
   h2 {
     font-size: rem(32);
     margin-right: rem(15);
+
+    @include mobile {
+      font-size: rem(18);
+    }
   }
 
   p {
     color: #666666;
+
+    @include mobile {
+      font-size: rem(14);
+    }
   }
 }
 
@@ -35,8 +43,9 @@
   margin: rem(40) 0;
 
   @include mobile {
-    padding: 0 rem(40);
+    margin: rem(20) 0;
   }
+
   .mySwiper {
     position: static;
     overflow: hidden;

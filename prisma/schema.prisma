@@ -86,6 +86,7 @@ model User {
 
   accounts          Account[]
   comments          Comment[]
+  resourcePosts ResourcePost[]
 
   inquiries         Inquiry[]
   inquiryReplies    InquiryReply[]
@@ -420,31 +421,57 @@ model Post {
   viewCount      Int              @default(0)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
-  jobRole        String?
-  companyName    String?
+
+  // 행사 정보
+  eventCategory  EventCategory?
   eventDate      DateTime?
-  eventVenue     String?
-  applyMethod    String?
-  jobType        JobType?
-  experience     ExperienceLevel? @default(IRRELEVANT)
   city           String?
   district       String?
+  eventVenue     String?
+  applyMethod    String?
+
+  // 구인구직
+  jobRole        String?
+  companyName    String?
+  jobType        JobType?
+  experience     ExperienceLevel? @default(IRRELEVANT)
+
+  // 관계
   attachments    Attachment[]
   comments       Comment[]
   messages       Message[]
   authorId       Int?
-  author         User?            @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  author         User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
   authorNickname String?
 
-  deletedAt DateTime?
-  deletedBy Int?
-  deletedByUser User? @relation("DeletedPosts", fields: [deletedBy], references: [id])
-  deleteReason DeleteReason?
+  // 삭제
+  deletedAt      DateTime?
+  deletedBy      Int?
+  deletedByUser  User? @relation("DeletedPosts", fields: [deletedBy], references: [id])
+  deleteReason   DeleteReason?
+  editHistories PostEditHistory[]
 
   @@index([type])
-  @@index([jobType])
   @@index([city])
-  @@index([jobRole])
+  @@index([eventCategory])
+  @@index([eventDate])
+}
+
+model PostEditHistory {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  title     String
+  content   String
+  editedAt  DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id])
+}
+
+enum EventCategory {
+  COMPETITION
+  SEMINAR
+  EVENT
+  NOTICE
 }
 
 enum DeleteReason {
@@ -473,6 +500,35 @@ model Comment {
   authorId Int?
   author   User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model ResourcePost {
+  id           Int      @id @default(autoincrement())
+  title        String
+  content      String
+
+  category     String   @default("DOCUMENT")
+
+  videoUrl     String?
+  externalUrl  String?
+
+  createdAt    DateTime @default(now())
+
+  authorId     Int
+  author       User @relation(fields: [authorId], references: [id])
+
+  attachments  ResourceAttachment[]
+}
+
+model ResourceAttachment {
+  id        Int @id @default(autoincrement())
+  fileName  String
+  fileUrl   String
+  publicId  String
+  fileType String
+  fileSize Int
+  postId    Int
+  post      ResourcePost @relation(fields: [postId], references: [id])
 }
 
 enum ProductStatus {

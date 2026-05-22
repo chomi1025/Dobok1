@@ -1,9 +1,9 @@
 import styles from "./page.module.scss";
 import ProductCard from "./ProductCard";
-import { ProductWithCategory } from "@/types/types";
+import { ProductPreview } from "@/types/types";
 
 interface ProductListProps {
-  products: ProductWithCategory[];
+  products: ProductPreview[];
   className?: string;
 }
 

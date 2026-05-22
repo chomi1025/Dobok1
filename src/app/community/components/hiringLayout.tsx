@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import "react-quill/dist/quill.snow.css";
 import styles from "./hiring.module.scss";

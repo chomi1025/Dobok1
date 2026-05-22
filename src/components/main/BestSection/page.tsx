@@ -1,9 +1,10 @@
-import { Category } from "@prisma/client";
+import { Category, Product } from "@prisma/client";
 import { Title } from "../../../types/types";
 import ProductSectionComponent from "../ProductSection/page";
 
 interface Props {
   categories: Category[];
+  initialProducts: Product[];
 }
 
 const title: Title = {
@@ -13,13 +14,17 @@ const title: Title = {
   href: "products/best",
 };
 
-export default async function BestSectionComponent({ categories }: Props) {
+export default async function BestSectionComponent({
+  categories,
+  initialProducts,
+}: Props) {
   return (
     <>
       <ProductSectionComponent
         type={"best"}
         title={title}
         categories={categories}
+        initialProducts={initialProducts}
       />
     </>
   );

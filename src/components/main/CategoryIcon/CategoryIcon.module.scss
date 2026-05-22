@@ -15,6 +15,10 @@
   h2 {
     font-size: rem(32);
     margin-bottom: rem(6);
+
+    @include mobile {
+      font-size: rem(20);
+    }
   }
 
   p {
@@ -26,36 +30,64 @@
 .icon {
   margin-top: rem(160);
 
+  @include mobile {
+    margin-top: rem(90);
+  }
+
   nav {
     ul {
       margin: 0 auto;
-      width: rem(900);
+      max-width: rem(900);
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
+      gap: rem(24) rem(18);
 
-      li {
-        width: rem(132);
+      @include mobile {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: rem(20) rem(12);
+        max-width: rem(768);
+        margin: 0 auto;
+      }
+    }
 
-        figure {
-          position: relative;
-          width: 100%;
-          aspect-ratio: 1 / 1;
-          margin-bottom: rem(15);
+    li {
+      width: rem(132);
 
-          div {
-            width: 50%;
-          }
-          img {
-            width: rem(43);
-            height: 100%;
-            object-fit: cover;
-            border-radius: rem(999);
-            box-sizing: border-box;
-          }
+      @include mobile {
+        width: auto;
+      }
+
+      figure {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        margin-bottom: rem(15);
+
+        @include mobile {
+          width: auto;
         }
 
-        p {
-          font-size: rem(15);
+        div {
+          width: 50%;
+        }
+
+        img {
+          width: rem(43);
+          height: 100%;
+          object-fit: cover;
+          border-radius: rem(999);
+          box-sizing: border-box;
+        }
+      }
+
+      p {
+        font-size: rem(15);
+
+        @include mobile {
+          font-size: rem(12);
         }
       }
     }
@@ -76,6 +108,11 @@
   transition: all 0.3s ease;
   border: 1px solid #f8f8f8;
   flex-shrink: 0;
+
+  @include mobile {
+    width: rem(60);
+    height: rem(60);
+  }
 
   .imageContainer {
     position: relative;

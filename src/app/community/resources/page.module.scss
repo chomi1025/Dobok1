@@ -1,0 +1,128 @@
+@import "../../../components/style/variables.module";
+
+.inner {
+  max-width: 100vw;
+  margin: 0 auto;
+
+  .header {
+    position: relative;
+    align-items: center;
+
+    h1 {
+      font-size: rem(24);
+      font-weight: 700;
+      margin-bottom: rem(5);
+    }
+
+    p {
+      margin-bottom: rem(20);
+      font-size: rem(14);
+      color: #888;
+    }
+
+    a {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+    }
+  }
+
+  > nav {
+    margin: rem(30) 0;
+  }
+}
+
+.eventTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  &,
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .titleCell {
+    text-align: left;
+    display: flex;
+
+    a {
+      color: #333;
+      text-decoration: none;
+      font-weight: 500;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.commentCount {
+  span {
+    display: inline-block;
+    margin-left: 3px;
+    font-weight: 700;
+  }
+}
+
+.titleCell {
+  display: flex;
+  flex-direction: column;
+
+  a {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+.titleTop {
+  display: flex;
+  gap: 4px;
+
+  font-size: 15px;
+  font-weight: 500;
+  color: #111;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 13px;
+  color: #888;
+}
+
+.commentCount {
+  color: #e11d48;
+  font-weight: 600;
+}
+
+.categoryBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 4px 10px;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  background: #f3f4f6;
+  color: #444;
+}
+
+.resourceType {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f3f4f6;
+  color: #444;
+}

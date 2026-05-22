@@ -42,31 +42,9 @@
     border-collapse: collapse;
   }
 
-  :global(thead) {
-    background: #f9f9f9;
-    th {
-      padding: 15px;
-      border-bottom: 1px solid #eee;
-      font-weight: 600;
-      text-align: center;
-      font-size: 15px;
-    }
-  }
-
-  :global(tbody) {
-    td {
-      padding: 15px;
-      border-bottom: 1px solid #eee;
-      text-align: center;
-      font-size: 15px;
-      color: #666;
-    }
-  }
-
   .titleCell {
     text-align: left;
     display: flex;
-    align-items: center;
 
     a {
       color: #333;
@@ -86,4 +64,50 @@
     margin-left: 3px;
     font-weight: 700;
   }
+}
+
+.titleCell {
+  display: flex;
+  flex-direction: column;
+
+  a {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+
+.titleTop {
+  display: flex;
+  gap: 4px;
+
+  font-size: 15px;
+  font-weight: 500;
+  color: #111;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 13px;
+  color: #888;
+}
+
+.commentCount {
+  color: #e11d48;
+  font-weight: 600;
+}
+
+.categoryBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f3f4f6;
+  color: #444;
 }

@@ -1,0 +1,127 @@
+@import "../../../../components/style/variables.module";
+
+.container {
+  margin: 0 auto;
+
+  .header {
+    margin-bottom: 30px;
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+  }
+
+  hr {
+    margin: rem(30) 0 rem(40);
+    border: none;
+    height: 1px;
+    background-color: #333;
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    .titleInput {
+      padding: rem(15) rem(18);
+      font-size: rem(14);
+      border-radius: rem(7);
+    }
+
+    .contentInput {
+      min-height: 400px;
+      padding: 15px;
+      font-size: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      resize: vertical;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+  }
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.input {
+  width: rem(200);
+}
+
+.select,
+.input,
+.titleInput {
+  padding: rem(15) rem(18);
+  border: 1px solid #ddd;
+  border-radius: rem(7);
+  font-size: rem(14);
+}
+
+.select {
+  width: rem(200);
+}
+
+.input {
+  width: 100%;
+}
+
+.select {
+  max-width: 220px;
+  cursor: pointer;
+  appearance: none;
+  padding-right: 44px;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 18px;
+}
+
+.fileUpload {
+  label {
+    display: block;
+  }
+}
+
+.fileUpload {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid #e5e5e5;
+  border-radius: 14px;
+  background: #fafafa;
+
+  label {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  input[type="file"] {
+    font-size: 14px;
+  }
+}
+
+.fileList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  li {
+    font-size: 14px;
+    color: #555;
+    word-break: break-all;
+  }
+}

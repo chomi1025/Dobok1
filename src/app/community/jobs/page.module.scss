@@ -138,3 +138,35 @@
     }
   }
 }
+
+.titleCell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.titleLink {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.titleTop {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.titleText {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 13px;
+  color: #888;
+}

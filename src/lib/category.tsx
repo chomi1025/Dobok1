@@ -18,6 +18,9 @@ export async function getMainCategories() {
       },
       include: {
         children: {
+          where: {
+            isVisible: true,
+          },
           orderBy: {
             sortOrder: "asc",
           },
@@ -27,7 +30,6 @@ export async function getMainCategories() {
         sortOrder: "asc",
       },
     });
-
     return JSON.parse(JSON.stringify(categories));
   } catch (error) {
     console.error("카테고리 불러오기 에러:", error);
@@ -41,6 +43,9 @@ export const getCategories = async (): Promise<{ grouped: Category[] }> => {
     orderBy: { sortOrder: "asc" },
     include: {
       children: {
+        where: {
+          isVisible: true,
+        },
         orderBy: { sortOrder: "asc" },
       },
     },
