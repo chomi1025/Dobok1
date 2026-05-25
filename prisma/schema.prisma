@@ -99,6 +99,7 @@ model User {
   reviews           Review[]
   reviewReplies     ReviewReply[]
   sessions          Session[]
+  estimatePosts     EstimatePost[]
   viewLogs          ContactViewLog[] @relation("ViewerRelation")
   authoredLogs      ContactViewLog[] @relation("AuthorRelation")
   nicknameHistory   UserNicknameHistory[]
@@ -202,6 +203,7 @@ model Product {
   productQnas    ProductQna[]
   discountType   PromotionType?
   discountValue  Int?
+  estimatePosts  EstimatePost[]
 }
 
 model ProductOption {
@@ -529,6 +531,74 @@ model ResourceAttachment {
   fileSize Int
   postId    Int
   post      ResourcePost @relation(fields: [postId], references: [id])
+}
+
+model EstimatePost {
+  id             String   @id @default(cuid())
+  title          String
+  content        String   @db.Text
+  writer         String
+  phone          String
+  email          String?
+  userId         Int?
+  user           User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  password       String?
+  status         EstimateStatus @default(WAITING)
+  isSecret       Boolean @default(true)
+  adminReply     String? @db.Text
+  repliedAt      DateTime?
+  productId      Int?
+  product        Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  quantity       Int?
+  size           String?
+  printing       Boolean? @default(false)
+  attachments    EstimateAttachment[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  deletedAt      DateTime?
+  answeredAt     DateTime?
+  history        EstimatePostHistory[]
+  @@index([createdAt])
+  @@index([status])
+
+}
+
+model EstimatePostHistory {
+  id          String   @id @default(cuid())
+  estimateId  String
+
+  before      Json?
+  after       Json?
+
+  changedFields String[]
+
+  userId      Int?
+
+  isGuest     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  estimate    EstimatePost @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+
+  @@index([estimateId])
+  @@index([createdAt])
+}
+
+enum EstimateStatus {
+  WAITING
+  PROCESSING
+  DONE
+}
+
+model EstimateAttachment {
+  id              String        @id @default(cuid())
+
+  estimatePostId  String
+  estimatePost    EstimatePost  @relation(fields: [estimatePostId], references: [id], onDelete: Cascade)
+
+  url             String
+  fileName        String
+
+  createdAt       DateTime @default(now())
 }
 
 enum ProductStatus {

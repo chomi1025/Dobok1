@@ -18,32 +18,18 @@ import { UnifiedTable } from "@/components/common/DataTable";
 import { X } from "lucide-react";
 
 interface UnifiedCartItem {
-  id: number;
+  id: string;
   productId: number;
   productOptionId?: number;
   productName: string;
   thumbnail: string;
-
   price: number;
   originPrice: number;
-
   quantity: number;
-
   optionName?: string;
   option?: string;
   optionName2?: string;
-
   isCustomizable: boolean;
-}
-
-declare module "@tanstack/react-table" {
-  interface TableMeta<TData> {
-    checkedItems: number[];
-    toggleCheck: (id: number) => void;
-
-    isAllChecked: boolean;
-    toggleAll: () => void;
-  }
 }
 
 interface Props {
@@ -73,7 +59,7 @@ export default function CartListComponent({
   isLoading,
   refetch,
 }: Props) {
-  const [checkedItems, setCheckedItems] = useState<number[]>([]);
+  const [checkedItems, setCheckedItems] = useState<string[]>([]);
   const router = useRouter();
   const queryClient = useQueryClient();
   const getDiscountRate = (origin: number, final: number) => {
@@ -93,12 +79,13 @@ export default function CartListComponent({
         .filter(Boolean)
         .join(" ");
 
-      const uniqueId =
+      const uniqueId = String(
         item.id ||
-        item.cartItemId ||
-        item.productOptionId ||
-        item.productId ||
-        index;
+          item.cartItemId ||
+          item.productOptionId ||
+          item.productId ||
+          index,
+      );
 
       return {
         id: uniqueId,
@@ -125,12 +112,11 @@ export default function CartListComponent({
     });
   }, [cart]);
 
-  const toggleCheck = useCallback((id: number) => {
+  const toggleCheck = useCallback((id: string) => {
     setCheckedItems((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
   }, []);
-
   const toggleAll = useCallback(() => {
     setCheckedItems((prev) => {
       if (prev.length === tableData.length) {
@@ -233,8 +219,7 @@ export default function CartListComponent({
     }
   };
 
-  const isAllChecked =
-    tableData.length > 0 && checkedItems.length === tableData.length;
+  const isAllChecked = checkedItems.length === tableData.length;
 
   const columns = useMemo(
     () => [
@@ -243,18 +228,25 @@ export default function CartListComponent({
         meta: { flex: 0.5 },
 
         header: ({ table }) => {
-          const { isAllChecked, toggleAll } = table.options.meta!;
-
-          return <Checkbox checked={isAllChecked} onChange={toggleAll} />;
-        },
-
-        cell: ({ row, table }) => {
-          const { checkedItems, toggleCheck } = table.options.meta!;
+          const meta = table.options.meta as CartMeta | undefined;
 
           return (
             <Checkbox
-              checked={checkedItems.includes(row.original.id)}
-              onChange={() => toggleCheck(row.original.id)}
+              checked={meta?.isAllChecked ?? false}
+              onChange={() => meta?.toggleAll?.()}
+            />
+          );
+        },
+
+        cell: ({ row, table }) => {
+          const meta = table.options.meta as CartMeta | undefined;
+
+          return (
+            <Checkbox
+              checked={
+                meta?.checkedItems?.includes(String(row.original.id)) ?? false
+              }
+              onChange={() => meta?.toggleCheck?.(String(row.original.id))}
             />
           );
         },
@@ -343,8 +335,11 @@ export default function CartListComponent({
         header: "삭제",
         meta: { flex: 0.7 },
 
-        cell: () => (
-          <button className={styles.deleteBtn}>
+        cell: ({ row }) => (
+          <button
+            className={styles.deleteBtn}
+            onClick={() => removeItem(Number(row.original.id))}
+          >
             <X size={18} />
           </button>
         ),
@@ -353,7 +348,14 @@ export default function CartListComponent({
     [],
   );
 
-  const table = useReactTable({
+  type CartMeta = {
+    checkedItems: string[];
+    toggleCheck: (id: string) => void;
+    isAllChecked: boolean;
+    toggleAll: () => void;
+  };
+
+  const table = useReactTable<UnifiedCartItem>({
     data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -368,6 +370,7 @@ export default function CartListComponent({
   const selectedItemsData = tableData.filter((item) =>
     checkedItems.includes(item.id),
   );
+
   const totalProductPrice = selectedItemsData.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0,

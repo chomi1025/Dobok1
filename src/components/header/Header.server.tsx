@@ -5,7 +5,12 @@ import Link from "next/link";
 import AuthIcons from "./AuthIcons.client";
 import GnbClient from "./GnbClient";
 import Logo from "./Logo";
-import { User, ShoppingCart, LayoutDashboard } from "lucide-react";
+import {
+  User,
+  ShoppingCart,
+  LayoutDashboard,
+  ClipboardPen,
+} from "lucide-react";
 import { Session } from "next-auth";
 import HeaderScrollWrapper from "./HeaderScrollWrapper";
 
@@ -48,9 +53,16 @@ export default async function HeaderServer({ session }: Props) {
       </HeaderScrollWrapper>
 
       <nav className={styles.bottomHeader}>
-        <GnbClient>
-          <HeaderDropdown categories={categories} />
-        </GnbClient>
+        <div className={styles.navInner}>
+          <GnbClient>
+            <HeaderDropdown categories={categories} />
+          </GnbClient>
+
+          <Link href="/estimate" className={styles.quoteButton}>
+            <ClipboardPen size={16} />
+            견적문의
+          </Link>
+        </div>
       </nav>
     </header>
   );
