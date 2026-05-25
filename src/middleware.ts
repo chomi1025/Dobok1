@@ -28,8 +28,7 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith("/community/jobs/new?type=hiring") ||
       pathname.startsWith("/community/jobs/new?type=seeking") ||
       pathname.startsWith("/community/free/new") ||
-      pathname.startsWith("/community/events/new") ||
-      pathname.includes("/edit");
+      pathname.startsWith("/community/events/new");
 
     if (isAuthPage) {
       const url = new URL("/login", req.url);
