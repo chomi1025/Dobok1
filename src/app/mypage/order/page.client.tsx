@@ -187,6 +187,8 @@ export default function OrdersClientPage() {
             {loading ? (
               <div className={styles.skeletonDateWrapper}>
                 <div className={styles.skeletonLineSmall} />
+
+                <div className={styles.skeletonLineSmall} />
               </div>
             ) : (
               <>

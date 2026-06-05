@@ -46,6 +46,7 @@
 }
 
 .star {
+  cursor: pointer;
   &.active {
     color: #facc15;
   }

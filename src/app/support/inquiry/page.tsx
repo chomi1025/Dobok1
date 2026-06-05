@@ -14,18 +14,25 @@ export const revalidate = 60;
 export default async function InquiryPage({
   searchParams,
 }: {
-  searchParams: { page?: string };
+  searchParams: { page?: string; status?: string };
 }) {
   const session = await getServerSession(authOptions);
   const currentUserId = session?.user?.id ? Number(session.user.id) : null;
   const isAdmin = session?.user?.role === "ADMIN";
+  const statusFilter = isAdmin ? searchParams.status : undefined;
   const page = Number(searchParams.page) || 1;
   const pageSize = 10; //몇개씩 보이게 할건지
 
   const queryClient = new QueryClient();
 
+  const where = {
+    ...(statusFilter && {
+      status: statusFilter,
+    }),
+  };
+
   await queryClient.prefetchQuery({
-    queryKey: ["inquiries", page],
+    queryKey: ["inquiries", page, searchParams.status],
     queryFn: async () => {
       const [inquiry, totalCount] = await Promise.all([
         prisma.inquiry.findMany({
@@ -38,7 +45,9 @@ export default async function InquiryPage({
           },
           orderBy: { createdAt: "desc" },
         }),
-        prisma.inquiry.count(),
+        prisma.inquiry.count({
+          where,
+        }),
       ]);
 
       const safeInquiries = inquiry.map((item: Inquiry) => {

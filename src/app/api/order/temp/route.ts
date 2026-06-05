@@ -78,10 +78,11 @@ export async function POST(req: Request) {
                 ? Math.round(((originPrice - salePrice) / originPrice) * 100)
                 : 0;
 
+
             return {
               productId: item.productId,
               productName: item.productName,
-              productImage,
+              productImage: item.productImage,
 
               quantity: qty,
 
@@ -102,6 +103,8 @@ export async function POST(req: Request) {
         items: true,
       },
     });
+
+
 
     return NextResponse.json({
       orderNumber: tempOrder.orderNumber,

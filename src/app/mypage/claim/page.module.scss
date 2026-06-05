@@ -82,8 +82,10 @@
 
 .priceInfo {
   display: flex;
+  align-items : center;
   flex-direction: column;
   gap: rem(2);
+
   strong {
     font-size: rem(14);
   }
@@ -101,4 +103,102 @@
   margin-top: rem(40);
   display: flex;
   justify-content: center;
+}
+
+
+.skeletonBox {
+  height: 18px;
+  width: 120px;
+  background: #eee;
+  border-radius: 6px;
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+.skeletonBoxSmall {
+  height: 18px;
+  width: 40px;
+  background: #eee;
+  border-radius: 6px;
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+.skeletonThumb {
+  width: 70px;
+  height: 70px;
+  background: #eee;
+  border-radius: 8px;
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+.skeletonLine {
+  height: 14px;
+  width: 160px;
+  background: #eee;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+.skeletonLineSmall {
+  height: 12px;
+  width: 100px;
+  background: #eee;
+  border-radius: 6px;
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+.titleColumn {
+  display: flex;
+  align-items: center;
+  gap: rem(15);
+}
+
+.skeletonThumb {
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;
+  background: #eee;
+  border-radius: 8px;
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+.skeletonTextGroup {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.skeletonDateWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items : center;
+  gap: rem(6);
+}
+
+.skeletonLineSmall {
+  height: 14px;
+  width: 110px;
+  background: #eee;
+  border-radius: 6px;
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+.skeletonLineTiny {
+  height: 12px;
+  width: 80px;
+  background: #eee;
+  border-radius: 6px;
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
 }

@@ -52,15 +52,24 @@
   line-height: 1.6;
 }
 
-.productCard {
+.info {
+  flex: 1;
   display: flex;
-  gap: 16px;
-  padding: rem(16) 0;
-  border-bottom: 1px solid #ddd;
+  flex-direction: column;
+  gap: 4px;
+}
 
-  &:last-of-type {
-    border-bottom: none;
-  }
+.name {
+  font-weight: 600;
+}
+
+.option {
+  font-size: 13px;
+  color: #777;
+}
+
+.price {
+  font-weight: 500;
 }
 
 .productInfo {
@@ -99,6 +108,17 @@
   gap: rem(12);
   margin-top: rem(32);
 
+  a {
+    flex: 1;
+    height: rem(48);
+    border-radius: rem(8);
+    font-size: rem(15);
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #000;
+  }
+
   button {
     flex: 1;
     height: rem(48);
@@ -110,24 +130,89 @@
     color: #000;
   }
 
-  > .primaryButton {
+  > .inquiryButton {
+    display: flex;
     flex: 1;
+    align-items: center;
+    justify-content: center;
     height: rem(48);
     border-radius: rem(8);
     font-size: rem(15);
     cursor: pointer;
-    border: none;
-    background: #000;
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #000;
+  }
+
+  > .cancleButton {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    height: rem(48);
+    border-radius: rem(8);
+    font-size: rem(15);
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #000;
+  }
+
+  > .claimButton {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    height: rem(48);
+    border-radius: rem(8);
+    font-size: rem(15);
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #000;
+  }
+}
+
+.reviewButton {
+  display: inline-flex;
+  align-self: center;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 6px;
+  background: #222;
+  color: white;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #111;
     color: #fff;
-    transition: background 0.2s ease;
+  }
+}
 
-    &:hover {
-      background: #333;
-    }
+.reviewDone {
+  display: inline-flex;
+  align-self: center;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  color: #333;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
 
-    &:active {
-      background: #111;
-    }
+  &:hover {
+    border: 1px solid #ccc;
   }
 }
 
@@ -146,7 +231,7 @@
 
 .saleWrapper {
   display: flex;
-  align-items : center;
+  align-items: center;
   gap: rem(5);
 }
 
@@ -159,4 +244,56 @@
 .discountRate {
   color: #e74c3c;
   font-size: 13px;
+}
+
+.productBlock {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 20px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.optionList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.optionCard {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.rightBlock {
+  display: flex;
+  align-items: center;
+}
+
+.reviewBtn,
+.reviewBtnPrimary {
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.reviewBtn {
+  background: #f2f2f2;
+  color: #333;
+}
+
+.reviewBtnPrimary {
+  background: #111;
+  color: #fff;
 }

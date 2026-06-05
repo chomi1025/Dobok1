@@ -1,17 +1,22 @@
 "use client";
 
 import styles from "./page.module.scss";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import EditorLayout from "@/components/common/EditorLayout/page";
 import toast from "react-hot-toast";
 import { useState } from "react";
+import EditorComponent from "@/components/common/editor/page";
 
 export default function InquiryWriteClientPage() {
+  const searchParams = useSearchParams();
+
+  const orderNumber = searchParams.get("orderNumber");
+
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    category: "OTHER",
+    category: orderNumber ? "ORDER" : "OTHER",
     title: "",
     content: "",
   });
@@ -69,7 +74,10 @@ export default function InquiryWriteClientPage() {
       const response = await fetch("/api/inquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          orderNumber,
+        }),
       });
 
       if (response.ok) {
@@ -88,6 +96,12 @@ export default function InquiryWriteClientPage() {
       onSubmit={onSubmit}
       isSubmitting={isLoading}
     >
+      {orderNumber && (
+        <div className={styles.orderInfo}>
+          <div className={styles.orderLabel}>문의 주문</div>
+          <div className={styles.orderNumber}>{orderNumber}</div>
+        </div>
+      )}
       <div className={styles.formGroup}>
         <label htmlFor="category">문의 유형</label>
         <select
@@ -119,13 +133,15 @@ export default function InquiryWriteClientPage() {
 
       <div className={styles.formGroup}>
         <label htmlFor="content">문의 내용</label>
-        <textarea
-          id="content"
+
+        <EditorComponent
           value={formData.content}
-          onChange={handleChange}
-          placeholder="문의하실 내용을 상세히 적어주세요."
-          className={errors.content ? styles.errorInput : ""}
-          rows={10}
+          onChange={(value) =>
+            setFormData((prev) => ({
+              ...prev,
+              content: value,
+            }))
+          }
         />
         {errors.content && (
           <p className={styles.errorMessage}>{errors.content}</p>

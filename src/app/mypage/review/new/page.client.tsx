@@ -1,29 +1,23 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import styles from "./page.module.scss";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import EditorComponent from "@/components/common/editor/page";
+import { OrderItem } from "@prisma/client";
 
-export default function ReviewNewClientPage() {
+interface Props {
+  item: OrderItem;
+}
+
+export default function ReviewNewClientPage({ item }: Props) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const productId = searchParams.get("id");
-
   const [rating, setRating] = useState(0);
   const [content, setContent] = useState("");
   const [images, setImages] = useState<(File | null)[]>([null, null, null]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // 상품 가짜 데이터
-  const product = {
-    name: "아디다스 품새도복",
-    img: "/images/sample.jpg",
-    option: "빨간색",
-  };
 
   // 이미지 변경
   const handleImageChange = (index: number, file: File) => {
@@ -42,27 +36,53 @@ export default function ReviewNewClientPage() {
   // 제출
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (rating === 0) {
       return toast.error("별점을 선택해주세요!");
     }
+
     if (content.length < 5) {
       return toast.error("리뷰를 5자 이상 작성해주세요!");
     }
 
-    setIsSubmitting(true);
+    try {
+      setIsSubmitting(true);
 
-    const formData = new FormData();
-    formData.append("productId", productId || "");
-    formData.append("rating", rating.toString());
-    formData.append("content", content);
-    images.forEach((img) => {
-      if (img) formData.append("images", img);
-    });
+      const formData = new FormData();
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsSubmitting(false);
-    alert("리뷰가 등록되었습니다.");
-    router.push("/mypage/review");
+      formData.append("orderItemId", item.id.toString());
+      formData.append("rating", rating.toString());
+      formData.append("content", content);
+
+      images.forEach((img) => {
+        if (img) {
+          formData.append("images", img);
+        }
+      });
+
+      const res = await fetch("/api/review", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message);
+      }
+
+      toast.success("리뷰가 등록되었습니다.");
+
+      router.push("/mypage/review");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "리뷰 등록 중 오류가 발생했습니다.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -73,14 +93,19 @@ export default function ReviewNewClientPage() {
 
       <form onSubmit={handleSubmit}>
         <div className={styles.productCard}>
-          <Image src={product.img} alt={product.name} width={90} height={90} />
+          <Image
+            src={item.productImage ?? "/images/no-image.png"}
+            alt={item.productName}
+            width={90}
+            height={90}
+          />
 
           <div className={styles.productInfo}>
             <span className={styles.date}>등록일:2025.10.10</span>
 
             <div className={styles.infoTop}>
-              <div className={styles.name}>{product.name}</div>
-              <div className={styles.option}>{product.option}</div>
+              <div className={styles.name}>{item.productName}</div>
+              <div className={styles.option}>{item.optionText}</div>
             </div>
 
             <div className={styles.starWrapper}>

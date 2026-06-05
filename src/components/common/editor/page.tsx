@@ -1,99 +1,34 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
 import "react-quill/dist/quill.snow.css";
+import styles from "./page.module.scss";
 
-const ReactQuill = dynamic(() => import("react-quill"), {
-  ssr: false,
-});
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
-interface Props {
+type EditorProps = {
   value: string;
   onChange: (value: string) => void;
-}
+};
 
-export default function EditorComponent({ value, onChange }: Props) {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
+export default function EditorComponent({ value, onChange }: EditorProps) {
   const modules = {
     toolbar: [
       [{ header: [1, 2, false] }],
-      ["bold", "italic", "underline", "strike"],
+      ["bold", "italic", "underline"],
       [{ list: "ordered" }, { list: "bullet" }],
-      ["image"],
       ["clean"],
     ],
   };
 
   return (
-    <div className="review-editor-container">
-      {isMounted && (
-        <style>{`
-          .review-editor-container .ql-toolbar.ql-snow {
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-            background-color: #f9f9f9;
-          }
-
-          .review-editor-container .ql-editor h1,
-          .review-editor-container .ql-editor h2 {
-            font-family: "Pretendard Variable", Pretendard, sans-serif !important;
-            font-weight: 700;
-            color: #222;
-            margin-bottom: 0.5rem;
-          }
-
-          .review-editor-container .ql-container.ql-snow {
-            border-bottom-left-radius: 8psx;
-            border-bottom-right-radius: 8px;
-            min-height: 300px;
-            font-size: 15px;
-          }
-
-          .review-editor-container .ql-editor.ql-blank::before {
-            font-style: normal;
-            color: #aaa;
-          }
-
-          .review-editor-container .ql-editor {
-            padding: 15px;
-            line-height: 1.6;
-            font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
-          }
-
-          .review-editor-container .ql-editor p {
-            margin: 0;
-            padding: 0;
-          }
-        `}</style>
-      )}
-
-      <div style={{ minHeight: 300, position: "relative" }}>
-        {!isMounted && (
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              background: "#f5f5f5",
-              borderRadius: 8,
-            }}
-          />
-        )}
-
-        {isMounted && (
-          <ReactQuill
-            theme="snow"
-            value={value}
-            onChange={onChange}
-            modules={modules}
-          />
-        )}
-      </div>
+    <div className={styles.reviewEditorContainer}>
+      <ReactQuill
+        theme="snow"
+        value={value}
+        onChange={onChange}
+        modules={modules}
+      />
     </div>
   );
 }
