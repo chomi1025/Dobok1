@@ -13,6 +13,17 @@ type OrderItemWithReview = Prisma.OrderItemGetPayload<{
   };
 }>;
 
+type ReviewListItem = {
+  id: number;
+  productId: number;
+  productName: string;
+  img: string | null;
+  optionTexts: (string | null)[];
+  deliveredAt: string;
+  reviewStatus: "리뷰작성가능" | "리뷰작성완료";
+  reviewId?: number;
+};
+
 type GroupedReviewItem = {
   productId: number;
   productName: string;
@@ -75,8 +86,8 @@ export default async function ReviewPage() {
     ),
   );
 
-  const reviews = grouped.map((item: any) => {
-    const hasReview = item.reviews?.length > 0;
+  const reviews: ReviewListItem[] = grouped.map((item) => {
+    const hasReview = item.reviews.length > 0;
 
     return {
       id: item.productId,
@@ -86,7 +97,7 @@ export default async function ReviewPage() {
       img: item.img,
       deliveredAt: item.latestDeliveredAt.toISOString().split("T")[0],
       reviewStatus: hasReview ? "리뷰작성완료" : "리뷰작성가능",
-      reviewId: item.reviews?.[0]?.id,
+      reviewId: item.reviews[0]?.id,
     };
   });
 
