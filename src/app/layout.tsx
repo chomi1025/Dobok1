@@ -14,8 +14,6 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 import dynamic from "next/dynamic";
-import ChatWidget from "@/components/chat/ChatWidget";
-import { CrispChat } from "@/components/CrispChat";
 
 const pretendard = localFont({
   src: "../../public/fonts/PretendardVariable.woff2",
