@@ -59,30 +59,37 @@
 
 .productCard {
   display: flex;
-  gap: rem(16);
-  padding: rem(16) 0;
-  border-bottom: 1px solid #ddd;
+  align-items: center;
+  gap: 16px;
 
-  &:last-of-type {
-    border-bottom: none;
+  padding: 16px 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid #e5e5e5;
   }
 }
 
-.productInfo {
+.ProductInfo {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 
-  .productName {
-    font-size: rem(15);
-    margin-bottom: rem(6);
-  }
-  .productMeta {
-    font-size: rem(13);
-    color: #777;
-  }
-  .productPrice {
-    font-size: rem(14);
-    margin-top: rem(8);
-  }
+.ProductName {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.productMeta {
+  font-size: 13px;
+  color: #666;
+}
+
+.productPrice {
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .buttonRow {

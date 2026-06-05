@@ -12,25 +12,32 @@ type ReplyType = {
   createdAt: string;
 };
 
+type ProductType = {
+  id: number;
+  name: string;
+  thumbnail: string | null;
+  images: string[];
+};
+
+type OrderItemType = {
+  product: ProductType;
+  option?: string;
+};
+
 type ReviewType = {
   id: number;
   rating: number;
   content: string;
   images: string[];
   createdAt: string;
-  orderItem: {
-    product: {
-      name: string;
-      img: string;
-    };
-    option?: string;
-  };
-  reply?: ReplyType;
+  orderItem: OrderItemType;
+  reply?: ReplyType | null;
 };
 
 export interface Props {
   initialReviews: ReviewType;
 }
+
 export default function ReviewDetailClientPage({ initialReviews }: Props) {
   const params = useParams();
   const reviewId = params.reviewId;
@@ -140,7 +147,11 @@ export default function ReviewDetailClientPage({ initialReviews }: Props) {
 
       <div className={styles.productCard}>
         <Image
-          src={review.orderItem.product.img}
+          src={
+            review.orderItem?.product?.thumbnail ??
+            review.orderItem?.product?.images?.[0] ??
+            "/images/no-image.png"
+          }
           alt="상품"
           width={90}
           height={90}

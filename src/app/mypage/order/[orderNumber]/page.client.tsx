@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.scss";
+import Link from "next/link";
 
 interface Address {
   postCode: string;
@@ -15,24 +16,33 @@ interface Shipping {
   address: Address;
 }
 
-interface OrderItem {
-  id: number;
-  productName: string;
-  quantity: number;
-  totalPrice: number;
-  productImage: string;
-  originalPrice?: number;
-  salePrice?: number;
-  discountRate?: number;
-}
-
 interface Order {
   id: number;
   orderNumber: string;
   date: string;
   status: string;
-  items: OrderItem[];
+  items: GroupedOrderItem[];
   shipping: Shipping;
+  carrier: string | null;
+  trackingNumber: string | null;
+}
+
+interface OrderOption {
+  orderItemId: number;
+  optionText: string | null;
+  price: number;
+  quantity: number;
+  hasReview: boolean;
+  reviewId: number | null;
+}
+
+interface GroupedOrderItem {
+  productId: number;
+  productName: string;
+  productImage: string | null;
+  hasAnyReview: boolean;
+  reviewId: number | null;
+  options: OrderOption[];
 }
 
 const ORDER_STATUS_LABEL: Record<string, string> = {
@@ -40,13 +50,68 @@ const ORDER_STATUS_LABEL: Record<string, string> = {
   PREPARING: "상품준비중",
   SHIPPING: "배송중",
   DELIVERED: "배송완료",
+  CANCELLED: "주문취소",
+};
+
+const carrierMap: Record<string, string> = {
+  CJ: "kr.cjlogistics",
+  한진택배: "kr.hanjin",
+  롯데택배: "kr.lotte",
+  로젠택배: "kr.logen",
+  우체국택배: "kr.epost",
 };
 
 export default function OrderDetailClientPage({ order }: { order: Order }) {
   const router = useRouter();
-  const totalPrice = order.items.reduce((sum, i) => sum + i.totalPrice, 0);
+  const totalPrice = order.items.reduce((sum, item) => {
+    const itemTotal = item.options.reduce(
+      (optionSum, opt) => optionSum + opt.price,
+      0,
+    );
+
+    return sum + itemTotal;
+  }, 0);
   const deliveryFee = totalPrice >= 50000 ? 0 : 3000;
   const grandTotal = totalPrice + deliveryFee;
+
+  const handleCancelOrder = async () => {
+    const confirmed = window.confirm("주문을 취소하시겠습니까?");
+
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch(`/api/order/${order.orderNumber}/cancel`, {
+        method: "PATCH",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message);
+      }
+
+      alert("주문이 취소되었습니다.");
+
+      router.refresh();
+    } catch (error) {
+      alert(
+        error instanceof Error
+          ? error.message
+          : "주문 취소 중 오류가 발생했습니다.",
+      );
+    }
+  };
+
+  //배송조회
+  const handleTracking = () => {
+    if (!order.carrier || !order.trackingNumber) return;
+    const carrierCode = carrierMap[order.carrier];
+
+    window.open(
+      `https://tracker.delivery/#/${carrierCode}/${order.trackingNumber}`,
+      "_blank",
+    );
+  };
 
   return (
     <div className={styles.inner}>
@@ -78,15 +143,15 @@ export default function OrderDetailClientPage({ order }: { order: Order }) {
 
         <div className={styles.infoGrid}>
           <span className={styles.label}>수령인</span>
-          <span className={styles.value}>{order.shipping.name}</span>
+          <span className={styles.value}>{order.shipping?.name}</span>
 
           <span className={styles.label}>연락처</span>
-          <span className={styles.value}>{order.shipping.phone}</span>
+          <span className={styles.value}>{order.shipping?.phone}</span>
 
           <span className={styles.label}>배송지</span>
           <p className={styles.address}>
             {order.shipping?.address
-              ? `(${order.shipping.address.postCode}) ${order.shipping.address.address} ${order.shipping.address.detailAddress}`
+              ? `(${order.shipping?.address.postCode}) ${order.shipping?.address.address} ${order.shipping?.address.detailAddress}`
               : "주소 없음"}
           </p>
         </div>
@@ -97,61 +162,56 @@ export default function OrderDetailClientPage({ order }: { order: Order }) {
       {/* 상품 정보 */}
       <section className={styles.card}>
         <h2>주문 상품</h2>
-        {order.items.map((item) => {
-          const unitSalePrice = item.totalPrice / item.quantity;
 
-          const originalPrice = item.originalPrice ?? unitSalePrice;
+        {order.items.map((item) => (
+          <div className={styles.productBlock} key={item.productId}>
+            <div className={styles.optionList}>
+              {item.options.map((opt) => (
+                <div className={styles.optionCard} key={opt.orderItemId}>
+                  <Image
+                    src={item.productImage || ""}
+                    width={60}
+                    height={60}
+                    alt=""
+                  />
 
-          const discountRate =
-            originalPrice > unitSalePrice
-              ? Math.round(
-                  ((originalPrice - unitSalePrice) / originalPrice) * 100,
-                )
-              : 0;
+                  <div className={styles.info}>
+                    <div className={styles.name}>{item.productName}</div>
 
-          return (
-            <div className={styles.productCard} key={item.id}>
-              <Image
-                src={item.productImage || "/images/no-image.png"}
-                alt={item.productName}
-                width={80}
-                height={80}
-                style={{
-                  objectFit: "cover",
-                  background: "grey",
-                  borderRadius: "5px",
-                }}
-              />
+                    <div className={styles.option}>
+                      {opt.optionText}
+                      <span className={styles.qty}>/ {opt.quantity}개</span>
+                    </div>
 
-              <div className={styles.productInfo}>
-                <p className={styles.productName}>{item.productName}</p>
-
-                <p className={styles.productMeta}>{item.quantity}개</p>
-
-                {/* 정가 */}
-                {originalPrice > unitSalePrice && (
-                  <p className={styles.originalPrice}>
-                    {originalPrice.toLocaleString()}원
-                  </p>
-                )}
-
-                <div className={styles.saleWrapper}>
-                  {/* 판매가 */}
-                  <p className={styles.salePrice}>
-                    {unitSalePrice.toLocaleString()}원
-                  </p>
-
-                  {/* 할인율 */}
-                  {discountRate > 0 && (
-                    <span className={styles.discountRate}>
-                      {discountRate}% 할인
-                    </span>
-                  )}
+                    <div className={styles.price}>
+                      {opt.price.toLocaleString()}원
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          );
-        })}
+
+            {order.status === "DELIVERED" && (
+              <div className={styles.rightBlock}>
+                {item.hasAnyReview ? (
+                  <Link
+                    className={styles.reviewBtn}
+                    href={`/mypage/review/${item.reviewId}`}
+                  >
+                    리뷰보기
+                  </Link>
+                ) : (
+                  <Link
+                    className={styles.reviewBtnPrimary}
+                    href={`/mypage/review/new?id=${item.productId}`}
+                  >
+                    리뷰작성
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
       </section>
 
       <hr />
@@ -177,33 +237,31 @@ export default function OrderDetailClientPage({ order }: { order: Order }) {
 
       {/* 버튼 */}
       <div className={styles.buttonRow}>
-        <button>문의하기</button>
+        <Link
+          href={`/support/inquiry/new?orderNumber=${order.orderNumber}`}
+          className={styles.inquiryButton}
+        >
+          문의하기
+        </Link>
 
-        {order.status === "PAYMENT_COMPLETE" && <button>주문취소</button>}
+        {order.status === "PAYMENT_COMPLETE" && (
+          <button className={styles.cancleButton} onClick={handleCancelOrder}>
+            주문취소
+          </button>
+        )}
 
-        {order.status === "SHIPPING" && <button>배송조회</button>}
+        {order.status === "SHIPPING" && (
+          <button onClick={handleTracking}>배송조회</button>
+        )}
 
         {order.status === "DELIVERED" && (
           <>
-            <button
-              className={styles.primaryButton}
-              onClick={() =>
-                router.push(
-                  `/mypage/review/new?orderNumber=${order.orderNumber}`,
-                )
-              }
-            >
-              리뷰작성
-            </button>
-            <button
-              onClick={() =>
-                router.push(
-                  `/mypage/claim/new?orderNumber=${order.orderNumber}`,
-                )
-              }
+            <Link
+              className={styles.claimButton}
+              href={`/mypage/claim/new?orderNumber=${order.orderNumber}`}
             >
               반품신청
-            </button>
+            </Link>
           </>
         )}
       </div>

@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { category, title, content } = body;
+    const { category, title, content, orderNumber } = body;
 
     if (!title || !content) {
       return NextResponse.json(
@@ -27,6 +27,7 @@ export async function POST(req: Request) {
         userId: Number(userId),
         category,
         title,
+        orderNumber: orderNumber || null,
         content,
         status: "WAITING",
         authorNameSnapshot: user?.name || "익명",

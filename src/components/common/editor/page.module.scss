@@ -1,0 +1,9 @@
+.reviewEditorContainer {
+  :global(.ql-container) {
+    height: 300px;
+  }
+
+  :global(.ql-editor) {
+    min-height: 100%;
+  }
+}

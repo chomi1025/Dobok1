@@ -52,6 +52,7 @@ export const metadata: Metadata = {
 interface Props {
   searchParams: {
     page?: string;
+    status?: "WAITING" | "PROCESSING" | "DONE";
   };
 }
 
@@ -60,8 +61,13 @@ export default async function EstimatePage({ searchParams }: Props) {
 
   const pageSize = 10;
 
+  const status = searchParams.status;
+
   const estimates = await prisma.estimatePost.findMany({
-    where: { deletedAt: null },
+    where: {
+      deletedAt: null,
+      ...(status && { status }),
+    },
     select: {
       writer: true,
       createdAt: true,
@@ -76,7 +82,12 @@ export default async function EstimatePage({ searchParams }: Props) {
     },
   });
 
-  const totalCount = await prisma.estimatePost.count();
+  const totalCount = await prisma.estimatePost.count({
+    where: {
+      deletedAt: null,
+      ...(status && { status }),
+    },
+  });
 
   const formattedEstimates = estimates.map((item: EstimatePost) => ({
     ...item,

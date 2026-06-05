@@ -1,4 +1,7 @@
+import { getServerSession } from "next-auth";
 import ClaimDetailClientPage from "./page.client";
+import { authOptions } from "@/lib/auth/options";
+import { prisma } from "@/lib/prisma";
 
 type ClaimType = "CANCEL" | "EXCHANGE" | "RETURN";
 type ClaimStatus = "REQUESTED" | "APPROVED" | "COMPLETED" | "REJECTED";
@@ -32,6 +35,46 @@ const MOCK_CLAIM_DETAIL: ClaimDetailData = {
   detail: "사이즈가 생각보다 커서 반품하고 싶습니다. 미개봉 상태입니다.",
 };
 
-export default function ClaimDetailPage() {
-  return <ClaimDetailClientPage MOCK_CLAIM_DETAIL={MOCK_CLAIM_DETAIL} />;
+export default async function ClaimPage({
+  params,
+}: {
+  params: { claimNumber: string };
+}) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return <div>로그인이 필요합니다.</div>;
+  }
+
+  const claim = await prisma.claim.findUnique({
+    where: { claimNumber: params.claimNumber },
+    include: {
+      order: {
+        include: {
+          items: true,
+        },
+      },
+    },
+  });
+
+  if (!claim) {
+    return <div>클레임 없음</div>;
+  }
+
+  if (claim.userId !== Number(session.user.id)) {
+    return <div>권한 없음</div>;
+  }
+
+  const formatted = {
+    claimNumber: claim.claimNumber,
+    claimType: claim.claimType,
+    status: claim.status,
+    requestedAt: claim.requestedAt,
+    processedAt: claim.processedAt,
+    reason: claim.reason,
+    detail: claim.detail,
+    items: claim.order?.items ?? [],
+  };
+
+  return <ClaimDetailClientPage claim={formatted} />;
 }

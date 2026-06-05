@@ -3,18 +3,47 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/options";
 import { redirect, notFound } from "next/navigation";
+import { OrderItem, Review } from "@prisma/client";
+
+type GroupedItem = {
+  productId: number;
+  productName: string;
+  productImage: string | null;
+  hasAnyReview: boolean;
+  reviewId: number | null;
+  options: {
+    orderItemId: number;
+    optionText: string | null;
+    price: number;
+    hasReview: boolean;
+    reviewId: number | null;
+    quantity: number ;
+  }[];
+};
+
+type FormattedOrder = {
+  id: number;
+  orderNumber: string;
+  date: string;
+  status: string;
+  carrier: string | null;
+  trackingNumber: string | null;
+  items: GroupedItem[];
+  shipping: {
+    name: string;
+    phone: string;
+    address: any;
+  };
+};
+
+type OrderItemWithReview = OrderItem & {
+  reviews: Review[];
+};
 
 interface Props {
   params: { orderNumber: string };
 }
 
-interface Items {
-  id: string;
-  productName: string;
-  quantity: number;
-  totalPrice: number;
-  productImage: string;
-}
 export default async function OrderDetailPage({ params }: Props) {
   const session = await getServerSession(authOptions);
 
@@ -29,10 +58,14 @@ export default async function OrderDetailPage({ params }: Props) {
   const order = await prisma.order.findFirst({
     where: {
       orderNumber: params.orderNumber,
-      userId: userId,
+      userId,
     },
     include: {
-      items: true,
+      items: {
+        include: {
+          reviews: true,
+        },
+      },
       user: {
         select: {
           name: true,
@@ -47,39 +80,57 @@ export default async function OrderDetailPage({ params }: Props) {
     notFound();
   }
 
-  const formattedOrder = {
+  const groupedMap = order.items.reduce(
+    (acc: Record<number, GroupedItem>, item: OrderItemWithReview) => {
+      const key = item.productId;
+
+      const reviews = item.reviews ?? [];
+
+      if (!acc[key]) {
+        acc[key] = {
+          productId: item.productId,
+          productName: item.productName,
+          productImage: item.productImage,
+          hasAnyReview: false,
+          reviewId: null,
+          options: [],
+        };
+      }
+
+      if (reviews.length > 0) {
+        acc[key].hasAnyReview = true;
+        acc[key].reviewId = reviews[0].id;
+      }
+
+      acc[key].options.push({
+        orderItemId: item.id,
+        optionText: item.optionText,
+        price: item.totalPrice,
+        quantity: item.quantity ?? 0,
+        hasReview: reviews.length > 0,
+        reviewId: reviews[0]?.id ?? null,
+      });
+
+      return acc;
+    },
+    {} as Record<number, GroupedItem>,
+  );
+
+  const grouped: GroupedItem[] = Object.values(groupedMap);
+
+  const formattedOrder: FormattedOrder = {
     id: order.id,
     orderNumber: order.orderNumber,
     date: order.createdAt.toISOString().split("T")[0],
     status: order.status,
-    items: order.items.map((item: any) => {
-      const originalPrice = item.originPrice;
-      const salePrice = item.salePrice ?? item.totalPrice / item.quantity;
-
-      const discountRate =
-        originalPrice && salePrice && originalPrice > salePrice
-          ? Math.round(((originalPrice - salePrice) / originalPrice) * 100)
-          : 0;
-
-      return {
-        id: item.id,
-        productName: item.productName,
-        quantity: item.quantity,
-        productImage: item.productImage,
-
-        originalPrice,
-        salePrice,
-        discountRate,
-        totalPrice: item.totalPrice,
-      };
-    }),
-
+    carrier: order.carrier,
+    trackingNumber: order.trackingNumber,
+    items: grouped,
     shipping: {
       name: order.user.name,
       phone: order.user.phone,
       address: order.user.address,
     },
   };
-
   return <OrderDetailClientPage order={formattedOrder} />;
 }

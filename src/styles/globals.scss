@@ -141,6 +141,15 @@ fieldset {
   height: auto;
 }
 
+/* page.module.scss */
+.reviewEditorContainer :global(.ql-container) {
+  height: 300px;
+}
+
+.reviewEditorContainer :global(.ql-editor) {
+  min-height: 100%;
+}
+
 /* 5. 타이포그래피 */
 h1 {
   color: #111;

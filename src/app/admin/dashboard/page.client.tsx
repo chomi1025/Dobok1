@@ -7,6 +7,7 @@ import {
   CreditCard,
   Package,
   MessageSquare,
+  FileText,
 } from "lucide-react";
 import { Order } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
@@ -29,6 +30,7 @@ interface AdminDashboardData {
   todaySales: number;
   recentOrders: Order[];
   pendingBusinessUsers: number;
+  unansweredEstimates: number;
 }
 
 const STATUS_MAP: Record<string, string> = {
@@ -61,6 +63,7 @@ export default function AdminDashboard() {
     todaySales = 0,
     recentOrders = [],
     pendingBusinessUsers = 0,
+    unansweredEstimates = 0,
   } = data || {};
 
   const stats = [
@@ -78,7 +81,7 @@ export default function AdminDashboard() {
       value: `${preparingCount}건`,
       icon: <Package />,
       color: "#ec4899",
-      href: "/admin/order?status=PREPARING",
+      href: "/admin/orders?period=30days&status=PREPARING&page=1",
     },
     {
       id: 3,
@@ -98,14 +101,22 @@ export default function AdminDashboard() {
     },
     {
       id: 5,
-      label: "미답변 문의",
+      label: "미답변 1:1문의",
       value: `${unansweredInquiries}건`,
       icon: <MessageSquare />,
       color: "#ef4444",
-      href: "/admin/inquiry?status=pending",
+      href: "/support/inquiry?status=WAITING",
     },
     {
       id: 6,
+      label: "미답변 견적문의",
+      value: `${unansweredEstimates}건`,
+      icon: <FileText />,
+      color: "#f97316",
+      href: "/estimate?status=WAITING",
+    },
+    {
+      id: 7,
       label: "사업자 승인 대기",
       value: `${pendingBusinessUsers}건`,
       icon: <Users />,
