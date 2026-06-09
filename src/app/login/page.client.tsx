@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import styles from "./page.module.scss";
 import Link from "next/link";
 import Button from "@/components/common/buttons/page";
+import Image from "next/image";
 
 export default function LoginClientPage() {
   const router = useRouter();
@@ -55,6 +56,16 @@ export default function LoginClientPage() {
     }
   };
 
+  const handleKakaoLogin = async () => {
+    try {
+      await signIn("kakao", {
+        callbackUrl: "/",
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error("카카오 로그인에 실패했습니다.");
+    }
+  };
   return (
     <div className={styles.inner}>
       <header className={styles.titleArea}>
@@ -113,6 +124,25 @@ export default function LoginClientPage() {
           <Button href="/signup/step1" variant="edit">
             회원가입
           </Button>
+
+          <div className={styles.divider}>
+            <span>또는</span>
+          </div>
+
+          <button
+            type="button"
+            className={styles.kakaoLoginButton}
+            onClick={handleKakaoLogin}
+          >
+            <Image
+              src="/kakaotalk.svg"
+              alt="카카오톡 로고"
+              width={24}
+              height={24}
+            />
+
+            <span>카카오로 계속하기</span>
+          </button>
         </div>
       </form>
     </div>

@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
         duplicateFields.push("phone");
 
       return NextResponse.json(
-        { error: `이미 존재하는 ${duplicateFields.join(", ")}입니다.` },
+        { error: `이미 가입된 회원입니다. 로그인 후 이용해주세요.` },
         { status: 400 },
       );
     }

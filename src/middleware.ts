@@ -23,7 +23,6 @@ export async function middleware(req: NextRequest) {
   if (!token) {
     const isAuthPage =
       pathname.startsWith("/admin") ||
-      pathname.startsWith("/mypage") ||
       pathname.startsWith("/support/inquiry") ||
       pathname.startsWith("/community/jobs/new?type=hiring") ||
       pathname.startsWith("/community/jobs/new?type=seeking") ||

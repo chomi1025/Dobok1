@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import KakaoProvider from "next-auth/providers/kakao";
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -11,6 +12,7 @@ export const authOptions: NextAuthOptions = {
     updateAge: 24 * 60 * 60,
   },
   providers: [
+    // 크리덴셜
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -57,16 +59,66 @@ export const authOptions: NextAuthOptions = {
         }
       },
     }),
+
+    // 카카오
+    KakaoProvider({
+      clientId: process.env.KAKAO_CLIENT_ID!,
+      clientSecret: process.env.KAKAO_CLIENT_SECRET!,
+    }),
   ],
   callbacks: {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "kakao") {
+        const existingUser = await prisma.user.findUnique({
+          where: {
+            email: user.email!,
+          },
+        });
+
+        if (!existingUser) {
+          const kakao = profile as any;
+
+          await prisma.socialSignupTemp.upsert({
+            where: {
+              providerId: String(kakao.id),
+            },
+            update: {},
+            create: {
+              provider: "KAKAO",
+              providerId: String(kakao.id),
+              email: kakao.kakao_account?.email,
+              name: kakao.kakao_account?.name,
+              phone: kakao.kakao_account?.phone_number,
+              birthday: `${kakao.kakao_account?.birthyear}-${kakao.kakao_account?.birthday}`,
+            },
+          });
+
+          return `/signup/social?providerId=${kakao.id}`;
+        }
+      }
+
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.username = (user as any).username;
-        token.role = (user as any).role;
-        token.status = (user as any).status;
-        token.nickname = (user as any).nickname;
+
+        token.isNewSocialUser = (user as any).isNewSocialUser;
+
+        if ((user as any).socialProfile) {
+          const profile = (user as any).socialProfile;
+
+          token.socialUser = {
+            email: profile.kakao_account?.email,
+            name: profile.kakao_account?.name,
+            phone: profile.kakao_account?.phone_number,
+            birthyear: profile.kakao_account?.birthyear,
+            birthday: profile.kakao_account?.birthday,
+          };
+        }
       }
+
       return token;
     },
     async session({ session, token }) {
@@ -76,7 +128,12 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role as any;
         (session.user as any).status = token.status;
         (session.user as any).nickname = token.nickname;
+        (session as any).socialUser = (token as any).socialUser;
+        (session as any).isNewSocialUser = (token as any).isNewSocialUser;
       }
+
+      (session as any).socialUser = (token as any).socialUser;
+
       return session;
     },
   },
