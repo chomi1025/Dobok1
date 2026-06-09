@@ -1,0 +1,281 @@
+"use client";
+
+import * as yup from "yup";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import type { ObjectSchema } from "yup";
+import TermsModal from "@/components/terms/Termsmodal";
+import toast from "react-hot-toast";
+import styles from "./page.module.scss";
+import Button from "@/components/common/buttons/page";
+import AccountInfo from "../step2/AccountInfo";
+import PersonalInfo from "../step2/PersonalInfo";
+import AddressInput from "../step2/AddressInput";
+import EmailInfo from "../step2/EmailInfo";
+import BirthdayInput from "../step2/BirthdayInput";
+import { SocialSignupTemp } from "@prisma/client";
+import { FormType } from "../step2/types";
+
+type TermsType = "service" | "privacy";
+
+const schema: ObjectSchema<Omit<FormType, "agreeTerms">> = yup.object({
+  username: yup
+    .string()
+    .required("아이디는 필수입니다.")
+    .min(4, "4글자 이상")
+    .max(20, "20글자 이하")
+    .matches(/^[A-Za-z0-9]+$/, "아이디는 영어와 숫자만 사용 가능합니다."),
+  usernameChecked: yup
+    .boolean()
+    .required("아이디 중복체크를 해주세요.")
+    .oneOf([true], "아이디 중복체크를 해주세요."),
+  password: yup
+    .string()
+    .required("비밀번호는 필수입니다.")
+    .min(8, "8글자 이상 입력해주세요.")
+    .max(20, "20글자 이하 입력해주세요.")
+    .matches(
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/,
+      "영문, 숫자, 특수문자를 각각 1개 이상 포함해야 합니다.",
+    ),
+  passwordConfirm: yup
+    .string()
+    .oneOf([yup.ref("password")], "비밀번호가 일치하지 않습니다.")
+    .required("비밀번호 확인은 필수입니다."),
+  name: yup.string().required("이름은 필수입니다."),
+  phone: yup
+    .object({
+      prefix: yup.string().required(),
+      middle: yup.string().required(),
+      last: yup.string().required(),
+    })
+    .required(),
+  email: yup
+    .string()
+    .email("이메일 형식이 아닙니다")
+    .required("이메일은 필수입니다."),
+  address: yup
+    .object({
+      address: yup.string().required("주소를 입력해주세요"),
+      postCode: yup.string().required("우편번호를 입력해주세요"),
+      detailAddress: yup.string().required("상세주소를 입력해주세요"),
+    })
+    .test(
+      "all-fields-filled",
+      "주소를 정확히 입력해주세요.",
+      (value) =>
+        !!value?.address && !!value?.postCode && !!value?.detailAddress,
+    )
+    .required(),
+  birthDate: yup.string().required("생년월일은 필수입니다."),
+  nickname: yup
+    .string()
+    .required("닉네임은 필수입니다.")
+    .min(2, "2글자 이상 입력해주세요.")
+    .max(10, "10글자 이하로 입력해주세요."),
+  nicknameChecked: yup
+    .boolean()
+    .required("닉네임 중복체크를 해주세요.")
+    .oneOf([true], "닉네임 중복체크를 해주세요."),
+});
+
+type Props = {
+  socialUser: SocialSignupTemp | null;
+};
+
+export default function SignupSocialClient({ socialUser }: Props) {
+
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    clearErrors,
+    getValues,
+    watch,
+    formState: { errors, isValid },
+  } = useForm<FormType>({
+    resolver: yupResolver(schema) as any,
+    mode: "onTouched",
+    defaultValues: {
+      username: "",
+      usernameChecked: false,
+      password: "",
+      passwordConfirm: "",
+      name: "",
+      phone: { prefix: "", middle: "", last: "" },
+      email: "",
+      address: { address: "", postCode: "", detailAddress: "" },
+      birthDate: "",
+      nickname: "",
+      nicknameChecked: false,
+    },
+    shouldUnregister: true,
+  });
+
+  //모달관련(약관동의)
+  const [termsOpen, setTermsOpen] = useState(false);
+  const [termsType, setTermsType] = useState<TermsType>("service");
+
+  // 우편번호 찾기(다음)
+  const [isPostOpen, setIsPostOpen] = useState(false);
+  const [userCi, setUserCi] = useState<string | null>(null);
+  const [emailDomain, setEmailDomain] = useState("gmail.com");
+
+  const onSubmit: SubmitHandler<FormType> = async (data) => {
+    const fullPhone = `${data.phone.prefix}-${data.phone.middle}-${data.phone.last}`;
+
+    if (!data.usernameChecked) {
+      toast.error("아이디 중복체크를 해주세요.");
+      return;
+    }
+    if (!data.nicknameChecked) {
+      toast.error("닉네임 중복체크를 해주세요.");
+      return;
+    }
+    try {
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: data.username.trim(),
+          password: data.password,
+          passwordConfirm: data.passwordConfirm,
+          email: data.email,
+          name: data.name,
+          phone: fullPhone,
+          address: data.address,
+          birth_date: data.birthDate,
+          ci: userCi,
+          nickname: data.nickname.trim(),
+        }),
+      });
+
+      const resData = await res.json();
+
+      if (!res.ok) {
+        throw new Error(
+          resData.message || resData.error || "회원가입에 실패했습니다.",
+        );
+      }
+
+      toast.success("회원가입이 완료되었습니다.");
+
+      router.push("/login");
+    } catch (err: any) {
+      toast.error(err.message, { duration: 3000 });
+    }
+  };
+
+  useEffect(() => {
+    if (!socialUser) return;
+
+    setValue("name", socialUser.name ?? "");
+    setValue("email", socialUser.email ?? "");
+
+    if (socialUser.birthday) {
+      const birth = socialUser.birthday;
+
+      if (birth.includes("-")) {
+        const [year, md] = birth.split("-");
+
+        const month = md.slice(0, 2);
+        const day = md.slice(2, 4);
+
+        setValue("birthDate", `${year}-${month}-${day}`);
+      }
+    }
+
+    // 전화번호
+    if (socialUser.phone) {
+      let phone = socialUser.phone;
+
+      if (phone.startsWith("+82")) {
+        phone = "0" + phone.replace("+82", "").trim();
+      }
+
+      const purePhone = phone.replace(/[^0-9]/g, "");
+
+      setValue("phone.prefix", purePhone.slice(0, 3));
+      setValue("phone.middle", purePhone.slice(3, 7));
+      setValue("phone.last", purePhone.slice(7, 11));
+    }
+  }, [socialUser, setValue]);
+
+  return (
+    <>
+      <section className={styles.inner}>
+        <div className={styles.title_Wrapper}>
+          <h2>회원가입</h2>
+          <p>도복일번지에 가입하시고 다양한 혜택을 받아보세요! </p>
+        </div>
+
+        <hr className={styles.line} />
+
+        <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+          <div className={styles.form_inner}>
+            {/* 계정정보:아이디,비밀번호 */}
+            <AccountInfo
+              register={register}
+              errors={errors}
+              setValue={setValue}
+              getValues={getValues}
+              watch={watch}
+              clearErrors={clearErrors}
+              isEdit={false}
+            />
+
+            {/* 개인정보:이름,핸드폰번호 */}
+            <PersonalInfo
+              register={register}
+              errors={errors}
+              setValue={setValue}
+              clearErrors={clearErrors}
+              watch={watch}
+              getValues={getValues}
+            />
+
+            {/* 주소 */}
+            <AddressInput control={control} errors={errors} />
+
+            {/* 이메일 */}
+            <EmailInfo
+              control={control}
+              errors={errors}
+              emailDomain={emailDomain}
+              setEmailDomain={setEmailDomain}
+            />
+
+            {/* 생년월일 */}
+            <BirthdayInput control={control} errors={errors} />
+          </div>
+
+          {/* 구분선 */}
+          <hr className={styles.line2} />
+
+          {/* 모달창 */}
+          <TermsModal
+            open={termsOpen}
+            type={termsType}
+            onClose={() => setTermsOpen(false)}
+          />
+
+          {/*  회원가입 버튼 */}
+          <Button
+            type="submit"
+            variant="black"
+            disabled={
+              !isValid || !watch("usernameChecked") || !watch("nicknameChecked")
+            }
+          >
+            회원가입
+          </Button>
+        </form>
+      </section>
+    </>
+  );
+}

@@ -26,6 +26,23 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
+model SocialSignupTemp {
+  id Int @id @default(autoincrement())
+
+  provider String
+  providerId String @unique
+
+  email String?
+  name String?
+  phone String?
+
+  birthYear  String?
+  birthday   String?
+
+
+  createdAt DateTime @default(now())
+}
+
 model Message {
   id                Int       @id @default(autoincrement())
   content           String

@@ -15,7 +15,7 @@ export default function GuestPage() {
       <div className={styles.content}>
         <header className={styles.header}>
           <div className={styles.mainIcon}>
-            <LockKeyhole size={48} strokeWidth={1.5} color="#002244" />
+            <LockKeyhole size={48} strokeWidth={1.5} color="#000" />
           </div>
           <h2>로그인이 필요한 서비스입니다.</h2>
           <p>
@@ -54,11 +54,12 @@ export default function GuestPage() {
         <footer className={styles.actions}>
           <Link href="/login" className={styles.loginBtn}>
             <LogIn size={18} style={{ marginRight: "8px" }} />
-            로그인하기
+            로그인
           </Link>
+
           <Link href="/register" className={styles.registerBtn}>
             <UserPlus size={18} style={{ marginRight: "8px" }} />
-            간편 회원가입
+            회원가입
           </Link>
         </footer>
       </div>

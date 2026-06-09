@@ -80,7 +80,7 @@ $text-sub: #777;
       gap: 12px;
 
       .icon {
-        color: $primary-color;
+        color: #333;
       }
 
       .benefitText {
@@ -123,10 +123,11 @@ $text-sub: #777;
   }
 
   .loginBtn {
-    background-color: $primary-color;
+    background-color: #222;
     color: #fff;
+
     &:hover {
-      background-color: #003366;
+      background-color: #111;
     }
   }
 
