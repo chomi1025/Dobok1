@@ -103,7 +103,9 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.username = (user as any).username;
-
+        token.role = (user as any).role;
+        token.status = (user as any).status;
+        token.nickname = (user as any).nickname;
         token.isNewSocialUser = (user as any).isNewSocialUser;
 
         if ((user as any).socialProfile) {
