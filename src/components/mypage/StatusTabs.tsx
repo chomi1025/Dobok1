@@ -61,7 +61,7 @@ export default function StatusTab({
             active={statusFilter === status}
             onClick={() => {
               setStatusFilter(status);
-              setCurrentPage(0);
+              setCurrentPage(1);
             }}
           >
             {status}

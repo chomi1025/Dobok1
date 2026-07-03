@@ -10,28 +10,17 @@
 }
 
 .titleRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: rem(20);
+  position: relative;
 
-  h1 {
-    font-weight: 700;
-    margin-bottom: rem(20);
+  a {
+    position: absolute;
+    right: 0;
+    top: -50px;
   }
 
-  .btnWrite {
-    padding: rem(10) rem(20);
-    background-color: #333;
-    color: #fff;
-    border-radius: rem(4);
-    font-size: rem(14);
-    font-weight: 500;
-    text-decoration: none;
-
-    &:hover {
-      background-color: #000;
-    }
+  > div {
+    padding: rem(20);
+    margin: rem(30) 0;
   }
 }
 

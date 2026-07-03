@@ -1,23 +1,25 @@
+import { prisma } from "@/lib/prisma";
 import ProductQnaClientPage from "./page.client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/options";
+import { redirect } from "next/navigation";
 
-export interface Qna {
-  id: number;
-  productName: string;
-  img: string;
-  qnaTitle: string;
-  qnaAt: string;
-  qnaStatus: "답변대기" | "답변완료";
-}
+export default async function ProductQnaPage() {
+  const session = await getServerSession(authOptions);
 
-const qnas: Qna[] = Array.from({ length: 5 }, (_, i) => ({
-  id: 2000 + i,
-  productName: `아디다스 품새도복(여) 유단자용 ${i + 1}`,
-  qnaTitle: "목부분 소재가 어떻게되나요? 궁금합니다",
-  img: "https://jbxwbgcgrqogbbwlzzdb.supabase.co/storage/v1/object/public/thumbnails/1773901449806-e05c163a-1571-4a6c-a331-ffbf713e6cf6.png",
-  qnaAt: "2025.12.15",
-  qnaStatus: i % 2 === 0 ? "답변대기" : "답변완료",
-}));
+  if (!session) {
+    redirect("/");
+  }
 
-export default function ProductQnaPage() {
+  const qnas = await prisma.ProductQna.findMany({
+    where: {
+      userId: Number(session.user.id),
+    },
+    include: {
+      product: true,
+      reply: true,
+    },
+  });
+
   return <ProductQnaClientPage qnas={qnas} />;
 }
