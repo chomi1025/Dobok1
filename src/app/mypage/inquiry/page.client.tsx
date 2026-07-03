@@ -10,7 +10,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useSearchParams } from "next/navigation";
-import Image from "next/image";
 import { UnifiedTable } from "@/components/common/DataTable";
 import PagenationComponent from "@/components/pagenation/page";
 import Button from "@/components/common/buttons/page";
@@ -26,12 +25,20 @@ export type InquiryType =
 
 export interface Inquiry {
   id: number;
-  inquiryType: InquiryType;
-  img: string;
-  inquiryTitle: string;
-  inquiryAt: string;
-  inquiryStatus: "답변대기" | "답변완료";
+  content: string;
+  title: string | null;
+  category: "PRODUCT" | "DELIVERY" | "ORDER" | "RETURN" | "OTHER";
+  status: "WAITING" | "ANSWERED";
+  createdAt: string;
 }
+
+const CategoryChange = {
+  PRODUCT: "상품문의",
+  DELIVERY: "배송문의",
+  ORDER: "주문문의",
+  RETURN: "취소·반품문의",
+  OTHER: "기타문의",
+};
 
 interface Props {
   inquiries: Inquiry[];
@@ -40,6 +47,7 @@ interface Props {
 const columnHelper = createColumnHelper<Inquiry>();
 
 export default function InquiryClientPage({ inquiries }: Props) {
+  console.log(inquiries);
   const [statusFilter, setStatusFilter] = useState<
     "전체" | "답변대기" | "답변완료"
   >("전체");
@@ -51,7 +59,12 @@ export default function InquiryClientPage({ inquiries }: Props) {
   // 필터링
   const filteredData = useMemo(() => {
     if (statusFilter === "전체") return inquiries;
-    return inquiries.filter((item) => item.inquiryStatus === statusFilter);
+
+    return inquiries.filter((item) =>
+      statusFilter === "답변완료"
+        ? item.status === "ANSWERED"
+        : item.status === "WAITING",
+    );
   }, [inquiries, statusFilter]);
 
   const paginatedData = useMemo(() => {
@@ -61,49 +74,49 @@ export default function InquiryClientPage({ inquiries }: Props) {
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor("inquiryType", {
+      columnHelper.accessor("category", {
         header: "문의유형",
         meta: { flex: 1.5 },
         cell: (info) => (
-          <span className={styles.typeBadge}>{info.getValue()}</span>
+          <span className={styles.typeBadge}>
+            {CategoryChange[info.getValue()]}
+          </span>
         ),
       }),
 
-      columnHelper.accessor("inquiryTitle", {
+      columnHelper.display({
+        id: "title",
         header: "제목",
         meta: { flex: 5 },
         cell: (info) => (
-          <div className={styles.titleColumn}>
-            <div className={styles.inquiryTextContent}>
-              <Link
-                href={`/mypage/inquiry/${info.row.original.id}`}
-                className={styles.inquiryLink}
-                prefetch={false}
-              >
-                {info.getValue()}
-              </Link>
-            </div>
-          </div>
+          <Link
+            href={`/mypage/inquiry/${info.row.original.id}`}
+            className={styles.inquiryLink}
+            prefetch={false}
+          >
+            {info.row.original.title ?? info.row.original.content.slice(0, 30)}
+          </Link>
         ),
       }),
 
-      columnHelper.accessor("inquiryAt", {
+      columnHelper.accessor("createdAt", {
         header: "작성일",
         meta: { flex: 1.5 },
         cell: (info) => (
-          <span className={styles.dateText}>{info.getValue()}</span>
+          <span className={styles.dateText}>
+            {new Date(info.getValue()).toLocaleDateString("ko-KR")}
+          </span>
         ),
       }),
-
-      columnHelper.accessor("inquiryStatus", {
+      columnHelper.accessor("status", {
         header: "상태",
         meta: { flex: 1.5 },
         cell: (info) => {
-          const isDone = info.getValue() === "답변완료";
+          const isDone = info.getValue() === "ANSWERED";
 
           return (
-            <span className={isDone ? styles.c : styles.statusWait}>
-              {info.getValue()}
+            <span className={isDone ? styles.statusDone : styles.statusWait}>
+              {isDone ? "답변완료" : "답변대기"}
             </span>
           );
         },
@@ -121,19 +134,19 @@ export default function InquiryClientPage({ inquiries }: Props) {
   return (
     <div className={styles.inner}>
       <header className={styles.pageHeader}>
-        <div className={styles.titleRow}>
-          <h1>1:1 문의</h1>
+        <h1>1:1 문의</h1>
 
+        <div className={styles.titleRow}>
           <Button variant="black" href="/mypage/inquiry/write">
             문의하기
           </Button>
-        </div>
 
-        <StatusTab
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          setCurrentPage={() => {}}
-        />
+          <StatusTab
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            setCurrentPage={() => {}}
+          />
+        </div>
       </header>
 
       <UnifiedTable table={table} className={styles.inquiryTable} />

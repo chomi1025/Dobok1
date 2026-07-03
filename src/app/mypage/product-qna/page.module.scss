@@ -4,14 +4,22 @@
   width: rem(908);
   margin: 0 auto;
   padding: rem(60) 0 rem(100);
+
+  header {
+    > div {
+      padding: rem(20);
+      margin : rem(30) 0;
+    }
+  }
 }
 
 .pageHeader {
   margin-bottom: rem(30);
+
   h1 {
     font-size: rem(24);
     font-weight: 700;
-    margin-bottom: rem(20);
+    margin-bottom: rem(30);
   }
 }
 

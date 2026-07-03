@@ -16,10 +16,23 @@ import "swiper/css/effect-fade";
 import dynamic from "next/dynamic";
 
 const pretendard = localFont({
-  src: "../../public/fonts/PretendardVariable.woff2",
-  weight: "400 800",
-  display: "swap",
-  preload: true,
+  src: [
+    {
+      path: "../../public/fonts/Pretendard-Regular.subset.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Pretendard-Light.subset.woff2",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Pretendard-Bold.subset.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
   variable: "--font-pretendard",
 });
 
@@ -46,8 +59,8 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions);
 
   return (
-    <html lang="ko" className={`${pretendard.variable} `}>
-      <body>
+    <html lang="ko">
+      <body className={`${pretendard.variable} `}>
         <Providers session={session}>
           <EmotionRegistry>
             <TopBanner />

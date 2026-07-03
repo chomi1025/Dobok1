@@ -18,6 +18,13 @@ export async function DELETE(
       );
     }
 
+    if (!params.id || isNaN(inquiryId)) {
+      return NextResponse.json(
+        { message: "잘못된 ID입니다." },
+        { status: 400 },
+      );
+    }
+
     const inquiry = await prisma.inquiry.findUnique({
       where: { id: inquiryId },
     });
